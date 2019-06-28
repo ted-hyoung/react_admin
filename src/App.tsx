@@ -1,25 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// base
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import routes, { PrivateRoute } from './routes';
 
-const App: React.FC = () => {
+// modules
+import { Layout } from 'antd';
+
+// components
+
+// defines
+const { Content } = Layout;
+
+const NotFound = () => {
+  return <div>Not Found!</div>;
+};
+
+function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div id="app">
+        <header>
+          <div>FROMC ADMIN</div>
+        </header>
+        <Content>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Switch>
+              {routes.map(({ path, component, secret }, index) => {
+                if (secret) {
+                  return <PrivateRoute exact key={index} path={path} component={component} />;
+                }
+
+                return <Route exact key={index} path={path} component={component} />;
+              })}
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </Suspense>
+        </Content>
+      </div>
+    </Router>
   );
 }
 
