@@ -25,9 +25,6 @@
     "build:dev": "REACT_APP_BUILD_MODE=sandbox craco start",
     "test": "craco start"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
