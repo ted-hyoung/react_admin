@@ -1,14 +1,23 @@
 // base
 import { combineReducers } from 'redux';
+import { all } from 'redux-saga/effects';
 
 // reducer
+import review, { ReviewState } from './reducer/review';
 
 // saga
+import reviewSaga from './saga/review';
 
-export interface StoreState {}
+export interface StoreState {
+  review: ReviewState;
+}
 
-// export function* saga() {}
+export function* saga() {
+  yield all([reviewSaga()]);
+}
 
-const reducer = combineReducers<StoreState>({});
+const reducer = combineReducers<StoreState>({
+  review,
+});
 
 export default reducer;

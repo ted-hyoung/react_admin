@@ -118,3 +118,14 @@ export const patch: AxiosFunction = (url, data, cb) => {
       throw extractErrorMsg(error);
     });
 };
+
+export const del: AxiosFunction = (url, data, cb) => {
+  return axios
+    .delete(host + url, {
+      headers: authHeader,
+    })
+    .then(res => (cb ? cb(res) : res))
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};
