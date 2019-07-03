@@ -8,7 +8,7 @@ import * as Actions from 'store/action/review';
 // types
 import { ResponseList } from 'types';
 import { ResponseReview, UpdateReview, SearchReview } from 'types/Review';
-import { GetListRequestPayload, GetRequestPayload, UpdateRequestPayload, DeleteRequestPayload } from 'types/Payload';
+import { GetListRequestPayload, GetRequestPayload, UpdateRequestPayload } from 'types/Payload';
 import { AnyAction } from 'redux';
 import { AxiosError } from 'axios';
 
@@ -68,8 +68,9 @@ const initialState: ReviewState = {
     reviewId: 0,
     starRate: 0,
     contents: '',
-    created: new Date(),
+    created: '',
     creator: {
+      loginId: '',
       username: '',
       phone: '',
     },

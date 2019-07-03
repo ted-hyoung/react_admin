@@ -1,7 +1,7 @@
-import { put, call, takeEvery, select } from 'redux-saga/effects';
+import { put, call, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { get, put as axiosPut } from 'lib/protocols';
 
-import { Modal } from 'antd';
+import { message } from 'antd';
 
 import {
   getReviewsAsync,
@@ -49,7 +49,7 @@ function* updateReview(action: PayloadAction<string, UpdateRequestPayload<Update
         size: state.review.reviews.size,
       }),
     );
-    Modal.info({ title: '리뷰가 수정되었습니다' });
+    message.success('수정되었습니다');
   } catch (error) {
     yield put(updateReviewAsync.failure(error));
   }
@@ -59,16 +59,14 @@ function* updateReviewsExpose(action: PayloadAction<string, UpdateReviewExposeRe
   try {
     yield call(() => axiosPut('/reviews/expose', action.payload));
     yield put(updateReviewsExposeAsync.success(action.payload));
-    Modal.info({
-      title: `공개 설정이 수정되었습니다`,
-    });
+    message.success('수정되었습니다');
   } catch (error) {
     yield put(updateReviewsExposeAsync.failure(error));
   }
 }
 
 export default function* reviewSaga() {
-  yield takeEvery(Actions.GET_REVIEWS_REQUEST, getReviews);
+  yield takeLatest(Actions.GET_REVIEWS_REQUEST, getReviews);
   yield takeEvery(Actions.GET_REVIEW_REQUEST, getReview);
   yield takeEvery(Actions.UPDATE_REVIEW_REQUEST, updateReview);
   yield takeEvery(Actions.UPDATE_REVIEWS_EXPOSE_REQUEST, updateReviewsExpose);

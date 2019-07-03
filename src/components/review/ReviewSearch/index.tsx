@@ -88,18 +88,18 @@ function ReviewSearch(props: ReviewSearchProps) {
             return;
           }
           if (moment.isMoment(val[key])) {
-            val[key] = val[key].toISOString();
+            val[key] = val[key].format('YYYY-MM-DDTHH:mm:ss');
           }
         });
         getData(0, pageSize, { ...val });
       }
     });
-  }, [validateFieldsAndScroll, pageSize]);
+  }, [validateFieldsAndScroll, pageSize, getData]);
 
   const handleReset = useCallback(() => {
     resetFields();
     getData(0, pageSize);
-  }, [getData, resetFields]);
+  }, [getData, resetFields, pageSize]);
 
   const setDate = useCallback(
     (value: string) => {
@@ -155,12 +155,12 @@ function ReviewSearch(props: ReviewSearchProps) {
           <Form.Item>{getFieldDecorator('startDate')(<DatePicker />)}</Form.Item>
           <Form.Item>{getFieldDecorator('endDate')(<DatePicker />)}</Form.Item>
           {Object.keys(DateRange).map((key: any) => (
-            <Button key={key} onClick={() => setDate(DateRange[key])}>
+            <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
               {DateRange[key]}
             </Button>
           ))}
         </div>
-        <Button onClick={handleSearch} type="primary">
+        <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
           검색
         </Button>
         <Button onClick={handleReset}>초기화</Button>

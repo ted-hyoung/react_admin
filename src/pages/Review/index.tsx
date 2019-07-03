@@ -38,6 +38,7 @@ const reviewSearchConditions = [
   { key: 'productName', text: '제품명' },
   { key: 'orderId', text: '주문번호' },
   { key: 'contents', text: '내용' },
+  // todo : brandName?
 ];
 
 function Review() {
@@ -113,14 +114,14 @@ function Review() {
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
     (value: string) => {
-      getReviews(0, value);
+      getReviews(0, Number(value));
     },
     [getReviews],
   );
 
   useEffect(() => {
     getReviews(0);
-  }, [getReviews]);
+  }, []);
 
   const reviewColumns: Array<ColumnProps<ResponseReview>> = useMemo(
     () => [
@@ -133,7 +134,7 @@ function Review() {
         title: '작성일',
         dataIndex: 'created',
         key: 'created',
-        render: created => moment(created).format('YYYY-MM-DD hh:mm:ss'),
+        render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '브랜드',
@@ -159,7 +160,7 @@ function Review() {
               <Rate value={review.starRate} disabled style={{ fontSize: 13 }} />
             </div>
             <div style={{ paddingLeft: 15 }}>
-              <div>{contents}</div>
+              <div style={{ paddingBottom: 10 }}>{contents}</div>
               <Button size="small" onClick={() => getReview(review.reviewId)}>
                 자세히 보기
               </Button>
@@ -168,11 +169,11 @@ function Review() {
         ),
       },
       {
-        title: '공개 설정 변경',
+        title: '공개',
         dataIndex: 'expose',
         key: 'expose',
         render: (expose, review) => (
-          <Button onClick={() => updateReviewsExpose([review.reviewId], !expose)} type={expose ? 'default' : 'primary'}>
+          <Button onClick={() => updateReviewsExpose([review.reviewId], !expose)} type={expose ? 'danger' : 'primary'}>
             {expose ? '비공개' : '공개'}
           </Button>
         ),
@@ -207,7 +208,7 @@ function Review() {
         ),
       },
     ],
-    [updateReviewsExpose, updateReview],
+    [updateReviewsExpose, updateReview, getReview],
   );
 
   return (
@@ -216,10 +217,12 @@ function Review() {
       <Divider />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
         <span>
-          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 10 }}>
+          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 5 }} type="primary">
             선택 공개
           </Button>
-          <Button onClick={() => handleUpdateReviewsExpose(false)}>선택 비공개</Button>
+          <Button onClick={() => handleUpdateReviewsExpose(false)} type="danger">
+            선택 비공개
+          </Button>
         </span>
         <Select defaultValue={PageSizeRange.SIZE10} style={{ width: 150 }} onChange={handlePageSizeChange}>
           {Object.keys(PageSizeRange).map((key: any) => (
