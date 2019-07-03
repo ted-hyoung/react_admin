@@ -12,22 +12,19 @@ export interface ResponseReview {
   created: Date;
   creator: {
     username: string;
+    phone: string;
   };
-  // images: CommonFile[];
-  // todo : order
+  sequence: number;
+  expose: boolean;
   order?: object;
-  sequence?: number;
+  images?: object[];
 }
 
 export interface UpdateReview {
-  starRate: number;
-  contents: string;
-  expose?: boolean;
-  // images?: CommonFile[];
+  sequence: boolean;
 }
 
 export interface SearchReview {
-  expose?: boolean;
   startDate?: Date;
   endDate?: Date;
   creatorLoginId?: string;
@@ -36,5 +33,4 @@ export interface SearchReview {
   productName?: string;
   orderId?: number;
   contents?: string;
-  isBest?: boolean;
 }

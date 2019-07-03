@@ -5,5 +5,5 @@ export interface ResponseList<T> {
   totalElements: number;
   totalPages: number;
   page: number;
-  size?: number;
+  size: number;
 }

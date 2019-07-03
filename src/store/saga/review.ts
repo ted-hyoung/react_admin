@@ -1,15 +1,23 @@
-import { put, call, takeEvery } from 'redux-saga/effects';
-import { get, post, del, put as axiosPut } from 'lib/protocols';
+import { put, call, takeEvery, select } from 'redux-saga/effects';
+import { get, put as axiosPut } from 'lib/protocols';
+
+import { Modal } from 'antd';
+
 import {
   getReviewsAsync,
   updateReviewAsync,
-  updateReviewExposeAsync,
   updateReviewsExposeAsync,
+  UpdateReviewExposeRequestPayload,
+  getReviewAsync,
 } from 'store/reducer/review';
 import * as Actions from 'store/action/review';
-import { AnyAction } from 'redux';
 
-function* getReviews(action: AnyAction) {
+// types
+import { PayloadAction } from 'typesafe-actions';
+import { UpdateRequestPayload, GetListRequestPayload, GetRequestPayload } from 'types/Payload';
+import { UpdateReview, SearchReview } from 'types/Review';
+
+function* getReviews(action: PayloadAction<string, GetListRequestPayload<SearchReview>>) {
   const { page, size, searchCondition } = action.payload;
   try {
     const res = yield call(() => get('/reviews', { params: { page, size, ...searchCondition } }));
@@ -19,31 +27,41 @@ function* getReviews(action: AnyAction) {
   }
 }
 
-function* updateReviews(action: AnyAction) {
+function* getReview(action: PayloadAction<string, GetRequestPayload>) {
+  const { id } = action.payload;
+  try {
+    const res = yield call(() => get('/reviews/' + id));
+    yield put(getReviewAsync.success(res.data));
+  } catch (error) {
+    yield put(getReviewAsync.failure(error));
+  }
+}
+
+function* updateReview(action: PayloadAction<string, UpdateRequestPayload<UpdateReview>>) {
   const { id, data } = action.payload;
   try {
-    yield call(() => post('/reviews/' + id, data));
-    yield put(updateReviewAsync.success({}));
+    yield call(() => axiosPut('/reviews/' + id, data));
+    yield put(updateReviewAsync.success(action.payload));
+    const state = yield select();
+    yield put(
+      getReviewsAsync.request({
+        page: state.review.reviews.page,
+        size: state.review.reviews.size,
+      }),
+    );
+    Modal.info({ title: '리뷰가 수정되었습니다' });
   } catch (error) {
     yield put(updateReviewAsync.failure(error));
   }
 }
 
-function* updateReviewExpose(action: AnyAction) {
-  const { id, expose } = action.payload;
+function* updateReviewsExpose(action: PayloadAction<string, UpdateReviewExposeRequestPayload[]>) {
   try {
-    yield call(() => axiosPut('/reviews/' + id + '/expose', { expose: `${expose}` }));
-    yield put(updateReviewExposeAsync.success({}));
-  } catch (error) {
-    yield put(updateReviewExposeAsync.failure(error));
-  }
-}
-
-function* updateReviewsExpose(action: AnyAction) {
-  const { reviewIds, expose } = action.payload;
-  try {
-    yield call(() => axiosPut('/reviews/expose', { params: { reviewIds, expose } }));
-    yield put(updateReviewsExposeAsync.success({}));
+    yield call(() => axiosPut('/reviews/expose', action.payload));
+    yield put(updateReviewsExposeAsync.success(action.payload));
+    Modal.info({
+      title: `공개 설정이 수정되었습니다`,
+    });
   } catch (error) {
     yield put(updateReviewsExposeAsync.failure(error));
   }
@@ -51,7 +69,7 @@ function* updateReviewsExpose(action: AnyAction) {
 
 export default function* reviewSaga() {
   yield takeEvery(Actions.GET_REVIEWS_REQUEST, getReviews);
-  yield takeEvery(Actions.UPDATE_REVIEW_REQUEST, updateReviews);
+  yield takeEvery(Actions.GET_REVIEW_REQUEST, getReview);
+  yield takeEvery(Actions.UPDATE_REVIEW_REQUEST, updateReview);
   yield takeEvery(Actions.UPDATE_REVIEWS_EXPOSE_REQUEST, updateReviewsExpose);
-  yield takeEvery(Actions.UPDATE_REVIEW_EXPOSE_REQUEST, updateReviewExpose);
 }

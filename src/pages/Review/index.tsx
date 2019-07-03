@@ -1,183 +1,121 @@
+// base
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+// modules
+import { Table, Select, Button, Rate, Divider } from 'antd';
+import { ColumnProps } from 'antd/lib/table';
+import moment from 'moment';
+
+// store
+import { StoreState } from 'store';
 import {
   getReviewsAsync,
-  updateReviewExposeAsync,
-  updateReviewAsync,
   updateReviewsExposeAsync,
+  UpdateReviewExposeRequestPayload,
+  updateReviewAsync,
+  getReviewAsync,
 } from 'store/reducer/review';
-import { Table, Form, Select, Input, Modal, DatePicker, Button, Rate } from 'antd';
-import { StoreState } from 'store';
-import { ColumnProps } from 'antd/lib/table';
-import { ResponseReview, SearchReview } from 'types/Review';
-import { FormComponentProps } from 'antd/lib/form';
-import moment, { Moment } from 'moment';
 
-enum dateRange {
-  ENTIRE = '전체',
-  TODAY = '오늘',
-  RECENT_3DAYS = '최근 3일',
-  RECENT_WEEK = '최근 7일',
+// types
+import { ResponseReview, SearchReview, UpdateReview } from 'types/Review';
+import { UpdateRequestPayload } from 'types/Payload';
+
+// component
+import { ReviewSearch, ReviewDetailModal } from 'components';
+
+enum PageSizeRange {
+  SIZE10 = '10',
+  SIZE20 = '20',
+  SIZE50 = '50',
+  SIZE100 = '100',
 }
 
-interface ReviewSearchProps extends FormComponentProps {
-  getData: (page: number, searchCondition?: SearchReview) => void;
-}
-
-const ReviewSearch = Form.create<ReviewSearchProps>()((props: ReviewSearchProps) => {
-  const { form, getData } = props;
-  const { getFieldDecorator, validateFieldsAndScroll, setFieldsValue } = form;
-  const handleSearch = useCallback(() => {
-    validateFieldsAndScroll((err, val) => {
-      if (err) {
-        console.log(err);
-        // Modal.warn({
-        //   content: err.
-        // })
-        return;
-      }
-      console.log(val);
-      // getData(0, val.key === 'null' ? {} : { [val.key]: val.value });
-    });
-  }, [validateFieldsAndScroll]);
-  const setDate = useCallback((value: string) => {
-    let startDate;
-    let endDate: Moment | undefined = moment().endOf('day');
-    switch (value) {
-      case dateRange.ENTIRE: {
-        endDate = undefined;
-        break;
-      }
-      case dateRange.TODAY: {
-        startDate = moment().startOf('day');
-        break;
-      }
-      case dateRange.RECENT_3DAYS: {
-        startDate = moment()
-          .subtract(3, 'day')
-          .startOf('day');
-        break;
-      }
-      case dateRange.RECENT_WEEK: {
-        startDate = moment()
-          .subtract(1, 'week')
-          .startOf('day');
-        break;
-      }
-    }
-    setFieldsValue({
-      startDate,
-      endDate,
-    });
-  }, []);
-  const ReviewSearchCondition = useMemo(
-    () => [
-      {
-        key: 'null',
-        value: '전체',
-      },
-      {
-        key: 'id',
-        value: '아이디',
-      },
-      {
-        key: 'phone',
-        value: '연락처',
-      },
-      {
-        key: 'eventName',
-        value: '공구명',
-      },
-      {
-        key: 'productName',
-        value: '제품명',
-      },
-      {
-        key: 'orderId',
-        value: '주문번호',
-      },
-      {
-        key: 'contents',
-        value: '내용',
-      },
-    ],
-    [],
-  );
-  return (
-    <div className="search">
-      <Form layout="inline">
-        <Form.Item>
-          {getFieldDecorator('key', {
-            initialValue: ReviewSearchCondition[0].key,
-          })(
-            <Select style={{ width: 120 }}>
-              {ReviewSearchCondition.map(condition => (
-                <Select.Option key={condition.value} value={condition.key}>
-                  {condition.value}
-                </Select.Option>
-              ))}
-            </Select>,
-          )}
-        </Form.Item>
-        <Form.Item>{getFieldDecorator('value')(<Input />)}</Form.Item>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Item>{getFieldDecorator('startDate')(<DatePicker />)}</Form.Item>
-          <Form.Item>{getFieldDecorator('endDate')(<DatePicker />)}</Form.Item>
-          {Object.keys(dateRange).map((key: any) => (
-            <Button key={key} onClick={() => setDate(dateRange[key])}>
-              {dateRange[key]}
-            </Button>
-          ))}
-        </div>
-        <Button onClick={handleSearch} type="primary">
-          검색
-        </Button>
-      </Form>
-    </div>
-  );
-});
+const reviewSearchConditions = [
+  { key: 'creatorLoginId', text: '아이디' },
+  { key: 'creatorPhone', text: '연락처' },
+  { key: 'eventName', text: '공구명' },
+  { key: 'productName', text: '제품명' },
+  { key: 'orderId', text: '주문번호' },
+  { key: 'contents', text: '내용' },
+];
 
 function Review() {
   const dispatch = useDispatch();
-  const reviews = useSelector((state: StoreState) => state.review.reviews);
+  const { content, totalElements, size: pageSize } = useSelector((state: StoreState) => state.review.reviews);
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
 
   const getReviews = useCallback(
-    (page: number, searchCondition?: SearchReview) => {
+    (page: number, size = pageSize, searchCondition?: SearchReview) => {
       dispatch(
         getReviewsAsync.request({
           page,
-          size: 10,
+          size,
           searchCondition,
         }),
       );
     },
+    [dispatch, pageSize],
+  );
+
+  const updateReview = useCallback(
+    (prop: UpdateRequestPayload<UpdateReview>) => {
+      dispatch(updateReviewAsync.request(prop));
+    },
     [dispatch],
   );
 
-  const disposeReviews = useCallback(() => {
-    dispatch(
-      updateReviewsExposeAsync.request({
-        reviewIds: selectedReviews,
-        expose: false,
-      }),
-    );
-  }, [dispatch]);
+  const updateReviewsExpose = useCallback(
+    (ids: number[] | string[], expose: boolean) => {
+      const requestData: UpdateReviewExposeRequestPayload[] = [];
+      ids.forEach((reviewId: number | string) => {
+        requestData.push({
+          reviewId,
+          expose,
+        });
+      });
+      dispatch(updateReviewsExposeAsync.request(requestData));
+    },
+    [dispatch],
+  );
 
-  const updateReviewExpose = useCallback((id: number, expose: boolean) => {
-    dispatch(
-      updateReviewExposeAsync.request({
-        id,
-        expose,
-      }),
-    );
-  }, []);
+  const getReview = useCallback(
+    (id: number) => {
+      dispatch(getReviewAsync.request({ id }));
+    },
+    [dispatch],
+  );
 
+  // 리뷰 숨김/공개
+  const handleUpdateReviewsExpose = useCallback(
+    (expose: boolean) => {
+      updateReviewsExpose(selectedReviews, expose);
+    },
+    [updateReviewsExpose, selectedReviews],
+  );
+
+  // table checkbox onChange
   const handleChange = useCallback(
     (selectedRowKeys: number[] | string[]) => {
       setSelectedReviews(selectedRowKeys);
     },
     [setSelectedReviews],
+  );
+
+  // pagination onChange
+  const handlePaginationChange = useCallback(
+    (currentPage: number) => {
+      getReviews(currentPage - 1);
+    },
+    [getReviews],
+  );
+
+  // pageSize select onChange
+  const handlePageSizeChange = useCallback(
+    (value: string) => {
+      getReviews(0, value);
+    },
+    [getReviews],
   );
 
   useEffect(() => {
@@ -212,49 +150,97 @@ function Review() {
         title: '후기 내용',
         dataIndex: 'contents',
         key: 'contents',
+        width: 450,
         render: (contents, review) => (
           <div style={{ display: 'flex' }}>
             <div>
-              <img src="http://placehold.it/100x100" alt="" />
+              <img src="http://placehold.it/110x110" alt="" />
               <br />
               <Rate value={review.starRate} disabled style={{ fontSize: 13 }} />
             </div>
-            <div>
+            <div style={{ paddingLeft: 15 }}>
               <div>{contents}</div>
-              <Button size="small">자세히 보기</Button>
+              <Button size="small" onClick={() => getReview(review.reviewId)}>
+                자세히 보기
+              </Button>
             </div>
           </div>
         ),
       },
       {
-        title: '공개여부',
+        title: '공개 설정 변경',
         dataIndex: 'expose',
         key: 'expose',
         render: (expose, review) => (
-          <Button onClick={() => updateReviewExpose(review.reviewId, !expose)}>{expose ? '공개' : '비공개'}</Button>
+          <Button onClick={() => updateReviewsExpose([review.reviewId], !expose)} type={expose ? 'default' : 'primary'}>
+            {expose ? '비공개' : '공개'}
+          </Button>
         ),
       },
       {
         title: '순서',
         dataIndex: 'sequence',
         key: 'sequence',
+        render: (sequence, review) => (
+          <>
+            <Select
+              style={{ width: 50 }}
+              defaultValue={sequence || 0}
+              onChange={(value: any) =>
+                updateReview({
+                  id: review.reviewId,
+                  data: {
+                    sequence: value === 0 ? null : value,
+                  },
+                })
+              }
+            >
+              {Array(11)
+                .fill('')
+                .map((item, index) => (
+                  <Select.Option key={index} value={index}>
+                    {index === 0 ? '-' : index}
+                  </Select.Option>
+                ))}
+            </Select>
+          </>
+        ),
       },
     ],
-    [reviews],
+    [updateReviewsExpose, updateReview],
   );
 
   return (
     <>
-      <ReviewSearch getData={getReviews} />
-      <Button onClick={disposeReviews}>선택 비공개</Button>
+      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <Divider />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+        <span>
+          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 10 }}>
+            선택 공개
+          </Button>
+          <Button onClick={() => handleUpdateReviewsExpose(false)}>선택 비공개</Button>
+        </span>
+        <Select defaultValue={PageSizeRange.SIZE10} style={{ width: 150 }} onChange={handlePageSizeChange}>
+          {Object.keys(PageSizeRange).map((key: any) => (
+            <Select.Option key={Number(PageSizeRange[key])}>{PageSizeRange[key]}개씩 보기</Select.Option>
+          ))}
+        </Select>
+      </div>
       <Table
         rowKey={review => review.reviewId.toString()}
         rowSelection={{
           onChange: handleChange,
         }}
-        dataSource={reviews.content}
+        dataSource={content}
         columns={reviewColumns}
+        pagination={{
+          total: totalElements,
+          pageSize,
+          onChange: handlePaginationChange,
+        }}
       />
+      <ReviewDetailModal />
     </>
   );
 }
