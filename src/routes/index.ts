@@ -13,4 +13,9 @@ export default [
     component: lazy(() => import('../pages/Home')),
     secret: false,
   },
+  {
+    path: '/qna',
+    component: lazy(() => import('../pages/Qna')),
+    secret: false,
+  },
 ];
