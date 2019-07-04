@@ -4,7 +4,7 @@ import { Form, Select, Input, DatePicker, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import moment, { Moment } from 'moment';
 
-import { SearchReview } from 'types/Review';
+import { SearchReview } from 'types';
 
 interface SearchCondition {
   key: string;

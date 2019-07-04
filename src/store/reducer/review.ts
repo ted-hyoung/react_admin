@@ -6,9 +6,15 @@ import { createAsyncAction, action } from 'typesafe-actions';
 import * as Actions from 'store/action/review';
 
 // types
-import { PageWrapper } from 'types';
-import { ResponseReview, UpdateReview, SearchReview } from 'types/Review';
-import { GetListRequestPayload, GetRequestPayload, UpdateRequestPayload } from 'types/Payload';
+import {
+  PageWrapper,
+  ResponseReview,
+  UpdateReview,
+  SearchReview,
+  GetListRequestPayload,
+  GetRequestPayload,
+  UpdateRequestPayload,
+} from 'types';
 import { AnyAction } from 'redux';
 import { AxiosError } from 'axios';
 
