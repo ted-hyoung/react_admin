@@ -5,7 +5,9 @@ import { FormComponentProps } from 'antd/lib/form';
 import moment, { Moment } from 'moment';
 import { SearchDate } from 'components';
 
-export interface SearchCondition {
+import { SearchReview } from 'types';
+
+interface SearchCondition {
   key: string;
   text: string;
 }

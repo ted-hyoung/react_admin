@@ -14,8 +14,7 @@ import * as Actions from 'store/action/reviewAction';
 
 // types
 import { PayloadAction } from 'typesafe-actions';
-import { UpdateRequestPayload, GetListRequestPayload, GetRequestPayload } from 'types/Payload';
-import { UpdateReview, SearchReview } from 'types/Review';
+import { UpdateRequestPayload, GetListRequestPayload, GetRequestPayload, UpdateReview, SearchReview } from 'types';
 
 function* getReviews(action: PayloadAction<string, GetListRequestPayload<SearchReview>>) {
   const { page, size, searchCondition } = action.payload;

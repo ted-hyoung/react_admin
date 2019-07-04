@@ -18,8 +18,7 @@ import {
 } from 'store/reducer/review';
 
 // types
-import { ResponseReview, SearchReview, UpdateReview } from 'types/Review';
-import { UpdateRequestPayload } from 'types/Payload';
+import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
 
 // component
 import { ReviewDetailModal, PageSizeSelect, ReviewSearch } from 'components';
