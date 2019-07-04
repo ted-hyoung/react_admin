@@ -10,7 +10,7 @@ import {
   UpdateReviewExposeRequestPayload,
   getReviewAsync,
 } from 'store/reducer/review';
-import * as Actions from 'store/action/review';
+import * as Actions from 'store/action/reviewAction';
 
 // types
 import { PayloadAction } from 'typesafe-actions';

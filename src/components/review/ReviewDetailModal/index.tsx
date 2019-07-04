@@ -21,7 +21,7 @@ function ReviewDetailModal() {
   const handleClose = useCallback(() => {
     dispatch(modalReviewAsync(false));
   }, [dispatch]);
-  const created = useMemo(() => moment(review.created).format('YYYY-MM-DD hh:mm:ss'), [review]);
+  const created = useMemo(() => moment(review.created).format('YYYY-MM-DD HH:mm:ss'), [review]);
   return (
     <Modal visible={detailModalVisible} onCancel={handleClose} title="리뷰 상세">
       <Form layout="horizontal" {...formItemLayout}>

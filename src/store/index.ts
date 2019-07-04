@@ -6,8 +6,7 @@ import { all } from 'redux-saga/effects';
 import review, { ReviewState } from './reducer/review';
 
 // saga
-import reviewSaga from './saga/review';
-
+import reviewSaga from './saga/reviewSaga';
 export interface StoreState {
   review: ReviewState;
 }

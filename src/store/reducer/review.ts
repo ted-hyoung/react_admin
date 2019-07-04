@@ -3,7 +3,7 @@ import { produce } from 'immer';
 import { createAsyncAction, action } from 'typesafe-actions';
 
 // store
-import * as Actions from 'store/action/review';
+import * as Actions from 'store/action/reviewAction';
 
 // types
 import {
