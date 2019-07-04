@@ -54,6 +54,15 @@ function ReviewDetailModal() {
           <Input.TextArea value={review.contents} style={{ height: 300 }} disabled />
         </Form.Item>
         {/* todo : image */}
+        <Form.Item label="이미지">
+          <div>
+            {Array(10)
+              .fill('')
+              .map((item, i) => (
+                <img key={i} style={{ marginBottom: 5, marginRight: 5 }} src="http://placehold.it/100x100" alt="" />
+              ))}
+          </div>
+        </Form.Item>
       </Form>
     </Modal>
   );

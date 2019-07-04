@@ -37,11 +37,11 @@ export const getReviewAsync = createAsyncAction(
   Actions.GET_REVIEW_FAILURE,
 )<GetRequestPayload, ResponseReview, AxiosError>();
 
-// 수정
-export const updateReviewAsync = createAsyncAction(
-  Actions.UPDATE_REVIEW_REQUEST,
-  Actions.UPDATE_REVIEW_SUCCESS,
-  Actions.UPDATE_REVIEW_FAILURE,
+// sequence 수정
+export const updateReviewSequenceAsync = createAsyncAction(
+  Actions.UPDATE_REVIEW_SEQUENCE_REQUEST,
+  Actions.UPDATE_REVIEW_SEQUENCE_SUCCESS,
+  Actions.UPDATE_REVIEW_SEQUENCE_FAILURE,
 )<UpdateRequestPayload<UpdateReview>, UpdateRequestPayload<UpdateReview>, AxiosError>();
 
 // expose 여부 수정
@@ -93,7 +93,7 @@ const review = (state = initialState, action: AnyAction) => {
         draft.detailModalVisible = true;
       });
     }
-    case Actions.UPDATE_REVIEW_SUCCESS: {
+    case Actions.UPDATE_REVIEW_SEQUENCE_SUCCESS: {
       return produce(state, draft => {
         const selectedReview = draft.reviews.content.findIndex(review => review.reviewId === action.payload.id);
         draft.reviews.content[selectedReview].sequence = 0;

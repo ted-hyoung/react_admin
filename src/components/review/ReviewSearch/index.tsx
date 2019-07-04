@@ -54,7 +54,7 @@ const ReviewSearchKeyAndValue = React.forwardRef<HTMLDivElement, ReviewSearchKey
 
   return (
     <div ref={ref} style={{ display: 'flex' }}>
-      <Select style={{ width: 120 }} onChange={handleSelectChange} value={value && value.key}>
+      <Select style={{ width: 120, marginRight: 5 }} onChange={handleSelectChange} value={value && value.key}>
         <Select.Option value={'null'}>전체</Select.Option>
         {searchConditions.map(condition => (
           <Select.Option key={condition.key} value={condition.key}>
@@ -74,6 +74,7 @@ function ReviewSearch(props: ReviewSearchProps) {
   const handleSearch = useCallback(() => {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
+        console.log(val);
         Object.keys(val).forEach(key => {
           if (val[key] === undefined) {
             delete val[key];
@@ -87,8 +88,10 @@ function ReviewSearch(props: ReviewSearchProps) {
             delete val[key];
             return;
           }
-          if (moment.isMoment(val[key])) {
-            val[key] = val[key].format('YYYY-MM-DDTHH:mm:ss');
+          if (key === 'date') {
+            val.startDate = val[key][0].startOf('day').format('YYYY-MM-DDTHH:mm:ss');
+            val.endDate = val[key][1].endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+            delete val[key];
           }
         });
         getData(0, pageSize, { ...val });
@@ -104,32 +107,27 @@ function ReviewSearch(props: ReviewSearchProps) {
   const setDate = useCallback(
     (value: string) => {
       let startDate;
-      let endDate: Moment | undefined = moment().endOf('day');
+      let endDate: Moment | undefined = moment();
       switch (value) {
         case DateRange.ENTIRE: {
           endDate = undefined;
           break;
         }
         case DateRange.TODAY: {
-          startDate = moment().startOf('day');
+          startDate = moment();
           break;
         }
         case DateRange.RECENT_3DAYS: {
-          startDate = moment()
-            .subtract(3, 'day')
-            .startOf('day');
+          startDate = moment().subtract(3, 'day');
           break;
         }
         case DateRange.RECENT_WEEK: {
-          startDate = moment()
-            .subtract(1, 'week')
-            .startOf('day');
+          startDate = moment().subtract(1, 'week');
           break;
         }
       }
       setFieldsValue({
-        startDate,
-        endDate,
+        date: [startDate, endDate],
       });
     },
     [setFieldsValue],
@@ -152,8 +150,9 @@ function ReviewSearch(props: ReviewSearchProps) {
           })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
         </Form.Item>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Item>{getFieldDecorator('startDate')(<DatePicker />)}</Form.Item>
-          <Form.Item>{getFieldDecorator('endDate')(<DatePicker />)}</Form.Item>
+          {/* <Form.Item>{getFieldDecorator('startDate')(<DatePicker />)}</Form.Item>
+          <Form.Item>{getFieldDecorator('endDate')(<DatePicker />)}</Form.Item> */}
+          <Form.Item>{getFieldDecorator('date')(<DatePicker.RangePicker />)}</Form.Item>
           {Object.keys(DateRange).map((key: any) => (
             <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
               {DateRange[key]}

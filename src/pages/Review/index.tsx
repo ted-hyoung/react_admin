@@ -13,7 +13,7 @@ import {
   getReviewsAsync,
   updateReviewsExposeAsync,
   UpdateReviewExposeRequestPayload,
-  updateReviewAsync,
+  updateReviewSequenceAsync,
   getReviewAsync,
 } from 'store/reducer/review';
 
@@ -24,12 +24,7 @@ import { UpdateRequestPayload } from 'types/Payload';
 // component
 import { ReviewSearch, ReviewDetailModal } from 'components';
 
-enum PageSizeRange {
-  SIZE10 = '10',
-  SIZE20 = '20',
-  SIZE50 = '50',
-  SIZE100 = '100',
-}
+const pageSizeRange = ['10', '20', '50', '100'];
 
 const reviewSearchConditions = [
   { key: 'creatorLoginId', text: '아이디' },
@@ -61,7 +56,7 @@ function Review() {
 
   const updateReview = useCallback(
     (prop: UpdateRequestPayload<UpdateReview>) => {
-      dispatch(updateReviewAsync.request(prop));
+      dispatch(updateReviewSequenceAsync.request(prop));
     },
     [dispatch],
   );
@@ -87,7 +82,7 @@ function Review() {
     [dispatch],
   );
 
-  // 리뷰 숨김/공개
+  // 숨김/공개 button onChange
   const handleUpdateReviewsExpose = useCallback(
     (expose: boolean) => {
       updateReviewsExpose(selectedReviews, expose);
@@ -119,6 +114,7 @@ function Review() {
     [getReviews],
   );
 
+  // componentDidMount
   useEffect(() => {
     getReviews(0);
   }, []);
@@ -224,9 +220,11 @@ function Review() {
             선택 비공개
           </Button>
         </span>
-        <Select defaultValue={PageSizeRange.SIZE10} style={{ width: 150 }} onChange={handlePageSizeChange}>
-          {Object.keys(PageSizeRange).map((key: any) => (
-            <Select.Option key={Number(PageSizeRange[key])}>{PageSizeRange[key]}개씩 보기</Select.Option>
+        <Select defaultValue={pageSizeRange[0]} style={{ width: 150 }} onChange={handlePageSizeChange}>
+          {pageSizeRange.map(size => (
+            <Select.Option key={size} value={size}>
+              {size}개씩 보기
+            </Select.Option>
           ))}
         </Select>
       </div>

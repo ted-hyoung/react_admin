@@ -5,7 +5,7 @@ import { message } from 'antd';
 
 import {
   getReviewsAsync,
-  updateReviewAsync,
+  updateReviewSequenceAsync,
   updateReviewsExposeAsync,
   UpdateReviewExposeRequestPayload,
   getReviewAsync,
@@ -37,11 +37,11 @@ function* getReview(action: PayloadAction<string, GetRequestPayload>) {
   }
 }
 
-function* updateReview(action: PayloadAction<string, UpdateRequestPayload<UpdateReview>>) {
+function* updateReviewSequence(action: PayloadAction<string, UpdateRequestPayload<UpdateReview>>) {
   const { id, data } = action.payload;
   try {
-    yield call(() => axiosPut('/reviews/' + id, data));
-    yield put(updateReviewAsync.success(action.payload));
+    yield call(() => axiosPut('/reviews/' + id + '/sequence', data));
+    yield put(updateReviewSequenceAsync.success(action.payload));
     const state = yield select();
     yield put(
       getReviewsAsync.request({
@@ -49,9 +49,9 @@ function* updateReview(action: PayloadAction<string, UpdateRequestPayload<Update
         size: state.review.reviews.size,
       }),
     );
-    message.success('수정되었습니다');
+    message.success('후기 순서가 수정되었습니다');
   } catch (error) {
-    yield put(updateReviewAsync.failure(error));
+    yield put(updateReviewSequenceAsync.failure(error));
   }
 }
 
@@ -59,7 +59,7 @@ function* updateReviewsExpose(action: PayloadAction<string, UpdateReviewExposeRe
   try {
     yield call(() => axiosPut('/reviews/expose', action.payload));
     yield put(updateReviewsExposeAsync.success(action.payload));
-    message.success('수정되었습니다');
+    message.success('공개 설정이 수정되었습니다');
   } catch (error) {
     yield put(updateReviewsExposeAsync.failure(error));
   }
@@ -68,6 +68,6 @@ function* updateReviewsExpose(action: PayloadAction<string, UpdateReviewExposeRe
 export default function* reviewSaga() {
   yield takeLatest(Actions.GET_REVIEWS_REQUEST, getReviews);
   yield takeEvery(Actions.GET_REVIEW_REQUEST, getReview);
-  yield takeEvery(Actions.UPDATE_REVIEW_REQUEST, updateReview);
+  yield takeEvery(Actions.UPDATE_REVIEW_SEQUENCE_REQUEST, updateReviewSequence);
   yield takeEvery(Actions.UPDATE_REVIEWS_EXPOSE_REQUEST, updateReviewsExpose);
 }
