@@ -13,4 +13,9 @@ export default [
     component: lazy(() => import('../pages/Home')),
     secret: false,
   },
+  {
+    path: '/events',
+    component: lazy(() => import('../pages/event/EventList')),
+    secret: false,
+  },
 ];
