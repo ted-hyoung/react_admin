@@ -7,6 +7,13 @@ export interface ResponseContactComment {
   created: string;
   comment: string;
 }
+export interface CreateContactComment {
+  comment: string;
+}
+
+export interface UpdateContactComment {
+  comment: string;
+}
 
 export interface ResponseContact {
   contactId: number;
@@ -16,4 +23,10 @@ export interface ResponseContact {
   comment: ResponseContactComment;
   creator: ResponseAccount;
   created: string;
+}
+
+export interface SearchContact {
+  status?: QnaStatus;
+  category?: CsrCategory;
+  keyword?: string;
 }

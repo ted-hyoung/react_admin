@@ -8,6 +8,11 @@ export interface GetRequestPayload {
   id: number;
 }
 
+export interface CreateRequestPayload<T> {
+  data: T;
+  parentId?: number;
+}
+
 export interface UpdateRequestPayload<T> {
   id: number;
   data: T;

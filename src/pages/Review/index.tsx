@@ -22,11 +22,10 @@ import { ResponseReview, SearchReview, UpdateReview } from 'types/Review';
 import { UpdateRequestPayload } from 'types/Payload';
 
 // component
-import { ReviewSearch, ReviewDetailModal } from 'components';
+import { ReviewDetailModal, PageSizeSelect, SearchBar } from 'components';
+import { SearchCondition } from 'components/SearchBar';
 
-const pageSizeRange = ['10', '20', '50', '100'];
-
-const reviewSearchConditions = [
+const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
   { key: 'creatorPhone', text: '연락처' },
   { key: 'eventName', text: '공구명' },
@@ -102,14 +101,6 @@ function Review() {
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
       getReviews(currentPage - 1);
-    },
-    [getReviews],
-  );
-
-  // pageSize select onChange
-  const handlePageSizeChange = useCallback(
-    (value: string) => {
-      getReviews(0, Number(value));
     },
     [getReviews],
   );
@@ -209,9 +200,9 @@ function Review() {
 
   return (
     <>
-      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <SearchBar getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
       <Divider />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <span>
           <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 5 }} type="primary">
             선택 공개
@@ -220,13 +211,7 @@ function Review() {
             선택 비공개
           </Button>
         </span>
-        <Select defaultValue={pageSizeRange[0]} style={{ width: 150 }} onChange={handlePageSizeChange}>
-          {pageSizeRange.map(size => (
-            <Select.Option key={size} value={size}>
-              {size}개씩 보기
-            </Select.Option>
-          ))}
-        </Select>
+        <PageSizeSelect getData={getReviews} />
       </div>
       <Table
         rowKey={review => review.reviewId.toString()}

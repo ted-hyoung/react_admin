@@ -4,28 +4,26 @@ import { Form, Select, Input, DatePicker, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import moment, { Moment } from 'moment';
 
-import { SearchReview } from 'types/Review';
-
-interface SearchCondition {
+export interface SearchCondition {
   key: string;
   text: string;
 }
 
-interface ReviewSearchProps extends FormComponentProps {
-  getData: (page: number, size?: number, searchCondition?: SearchReview) => void;
+interface SearchBarProps extends FormComponentProps {
+  getData: (page: number, size?: number, searchCondition?: { [prop: string]: string }) => void;
   pageSize: number;
   searchConditions: SearchCondition[];
 }
 
-interface ReviewSearchKeyAndValuePropValue {
+interface SearchBarKeyAndValuePropValue {
   key?: SearchCondition;
   value?: string;
 }
 
-interface ReviewSearchKeyAndValueProp {
-  value?: ReviewSearchKeyAndValuePropValue;
+interface SearchBoarKeyAndValueProp {
+  value?: SearchBarKeyAndValuePropValue;
   onSearch: () => void;
-  onChange?: (value?: ReviewSearchKeyAndValuePropValue) => void;
+  onChange?: (value?: SearchBarKeyAndValuePropValue) => void;
   searchConditions: SearchCondition[];
 }
 
@@ -36,11 +34,11 @@ enum DateRange {
   RECENT_WEEK = '최근 7일',
 }
 
-const ReviewSearchKeyAndValue = React.forwardRef<HTMLDivElement, ReviewSearchKeyAndValueProp>((props, ref) => {
+const SearchBarKeyAndValue = React.forwardRef<HTMLDivElement, SearchBoarKeyAndValueProp>((props, ref) => {
   const { value, onChange, searchConditions, onSearch } = props;
 
   const handleChange = useCallback(
-    (val: ReviewSearchKeyAndValuePropValue) => {
+    (val: SearchBarKeyAndValuePropValue) => {
       if (onChange) {
         onChange(val);
       }
@@ -67,7 +65,7 @@ const ReviewSearchKeyAndValue = React.forwardRef<HTMLDivElement, ReviewSearchKey
   );
 });
 
-function ReviewSearch(props: ReviewSearchProps) {
+function SearchBar(props: SearchBarProps) {
   const { form, getData, pageSize, searchConditions } = props;
   const { getFieldDecorator, validateFieldsAndScroll, setFieldsValue, getFieldValue, resetFields } = form;
 
@@ -146,7 +144,7 @@ function ReviewSearch(props: ReviewSearchProps) {
                 ...arg,
               };
             },
-          })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
+          })(<SearchBarKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
         </Form.Item>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Form.Item>{getFieldDecorator('date')(<DatePicker.RangePicker />)}</Form.Item>
@@ -165,4 +163,4 @@ function ReviewSearch(props: ReviewSearchProps) {
   );
 }
 
-export default Form.create<ReviewSearchProps>()(ReviewSearch);
+export default Form.create<SearchBarProps>()(SearchBar);

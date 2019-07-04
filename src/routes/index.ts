@@ -18,4 +18,9 @@ export default [
     component: lazy(() => import('../pages/Review')),
     secret: false,
   },
+  {
+    path: '/contact',
+    component: lazy(() => import('../pages/Contact')),
+    secret: false,
+  },
 ];
