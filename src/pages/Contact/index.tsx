@@ -1,12 +1,17 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // store
 import { StoreState } from 'store';
-import { getContactsAsync, createContactCommentAsync } from 'store/reducer/contact';
+import {
+  getContactsAsync,
+  createContactCommentAsync,
+  updateContactCommentAsync,
+  deleteContactCommentAsync,
+} from 'store/reducer/contact';
 
 // types
-import { SearchContact, ResponseContact, UpdateContactComment } from 'types';
+import { SearchContact, ResponseContact, UpdateContactComment, CreateContactComment } from 'types';
 import { QnaStatus, CsrCategory } from 'enums';
 import { FormComponentProps } from 'antd/lib/form';
 import { ColumnProps } from 'antd/lib/table';
@@ -27,40 +32,41 @@ const searchCondition: SearchCondition[] = [
   { key: 'keyword', text: '키워드' },
 ];
 
-interface ContactCommentFormProps extends FormComponentProps {
+interface RequestContact {
+  createComment: (parentId: number, data: CreateContactComment) => void;
+  updateComment: (id: number, data: UpdateContactComment) => void;
+  deleteComment: (id: number) => void;
+}
+
+interface ContactCommentFormProps extends FormComponentProps, RequestContact {
   contactId: number;
   disable: boolean;
   value?: string;
 }
 
 const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: ContactCommentFormProps) => {
-  const dispatch = useDispatch();
-  const { contactId, value = '', disable, form } = props;
+  const { contactId, value = '', disable, createComment, updateComment, deleteComment, form } = props;
   const { getFieldDecorator, validateFieldsAndScroll } = form;
-
-  const createComment = useCallback(
-    (value: string) => {
-      dispatch(
-        createContactCommentAsync.request({
-          parentId: contactId,
-          data: {
-            comment: value,
-          },
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  const updateComment = useCallback((props: UpdateContactComment) => {}, [dispatch]);
 
   const handleClick = useCallback(() => {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
-        createComment(val.comment);
+        createComment(contactId, val);
       }
     });
-  }, [validateFieldsAndScroll, createComment]);
+  }, [validateFieldsAndScroll, createComment, contactId]);
+
+  const handleModify = useCallback(() => {
+    validateFieldsAndScroll((err, val) => {
+      if (!err) {
+        updateComment(contactId, val);
+      }
+    });
+  }, [validateFieldsAndScroll, updateComment, contactId]);
+
+  const handleDelete = useCallback(() => {
+    deleteComment(contactId);
+  }, [deleteComment, contactId]);
 
   return (
     <Form>
@@ -77,8 +83,10 @@ const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: Contac
       </Form.Item>
       {disable ? (
         <>
-          <Button>수정</Button>
-          <Button type="danger">삭제</Button>
+          <Button onClick={handleModify}>수정</Button>
+          <Button type="danger" onClick={handleDelete}>
+            삭제
+          </Button>
         </>
       ) : (
         <Button onClick={handleClick}>등록</Button>
@@ -87,8 +95,8 @@ const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: Contac
   );
 });
 
-function ContactCommentRow(props: ResponseContact) {
-  const { comment, contents, creator, contactId } = props;
+function ContactCommentRow(props: ResponseContact & RequestContact) {
+  const { comment, contents, creator, contactId, createComment, updateComment, deleteComment } = props;
   const commentCreated = useMemo(() => comment && moment(comment.created).format('YYYY-MM-DD HH:mm:ss'), [comment]);
   return (
     <div>
@@ -108,7 +116,14 @@ function ContactCommentRow(props: ResponseContact) {
             <span>{commentCreated}</span>
           </div>
         )}
-        <ContactCommentForm contactId={contactId} value={comment && comment.comment} disable={comment ? true : false} />
+        <ContactCommentForm
+          contactId={contactId}
+          value={comment && comment.comment}
+          disable={comment ? true : false}
+          createComment={createComment}
+          updateComment={updateComment}
+          deleteComment={deleteComment}
+        />
       </div>
     </div>
   );
@@ -131,6 +146,43 @@ function Contact() {
     [dispatch, pageSize],
   );
 
+  const createComment = useCallback(
+    (parentId: number, data: CreateContactComment) => {
+      dispatch(
+        createContactCommentAsync.request({
+          parentId,
+          data,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const updateComment = useCallback(
+    (id: number, data: UpdateContactComment) => {
+      dispatch(
+        updateContactCommentAsync.request({
+          // comment update시에는 commentId가 아니라 contactId를 사용
+          id,
+          data,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const deleteComment = useCallback(
+    (id: number) => {
+      dispatch(
+        deleteContactCommentAsync.request({
+          id,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  // componentDidMount
   useEffect(() => {
     getContacts(0);
   }, []);
@@ -183,7 +235,14 @@ function Contact() {
         rowKey={contact => contact.contactId.toString()}
         dataSource={content}
         columns={contactColumns}
-        expandedRowRender={contact => <ContactCommentRow {...contact} />}
+        expandedRowRender={contact => (
+          <ContactCommentRow
+            {...contact}
+            createComment={createComment}
+            updateComment={updateComment}
+            deleteComment={deleteComment}
+          />
+        )}
         expandRowByClick
       />
     </div>

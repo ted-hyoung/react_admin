@@ -2,19 +2,20 @@ import {
   PageWrapper,
   ResponseContact,
   GetListRequestPayload,
+  GetRequestPayload,
   CreateContactComment,
   CreateRequestPayload,
   UpdateRequestPayload,
   UpdateContactComment,
   DeleteRequestPayload,
   SearchContact,
-  ResponseContactComment,
 } from 'types';
 import { AnyAction } from 'redux';
 import { createAsyncAction } from 'typesafe-actions';
-import * as Actions from 'store/action/contact';
+import * as Actions from 'store/action/contactAction';
 import { AxiosError } from 'axios';
 import produce from 'immer';
+import { QnaStatus } from 'enums';
 
 export interface ContactState {
   contacts: PageWrapper<ResponseContact>;
@@ -27,19 +28,26 @@ export const getContactsAsync = createAsyncAction(
   Actions.GET_CONTACTS_FAILURE,
 )<GetListRequestPayload<SearchContact>, PageWrapper<ResponseContact>, AxiosError>();
 
+// 상세 조회
+export const getContactAsync = createAsyncAction(
+  Actions.GET_CONTACT_REQUEST,
+  Actions.GET_CONTACT_SUCCESS,
+  Actions.GET_CONTACT_FAILURE,
+)<GetRequestPayload, ResponseContact, AxiosError>();
+
 // 답글 등록
 export const createContactCommentAsync = createAsyncAction(
   Actions.CREATE_CONTACT_COMMENT_REQUEST,
   Actions.CREATE_CONTACT_COMMENT_SUCCESS,
   Actions.CREATE_CONTACT_COMMENT_FAILURE,
-)<CreateRequestPayload<CreateContactComment>, ResponseContact, AxiosError>();
+)<CreateRequestPayload<CreateContactComment>, {}, AxiosError>();
 
 // 답글 수정
 export const updateContactCommentAsync = createAsyncAction(
   Actions.UPDATE_CONTACT_COMMENT_REQUEST,
   Actions.UPDATE_CONTACT_COMMENT_SUCCESS,
   Actions.UPDATE_CONTACT_COMMENT_FAILURE,
-)<UpdateRequestPayload<UpdateContactComment>, UpdateRequestPayload<UpdateContactComment>, AxiosError>();
+)<UpdateRequestPayload<UpdateContactComment>, {}, AxiosError>();
 
 // 답글 삭제
 export const deleteContactCommentAsync = createAsyncAction(
@@ -67,14 +75,10 @@ const contact = (state = initialState, action: AnyAction) => {
         draft.contacts = action.payload;
       });
     }
-    case Actions.CREATE_CONTACT_COMMENT_SUCCESS: {
+    case Actions.GET_CONTACT_SUCCESS: {
       return produce(state, draft => {
-        const currContactIndex = draft.contacts.content.findIndex(
-          contact => (contact.contactId = action.payload.contactId),
-        );
-        if (currContactIndex > -1) {
-          draft.contacts.content[currContactIndex] = action.payload;
-        }
+        const currIndex = draft.contacts.content.findIndex(contact => contact.contactId === action.payload.contactId);
+        draft.contacts.content[currIndex] = action.payload;
       });
     }
     default: {

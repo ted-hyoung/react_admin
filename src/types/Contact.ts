@@ -20,9 +20,9 @@ export interface ResponseContact {
   status: QnaStatus;
   category: CsrCategory;
   contents: string;
-  comment: ResponseContactComment;
   creator: ResponseAccount;
   created: string;
+  comment?: ResponseContactComment;
 }
 
 export interface SearchContact {
