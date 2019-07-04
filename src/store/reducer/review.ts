@@ -6,14 +6,14 @@ import { createAsyncAction, action } from 'typesafe-actions';
 import * as Actions from 'store/action/review';
 
 // types
-import { ResponseList } from 'types';
+import { PageWrapper } from 'types';
 import { ResponseReview, UpdateReview, SearchReview } from 'types/Review';
 import { GetListRequestPayload, GetRequestPayload, UpdateRequestPayload } from 'types/Payload';
 import { AnyAction } from 'redux';
 import { AxiosError } from 'axios';
 
 export interface ReviewState {
-  reviews: ResponseList<ResponseReview>;
+  reviews: PageWrapper<ResponseReview>;
   review: ResponseReview;
   detailModalVisible: boolean;
 }
@@ -28,7 +28,7 @@ export const getReviewsAsync = createAsyncAction(
   Actions.GET_REVIEWS_REQUEST,
   Actions.GET_REVIEWS_SUCCESS,
   Actions.GET_REVIEWS_FAILURE,
-)<GetListRequestPayload<SearchReview>, ResponseList<ResponseReview>, AxiosError>();
+)<GetListRequestPayload<SearchReview>, PageWrapper<ResponseReview>, AxiosError>();
 
 // 단건 조회
 export const getReviewAsync = createAsyncAction(

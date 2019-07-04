@@ -1,4 +1,4 @@
-export interface ResponseList<T> {
+export interface PageWrapper<T> {
   content: T[];
   first: boolean;
   last: boolean;
