@@ -22,8 +22,8 @@ import { ResponseReview, SearchReview, UpdateReview } from 'types/Review';
 import { UpdateRequestPayload } from 'types/Payload';
 
 // component
-import { ReviewDetailModal, PageSizeSelect, SearchBar } from 'components';
-import { SearchCondition } from 'components/SearchBar';
+import { ReviewDetailModal, PageSizeSelect, ReviewSearch } from 'components';
+import { SearchCondition } from 'components/review/ReviewSearch';
 
 const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
@@ -200,7 +200,7 @@ function Review() {
 
   return (
     <>
-      <SearchBar getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
       <Divider />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <span>

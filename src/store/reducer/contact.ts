@@ -15,7 +15,6 @@ import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from 'store/action/contactAction';
 import { AxiosError } from 'axios';
 import produce from 'immer';
-import { QnaStatus } from 'enums';
 
 export interface ContactState {
   contacts: PageWrapper<ResponseContact>;

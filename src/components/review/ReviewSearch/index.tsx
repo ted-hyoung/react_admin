@@ -3,42 +3,36 @@ import React, { useCallback } from 'react';
 import { Form, Select, Input, DatePicker, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import moment, { Moment } from 'moment';
+import { SearchDate } from 'components';
 
 export interface SearchCondition {
   key: string;
   text: string;
 }
 
-interface SearchBarProps extends FormComponentProps {
+interface ReviewSearchProps extends FormComponentProps {
   getData: (page: number, size?: number, searchCondition?: { [prop: string]: string }) => void;
   pageSize: number;
   searchConditions: SearchCondition[];
 }
 
-interface SearchBarKeyAndValuePropValue {
+interface ReviewSearchKeyAndValuePropValue {
   key?: SearchCondition;
   value?: string;
 }
 
-interface SearchBoarKeyAndValueProp {
-  value?: SearchBarKeyAndValuePropValue;
+interface ReviewSearchKeyAndValueProp {
+  value?: ReviewSearchKeyAndValuePropValue;
   onSearch: () => void;
-  onChange?: (value?: SearchBarKeyAndValuePropValue) => void;
+  onChange?: (value?: ReviewSearchKeyAndValuePropValue) => void;
   searchConditions: SearchCondition[];
 }
 
-enum DateRange {
-  ENTIRE = '전체',
-  TODAY = '오늘',
-  RECENT_3DAYS = '최근 3일',
-  RECENT_WEEK = '최근 7일',
-}
-
-const SearchBarKeyAndValue = React.forwardRef<HTMLDivElement, SearchBoarKeyAndValueProp>((props, ref) => {
+const ReviewSearchKeyAndValue = React.forwardRef<HTMLDivElement, ReviewSearchKeyAndValueProp>((props, ref) => {
   const { value, onChange, searchConditions, onSearch } = props;
 
   const handleChange = useCallback(
-    (val: SearchBarKeyAndValuePropValue) => {
+    (val: ReviewSearchKeyAndValuePropValue) => {
       if (onChange) {
         onChange(val);
       }
@@ -65,9 +59,9 @@ const SearchBarKeyAndValue = React.forwardRef<HTMLDivElement, SearchBoarKeyAndVa
   );
 });
 
-function SearchBar(props: SearchBarProps) {
+function ReviewSearch(props: ReviewSearchProps) {
   const { form, getData, pageSize, searchConditions } = props;
-  const { getFieldDecorator, validateFieldsAndScroll, setFieldsValue, getFieldValue, resetFields } = form;
+  const { getFieldDecorator, validateFieldsAndScroll, getFieldValue, resetFields } = form;
 
   const handleSearch = useCallback(() => {
     validateFieldsAndScroll((err, val) => {
@@ -100,35 +94,6 @@ function SearchBar(props: SearchBarProps) {
     resetFields();
     getData(0, pageSize);
   }, [getData, resetFields, pageSize]);
-
-  const setDate = useCallback(
-    (value: string) => {
-      let startDate;
-      let endDate: Moment | undefined = moment();
-      switch (value) {
-        case DateRange.ENTIRE: {
-          endDate = undefined;
-          break;
-        }
-        case DateRange.TODAY: {
-          startDate = moment();
-          break;
-        }
-        case DateRange.RECENT_3DAYS: {
-          startDate = moment().subtract(3, 'day');
-          break;
-        }
-        case DateRange.RECENT_WEEK: {
-          startDate = moment().subtract(1, 'week');
-          break;
-        }
-      }
-      setFieldsValue({
-        date: [startDate, endDate],
-      });
-    },
-    [setFieldsValue],
-  );
   return (
     <div className="search">
       <Form layout="inline">
@@ -144,16 +109,9 @@ function SearchBar(props: SearchBarProps) {
                 ...arg,
               };
             },
-          })(<SearchBarKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
+          })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
         </Form.Item>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Item>{getFieldDecorator('date')(<DatePicker.RangePicker />)}</Form.Item>
-          {Object.keys(DateRange).map((key: any) => (
-            <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
-              {DateRange[key]}
-            </Button>
-          ))}
-        </div>
+        <Form.Item>{getFieldDecorator('date')(<SearchDate />)}</Form.Item>
         <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
           검색
         </Button>
@@ -163,4 +121,4 @@ function SearchBar(props: SearchBarProps) {
   );
 }
 
-export default Form.create<SearchBarProps>()(SearchBar);
+export default Form.create<ReviewSearchProps>()(ReviewSearch);

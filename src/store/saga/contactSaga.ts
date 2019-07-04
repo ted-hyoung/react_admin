@@ -46,6 +46,7 @@ function* createContactComment(action: PayloadAction<string, CreateRequestPayloa
   try {
     yield call(() => post('/contacts/' + parentId + '/comment', data));
     yield put(createContactCommentAsync.success({}));
+    message.success('답변이 등록되었습니다');
     if (parentId) {
       yield put(
         getContactAsync.request({
@@ -53,7 +54,6 @@ function* createContactComment(action: PayloadAction<string, CreateRequestPayloa
         }),
       );
     }
-    message.success('답변이 등록되었습니다');
   } catch (error) {
     yield put(createContactCommentAsync.failure(error));
   }
