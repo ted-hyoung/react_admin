@@ -74,7 +74,6 @@ function ReviewSearch(props: ReviewSearchProps) {
   const handleSearch = useCallback(() => {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
-        console.log(val);
         Object.keys(val).forEach(key => {
           if (val[key] === undefined) {
             delete val[key];
@@ -150,8 +149,6 @@ function ReviewSearch(props: ReviewSearchProps) {
           })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
         </Form.Item>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Form.Item>{getFieldDecorator('startDate')(<DatePicker />)}</Form.Item>
-          <Form.Item>{getFieldDecorator('endDate')(<DatePicker />)}</Form.Item> */}
           <Form.Item>{getFieldDecorator('date')(<DatePicker.RangePicker />)}</Form.Item>
           {Object.keys(DateRange).map((key: any) => (
             <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>

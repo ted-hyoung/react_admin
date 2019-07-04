@@ -1,7 +1,7 @@
 import { put, call, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { get, put as axiosPut } from 'lib/protocols';
 
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 
 import {
   getReviewsAsync,
@@ -24,6 +24,7 @@ function* getReviews(action: PayloadAction<string, GetListRequestPayload<SearchR
     yield put(getReviewsAsync.success(res.data));
   } catch (error) {
     yield put(getReviewsAsync.failure(error));
+    Modal.error({ title: error });
   }
 }
 
