@@ -23,4 +23,8 @@ export default [
     component: lazy(() => import('../pages/Qna')),
     secret: false,
   },
+  {
+    path: '/review',
+    component: lazy(() => import('../pages/Review')),
+  },
 ];
