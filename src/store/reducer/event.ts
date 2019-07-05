@@ -10,7 +10,7 @@ import { ResponseEventForList, GetListRequestPayload, PageWrapper } from 'types'
 import { AxiosError } from 'axios';
 
 export interface EventState {
-  events: PageWrapper<ResponseEventForList[]>;
+  events: PageWrapper<ResponseEventForList>;
 }
 
 export const getEventsAsync = createAsyncAction(
