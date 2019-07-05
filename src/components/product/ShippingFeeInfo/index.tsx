@@ -13,18 +13,15 @@ import './index.less';
 interface Props {
   shippingFreeInfo : ResponseShippingFeeInfo;
   onClickShippingFreeInfo: () => void;
-  setShippingFreeInfoValue: any;
+  onChangeShippingFreeInfoValue: (e: React.ChangeEvent) => void;
 }
 
 function ShippingFeeInfo(props: Props) {
 
-  const { shippingFreeInfo, onClickShippingFreeInfo, setShippingFreeInfoValue } = props;
-console.log(shippingFreeInfo)
+  const { shippingFreeInfo, onClickShippingFreeInfo, onChangeShippingFreeInfoValue } = props;
+
   return (
     <div className="shippingFee-info">
-      {shippingFreeInfo.shippingFee}
-      <br />
-      {shippingFreeInfo.shippingFreeCondition}
       <div className="shippingFee-info-title">
         <h2>배송비 설정</h2>
       </div>
@@ -42,7 +39,7 @@ console.log(shippingFreeInfo)
             value={shippingFreeInfo.shippingFee}
             size="small"
             type="Number"
-            onChange={e => setShippingFreeInfoValue(e)}
+            onChange={e => onChangeShippingFreeInfoValue(e)}
           />
         </Col>
         <Col span={1} className="shippingFee-info-col-right">
@@ -58,7 +55,7 @@ console.log(shippingFreeInfo)
             value={shippingFreeInfo.shippingFreeCondition}
             size="small"
             type="Number"
-            onChange={e => setShippingFreeInfoValue(e)}
+            onChange={e => onChangeShippingFreeInfoValue(e)}
           />
         </Col>
         <Col span={4} className="shippingFee-info-col-left">

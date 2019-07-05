@@ -42,8 +42,8 @@ function EventTab() {
       </TabPane>
       <TabPane tab="제품 정보" key="product">
         <ProductDetail
-          products={products}
-          shippingFeeInfo={shippingFeeInfo}
+          responseProducts={products}
+          responseShippingFeeInfo={shippingFeeInfo}
         />
       </TabPane>
       <TabPane tab="셀럽 리뷰" disabled={eventStatus} key="celeb">

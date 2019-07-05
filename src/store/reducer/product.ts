@@ -37,10 +37,28 @@ export const createProductAsync = createAsyncAction(
   Actions.CREATE_PRODUCTS_FAILURE
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const updateProductAsync = createAsyncAction(
+  Actions.UPDATE_PRODUCTS_REQUEST,
+  Actions.UPDATE_PRODUCTS_SUCCESS,
+  Actions.UPDATE_PRODUCTS_FAILURE
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 export const updateShippingFeeInfoAsync = createAsyncAction(
   Actions.UPDATE_SHIPPING_FEE_INFO_REQUEST,
   Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS,
   Actions.UPDATE_SHIPPING_FEE_INFO_FAILURE
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const deleteProductsAsync = createAsyncAction(
+  Actions.DELETED_PRODUCTS_REQUEST,
+  Actions.DELETED_PRODUCTS_SUCCESS,
+  Actions.DELETED_PRODUCTS_FAILURE
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const soldOutProductsAsync = createAsyncAction(
+  Actions.SOLD_OUT_PRODUCTS_REQUEST,
+  Actions.SOLD_OUT_PRODUCTS_SUCCESS,
+  Actions.SOLD_OUT_PRODUCTS_FAILURE
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 // reducers
@@ -64,6 +82,12 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
       });
     }
     case Actions.CREATE_PRODUCTS_SUCCESS: {
+      return state;
+    }
+    case Actions.UPDATE_PRODUCTS_SUCCESS: {
+      return state;
+    }
+    case Actions.DELETED_PRODUCTS_SUCCESS: {
       return state;
     }
     case Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS: {
