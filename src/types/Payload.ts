@@ -1,11 +1,11 @@
+export interface GetRequestPayload {
+  id: number;
+}
+
 export interface GetListRequestPayload<T = {}> {
   page: number;
   size: number;
   searchCondition?: T;
-}
-
-export interface GetRequestPayload {
-  id: number;
 }
 
 export interface UpdateRequestPayload<T> {

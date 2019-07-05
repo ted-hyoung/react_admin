@@ -16,6 +16,10 @@ export default [
   {
     path: '/review',
     component: lazy(() => import('../pages/Review')),
+  },
+  {
+    path: '/events',
+    component: lazy(() => import('../pages/event/EventList')),
     secret: false,
   },
 ];
