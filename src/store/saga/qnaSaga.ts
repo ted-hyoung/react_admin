@@ -9,6 +9,8 @@ import {
   updateQnaCommentAsync,
   deleteQnaCommentAsync,
   updateQnaExposeAsync,
+  updateQnaSequenceAsync,
+  getQnaStatusWaitAsync,
 } from 'store/reducer/qna';
 
 function* getQna(action: RequestAsyncAction) {
@@ -25,8 +27,10 @@ function* getQna(action: RequestAsyncAction) {
         },
       }),
     );
+    const waitStatusCount = yield call(() => Api.get('/qna/wait'));
 
     yield put(getQnaAsync.success(res.data));
+    yield put(getQnaStatusWaitAsync.success(waitStatusCount.data));
   } catch (error) {
     yield put(getQnaAsync.failure(error));
   }
@@ -40,7 +44,12 @@ function* createQnaComment(action: RequestAsyncAction) {
     };
 
     yield call(() => Api.post(`/qna/${qnaId}/comment`, data));
-    yield put(createQnaCommentAsync.success(action.payload));
+
+    const res = yield call(() => Api.get(`/qna/${qnaId}`));
+    const waitStatusCount = yield call(() => Api.get('/qna/wait'));
+
+    yield put(createQnaCommentAsync.success(res.data));
+    yield put(getQnaStatusWaitAsync.success(waitStatusCount.data));
   } catch (error) {
     yield put(createQnaCommentAsync.failure(error));
   }
@@ -54,7 +63,9 @@ function* updateQnaComment(action: RequestAsyncAction) {
     };
 
     yield call(() => Api.put(`/qna/${qnaId}/comment/${qnaCommentId}`, data));
-    yield put(updateQnaCommentAsync.success(action.payload));
+    const res = yield call(() => Api.get(`/qna/${qnaId}`));
+
+    yield put(updateQnaCommentAsync.success(res.data));
   } catch (error) {
     yield put(updateQnaCommentAsync.failure(error));
   }
@@ -65,7 +76,10 @@ function* deleteQnaComment(action: RequestAsyncAction) {
     const { qnaId, qnaCommentId } = action.payload;
 
     yield call(() => Api.del(`/qna/${qnaId}/comment/${qnaCommentId}`));
+    const waitStatusCount = yield call(() => Api.get('/qna/wait'));
+
     yield put(deleteQnaCommentAsync.success(qnaId));
+    yield put(getQnaStatusWaitAsync.success(waitStatusCount.data));
   } catch (error) {
     yield put(deleteQnaCommentAsync.failure(error));
   }
@@ -82,10 +96,36 @@ function* updateQnaExpose(action: RequestAsyncAction) {
   }
 }
 
+function* updateQnaSequence(action: RequestAsyncAction) {
+  try {
+    const { qnaId, orderType, sequence } = action.payload;
+    const data = {
+      orderType,
+      sequence,
+    };
+
+    yield call(() => Api.put(`/qna/${qnaId}/sequence`, data));
+    const res = yield call(() =>
+      Api.get('/qna', {
+        params: {
+          page: 0,
+          size: 20,
+        },
+      }),
+    );
+
+    yield put(updateQnaSequenceAsync.success(action.payload));
+    yield put(getQnaAsync.success(res.data));
+  } catch (error) {
+    yield put(updateQnaSequenceAsync.failure(error));
+  }
+}
+
 export default function* qnaSaga() {
   yield takeEvery(Action.GET_QNA_REQUEST, getQna);
   yield takeLatest(Action.CREATE_QNA_COMMENT_REQUEST, createQnaComment);
   yield takeEvery(Action.UPDATE_QNA_COMMENT_REQUEST, updateQnaComment);
   yield takeEvery(Action.DELETE_QNA_COMMENT_REQUEST, deleteQnaComment);
   yield takeEvery(Action.UPDATE_QNA_EXPOSE_REQUEST, updateQnaExpose);
+  yield takeEvery(Action.UPDATE_QNA_SEQUENCE_REQUEST, updateQnaSequence);
 }

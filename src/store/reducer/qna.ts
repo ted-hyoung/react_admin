@@ -14,37 +14,57 @@ export interface QnaState {
     totalElements?: number;
     totalPages?: number;
   };
+  waitStatusCount: number;
 }
 
 // action
+// Q&A 목록 조회
 export const getQnaAsync = createAsyncAction(Actions.GET_QNA_REQUEST, Actions.GET_QNA_SUCCESS, Actions.GET_QNA_FAILURE)<
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction
 >();
 
+// Q&A 답변 등록
 export const createQnaCommentAsync = createAsyncAction(
   Actions.CREATE_QNA_COMMENT_REQUEST,
   Actions.CREATE_QNA_COMMENT_SUCCESS,
   Actions.CREATE_QNA_COMMENT_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// Q&A 답변 수정
 export const updateQnaCommentAsync = createAsyncAction(
   Actions.UPDATE_QNA_COMMENT_REQUEST,
   Actions.UPDATE_QNA_COMMENT_SUCCESS,
   Actions.UPDATE_QNA_COMMENT_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// Q&A 답변 삭제
 export const deleteQnaCommentAsync = createAsyncAction(
   Actions.DELETE_QNA_COMMENT_REQUEST,
   Actions.DELETE_QNA_COMMENT_SUCCESS,
   Actions.DELETE_QNA_COMMENT_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// 공개 & 비공개 수정
 export const updateQnaExposeAsync = createAsyncAction(
   Actions.UPDATE_QNA_EXPOSE_REQUEST,
   Actions.UPDATE_QNA_EXPOSE_SUCCESS,
   Actions.UPDATE_QNA_EXPOSE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+// 우선 순위 수정
+export const updateQnaSequenceAsync = createAsyncAction(
+  Actions.UPDATE_QNA_SEQUENCE_REQUEST,
+  Actions.UPDATE_QNA_SEQUENCE_SUCCESS,
+  Actions.UPDATE_QNA_SEQUENCE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+// 답변대기 개수
+export const getQnaStatusWaitAsync = createAsyncAction(
+  Actions.GET_QNA_STATUS_WAIT_REQUEST,
+  Actions.GET_QNA_STATUS_WAIT_SUCCESS,
+  Actions.GET_QNA_STATUS_WAIT_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 // reducers
@@ -52,6 +72,7 @@ const initialState: QnaState = {
   qna: {
     content: [],
   },
+  waitStatusCount: 0,
 };
 
 const qna = (state = initialState, action: ResponseAsyncAction) => {
@@ -69,10 +90,25 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
       });
     }
     case Actions.CREATE_QNA_COMMENT_SUCCESS: {
-      return state;
+      return produce(state, draft => {
+        const { qnaId, qnaStatus, qnaComment } = action.payload;
+        const item = draft.qna.content.find(item => item.qnaId === qnaId);
+
+        if (item) {
+          item.qnaStatus = qnaStatus;
+          item.qnaComment = qnaComment;
+        }
+      });
     }
     case Actions.UPDATE_QNA_COMMENT_SUCCESS: {
-      return state;
+      return produce(state, draft => {
+        const { qnaId, qnaComment } = action.payload;
+        const item = draft.qna.content.find(item => item.qnaId === qnaId);
+
+        if (item) {
+          item.qnaComment = qnaComment;
+        }
+      });
     }
     case Actions.DELETE_QNA_COMMENT_SUCCESS: {
       return produce(state, draft => {
@@ -92,6 +128,23 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
         if (item) {
           item.expose = expose;
         }
+      });
+    }
+    case Actions.UPDATE_QNA_SEQUENCE_SUCCESS: {
+      return produce(state, draft => {
+        const { qnaId, orderType, sequence } = action.payload;
+        const item = draft.qna.content.find(item => item.qnaId === qnaId);
+
+        if (item) {
+          item.orderType = orderType;
+          item.sequence = sequence;
+        }
+      });
+    }
+    case Actions.GET_QNA_STATUS_WAIT_SUCCESS: {
+      return produce(state, draft => {
+        const { waitStatusCount } = action.payload;
+        draft.waitStatusCount = waitStatusCount;
       });
     }
     default: {
