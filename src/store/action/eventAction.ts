@@ -1,0 +1,3 @@
+export const GET_EVENTS_REQUEST = 'event/GET_EVENTS_REQUEST';
+export const GET_EVENTS_SUCCESS = 'event/GET_EVENTS_SUCCESS';
+export const GET_EVENTS_FAILURE = 'event/GET_EVENTS_FAILURE';
