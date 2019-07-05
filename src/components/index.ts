@@ -1,5 +1,6 @@
 export * from './review';
 export * from './contact';
 
-export { default as PageSizeSelect } from './PageSizeSelect';
+export { default as Menu } from './Menu';
+export { default as PaginationTable } from './PaginationTable';
 export { default as SearchDate } from './SearchDate';

@@ -9,20 +9,13 @@ import { getContactsAsync } from 'store/reducer/contact';
 import { SearchContact, ResponseContact } from 'types';
 import { QnaStatus, CsrCategory } from 'enums';
 import { ColumnProps } from 'antd/lib/table';
-import { SearchCondition } from 'components/review/ReviewSearch';
 
 // modules
 import { Table, Tag } from 'antd';
 import moment from 'moment';
 
 // components
-import { PageSizeSelect, ReviewSearch, ContactCommentRow, ContactSearch } from 'components';
-
-const searchCondition: SearchCondition[] = [
-  { key: 'status', text: '상태' },
-  { key: 'category', text: '분류' },
-  { key: 'keyword', text: '키워드' },
-];
+import { ContactCommentRow, ContactSearch, PaginationTable } from 'components';
 
 function Contact() {
   const dispatch = useDispatch();
@@ -39,6 +32,13 @@ function Contact() {
       );
     },
     [dispatch, pageSize],
+  );
+
+  const handleChangePageSize = useCallback(
+    (value: string) => {
+      getContacts(Number(value));
+    },
+    [getContacts],
   );
 
   // componentDidMount
@@ -91,12 +91,11 @@ function Contact() {
   return (
     <div>
       <ContactSearch getData={getContacts} />
-      <PageSizeSelect getData={getContacts} />
-      <Table
+      <PaginationTable
+        onChangePageSize={handleChangePageSize}
         rowKey={contact => contact.contactId.toString()}
         dataSource={content}
         columns={contactColumns}
-        scroll={{ x: 1200 }}
         expandedRowRender={contact => <ContactCommentRow {...contact} />}
         expandRowByClick
       />

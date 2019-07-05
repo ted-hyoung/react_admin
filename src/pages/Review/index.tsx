@@ -21,7 +21,7 @@ import {
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
 
 // component
-import { ReviewDetailModal, PageSizeSelect, ReviewSearch } from 'components';
+import { ReviewDetailModal, ReviewSearch, PaginationTable } from 'components';
 import { SearchCondition } from 'components/review/ReviewSearch';
 
 const reviewSearchConditions: SearchCondition[] = [
@@ -100,6 +100,14 @@ function Review() {
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
       getReviews(currentPage - 1);
+    },
+    [getReviews],
+  );
+
+  // pageSize select onChange
+  const handlePageSizeChange = useCallback(
+    (value: string) => {
+      getReviews(0, Number(value));
     },
     [getReviews],
   );
@@ -201,18 +209,9 @@ function Review() {
     <>
       <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
       <Divider />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span>
-          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 5 }} type="primary">
-            선택 공개
-          </Button>
-          <Button onClick={() => handleUpdateReviewsExpose(false)} type="danger">
-            선택 비공개
-          </Button>
-        </span>
-        <PageSizeSelect getData={getReviews} />
-      </div>
-      <Table
+      <PaginationTable
+        onChangeExpose={handleUpdateReviewsExpose}
+        onChangePageSize={handlePageSizeChange}
         rowKey={review => review.reviewId.toString()}
         rowSelection={{
           onChange: handleChange,
