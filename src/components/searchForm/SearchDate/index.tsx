@@ -1,7 +1,11 @@
 import React, { useCallback } from 'react';
-import { RangePickerProps, DatePickerDecorator, RangePickerValue } from 'antd/lib/date-picker/interface';
+
+// modules
 import { DatePicker, Button } from 'antd';
 import moment, { Moment } from 'moment';
+
+// types
+import { RangePickerProps, DatePickerDecorator, RangePickerValue } from 'antd/lib/date-picker/interface';
 
 enum DateRange {
   ENTIRE = '전체',
@@ -20,16 +24,20 @@ export function validateDate(val: any, key: string) {
   delete val[key];
 }
 
-export function getValueFromEvent(...args: any[]) {
-  return args[1];
+export function getValueFromEventForSearchDate(dates: RangePickerValue, dateStrings: [string, string]) {
+  return dateStrings;
 }
 
-export function getValueProps(value: any) {
+export function getValuePropsForSearchDate(value: any) {
   if (value) {
     const newValue = [...value];
     value.forEach((item: any, index: any) => {
       if (typeof item === 'string') {
-        newValue[index] = moment(item);
+        if (item.length === 0) {
+          newValue[index] = null;
+        } else {
+          newValue[index] = moment(item);
+        }
       }
     });
     return { value: newValue };

@@ -19,10 +19,10 @@ import {
 
 // types
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
+import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
-import { ReviewDetailModal, ReviewSearch, PaginationTable } from 'components';
-import { SearchCondition } from 'components/review/ReviewSearch';
+import { ReviewDetailModal, PaginationTable, SearchBar } from 'components';
 
 const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
@@ -204,10 +204,13 @@ function Review() {
     ],
     [updateReviewsExpose, updateReview, getReview],
   );
-
   return (
     <>
-      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <SearchBar
+        onSearch={value => getReviews(0, pageSize, value)}
+        onReset={() => getReviews(0)}
+        searchConditions={reviewSearchConditions}
+      />
       <Divider />
       <PaginationTable
         onChangeExpose={handleUpdateReviewsExpose}

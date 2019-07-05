@@ -11,18 +11,17 @@ import { QnaStatus, CsrCategory } from 'enums';
 import { ColumnProps } from 'antd/lib/table';
 
 // modules
-import { Tag, Divider } from 'antd';
+import { Tag, Divider, Select, Input, Form } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, ContactSearch, PaginationTable, GalleryModal } from 'components';
+import { ContactCommentRow, PaginationTable, GalleryModal, SearchBar } from 'components';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
 function Contact() {
   const dispatch = useDispatch();
-  const { contacts, contact } = useSelector((state: StoreState) => state.contact);
-  const { content, size: pageSize } = contacts;
+  const { content, size: pageSize } = useSelector((state: StoreState) => state.contact.contacts);
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -52,6 +51,19 @@ function Contact() {
       setGalleryVisible(true);
     },
     [setCurrentImageIndex, setGalleryVisible],
+  );
+
+  const handleSearch = useCallback(
+    (val: any) => {
+      Object.keys(val).map(key => {
+        if (key === 'status' && val[key] === 'ENTIRE') {
+          delete val[key];
+          return;
+        }
+      });
+      getContacts(0, pageSize, val);
+    },
+    [getContacts, pageSize],
   );
 
   // componentDidMount
@@ -103,7 +115,29 @@ function Contact() {
 
   return (
     <div>
-      <ContactSearch getData={getContacts} />
+      <SearchBar
+        onSearch={handleSearch}
+        onReset={() => getContacts(0)}
+        customFormItems={form => [
+          <div style={{ display: 'flex' }} key="test">
+            <Form.Item>
+              {form.getFieldDecorator('status', {
+                initialValue: 'ENTIRE',
+              })(
+                <Select style={{ width: 120, marginRight: 5 }}>
+                  <Select.Option value="ENTIRE">전체</Select.Option>
+                  {Object.keys(QnaStatus).map((key: any) => (
+                    <Select.Option key={key} value={key}>
+                      {QnaStatus[key]}
+                    </Select.Option>
+                  ))}
+                </Select>,
+              )}
+            </Form.Item>
+            <Form.Item style={{ flexGrow: 1 }}>{form.getFieldDecorator('keyword')(<Input />)}</Form.Item>
+          </div>,
+        ]}
+      />
       <Divider />
       <PaginationTable
         onChangePageSize={handleChangePageSize}
