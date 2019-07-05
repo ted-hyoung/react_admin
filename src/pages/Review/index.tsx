@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // modules
-import { Table, Select, Button, Rate, Divider } from 'antd';
+import { Select, Button, Rate, Divider } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 

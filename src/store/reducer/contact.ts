@@ -15,9 +15,11 @@ import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from 'store/action/contactAction';
 import { AxiosError } from 'axios';
 import produce from 'immer';
+import { QnaStatus, CsrCategory } from 'enums';
 
 export interface ContactState {
   contacts: PageWrapper<ResponseContact>;
+  contact: ResponseContact;
 }
 
 // 목록 조회
@@ -65,6 +67,16 @@ const initialState: ContactState = {
     page: 0,
     size: 10,
   },
+  contact: {
+    contactId: 0,
+    status: QnaStatus.WAIT,
+    category: CsrCategory.PAYMENT,
+    contents: '',
+    creator: {
+      loginId: 0,
+    },
+    created: '',
+  },
 };
 
 const contact = (state = initialState, action: AnyAction) => {
@@ -78,6 +90,7 @@ const contact = (state = initialState, action: AnyAction) => {
       return produce(state, draft => {
         const currIndex = draft.contacts.content.findIndex(contact => contact.contactId === action.payload.contactId);
         draft.contacts.content[currIndex] = action.payload;
+        draft.contact = action.payload;
       });
     }
     default: {

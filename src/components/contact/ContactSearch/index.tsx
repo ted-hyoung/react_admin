@@ -1,11 +1,20 @@
 import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
+// modules
 import { Form, Select, Input, Button } from 'antd';
+
+// types
+import { SearchContact } from 'types';
 import { FormComponentProps } from 'antd/lib/form';
 import { QnaStatus } from 'enums';
+
+// components;
 import { SearchDate } from 'components';
-import { useSelector } from 'react-redux';
+import { getValueProps, getValueFromEvent, validateDate } from 'components/SearchDate';
+
+// store
 import { StoreState } from 'store';
-import { SearchContact } from 'types';
 
 interface Props extends FormComponentProps {
   getData: (page: number, size?: number, searchCondition?: SearchContact) => void;
@@ -30,18 +39,14 @@ const ContactSearch = Form.create<Props>()((props: Props) => {
             return;
           }
           if (key === 'date') {
-            if (val[key].length > 0) {
-              val.startDate = val[key][0].startOf('day').format('YYYY-MM-DDTHH:mm:ss');
-              val.endDate = val[key][1].endOf('day').format('YYYY-MM-DDTHH:mm:ss');
-            }
-            delete val[key];
+            validateDate(val, 'date');
             return;
           }
         });
         getData(0, pageSize, val);
       }
     });
-  }, [validateFieldsAndScroll]);
+  }, [validateFieldsAndScroll, getData, pageSize]);
 
   const handleReset = useCallback(() => {
     resetFields();
@@ -65,7 +70,12 @@ const ContactSearch = Form.create<Props>()((props: Props) => {
         )}
       </Form.Item>
       <Form.Item>{getFieldDecorator('keyword')(<Input />)}</Form.Item>
-      <Form.Item>{getFieldDecorator('date')(<SearchDate />)}</Form.Item>
+      <Form.Item>
+        {getFieldDecorator('date', {
+          getValueFromEvent,
+          getValueProps,
+        })(<SearchDate />)}
+      </Form.Item>
       <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
         검색
       </Button>

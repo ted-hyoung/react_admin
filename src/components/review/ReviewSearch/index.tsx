@@ -1,8 +1,12 @@
 import React, { useCallback } from 'react';
 
+// modules
 import { Form, Select, Input, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+
+// components
 import { SearchDate } from 'components';
+import { validateDate, getValueFromEvent, getValueProps } from 'components/SearchDate';
 
 export interface SearchCondition {
   key: string;
@@ -79,9 +83,8 @@ function ReviewSearch(props: ReviewSearchProps) {
             return;
           }
           if (key === 'date') {
-            val.startDate = val[key][0].startOf('day').format('YYYY-MM-DDTHH:mm:ss');
-            val.endDate = val[key][1].endOf('day').format('YYYY-MM-DDTHH:mm:ss');
-            delete val[key];
+            validateDate(val, 'date');
+            return;
           }
         });
         getData(0, pageSize, { ...val });
@@ -94,29 +97,32 @@ function ReviewSearch(props: ReviewSearchProps) {
     getData(0, pageSize);
   }, [getData, resetFields, pageSize]);
   return (
-    <div className="search">
-      <Form layout="inline">
-        <Form.Item>
-          {getFieldDecorator('searchCondition', {
-            initialValue: {
-              key: 'null',
-              value: '',
-            },
-            getValueFromEvent: arg => {
-              return {
-                ...getFieldValue('searchCondition'),
-                ...arg,
-              };
-            },
-          })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
-        </Form.Item>
-        <Form.Item>{getFieldDecorator('date')(<SearchDate />)}</Form.Item>
-        <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
-          검색
-        </Button>
-        <Button onClick={handleReset}>초기화</Button>
-      </Form>
-    </div>
+    <Form layout="inline">
+      <Form.Item>
+        {getFieldDecorator('searchCondition', {
+          initialValue: {
+            key: 'null',
+            value: '',
+          },
+          getValueFromEvent: arg => {
+            return {
+              ...getFieldValue('searchCondition'),
+              ...arg,
+            };
+          },
+        })(<ReviewSearchKeyAndValue searchConditions={searchConditions} onSearch={handleSearch} />)}
+      </Form.Item>
+      <Form.Item>
+        {getFieldDecorator('date', {
+          getValueFromEvent,
+          getValueProps,
+        })(<SearchDate />)}
+      </Form.Item>
+      <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
+        검색
+      </Button>
+      <Button onClick={handleReset}>초기화</Button>
+    </Form>
   );
 }
 

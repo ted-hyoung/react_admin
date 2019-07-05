@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // store
@@ -11,15 +11,20 @@ import { QnaStatus, CsrCategory } from 'enums';
 import { ColumnProps } from 'antd/lib/table';
 
 // modules
-import { Table, Tag } from 'antd';
+import { Tag, Divider } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, ContactSearch, PaginationTable } from 'components';
+import { ContactCommentRow, ContactSearch, PaginationTable, GalleryModal } from 'components';
+
+const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
 function Contact() {
   const dispatch = useDispatch();
-  const { content, size: pageSize } = useSelector((state: StoreState) => state.contact.contacts);
+  const { contacts, contact } = useSelector((state: StoreState) => state.contact);
+  const { content, size: pageSize } = contacts;
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const getContacts = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchContact) => {
@@ -39,6 +44,14 @@ function Contact() {
       getContacts(Number(value));
     },
     [getContacts],
+  );
+
+  const handleClickImage = useCallback(
+    (imageIndex: number) => {
+      setCurrentImageIndex(imageIndex);
+      setGalleryVisible(true);
+    },
+    [setCurrentImageIndex, setGalleryVisible],
   );
 
   // componentDidMount
@@ -91,13 +104,22 @@ function Contact() {
   return (
     <div>
       <ContactSearch getData={getContacts} />
+      <Divider />
       <PaginationTable
         onChangePageSize={handleChangePageSize}
         rowKey={contact => contact.contactId.toString()}
         dataSource={content}
         columns={contactColumns}
-        expandedRowRender={contact => <ContactCommentRow {...contact} />}
+        expandedRowRender={contact => <ContactCommentRow {...contact} onClickImage={handleClickImage} />}
         expandRowByClick
+      />
+      <GalleryModal
+        visible={galleryVisible}
+        setVisible={setGalleryVisible}
+        // todo : images
+        // images={contact.images}
+        images={dummy}
+        currentIndex={currentImageIndex}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { RangePickerProps, DatePickerDecorator, RangePickerValue } from 'antd/lib/date-picker/interface';
 import { DatePicker, Button } from 'antd';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 enum DateRange {
   ENTIRE = '전체',
@@ -10,46 +10,97 @@ enum DateRange {
   RECENT_WEEK = '최근 7일',
 }
 
+const dateFormat = 'YYYY-MM-DDTHH:mm:ss';
+
+export function validateDate(val: any, key: string) {
+  if (val[key].length > 0) {
+    val.startDate = val[key][0];
+    val.endDate = val[key][1];
+  }
+  delete val[key];
+}
+
+export function getValueFromEvent(...args: any[]) {
+  return args[1];
+}
+
+export function getValueProps(value: any) {
+  if (value) {
+    const newValue = [...value];
+    value.forEach((item: any, index: any) => {
+      if (typeof item === 'string') {
+        newValue[index] = moment(item);
+      }
+    });
+    return { value: newValue };
+  }
+  return value;
+}
+
 const SearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
   const { value, onChange } = props;
-  const setDate = useCallback(
-    (value: string) => {
-      let dates: RangePickerValue = [];
-      let dateStrings: [string, string] = ['', ''];
-      switch (value) {
-        case DateRange.ENTIRE: {
-          break;
-        }
-        case DateRange.TODAY: {
-          const today = moment();
-          dates = [today, today];
-          dateStrings = [today.format(), today.format()];
-          break;
-        }
-        case DateRange.RECENT_3DAYS: {
-          const startDate = moment().subtract(3, 'day');
-          const endDate = moment();
-          dates = [startDate, endDate];
-          dateStrings = [startDate.format(), endDate.format()];
-          break;
-        }
-        case DateRange.RECENT_WEEK: {
-          const startDate = moment().subtract(1, 'week');
-          const endDate = moment();
-          dates = [startDate, endDate];
-          dateStrings = [startDate.format(), endDate.format()];
-          break;
-        }
-      }
+
+  const handleChange = useCallback(
+    (dates: RangePickerValue, dateStrings: [string, string]) => {
       if (onChange) {
-        onChange(dates, dateStrings);
+        const newDates = [...dates] as RangePickerValue;
+        const newDateStrings = [...dateStrings] as [string, string];
+        if (dates) {
+          dates.forEach((item, i) => {
+            if (item) {
+              if (i === 0) {
+                const start = item.startOf('day');
+                newDates[i] = start;
+                newDateStrings[i] = start.format(dateFormat);
+              } else {
+                const end = item.endOf('day');
+                newDates[i] = end;
+                newDateStrings[i] = end.format(dateFormat);
+              }
+            }
+          });
+        }
+        onChange(newDates, newDateStrings);
       }
     },
     [onChange],
   );
+
+  const setDate = useCallback(
+    (value: string) => {
+      const today = moment();
+      let dates: RangePickerValue = [today, today];
+      const dateStrings: [string, string] = ['', ''];
+      switch (value) {
+        case DateRange.ENTIRE: {
+          dates = [];
+          break;
+        }
+        case DateRange.TODAY: {
+          break;
+        }
+        case DateRange.RECENT_3DAYS: {
+          dates[0] = moment().subtract(3, 'day');
+          break;
+        }
+        case DateRange.RECENT_WEEK: {
+          dates[0] = moment().subtract(1, 'week');
+          break;
+        }
+      }
+      dates.forEach((date: Moment | undefined, index: number) => {
+        if (date) {
+          dateStrings[index] = date.format('YYYY-MM-DD');
+        }
+      });
+      handleChange(dates, dateStrings);
+    },
+    [handleChange],
+  );
+
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      <DatePicker.RangePicker value={value} onChange={onChange} style={{ marginRight: 15 }} />
+      <DatePicker.RangePicker value={value} onChange={handleChange} style={{ marginRight: 15 }} />
       {Object.keys(DateRange).map((key: any) => (
         <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
           {DateRange[key]}

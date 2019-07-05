@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { CreateContactComment, UpdateContactComment, ResponseContact } from 'types';
 import Form, { FormComponentProps } from 'antd/lib/form';
-import { Avatar, Comment, Button, Input } from 'antd';
+import { Avatar, Comment, Button, Input, Modal } from 'antd';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deleteContactCommentAsync, updateContactCommentAsync, createContactCommentAsync } from 'store/reducer/contact';
+import GalleryModal from 'components/GalleryModal';
 
 // define
 const { TextArea } = Input;
@@ -83,8 +84,12 @@ const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: Contac
   );
 });
 
-function ContactCommentRow(props: ResponseContact) {
-  const { comment, contents, creator, contactId } = props;
+interface ContactCommentRowProps extends ResponseContact {
+  onClickImage: (index: number) => void;
+}
+
+function ContactCommentRow(props: ContactCommentRowProps) {
+  const { comment, contents, creator, contactId, onClickImage } = props;
   const dispatch = useDispatch();
   const commentCreated = useMemo(() => comment && moment(comment.created).format('YYYY-MM-DD HH:mm:ss'), [comment]);
   const [showForm, setShowForm] = useState(false);
@@ -119,7 +124,25 @@ function ContactCommentRow(props: ResponseContact) {
             <span>주문번호 : 0000-0000-00-0</span>
           </div>
         }
-        content={contents}
+        content={
+          <>
+            <div style={{ marginBottom: 10 }}>{contents}</div>
+            {/* todo : images */}
+            <div>
+              {Array(5)
+                .fill('')
+                .map((image, i) => (
+                  <img
+                    key={i}
+                    src={`http://placehold.it/100x100?text=${(i + 1).toString()}`}
+                    onClick={() => onClickImage(i)}
+                    alt=""
+                    style={{ marginRight: 5, marginBottom: 5 }}
+                  />
+                ))}
+            </div>
+          </>
+        }
       />
       {comment && !showForm && (
         <Comment
@@ -143,6 +166,12 @@ function ContactCommentRow(props: ResponseContact) {
           onCancel={() => setShowForm(false)}
         />
       )}
+      {/* <GalleryModal
+        images={Array(5).fill({ src: 'http://placehold.it/300x300' })}
+        currentIndex={selectedImage}
+        visible={galleryModalVisible}
+        setVisible={setGalleryModalVisible}
+      /> */}
     </div>
   );
 }
