@@ -1,5 +1,6 @@
 export * from './AsyncAction';
 export * from './Event';
+export * from './Review';
 export * from './Payload';
 export * from './Qna';
 export * from './Review';
