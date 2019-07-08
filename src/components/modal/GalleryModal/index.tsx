@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Modal, Carousel, Icon } from 'antd';
 import './index.less';
-interface Props {
-  images: any[];
-  currentIndex: number;
+import { ModalOptions, GalleryModalContent } from 'types';
+
+interface Props extends ModalOptions {
+  content: GalleryModalContent;
   visible: boolean;
-  setVisible: (visible: boolean) => void;
 }
 
 function GalleryModal(props: Props) {
-  const { images, currentIndex, visible, setVisible } = props;
+  const { content } = props;
+  const { images, currentIndex } = content;
   const carouselRef = useRef<Carousel>(null);
 
   const handlePrev = useCallback(() => {
@@ -25,13 +26,13 @@ function GalleryModal(props: Props) {
   }, [carouselRef]);
 
   useEffect(() => {
-    if (carouselRef.current) {
+    if (carouselRef.current && currentIndex) {
+      console.log(currentIndex, carouselRef);
       carouselRef.current.goTo(currentIndex);
     }
   }, [currentIndex, carouselRef]);
-
   return (
-    <Modal visible={visible} onCancel={() => setVisible(false)} wrapClassName="modal-gallery" forceRender footer={null}>
+    <Modal {...props} wrapClassName="modal-gallery" footer={null} forceRender>
       <Carousel ref={carouselRef}>
         {images.map((image, i) => (
           <img key={'modal-gallery-' + i} src={image.src + '?text=' + (i + 1)} alt="" />

@@ -16,11 +16,13 @@ import moment from 'moment';
 
 // components
 import { ContactCommentRow, PaginationTable, GalleryModal, SearchBar } from 'components';
+import useModal from 'lib/hooks/useModal';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
 function Contact() {
   const dispatch = useDispatch();
+  const openModal = useModal();
   const { contacts, counts } = useSelector((state: StoreState) => state.contact);
   const { content, size: pageSize } = contacts;
 
@@ -55,6 +57,13 @@ function Contact() {
     (imageIndex: number) => {
       setCurrentImageIndex(imageIndex);
       setGalleryVisible(true);
+      // openModal({
+      //   type: 'gallery',
+      //   content: {
+      //     images: dummy,
+      //     currentIndex: imageIndex,
+      //   },
+      // });
     },
     [setCurrentImageIndex, setGalleryVisible],
   );
@@ -156,12 +165,15 @@ function Contact() {
         expandRowByClick
       />
       <GalleryModal
+        type="gallery"
         visible={galleryVisible}
-        setVisible={setGalleryVisible}
+        // setVisible={setGalleryVisible}
         // todo : images
         // images={contact.images}
-        images={dummy}
-        currentIndex={currentImageIndex}
+        content={{
+          images: dummy,
+          currentIndex: currentImageIndex,
+        }}
       />
     </div>
   );

@@ -12,6 +12,7 @@ import * as serviceWorker from './serviceWorker';
 // assets
 // import 'moment/locale/ko';
 import './index.less';
+import ModalProvider from 'lib/context/ModalProvider';
 
 // defines
 const sagaMiddleware = createSagaMiddleware();
@@ -21,7 +22,9 @@ sagaMiddleware.run(saga);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ModalProvider>
+      <App />
+    </ModalProvider>
   </Provider>,
   document.getElementById('root'),
 );

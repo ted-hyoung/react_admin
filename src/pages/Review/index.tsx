@@ -22,7 +22,8 @@ import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from
 import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
-import { ReviewDetailModal, PaginationTable, SearchBar } from 'components';
+import { PaginationTable, SearchBar } from 'components';
+import useModal from 'lib/hooks/useModal';
 
 const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
@@ -36,7 +37,9 @@ const reviewSearchConditions: SearchCondition[] = [
 
 function Review() {
   const dispatch = useDispatch();
-  const { content, totalElements, size: pageSize } = useSelector((state: StoreState) => state.review.reviews);
+  const openModal = useModal();
+  const { reviews, review } = useSelector((state: StoreState) => state.review);
+  const { content, totalElements, size: pageSize } = reviews;
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
 
   const getReviews = useCallback(
@@ -111,6 +114,63 @@ function Review() {
     },
     [getReviews],
   );
+
+  const detailModalData = useMemo(
+    () => [
+      {
+        title: '주문정보',
+        items: [
+          {
+            label: '공구명',
+            value: '비클 앰플 공구 1차',
+          },
+          {
+            label: '주문번호',
+            value: '0000-0000-0000-0000',
+          },
+          {
+            label: '구매상품',
+            value: '01. 비클 앰플 1세트(옵션 : 주황마스크)',
+          },
+        ],
+      },
+      {
+        title: '상품 후기',
+        items: [
+          {
+            label: '아이디',
+            value: 'asdfasdf3323', //review.creator.loginId,
+          },
+          {
+            label: '연락처',
+            value: '010-0000-0000', // review.creator.phone,
+          },
+          {
+            label: '작성일',
+            value: moment(review.created).format('YYYY-MM-DD HH:mm:ss'),
+          },
+          {
+            label: '평점',
+            value: <Rate disabled value={review.starRate} />,
+          },
+          {
+            label: '내용',
+            value: review.contents,
+          },
+        ],
+      },
+    ],
+    [review],
+  );
+
+  useEffect(() => {
+    if (review.reviewId !== 0) {
+      openModal({
+        type: 'detail',
+        content: detailModalData,
+      });
+    }
+  }, [review]);
 
   // componentDidMount
   useEffect(() => {
@@ -227,7 +287,6 @@ function Review() {
           onChange: handlePaginationChange,
         }}
       />
-      <ReviewDetailModal />
     </>
   );
 }

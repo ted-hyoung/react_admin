@@ -3,6 +3,7 @@ export * from './Payload';
 export * from './Account';
 export * from './Contact';
 export * from './Event';
+export * from './Modal';
 
 export interface PageWrapper<T> {
   content: T[];

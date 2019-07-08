@@ -5,7 +5,6 @@ import { Avatar, Comment, Button, Input, Modal } from 'antd';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deleteContactCommentAsync, updateContactCommentAsync, createContactCommentAsync } from 'store/reducer/contact';
-import GalleryModal from 'components/GalleryModal';
 
 // define
 const { TextArea } = Input;
@@ -166,12 +165,6 @@ function ContactCommentRow(props: ContactCommentRowProps) {
           onCancel={() => setShowForm(false)}
         />
       )}
-      {/* <GalleryModal
-        images={Array(5).fill({ src: 'http://placehold.it/300x300' })}
-        currentIndex={selectedImage}
-        visible={galleryModalVisible}
-        setVisible={setGalleryModalVisible}
-      /> */}
     </div>
   );
 }
