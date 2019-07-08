@@ -1,7 +1,14 @@
+// base
 import React, { useEffect, useRef, useCallback } from 'react';
+
+// modules
 import { Modal, Carousel, Icon } from 'antd';
-import './index.less';
+
+// types
 import { ModalOptions, GalleryModalContent } from 'types';
+
+// assets
+import './index.less';
 
 interface Props extends ModalOptions {
   content: GalleryModalContent;
