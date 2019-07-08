@@ -18,6 +18,7 @@ import {
   updateContactCommentAsync,
   deleteContactCommentAsync,
   getContactAsync,
+  getContactsCountAsync,
 } from 'store/reducer/contact';
 import { message } from 'antd';
 
@@ -83,10 +84,20 @@ function* deleteContactComment(action: PayloadAction<string, DeleteRequestPayloa
   }
 }
 
+function* getContactsCount() {
+  try {
+    const res = yield call(() => get('/contacts/count'));
+    yield put(getContactsCountAsync.success(res.data));
+  } catch (error) {
+    yield put(getContactsCountAsync.failure(error));
+  }
+}
+
 export default function* contactSaga() {
   yield takeEvery(Actions.GET_CONTACTS_REQUEST, getContacts);
   yield takeEvery(Actions.GET_CONTACT_REQUEST, getContact);
   yield takeEvery(Actions.CREATE_CONTACT_COMMENT_REQUEST, createContactComment);
   yield takeEvery(Actions.UPDATE_CONTACT_COMMENT_REQUEST, updateContactComment);
   yield takeEvery(Actions.DELETE_CONTACT_COMMENT_REQUEST, deleteContactComment);
+  yield takeEvery(Actions.GET_CONTACTS_COUNNT_REQUEST, getContactsCount);
 }

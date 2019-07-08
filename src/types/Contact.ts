@@ -30,3 +30,8 @@ export interface SearchContact {
   category?: CsrCategory;
   keyword?: string;
 }
+
+export interface CountContact {
+  wait: number;
+  complete: number;
+}

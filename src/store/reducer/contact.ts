@@ -13,6 +13,7 @@ import {
   UpdateContactComment,
   DeleteRequestPayload,
   SearchContact,
+  CountContact,
 } from 'types';
 import { AxiosError } from 'axios';
 import { AnyAction } from 'redux';
@@ -22,6 +23,7 @@ import * as Actions from 'store/action/contactAction';
 
 export interface ContactState {
   contacts: PageWrapper<ResponseContact>;
+  counts: CountContact;
 }
 
 // 목록 조회
@@ -59,6 +61,13 @@ export const deleteContactCommentAsync = createAsyncAction(
   Actions.DELETE_CONTACT_COMMENT_FAILURE,
 )<DeleteRequestPayload, {}, AxiosError>();
 
+// count
+export const getContactsCountAsync = createAsyncAction(
+  Actions.GET_CONTACTS_COUNNT_REQUEST,
+  Actions.GET_CONTACTS_COUNNT_SUCCESS,
+  Actions.GET_CONTACTS_COUNNT_FAILURE,
+)<{}, CountContact, AxiosError>();
+
 const initialState: ContactState = {
   contacts: {
     content: [],
@@ -68,6 +77,10 @@ const initialState: ContactState = {
     totalPages: 0,
     page: 0,
     size: 10,
+  },
+  counts: {
+    wait: 0,
+    complete: 0,
   },
 };
 
@@ -82,6 +95,11 @@ const contact = (state = initialState, action: AnyAction) => {
       return produce(state, draft => {
         const currIndex = draft.contacts.content.findIndex(contact => contact.contactId === action.payload.contactId);
         draft.contacts.content[currIndex] = action.payload;
+      });
+    }
+    case Actions.GET_CONTACTS_COUNNT_SUCCESS: {
+      return produce(state, draft => {
+        draft.counts = action.payload;
       });
     }
     default: {

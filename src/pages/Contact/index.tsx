@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // store
 import { StoreState } from 'store';
-import { getContactsAsync } from 'store/reducer/contact';
+import { getContactsAsync, getContactsCountAsync } from 'store/reducer/contact';
 
 // types
 import { SearchContact, ResponseContact } from 'types';
@@ -21,7 +21,9 @@ const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
 function Contact() {
   const dispatch = useDispatch();
-  const { content, size: pageSize } = useSelector((state: StoreState) => state.contact.contacts);
+  const { contacts, counts } = useSelector((state: StoreState) => state.contact);
+  const { content, size: pageSize } = contacts;
+
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -37,6 +39,10 @@ function Contact() {
     },
     [dispatch, pageSize],
   );
+
+  const getCounts = useCallback(() => {
+    dispatch(getContactsCountAsync.request({}));
+  }, [dispatch]);
 
   const handleChangePageSize = useCallback(
     (value: string) => {
@@ -69,6 +75,7 @@ function Contact() {
   // componentDidMount
   useEffect(() => {
     getContacts(0);
+    getCounts();
   }, []);
 
   const contactColumns: Array<ColumnProps<ResponseContact>> = useMemo(
@@ -139,6 +146,7 @@ function Contact() {
         ]}
       />
       <Divider />
+      <div style={{ float: 'left', marginTop: 10 }}>답변대기 : {counts.wait}건</div>
       <PaginationTable
         onChangePageSize={handleChangePageSize}
         rowKey={contact => contact.contactId.toString()}
