@@ -74,7 +74,7 @@ const columns : Array<ColumnProps<ProductList>> = [
               children: <div><span>없음</span></div>
             }
           } else {
-            const optionIndex:JSX.Element[] = [];
+            const optionIndex: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionIndex.push(
@@ -105,7 +105,7 @@ const columns : Array<ColumnProps<ProductList>> = [
               }
             };
           } else {
-            const optionName:JSX.Element[] = [];
+            const optionName: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionName.push(
@@ -138,7 +138,7 @@ const columns : Array<ColumnProps<ProductList>> = [
               }
             };
           } else {
-            const optionSalePrice:JSX.Element[] = [];
+            const optionSalePrice: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionSalePrice.push(
@@ -167,7 +167,7 @@ const columns : Array<ColumnProps<ProductList>> = [
       { title: '현 재고/총 재고', key: 'stock', dataIndex: 'stock', align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
-            const optionStock:JSX.Element[] = [];
+            const optionStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionStock.push(
@@ -196,7 +196,7 @@ const columns : Array<ColumnProps<ProductList>> = [
       { title: '안전 재고', key: 'safeStock', dataIndex: 'safeStock', align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
-            const optionSafeStock:JSX.Element[] = [];
+            const optionSafeStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionSafeStock.push(

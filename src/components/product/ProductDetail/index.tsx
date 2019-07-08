@@ -5,6 +5,9 @@ import { useDispatch } from 'react-redux';
 // components
 import { ProductTable, ShippingFreeInfo } from 'components';
 
+// modules
+import { TableRowSelection } from 'antd/lib/table';
+
 // store
 import {
   createProductAsync,
@@ -84,10 +87,10 @@ function ProductDetail(props: Props) {
     setShippingFree(() => responseShippingFeeInfo);
   }, [responseProducts, responseShippingFeeInfo]);
 
-  const rowSelection:object = {
+  const rowSelection:TableRowSelection<string[]> = {
     selectedRowKeys,
-    onChange: useCallback((selectedRowKeys:string[]) => {
-      setSelectedRowKeys(selectedRowKeys);
+    onChange: useCallback(selectedRowKeys => {
+      setSelectedRowKeys(selectedRowKeys)
     }, [])
   };
 
@@ -267,9 +270,8 @@ function ProductDetail(props: Props) {
   const handleProductSoldOut = useCallback((productSold:ProductSold) => {
     const selectedIds:number[] = [];
 
-    selectedRowKeys.forEach(index => {
-      const selectIndex = Number(index) - 1;
-      selectedIds.push(products[selectIndex].productId);
+    selectedRowKeys.map(index => {
+      return selectedIds.push(products[Number(index) - 1].productId);
     });
 
     const data = {

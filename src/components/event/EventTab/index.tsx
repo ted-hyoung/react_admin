@@ -17,8 +17,7 @@ const TabPane = Tabs.TabPane;
 
 function EventTab() {
 
-  const products = useSelector((state: StoreState) => state.product.products);
-  const shippingFeeInfo = useSelector((state: StoreState) => state.product.shippingFeeInfo);
+  const { products, shippingFeeInfo } = useSelector((state: StoreState) => state.product);
   const dispatch = useDispatch();
   const eventStatus = true;
 
