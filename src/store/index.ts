@@ -3,28 +3,28 @@ import { combineReducers } from 'redux';
 import { all } from 'redux-saga/effects';
 
 // reducer
-import review, { ReviewState } from './reducer/review';
 import event, { EventState } from './reducer/event';
+import review, { ReviewState } from './reducer/review';
 import contact, { ContactState } from './reducer/contact';
 
 // saga
-import reviewSaga from './saga/reviewSaga';
 import eventSaga from './saga/eventSaga';
+import reviewSaga from './saga/reviewSaga';
 import contactSaga from './saga/contactSaga';
 
 export interface StoreState {
-  review: ReviewState;
   event: EventState;
+  review: ReviewState;
   contact: ContactState;
 }
 
 export function* saga() {
-  yield all([reviewSaga(), eventSaga(), contactSaga()]);
+  yield all([eventSaga(), reviewSaga(), contactSaga()]);
 }
 
 const reducer = combineReducers<StoreState>({
-  review,
   event,
+  review,
   contact,
 });
 

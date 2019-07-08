@@ -139,11 +139,11 @@ function Review() {
         items: [
           {
             label: '아이디',
-            value: 'asdfasdf3323', //review.creator.loginId,
+            value: review.creator.loginId,
           },
           {
             label: '연락처',
-            value: '010-0000-0000', // review.creator.phone,
+            value: review.creator.phone,
           },
           {
             label: '작성일',
@@ -163,6 +163,11 @@ function Review() {
     [review],
   );
 
+  // componentDidMount
+  useEffect(() => {
+    getReviews(0);
+  }, []);
+
   useEffect(() => {
     if (review.reviewId !== 0) {
       openModal({
@@ -171,11 +176,6 @@ function Review() {
       });
     }
   }, [review]);
-
-  // componentDidMount
-  useEffect(() => {
-    getReviews(0);
-  }, []);
 
   const reviewColumns: Array<ColumnProps<ResponseReview>> = useMemo(
     () => [
