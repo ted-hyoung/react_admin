@@ -104,7 +104,7 @@ function QnaExpandForm(props: Props) {
             okText="확인"
             cancelText="취소"
           >
-            <Button>{expose ? '공개' : '비공개'}</Button>
+            <Button type={expose ? 'primary' : 'dashed'}>{expose ? '공개' : '비공개'}</Button>
           </Popconfirm>
         </Col>
       </Row>
@@ -142,11 +142,11 @@ function QnaExpandForm(props: Props) {
                     okText="확인"
                     cancelText="취소"
                   >
-                    <Button>등록</Button>
+                    <Button type="primary">등록</Button>
                   </Popconfirm>
                 ) : (
                   <>
-                    <Button style={{ marginRight: 4 }} onClick={handleChangeActivation}>
+                    <Button style={{ marginRight: 4 }} type="primary" onClick={handleChangeActivation}>
                       수정
                     </Button>
                     <Popconfirm
@@ -155,7 +155,7 @@ function QnaExpandForm(props: Props) {
                       okText="확인"
                       cancelText="취소"
                     >
-                      <Button>삭제</Button>
+                      <Button type="danger">삭제</Button>
                     </Popconfirm>
                   </>
                 )}
@@ -167,7 +167,7 @@ function QnaExpandForm(props: Props) {
                 okText="확인"
                 cancelText="취소"
               >
-                <Button>등록</Button>
+                <Button type="primary">등록</Button>
               </Popconfirm>
             )}
           </div>

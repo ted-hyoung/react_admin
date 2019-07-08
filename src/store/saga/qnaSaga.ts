@@ -1,5 +1,5 @@
 // base
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { RequestAsyncAction } from 'types/AsyncAction';
 import * as Api from 'lib/protocols';
 import * as Action from 'store/action/qnaAction';
@@ -24,6 +24,7 @@ function* getQna(action: RequestAsyncAction) {
           size,
           qnaStatus: qnaStatus || undefined,
           searchName: searchName || undefined,
+          expose: false,
         },
       }),
     );
@@ -45,11 +46,14 @@ function* createQnaComment(action: RequestAsyncAction) {
 
     yield call(() => Api.post(`/qna/${qnaId}/comment`, data));
 
-    const res = yield call(() => Api.get(`/qna/${qnaId}`));
-    const waitStatusCount = yield call(() => Api.get('/qna/wait'));
+    const state = yield select();
 
-    yield put(createQnaCommentAsync.success(res.data));
-    yield put(getQnaStatusWaitAsync.success(waitStatusCount.data));
+    yield put(
+      getQnaAsync.request({
+        page: state.qna.qna.page,
+        size: state.qna.qna.size,
+      }),
+    );
   } catch (error) {
     yield put(createQnaCommentAsync.failure(error));
   }
@@ -76,10 +80,15 @@ function* deleteQnaComment(action: RequestAsyncAction) {
     const { qnaId, qnaCommentId } = action.payload;
 
     yield call(() => Api.del(`/qna/${qnaId}/comment/${qnaCommentId}`));
-    const waitStatusCount = yield call(() => Api.get('/qna/wait'));
 
-    yield put(deleteQnaCommentAsync.success(qnaId));
-    yield put(getQnaStatusWaitAsync.success(waitStatusCount.data));
+    const state = yield select();
+
+    yield put(
+      getQnaAsync.request({
+        page: state.qna.qna.page,
+        size: state.qna.qna.size,
+      }),
+    );
   } catch (error) {
     yield put(deleteQnaCommentAsync.failure(error));
   }
@@ -105,17 +114,15 @@ function* updateQnaSequence(action: RequestAsyncAction) {
     };
 
     yield call(() => Api.put(`/qna/${qnaId}/sequence`, data));
-    const res = yield call(() =>
-      Api.get('/qna', {
-        params: {
-          page: 0,
-          size: 20,
-        },
+
+    const state = yield select();
+
+    yield put(
+      getQnaAsync.request({
+        page: state.qna.qna.page,
+        size: state.qna.qna.size,
       }),
     );
-
-    yield put(updateQnaSequenceAsync.success(action.payload));
-    yield put(getQnaAsync.success(res.data));
   } catch (error) {
     yield put(updateQnaSequenceAsync.failure(error));
   }

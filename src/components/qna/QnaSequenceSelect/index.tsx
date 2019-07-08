@@ -45,64 +45,63 @@ function QnaSequenceSelect(props: Props) {
     setSequence(value);
   }, []);
 
-  const handleUpdateSequence = useCallback(() => {
+  const handleUpdateSequence = useCallback(async () => {
     const data = {
       qnaId: recordQnaId,
       orderType,
       sequence: sequence !== 0 ? sequence : undefined,
     };
 
-    dispatch(updateQnaSequenceAsync.request(data));
-    setSequence(sequence);
-  }, [dispatch, orderType, sequence]);
+    await dispatch(updateQnaSequenceAsync.request(data));
+  }, [dispatch, orderType, sequence, recordQnaId]);
 
-  const options = useCallback(
-    orderType => {
-      switch (orderType) {
-        case QnaOrderType[QnaOrderType.TOP]:
-          console.log(sequence);
-          console.log(recordSequence);
-          return (
+  useEffect(() => {
+    setOrderType(textOrderType);
+    setSequence(recordSequence);
+  }, [recordSequence, textOrderType]);
+
+  return (
+    <div className="qna-type-select">
+      <Row type="flex">
+        <Col>
+          <Select style={{ marginRight: 4 }} value={orderType} onChange={handleChangeOrderType}>
+            <Option value="NONE">선택안함</Option>
+            <Option value="TOP">상단고정</Option>
+            <Option value="BOTTOM">하단고정</Option>
+          </Select>
+        </Col>
+        <Col>
+          {orderType === QnaOrderType[QnaOrderType.TOP] ? (
             <>
-              <Select defaultValue={sequence} onChange={handleChangeSequence}>
-                {TOP_OPTIONS.map(item => {
-                  return (
-                    <Option key={item.name} value={item.value}>
-                      {item.name}
-                    </Option>
-                  );
-                })}
-              </Select>
-              {sequence !== recordSequence && (
-                <Button style={{ marginLeft: 4 }} onClick={handleUpdateSequence}>
+              <div>
+                <Select value={sequence} onChange={handleChangeSequence}>
+                  {TOP_OPTIONS.map(item => {
+                    return (
+                      <Option key={item.name} value={item.value}>
+                        {item.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
+
+                {sequence !== recordSequence && (
+                  <Button style={{ marginLeft: 4 }} type="primary" onClick={handleUpdateSequence}>
+                    확인
+                  </Button>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              {orderType !== textOrderType && (
+                <Button type="primary" onClick={handleUpdateSequence}>
                   확인
                 </Button>
               )}
             </>
-          );
-
-        case QnaOrderType[QnaOrderType.NONE]:
-          return <>{orderType !== textOrderType && <Button onClick={handleUpdateSequence}>확인</Button>}</>;
-
-        case QnaOrderType[QnaOrderType.BOTTOM]:
-          return <>{orderType !== textOrderType && <Button onClick={handleUpdateSequence}>확인</Button>}</>;
-      }
-    },
-    [orderType, sequence, recordSequence, handleChangeSequence],
-  );
-
-  useEffect(() => {
-    options(orderType);
-  }, [orderType]);
-
-  return (
-    <div className="qna-type-select">
-      <Select style={{ marginRight: 4 }} defaultValue={orderType} onChange={handleChangeOrderType}>
-        <Option value="NONE">선택안함</Option>
-        <Option value="TOP">상단고정</Option>
-        <Option value="BOTTOM">하단고정</Option>
-      </Select>
-      {options(orderType)}
+          )}
+        </Col>
+      </Row>
     </div>
   );
 }

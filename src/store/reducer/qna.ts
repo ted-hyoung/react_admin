@@ -1,19 +1,11 @@
 import produce from 'immer';
 import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from 'store/action/qnaAction';
-import { ResponseQna, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction } from 'types';
+import { PageWrapper, ResponseQna, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction } from 'types';
 
 // types
 export interface QnaState {
-  qna: {
-    content: ResponseQna[];
-    first?: boolean;
-    last?: boolean;
-    page?: number;
-    size?: number;
-    totalElements?: number;
-    totalPages?: number;
-  };
+  qna: PageWrapper<ResponseQna>;
   waitStatusCount: number;
 }
 
@@ -71,6 +63,12 @@ export const getQnaStatusWaitAsync = createAsyncAction(
 const initialState: QnaState = {
   qna: {
     content: [],
+    first: false,
+    last: false,
+    totalElements: 0,
+    totalPages: 0,
+    page: 0,
+    size: 10,
   },
   waitStatusCount: 0,
 };
@@ -89,17 +87,6 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
         }
       });
     }
-    case Actions.CREATE_QNA_COMMENT_SUCCESS: {
-      return produce(state, draft => {
-        const { qnaId, qnaStatus, qnaComment } = action.payload;
-        const item = draft.qna.content.find(item => item.qnaId === qnaId);
-
-        if (item) {
-          item.qnaStatus = qnaStatus;
-          item.qnaComment = qnaComment;
-        }
-      });
-    }
     case Actions.UPDATE_QNA_COMMENT_SUCCESS: {
       return produce(state, draft => {
         const { qnaId, qnaComment } = action.payload;
@@ -110,16 +97,6 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
         }
       });
     }
-    case Actions.DELETE_QNA_COMMENT_SUCCESS: {
-      return produce(state, draft => {
-        const item = draft.qna.content.find(item => item.qnaId === action.payload);
-
-        if (item) {
-          item.qnaComment = null;
-          item.qnaStatus = 'WAIT';
-        }
-      });
-    }
     case Actions.UPDATE_QNA_EXPOSE_SUCCESS: {
       return produce(state, draft => {
         const { qnaId, expose } = action.payload;
@@ -127,17 +104,6 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
 
         if (item) {
           item.expose = expose;
-        }
-      });
-    }
-    case Actions.UPDATE_QNA_SEQUENCE_SUCCESS: {
-      return produce(state, draft => {
-        const { qnaId, orderType, sequence } = action.payload;
-        const item = draft.qna.content.find(item => item.qnaId === qnaId);
-
-        if (item) {
-          item.orderType = orderType;
-          item.sequence = sequence;
         }
       });
     }

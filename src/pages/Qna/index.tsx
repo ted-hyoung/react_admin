@@ -7,7 +7,7 @@ import { StoreState } from 'store';
 import { getQnaAsync } from 'store/reducer/qna';
 
 // modules
-import { Table } from 'antd';
+import { Table, Tag } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -54,7 +54,11 @@ const Qna = () => {
       dataIndex: 'qnaStatus',
       key: 'qnaStatus',
       render: (status: string) => {
-        return status === QnaStatus[QnaStatus.WAIT] ? QnaStatus[QnaStatus.답변대기] : QnaStatus[QnaStatus.답변완료];
+        return status === QnaStatus[QnaStatus.WAIT] ? (
+          <Tag color="#f50">{QnaStatus[QnaStatus.답변대기]}</Tag>
+        ) : (
+          <Tag color="#a6a6a6">{QnaStatus[QnaStatus.답변완료]}</Tag>
+        );
       },
     },
     { title: '공구명', dataIndex: 'eventName', key: 'eventName' },
@@ -63,7 +67,7 @@ const Qna = () => {
       title: '접수일',
       dataIndex: 'created',
       key: 'created',
-      render: text => {
+      render: (text: string) => {
         return moment(text).format(DATE_FORMAT);
       },
     },
@@ -71,7 +75,7 @@ const Qna = () => {
       title: '위치 수정',
       dataIndex: 'orderType',
       key: 'orderType',
-      width: 300,
+      width: 250,
       render: (textOrderType: QnaOrderType, record: ResponseQna) => {
         return (
           <QnaSequenceSelect
@@ -88,8 +92,8 @@ const Qna = () => {
     <div className="qna">
       <QnaSearch onOk={getQna} />
 
-      <div className="qna-status-wait" style={{ textAlign: 'right', marginBottom: 10, padding: '0 30px' }}>
-        답변대기 {waitStatusCount}
+      <div className="qna-status-wait" style={{ textAlign: 'right', marginBottom: 10 }}>
+        <strong>답변대기</strong> {waitStatusCount}
       </div>
 
       <div className="qna-table">
