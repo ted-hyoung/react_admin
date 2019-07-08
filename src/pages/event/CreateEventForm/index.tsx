@@ -74,15 +74,7 @@ function CreateEventForm(props: FormComponentProps) {
     });
   };
 
-  const handleSelectMetion = (option: OptionProps) => {
-    if (!option) {
-      return false;
-    }
-
-    setFieldsValue({ brandName: option.value });
-  };
-
-  const handleSelectBrandName = (value: string | number | LabeledValue) => {
+  const handleSelectBrandName = (value: LabeledValue) => {
     console.log(value);
 
     if (typeof value === 'string' || typeof value === 'number') {
@@ -257,7 +249,12 @@ function CreateEventForm(props: FormComponentProps) {
           </Descriptions.Item>
         </Descriptions>
       </Form>
-      <SelectOptionModal visible={visible} onSelect={handleSelectBrandName} />
+      <SelectOptionModal
+        placeholder="브랜드 선택"
+        visible={visible}
+        options={[{ key: 'test', label: 'test' }]}
+        onSelect={handleSelectBrandName}
+      />
     </>
   );
 }

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, Select } from 'antd';
-import { SelectValue, LabeledValue } from 'antd/lib/select';
+import { LabeledValue, AbstractSelectProps } from 'antd/lib/select';
 
 // defines
 const { Option } = Select;
@@ -10,16 +10,16 @@ export interface OptionProps {
   label: string;
 }
 
-interface Props {
+interface Props extends AbstractSelectProps {
   visible: boolean;
-  options?: OptionProps[];
-  onSelect?: (value: string | number | LabeledValue) => void;
+  options: OptionProps[];
+  onSelect?: (value: LabeledValue) => void;
 }
 
 function SelectOptionModal(props: Props) {
-  const { visible, options, onSelect } = props;
+  const { visible, options, onSelect, ...rest } = props;
 
-  const handleSelectOption = (value: string | number | LabeledValue) => {
+  const handleSelectOption = (value: LabeledValue) => {
     if (onSelect) {
       onSelect(value);
     }
@@ -27,10 +27,17 @@ function SelectOptionModal(props: Props) {
 
   return (
     <Modal visible={visible} closable={false} centered footer={null}>
-      <Select labelInValue style={{ width: '100%' }} placeholder="브랜드 선택" onSelect={handleSelectOption}>
-        <Option value="test1">테스트1</Option>
-        <Option value="test2">테스트2</Option>
-        <Option value="test3">테스트3</Option>
+      <Select
+        {...rest}
+        labelInValue
+        style={{ width: '100%' }}
+        onSelect={value => handleSelectOption(value as LabeledValue)}
+      >
+        {options.map(option => (
+          <Option key={option.key} value={option.key}>
+            {option.label}
+          </Option>
+        ))}
       </Select>
     </Modal>
   );
