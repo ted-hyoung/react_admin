@@ -41,6 +41,7 @@ function Review() {
   const { reviews, review } = useSelector((state: StoreState) => state.review);
   const { content, totalElements, size: pageSize } = reviews;
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchReview>();
 
   const getReviews = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchReview) => {
@@ -51,8 +52,9 @@ function Review() {
           searchCondition,
         }),
       );
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch, pageSize],
+    [dispatch, pageSize, setLastSearchCondition],
   );
 
   const updateReview = useCallback(
@@ -102,17 +104,17 @@ function Review() {
   // pagination onChange
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getReviews(currentPage - 1);
+      getReviews(currentPage - 1, pageSize, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition, pageSize],
   );
 
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
     (value: number) => {
-      getReviews(0, value);
+      getReviews(0, value, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition],
   );
 
   const detailModalData = useMemo(

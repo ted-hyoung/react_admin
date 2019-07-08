@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Modal, Carousel, Icon } from 'antd';
 import './index.less';
 import { ModalOptions, GalleryModalContent } from 'types';
@@ -12,7 +12,6 @@ function GalleryModal(props: Props) {
   const { content } = props;
   const { images, currentIndex } = content;
   const carouselRef = useRef<Carousel>(null);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const handlePrev = useCallback(() => {
     if (carouselRef.current) {
@@ -45,7 +44,7 @@ function GalleryModal(props: Props) {
         }, 100);
       }
     }
-  }, [currentIndex, carouselRef.current]);
+  }, [currentIndex, carouselRef.current, goTo]);
 
   return (
     <Modal {...props} wrapClassName="modal-gallery" footer={null}>

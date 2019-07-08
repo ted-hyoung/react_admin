@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // store
@@ -15,7 +15,9 @@ import { Tag, Divider, Select, Input, Form } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, PaginationTable, GalleryModal, SearchBar } from 'components';
+import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
+
+// lib
 import useModal from 'lib/hooks/useModal';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
@@ -62,6 +64,7 @@ function Contact() {
   const openModal = useModal();
   const { contacts, counts } = useSelector((state: StoreState) => state.contact);
   const { content, size: pageSize, totalElements } = contacts;
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchContact>();
 
   const getContacts = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchContact) => {
@@ -72,8 +75,9 @@ function Contact() {
           searchCondition,
         }),
       );
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch, pageSize],
+    [dispatch, pageSize, setLastSearchCondition],
   );
 
   const getCounts = useCallback(() => {
@@ -82,9 +86,9 @@ function Contact() {
 
   const handleChangePageSize = useCallback(
     (value: number) => {
-      getContacts(value);
+      getContacts(0, value, lastSearchCondition);
     },
-    [getContacts],
+    [getContacts, lastSearchCondition],
   );
 
   const handleClickImage = useCallback(
@@ -102,7 +106,7 @@ function Contact() {
 
   const handleSearch = useCallback(
     (val: any) => {
-      Object.keys(val).map(key => {
+      Object.keys(val).forEach(key => {
         if (key === 'status' && val[key] === 'ENTIRE') {
           delete val[key];
           return;
@@ -116,9 +120,9 @@ function Contact() {
   // pagination onChange
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getContacts(currentPage - 1);
+      getContacts(currentPage - 1, pageSize, lastSearchCondition);
     },
-    [getContacts],
+    [getContacts, lastSearchCondition, pageSize],
   );
 
   // componentDidMount
