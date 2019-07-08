@@ -3,9 +3,10 @@ import React, { ChangeEvent } from 'react';
 
 // modules
 import { Button, Col, Input, Modal as AntModal, Row, Select, Table, Typography } from 'antd';
+import { ColumnProps } from 'antd/lib/table';
 
 // types
-import { CreateProduct, ResponseProduct } from 'types';
+import { CreateOption, CreateProduct, ResponseOption, ResponseProduct } from 'types';
 
 // enums
 import { ProductMode } from 'enums';
@@ -47,6 +48,102 @@ function ProductModal(props: Props) {
     addOptionRow,
     removeOptionRow
   } = props;
+
+  const columns:Array<ColumnProps<CreateOption | ResponseOption>> = [
+    { title: '옵션', key: 'options', dataIndex: "options", align: 'center',
+      children: [
+        { title: 'NO', key: 'optionNo', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return index + 1;
+          }
+        },
+        { title: '옵션명', key: 'optionName', dataIndex: 'optionName', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return <div key={index}>
+              <Input
+                name="optionName"
+                value={record.optionName}
+                onChange={e => onChangeOptionValue(e, index)}
+              />
+            </div>
+          }
+        },
+        { title: '옵션 추가 금액', key: 'salePrice', dataIndex: 'salePrice', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return <div key={index}>
+              <Input
+                name="salePrice"
+                className="product-modal-input"
+                type="Number"
+                value={record.salePrice}
+                onChange={e => onChangeOptionValue(e, index)}
+              />
+            </div>
+          }
+        }
+      ]
+    },
+    { title: '재고', key: 'stock', dataIndex: 'stock', align: 'center',
+      children: [
+        { title: 'NO', key: 'stockNo', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return index + 1;
+          }
+        },
+        { title: '총 재고', key: 'stock', dataIndex: 'stock', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return <div key={index}>
+              <Input
+                name="stock"
+                className="product-modal-input"
+                type="Number"
+                value={record.stock}
+                onChange={e => onChangeOptionValue(e, index)}
+              />
+            </div>
+          }
+        },
+        { title: '안전 재고', key: 'safeStock', dataIndex: 'safeStock', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            return <div key={index}>
+              <Input
+                name="safeStock"
+                className="product-modal-input"
+                type="Number" value={record.safeStock}
+                onChange={e => onChangeOptionValue(e, index)}
+              />
+            </div>
+          }
+        },
+        { title: '삭제/추가', key: 'button', dataIndex: 'button', align: 'center',
+          render: (text:string, record:CreateOption | ResponseOption, index:number) => {
+            const button: JSX.Element[] = [];
+            if (index === (selectedProduct.options.length - 1)) {
+              button.push(
+                <div key={index}>
+                  <div>
+                    <Button type="primary" onClick={addOptionRow}>추가</Button> &nbsp;
+                    <Button type="danger" onClick={() => removeOptionRow(index)}>삭제</Button>
+                  </div>
+                </div>
+              )
+            } else {
+              button.push(
+                <div key={index}>
+                  <div>
+                    <Button type="danger" onClick={() => removeOptionRow(index)}>삭제</Button>
+                  </div>
+                </div>
+              );
+            }
+            return {
+              children: button
+            }
+          }
+        }
+      ]
+    },
+  ];
 
   return (
     <div className="product-modal" onClick={() => onClickProductModalOpen}>
@@ -123,101 +220,7 @@ function ProductModal(props: Props) {
       {selectedProduct.enableOption ?
         <Row>
           <Table
-            columns={[
-              { title: '옵션', key: 'options', dataIndex: 'options', align: 'center',
-                children: [
-                  { title: 'NO', key: 'optionNo', align: 'center',
-                    render: (text, record, index) => {
-                      return index + 1;
-                    }
-                  },
-                  { title: '옵션명', key: 'optionName', dataIndex: 'optionName', align: 'center',
-                    render: (text, record, index) => {
-                      return <div key={index}>
-                        <Input
-                          name="optionName"
-                          value={record.optionName}
-                          onChange={e => onChangeOptionValue(e, index)}
-                        />
-                      </div>
-                    }
-                  },
-                  { title: '옵션 추가 금액', key: 'salePrice', dataIndex: 'salePrice', align: 'center',
-                    render: (text, record, index) => {
-                      return <div key={index}>
-                        <Input
-                          name="salePrice"
-                          className="product-modal-input"
-                          type="Number"
-                          value={record.salePrice}
-                          onChange={e => onChangeOptionValue(e, index)}
-                        />
-                      </div>
-                    }
-                  }
-                ]
-              },
-              { title: '재고', key: 'stock', dataIndex: 'stock', align: 'center',
-                children: [
-                  { title: 'NO', key: 'stockNo', align: 'center',
-                    render: (text, record, index) => {
-                      return index + 1;
-                    }
-                  },
-                  { title: '총 재고', key: 'stock', dataIndex: 'stock', align: 'center',
-                    render: (text, record, index) => {
-                      return <div key={index}>
-                        <Input
-                          name="stock"
-                          className="product-modal-input"
-                          type="Number"
-                          value={record.stock}
-                          onChange={e => onChangeOptionValue(e, index)}
-                        />
-                      </div>
-                    }
-                  },
-                  { title: '안전 재고', key: 'safeStock', dataIndex: 'safeStock', align: 'center',
-                    render: (text, record, index) => {
-                      return <div key={index}>
-                        <Input
-                          name="safeStock"
-                          className="product-modal-input"
-                          type="Number" value={record.safeStock}
-                          onChange={e => onChangeOptionValue(e, index)}
-                        />
-                      </div>
-                    }
-                  },
-                  { title: '삭제/추가', key: 'button', dataIndex: 'button', align: 'center',
-                    render: (text, record, index) => {
-                      const button:JSX.Element[] = [];
-                      if (index === (selectedProduct.options.length - 1)) {
-                        button.push(
-                          <div key={index}>
-                            <div>
-                              <Button type="primary" onClick={addOptionRow}>추가</Button> &nbsp;
-                              <Button type="danger" onClick={() => removeOptionRow(index)}>삭제</Button>
-                            </div>
-                          </div>
-                        )
-                      } else {
-                        button.push(
-                          <div key={index}>
-                            <div>
-                              <Button type="danger" onClick={() => removeOptionRow(index)}>삭제</Button>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return {
-                        children: button
-                      }
-                    }
-                  }
-                ]
-              },
-            ]}
+            columns={columns}
             rowKey="options"
             bordered
             pagination={false}

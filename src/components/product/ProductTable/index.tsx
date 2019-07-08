@@ -37,17 +37,17 @@ interface Props {
 }
 
 export interface ProductList {
-  key: number,
-  productId: number,
-  productName: string,
-  discountSalesPrice: number,
-  freebie: string,
-  normalSalesPrice: number,
-  enableOption: boolean,
-  disabledOptionStock: number,
-  disabledOptionTotalStock: number,
-  disabledOptionSafeStock: number,
-  options: ResponseOption[]
+  key: number;
+  productId: number;
+  productName: string;
+  discountSalesPrice: number;
+  freebie: string;
+  normalSalesPrice: number;
+  enableOption: boolean;
+  disabledOptionStock: number;
+  disabledOptionTotalStock: number;
+  disabledOptionSafeStock: number;
+  options: ResponseOption[];
 }
 
 const columns : Array<ColumnProps<ProductList>> = [
