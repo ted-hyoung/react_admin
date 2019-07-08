@@ -18,6 +18,9 @@ import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
 import { ResponseQna } from 'types';
 import { QnaStatus, QnaOrderType } from 'enums';
 
+// assets
+import './index.less';
+
 // defines
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 

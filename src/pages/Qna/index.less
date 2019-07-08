@@ -1,0 +1,17 @@
+.qna {
+  table {
+    table-layout: fixed;
+
+    tbody {
+      tr {
+        td {
+          &:nth-child(5) {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}
