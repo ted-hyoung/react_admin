@@ -8,9 +8,9 @@ import createSagaMiddleware from 'redux-saga';
 import App from './App';
 import reducer, { saga } from './store';
 import * as serviceWorker from './serviceWorker';
+import 'moment/locale/ko';
 
 // assets
-// import 'moment/locale/ko';
 import './index.less';
 
 // defines

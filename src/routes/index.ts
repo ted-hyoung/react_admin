@@ -4,8 +4,13 @@ export { default as PrivateRoute } from './PrivateRoute';
 
 export default [
   {
-    path: '/',
-    component: lazy(() => import('../pages/Login')),
+    path: '/events/new',
+    component: lazy(() => import('../pages/event/CreateEventForm')),
+    secret: false,
+  },
+  {
+    path: '/events',
+    component: lazy(() => import('../pages/event/EventList')),
     secret: false,
   },
   {
@@ -14,8 +19,8 @@ export default [
     secret: false,
   },
   {
-    path: '/events',
-    component: lazy(() => import('../pages/event/EventList')),
+    path: '/',
+    component: lazy(() => import('../pages/Login')),
     secret: false,
   },
 ];
