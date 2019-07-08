@@ -10,7 +10,7 @@ import { Menu } from 'components';
 // components
 
 // defines
-const { Content } = Layout;
+const { Content, Sider, Header } = Layout;
 
 const NotFound = () => {
   return <div>Not Found!</div>;
@@ -20,11 +20,33 @@ function App() {
   return (
     <Router>
       <div id="app">
-        <Row type="flex">
-          <Col style={{ width: 200 }}>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider>
+            <Menu />
+          </Sider>
+          <Layout style={{ backgroundColor: '#ffffff' }}>
+            <Header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e8e8e8' }}>FROM C</Header>
+            <Content id="content" style={{ padding: 50 }}>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Switch>
+                  {routes.map(({ path, component, secret }, index) => {
+                    if (secret) {
+                      return <PrivateRoute exact key={index} path={path} component={component} />;
+                    }
+
+                    return <Route exact key={index} path={path} component={component} />;
+                  })}
+                  <Route path="*" component={NotFound} />
+                </Switch>
+              </Suspense>
+            </Content>
+          </Layout>
+        </Layout>
+        {/* <Row>
+          <Col span={6}>
             <Menu />
           </Col>
-          <Col style={{ flex: '1' }}>
+          <Col span={18}>
             <Content style={{ padding: 50 }}>
               <Suspense fallback={<div>Loading...</div>}>
                 <Switch>
@@ -40,7 +62,7 @@ function App() {
               </Suspense>
             </Content>
           </Col>
-        </Row>
+        </Row> */}
       </div>
     </Router>
   );

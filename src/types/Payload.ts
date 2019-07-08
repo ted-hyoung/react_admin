@@ -1,3 +1,7 @@
+export interface CreateRequestPayload<T> {
+  data: T;
+}
+
 export interface GetRequestPayload {
   id: number;
 }
