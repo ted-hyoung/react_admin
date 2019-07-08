@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // modules
-import { Table, Select, Button, Rate, Divider } from 'antd';
+import { Select, Button, Rate, Divider } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -19,13 +19,12 @@ import {
 
 // types
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
+import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
-import { ReviewSearch, ReviewDetailModal } from 'components';
+import { ReviewDetailModal, PaginationTable, SearchBar } from 'components';
 
-const pageSizeRange = ['10', '20', '50', '100'];
-
-const reviewSearchConditions = [
+const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
   { key: 'creatorPhone', text: '연락처' },
   { key: 'eventName', text: '공구명' },
@@ -205,29 +204,17 @@ function Review() {
     ],
     [updateReviewsExpose, updateReview, getReview],
   );
-
   return (
     <>
-      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <SearchBar
+        onSearch={value => getReviews(0, pageSize, value)}
+        onReset={() => getReviews(0)}
+        searchConditions={reviewSearchConditions}
+      />
       <Divider />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
-        <span>
-          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 5 }} type="primary">
-            선택 공개
-          </Button>
-          <Button onClick={() => handleUpdateReviewsExpose(false)} type="danger">
-            선택 비공개
-          </Button>
-        </span>
-        <Select defaultValue={pageSizeRange[0]} style={{ width: 150 }} onChange={handlePageSizeChange}>
-          {pageSizeRange.map(size => (
-            <Select.Option key={size} value={size}>
-              {size}개씩 보기
-            </Select.Option>
-          ))}
-        </Select>
-      </div>
-      <Table
+      <PaginationTable
+        onChangeExpose={handleUpdateReviewsExpose}
+        onChangePageSize={handlePageSizeChange}
         rowKey={review => review.reviewId.toString()}
         rowSelection={{
           onChange: handleChange,

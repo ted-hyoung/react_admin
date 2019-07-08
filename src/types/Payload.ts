@@ -1,5 +1,6 @@
 export interface CreateRequestPayload<T> {
   data: T;
+  parentId?: number;
 }
 
 export interface GetRequestPayload {
