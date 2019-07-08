@@ -109,8 +109,8 @@ function EventList() {
   }, []);
 
   const handleChangePageSize = useCallback(
-    (value: string) => {
-      getEvents(0, Number(value));
+    (value: number) => {
+      getEvents(0, value);
     },
 
     [getEvents],

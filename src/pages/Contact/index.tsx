@@ -47,8 +47,8 @@ function Contact() {
   }, [dispatch]);
 
   const handleChangePageSize = useCallback(
-    (value: string) => {
-      getContacts(Number(value));
+    (value: number) => {
+      getContacts(value);
     },
     [getContacts],
   );
