@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // modules
-import { Table, Select, Button, Rate, Divider } from 'antd';
+import { Select, Button, Rate, Divider } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -19,13 +19,13 @@ import {
 
 // types
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
+import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
-import { ReviewSearch, ReviewDetailModal } from 'components';
+import { PaginationTable, SearchBar } from 'components';
+import useModal from 'lib/hooks/useModal';
 
-const pageSizeRange = ['10', '20', '50', '100'];
-
-const reviewSearchConditions = [
+const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
   { key: 'creatorPhone', text: '연락처' },
   { key: 'eventName', text: '공구명' },
@@ -37,7 +37,9 @@ const reviewSearchConditions = [
 
 function Review() {
   const dispatch = useDispatch();
-  const { content, totalElements, size: pageSize } = useSelector((state: StoreState) => state.review.reviews);
+  const openModal = useModal();
+  const { reviews, review } = useSelector((state: StoreState) => state.review);
+  const { content, totalElements, size: pageSize } = reviews;
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
 
   const getReviews = useCallback(
@@ -107,11 +109,68 @@ function Review() {
 
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
-    (value: string) => {
-      getReviews(0, Number(value));
+    (value: number) => {
+      getReviews(0, value);
     },
     [getReviews],
   );
+
+  const detailModalData = useMemo(
+    () => [
+      {
+        title: '주문정보',
+        items: [
+          {
+            label: '공구명',
+            value: '비클 앰플 공구 1차',
+          },
+          {
+            label: '주문번호',
+            value: '0000-0000-0000-0000',
+          },
+          {
+            label: '구매상품',
+            value: '01. 비클 앰플 1세트(옵션 : 주황마스크)',
+          },
+        ],
+      },
+      {
+        title: '상품 후기',
+        items: [
+          {
+            label: '아이디',
+            value: 'asdfasdf3323', //review.creator.loginId,
+          },
+          {
+            label: '연락처',
+            value: '010-0000-0000', // review.creator.phone,
+          },
+          {
+            label: '작성일',
+            value: moment(review.created).format('YYYY-MM-DD HH:mm:ss'),
+          },
+          {
+            label: '평점',
+            value: <Rate disabled value={review.starRate} />,
+          },
+          {
+            label: '내용',
+            value: review.contents,
+          },
+        ],
+      },
+    ],
+    [review],
+  );
+
+  useEffect(() => {
+    if (review.reviewId !== 0) {
+      openModal({
+        type: 'detail',
+        content: detailModalData,
+      });
+    }
+  }, [review]);
 
   // componentDidMount
   useEffect(() => {
@@ -205,29 +264,17 @@ function Review() {
     ],
     [updateReviewsExpose, updateReview, getReview],
   );
-
   return (
     <>
-      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <SearchBar
+        onSearch={value => getReviews(0, pageSize, value)}
+        onReset={() => getReviews(0)}
+        searchConditions={reviewSearchConditions}
+      />
       <Divider />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 15 }}>
-        <span>
-          <Button onClick={() => handleUpdateReviewsExpose(true)} style={{ marginRight: 5 }} type="primary">
-            선택 공개
-          </Button>
-          <Button onClick={() => handleUpdateReviewsExpose(false)} type="danger">
-            선택 비공개
-          </Button>
-        </span>
-        <Select defaultValue={pageSizeRange[0]} style={{ width: 150 }} onChange={handlePageSizeChange}>
-          {pageSizeRange.map(size => (
-            <Select.Option key={size} value={size}>
-              {size}개씩 보기
-            </Select.Option>
-          ))}
-        </Select>
-      </div>
-      <Table
+      <PaginationTable
+        onChangeExpose={handleUpdateReviewsExpose}
+        onChangePageSize={handlePageSizeChange}
         rowKey={review => review.reviewId.toString()}
         rowSelection={{
           onChange: handleChange,
@@ -240,7 +287,6 @@ function Review() {
           onChange: handlePaginationChange,
         }}
       />
-      <ReviewDetailModal />
     </>
   );
 }

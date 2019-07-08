@@ -21,7 +21,6 @@ import { AxiosError } from 'axios';
 export interface ReviewState {
   reviews: PageWrapper<ResponseReview>;
   review: ResponseReview;
-  detailModalVisible: boolean;
 }
 
 export interface UpdateReviewExposeRequestPayload {
@@ -57,9 +56,6 @@ export const updateReviewsExposeAsync = createAsyncAction(
   Actions.UPDATE_REVIEWS_EXPOSE_FAILURE,
 )<UpdateReviewExposeRequestPayload[], UpdateReviewExposeRequestPayload[], AxiosError>();
 
-// detailModalVisible
-export const modalReviewAsync = (visible: boolean) => action(Actions.MODAL_REVIEW, visible);
-
 const initialState: ReviewState = {
   reviews: {
     content: [],
@@ -83,7 +79,6 @@ const initialState: ReviewState = {
     expose: true,
     sequence: 0,
   },
-  detailModalVisible: false,
 };
 
 const review = (state = initialState, action: AnyAction) => {
@@ -96,7 +91,7 @@ const review = (state = initialState, action: AnyAction) => {
     case Actions.GET_REVIEW_SUCCESS: {
       return produce(state, draft => {
         draft.review = action.payload;
-        draft.detailModalVisible = true;
+        // draft.detailModalVisible = true;
       });
     }
     case Actions.UPDATE_REVIEW_SEQUENCE_SUCCESS: {
@@ -118,11 +113,6 @@ const review = (state = initialState, action: AnyAction) => {
           const selected = draft.reviews.content.findIndex(review => review.reviewId === Number(item.reviewId));
           draft.reviews.content[selected].expose = item.expose;
         });
-      });
-    }
-    case Actions.MODAL_REVIEW: {
-      return produce(state, draft => {
-        draft.detailModalVisible = action.payload;
       });
     }
     default: {

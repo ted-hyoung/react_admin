@@ -1,5 +1,5 @@
 // base
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 
 // modules
@@ -72,7 +72,7 @@ const MENU_LIST = [
         name: 'Q & A 관리',
       },
       {
-        key: 'question',
+        key: 'contact',
         name: '1:1 문의 관리',
       },
       {
@@ -114,7 +114,7 @@ function Menu(props: RouteComponentProps) {
       defaultOpenKeys={[defaultOpenKeys]}
       defaultSelectedKeys={[defaultSelectedKeys]}
       mode="inline"
-      style={{ width: 200, height: '100vh' }}
+      style={{ width: 200, height: '100%' }}
       onClick={handleClickMenu}
     >
       {MENU_LIST.map(menu => (
@@ -133,74 +133,6 @@ function Menu(props: RouteComponentProps) {
         </AntMenu.SubMenu>
       ))}
     </AntMenu>
-    // <AntMenu
-    //   defaultOpenKeys={['dep1']}
-    //   defaultSelectedKeys={['1']}
-    //   mode="inline"
-    //   style={{ width: 200, height: '100vh' }}
-    // >
-    //   <AntMenu.SubMenu
-    //     key="dep1"
-    //     title={
-    //       <span>
-    //         <Icon type="appstore" />
-    //         <span>상점 관리</span>
-    //       </span>
-    //     }
-    //   >
-    //     <AntMenu.Item key="1">계정 관리</AntMenu.Item>
-    //     <AntMenu.Item key="2">셀럽 페이지 관리</AntMenu.Item>
-    //     <AntMenu.Item key="3">결산 관리</AntMenu.Item>
-    //   </AntMenu.SubMenu>
-    //   <AntMenu.SubMenu
-    //     key="dep2"
-    //     title={
-    //       <span>
-    //         <Icon type="shopping" />
-    //         <span>상품 관리</span>
-    //       </span>
-    //     }
-    //   >
-    //     <AntMenu.Item key="4">공구 관리</AntMenu.Item>
-    //   </AntMenu.SubMenu>
-    //   <AntMenu.SubMenu
-    //     key="dep3"
-    //     title={
-    //       <span>
-    //         <Icon type="appstore" />
-    //         <span>주문 관리</span>
-    //       </span>
-    //     }
-    //   >
-    //     <AntMenu.Item key="5">전체 주문 조회</AntMenu.Item>
-    //     <AntMenu.Item key="6">배송 관리</AntMenu.Item>
-    //   </AntMenu.SubMenu>
-    //   <AntMenu.SubMenu
-    //     key="dep4"
-    //     title={
-    //       <span>
-    //         <Icon type="appstore" />
-    //         <span>통계 관리</span>
-    //       </span>
-    //     }
-    //   >
-    //     <AntMenu.Item key="7">매출 통계</AntMenu.Item>
-    //   </AntMenu.SubMenu>
-    //   <AntMenu.SubMenu
-    //     key="dep5"
-    //     title={
-    //       <span>
-    //         <Icon type="appstore" />
-    //         <span>게시판 관리</span>
-    //       </span>
-    //     }
-    //   >
-    //     <AntMenu.Item key="8">후기 관리</AntMenu.Item>
-    //     <AntMenu.Item key="9">Q & A 관리</AntMenu.Item>
-    //     <AntMenu.Item key="10">1 : 1 문의 관리</AntMenu.Item>
-    //     <AntMenu.Item key="11">CS 관리</AntMenu.Item>
-    //   </AntMenu.SubMenu>
-    // </AntMenu>
   );
 }
 
