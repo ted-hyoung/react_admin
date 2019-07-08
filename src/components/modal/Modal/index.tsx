@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { Modal as AntModal } from 'antd';
 import { Button } from 'antd/lib/radio';
-import FormModal from '../FormModal';
 import { ModalTypes, ModalOptions, DetailModalContent, GalleryModalContent } from 'types/Modal';
-import GalleryModal from '../GalleryModal';
+import { DetailModal, GalleryModal } from 'components';
 
 interface Props extends ModalOptions {
   visible: boolean;
@@ -29,7 +28,7 @@ function Modal(props: Props) {
   switch (type) {
     case 'detail': {
       return (
-        <FormModal
+        <DetailModal
           {...{
             ...props,
             content: content as DetailModalContent[],

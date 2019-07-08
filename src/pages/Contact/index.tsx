@@ -20,14 +20,48 @@ import useModal from 'lib/hooks/useModal';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
+const contactColumns: Array<ColumnProps<ResponseContact>> = [
+  {
+    title: 'No',
+    dataIndex: 'contactId',
+    key: 'contactId',
+  },
+  {
+    title: '상태',
+    dataIndex: 'status',
+    key: 'status',
+    render: status => <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>,
+  },
+  {
+    title: '분류',
+    dataIndex: 'category',
+    key: 'category',
+    render: category => CsrCategory[category],
+  },
+  {
+    title: '공구명',
+    dataIndex: 'eventName',
+    key: 'eventName',
+  },
+  {
+    title: '문의 내용',
+    dataIndex: 'contents',
+    key: 'contents',
+    width: 500,
+  },
+  {
+    title: '접수일',
+    dataIndex: 'created',
+    key: 'created',
+    render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
+  },
+];
+
 function Contact() {
   const dispatch = useDispatch();
   const openModal = useModal();
   const { contacts, counts } = useSelector((state: StoreState) => state.contact);
   const { content, size: pageSize, totalElements } = contacts;
-
-  const [galleryVisible, setGalleryVisible] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const getContacts = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchContact) => {
@@ -55,17 +89,15 @@ function Contact() {
 
   const handleClickImage = useCallback(
     (imageIndex: number) => {
-      setCurrentImageIndex(imageIndex);
-      setGalleryVisible(true);
-      // openModal({
-      //   type: 'gallery',
-      //   content: {
-      //     images: dummy,
-      //     currentIndex: imageIndex,
-      //   },
-      // });
+      openModal({
+        type: 'gallery',
+        content: {
+          images: dummy,
+          currentIndex: imageIndex,
+        },
+      });
     },
-    [setCurrentImageIndex, setGalleryVisible],
+    [openModal],
   );
 
   const handleSearch = useCallback(
@@ -94,48 +126,6 @@ function Contact() {
     getContacts(0);
     getCounts();
   }, []);
-
-  const contactColumns: Array<ColumnProps<ResponseContact>> = useMemo(
-    () => [
-      {
-        title: 'No',
-        dataIndex: 'contactId',
-        key: 'contactId',
-      },
-      {
-        title: '상태',
-        dataIndex: 'status',
-        key: 'status',
-        render: status => (
-          <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>
-        ),
-      },
-      {
-        title: '분류',
-        dataIndex: 'category',
-        key: 'category',
-        render: category => CsrCategory[category],
-      },
-      {
-        title: '공구명',
-        dataIndex: 'eventName',
-        key: 'eventName',
-      },
-      {
-        title: '문의 내용',
-        dataIndex: 'contents',
-        key: 'contents',
-        width: 500,
-      },
-      {
-        title: '접수일',
-        dataIndex: 'created',
-        key: 'created',
-        render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
-      },
-    ],
-    [],
-  );
 
   return (
     <div>
@@ -176,17 +166,6 @@ function Contact() {
         }}
         expandedRowRender={contact => <ContactCommentRow {...contact} onClickImage={handleClickImage} />}
         expandRowByClick
-      />
-      <GalleryModal
-        type="gallery"
-        visible={galleryVisible}
-        // setVisible={setGalleryVisible}
-        // todo : images
-        // images={contact.images}
-        content={{
-          images: dummy,
-          currentIndex: currentImageIndex,
-        }}
       />
     </div>
   );
