@@ -4,8 +4,8 @@ export * from './Payload';
 export * from './Qna';
 export * from './Review';
 export * from './Modal';
-export * from './Contact';
 export * from './Account';
+export * from './Contact';
 
 export interface PageWrapper<T> {
   content: T[];
