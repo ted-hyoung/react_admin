@@ -24,7 +24,7 @@ function Contact() {
   const dispatch = useDispatch();
   const openModal = useModal();
   const { contacts, counts } = useSelector((state: StoreState) => state.contact);
-  const { content, size: pageSize } = contacts;
+  const { content, size: pageSize, totalElements } = contacts;
 
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -79,6 +79,14 @@ function Contact() {
       getContacts(0, pageSize, val);
     },
     [getContacts, pageSize],
+  );
+
+  // pagination onChange
+  const handlePaginationChange = useCallback(
+    (currentPage: number) => {
+      getContacts(currentPage - 1);
+    },
+    [getContacts],
   );
 
   // componentDidMount
@@ -161,6 +169,11 @@ function Contact() {
         rowKey={contact => contact.contactId.toString()}
         dataSource={content}
         columns={contactColumns}
+        pagination={{
+          total: totalElements,
+          pageSize,
+          onChange: handlePaginationChange,
+        }}
         expandedRowRender={contact => <ContactCommentRow {...contact} onClickImage={handleClickImage} />}
         expandRowByClick
       />
