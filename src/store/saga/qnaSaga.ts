@@ -22,8 +22,8 @@ function* getQna(action: RequestAsyncAction) {
         params: {
           page,
           size,
-          qnaStatus: qnaStatus || undefined,
-          searchName: searchName || undefined,
+          qnaStatus,
+          searchName,
           expose: false,
         },
       }),
