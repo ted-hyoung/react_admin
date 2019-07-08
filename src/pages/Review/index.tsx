@@ -105,8 +105,8 @@ function Review() {
 
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
-    (value: string) => {
-      getReviews(0, Number(value));
+    (value: number) => {
+      getReviews(0, value);
     },
     [getReviews],
   );

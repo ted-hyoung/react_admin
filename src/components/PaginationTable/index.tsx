@@ -6,10 +6,10 @@ import { Table, Button, Select, Row, Col } from 'antd';
 import { TableComponents, TableProps } from 'antd/lib/table';
 
 // defines
-const pageSizeRange = ['10', '20', '50', '100'];
+const pageSizeRange = [10, 20, 50, 100];
 
 interface Props<T> extends TableProps<T> {
-  onChangePageSize?: (value: string) => void;
+  onChangePageSize?: (value: number) => void;
   onChangeExpose?: (value: boolean) => void;
 }
 
