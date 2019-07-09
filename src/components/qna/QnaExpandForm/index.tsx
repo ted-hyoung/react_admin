@@ -93,9 +93,11 @@ function QnaExpandForm(props: Props) {
   return (
     <div className="qna-expand-form">
       <Row type="flex" style={{ marginBottom: 20 }}>
-        <Col span={2}>질문</Col>
+        <Col span={2}>
+          <strong>질문</strong>
+        </Col>
         <Col span={20}>
-          <p>{contents}</p>
+          <p style={{ wordBreak: 'break-all' }}>{contents}</p>
         </Col>
         <Col span={2} style={{ textAlign: 'right' }}>
           <Popconfirm
@@ -110,7 +112,9 @@ function QnaExpandForm(props: Props) {
       </Row>
 
       <Row type="flex">
-        <Col span={2}>답변</Col>
+        <Col span={2}>
+          <strong>답변</strong>
+        </Col>
         <Col span={22}>
           <Row type="flex" style={{ marginBottom: 10 }}>
             <Col span={18}>조민영</Col>
@@ -128,6 +132,7 @@ function QnaExpandForm(props: Props) {
               key={qnaId}
               disabled={qnaComment ? !activation : activation}
               rows={4}
+              maxLength={500}
               value={comment}
               onChange={handleChangeComment}
             />

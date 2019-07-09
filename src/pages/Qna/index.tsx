@@ -51,11 +51,13 @@ const Qna = () => {
       title: '번호',
       dataIndex: 'qnaId',
       key: 'qnaId',
+      width: '5%',
     },
     {
       title: '상태',
       dataIndex: 'qnaStatus',
       key: 'qnaStatus',
+      width: '10%',
       render: (status: string) => {
         return status === QnaStatus[QnaStatus.WAIT] ? (
           <Tag color="#f50">{QnaStatus[QnaStatus.답변대기]}</Tag>
@@ -64,12 +66,13 @@ const Qna = () => {
         );
       },
     },
-    { title: '공구명', dataIndex: 'eventName', key: 'eventName' },
-    { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: 400 },
+    { title: '공구명', dataIndex: 'eventName', key: 'eventName', width: '10%' },
+    { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '30%' },
     {
       title: '접수일',
       dataIndex: 'created',
       key: 'created',
+      width: '20%',
       render: (text: string) => {
         return moment(text).format(DATE_FORMAT);
       },
@@ -78,7 +81,7 @@ const Qna = () => {
       title: '위치 수정',
       dataIndex: 'orderType',
       key: 'orderType',
-      width: 250,
+      width: '25%',
       render: (textOrderType: QnaOrderType, record: ResponseQna) => {
         return (
           <QnaSequenceSelect
