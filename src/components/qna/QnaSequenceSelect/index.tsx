@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 
 // modules
 import { Select, Button, Row, Col } from 'antd';
+
+// utils
 import { QnaOrderType } from 'enums/QnaOrderType';
 
 // store
@@ -45,14 +47,14 @@ function QnaSequenceSelect(props: Props) {
     setSequence(value);
   }, []);
 
-  const handleUpdateSequence = useCallback(async () => {
+  const handleUpdateSequence = useCallback(() => {
     const data = {
       qnaId: recordQnaId,
       orderType,
       sequence: sequence !== 0 ? sequence : undefined,
     };
 
-    await dispatch(updateQnaSequenceAsync.request(data));
+    dispatch(updateQnaSequenceAsync.request(data));
   }, [dispatch, orderType, sequence, recordQnaId]);
 
   useEffect(() => {
