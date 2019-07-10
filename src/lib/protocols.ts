@@ -18,7 +18,7 @@ const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
-    return error.response.data.message || '에러 발생';
+    return error.response.data.message || error.response.data.errors[0].message || '에러 발생';
   }
 };
 
@@ -41,7 +41,7 @@ const host = getHost();
 const authHeader = {
   Accept: 'application/json',
   Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyODQ3NTU5LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYyMjQyNzU5fQ.zAJOV9DePtxQqR4M0wlDTxGfPGgaRGdnVSjQa9XMuEU",',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyMzA0MTM5LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYxNjk5MzM5fQ.dSHGYtG8Vxbwy8ppsufx0FrvWDeCY0tU-vmpKBJRLAM',
 };
 
 /**
@@ -111,6 +111,23 @@ export const put: AxiosFunction = (url, data, cb) => {
 export const patch: AxiosFunction = (url, data, cb) => {
   return axios
     .patch(host + url, data ? data : {}, {
+      headers: authHeader,
+    })
+    .then(res => (cb ? cb(res) : res))
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};
+
+/**
+ *
+ * @param url api url
+ * @param data api data
+ * @param cb callback function
+ */
+export const del: AxiosFunction = (url, data, cb) => {
+  return axios
+    .delete(host + url, {
       headers: authHeader,
     })
     .then(res => (cb ? cb(res) : res))
