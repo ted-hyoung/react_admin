@@ -54,7 +54,6 @@ function CreateEventForm(props: FormComponentProps) {
     e.preventDefault();
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
-      console.log(error);
       if (!error) {
         const data: CreateEvent = {
           name: values.name,
@@ -75,12 +74,6 @@ function CreateEventForm(props: FormComponentProps) {
   };
 
   const handleSelectBrandName = (value: LabeledValue) => {
-    console.log(value);
-
-    if (typeof value === 'string' || typeof value === 'number') {
-      return false;
-    }
-
     setFieldsValue({ brandName: value.label });
     setVisible(false);
   };
@@ -89,7 +82,7 @@ function CreateEventForm(props: FormComponentProps) {
     <>
       <Form className="create-event" onSubmit={handleSubmit}>
         <button type="submit">등록</button>
-        <Descriptions bordered title="공구 정보">
+        <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
               <Col>
@@ -108,7 +101,7 @@ function CreateEventForm(props: FormComponentProps) {
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('name'))}/500</span>
+                <span>{calcStringByte(getFieldValue('name'))}/100</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -127,7 +120,7 @@ function CreateEventForm(props: FormComponentProps) {
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('choiceReview'))}/100</span>
+                <span>{calcStringByte(getFieldValue('choiceReview'))}/500</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -222,12 +215,13 @@ function CreateEventForm(props: FormComponentProps) {
               </Col>
             </FlexRow>
           </Descriptions.Item>
-          <Descriptions.Item label="*목표 구매액" span={24}>
+          <Descriptions.Item label="목표 구매액" span={24}>
             <FlexRow>
               <Col span={4}>
                 <Form.Item>
                   {getFieldDecorator('targetAmount')(
                     <InputNumber
+                      min={0}
                       step={10000}
                       style={{ width: '100%' }}
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}

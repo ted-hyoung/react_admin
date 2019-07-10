@@ -1,6 +1,8 @@
 // base
 import { produce } from 'immer';
-import { createAsyncAction, PayloadAction } from 'typesafe-actions';
+import { AnyAction } from 'redux';
+import { createAsyncAction, createReducer, PayloadAction } from 'typesafe-actions';
+import { AxiosError, AxiosResponse } from 'axios';
 
 // actions
 import * as Actions from 'store/action/eventAction';
@@ -14,7 +16,7 @@ import {
   CreateRequestPayload,
   CreateEvent,
 } from 'types';
-import { AxiosError, AxiosResponse } from 'axios';
+
 import { EventStatus } from 'enums';
 
 export interface EventState {
@@ -64,15 +66,15 @@ const initialState: EventState = {
   },
 };
 
-export default (state = initialState, action: PayloadAction<string, AxiosResponse>) => {
+export default (state = initialState, action: AnyAction) => {
   switch (action.type) {
-    case Actions.GET_EVENTS_SUCCESS: {
-      return produce(state, draft => {
-        draft.events = action.payload.data;
-      });
-    }
     case Actions.CREATE_EVENT_SUCCESS: {
       return state;
+    }
+    case Actions.GET_EVENTS_SUCCESS: {
+      return produce(state, draft => {
+        draft.events = action.payload;
+      });
     }
     default: {
       return state;

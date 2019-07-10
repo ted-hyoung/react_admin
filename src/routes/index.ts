@@ -5,7 +5,7 @@ export { default as PrivateRoute } from './PrivateRoute';
 export default [
   {
     path: '/events/new',
-    component: lazy(() => import('../pages/event/CreateEventForm')),
+    component: lazy(() => import('../pages/event/EventForm')),
     secret: false,
   },
   {

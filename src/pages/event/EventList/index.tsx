@@ -74,8 +74,6 @@ function EventList() {
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
 
-  console.log(events);
-
   const { size: pageSize = 10 } = events;
 
   const getEvents = useCallback(
