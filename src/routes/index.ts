@@ -4,6 +4,11 @@ export { default as PrivateRoute } from './PrivateRoute';
 
 export default [
   {
+    path: '/events/celeb-review',
+    component: lazy(() => import('../pages/event/UpdateCelebReviewForm')),
+    secret: false,
+  },
+  {
     path: '/events/new',
     component: lazy(() => import('../pages/event/CreateEventForm')),
     secret: false,

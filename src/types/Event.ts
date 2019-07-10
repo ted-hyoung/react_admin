@@ -39,3 +39,8 @@ export interface SearchEvent {
   salesStarted: string;
   salesEnded: string;
 }
+
+export interface UpdateCelebReview {
+  contents: string;
+  instagramUrl: string;
+}
