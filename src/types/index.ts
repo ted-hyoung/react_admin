@@ -4,6 +4,7 @@ export * from './Payload';
 export * from './Account';
 export * from './Contact';
 export * from './Modal';
+export * from './CelebReview';
 
 export interface PageWrapper<T> {
   content: Array<T>;

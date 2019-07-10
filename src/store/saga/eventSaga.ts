@@ -8,15 +8,8 @@ import {} from 'antd';
 
 // types
 import { PayloadAction } from 'typesafe-actions';
-import {
-  GetListRequestPayload,
-  SearchEvent,
-  CreateRequestPayload,
-  CreateEvent,
-  UpdateRequestPayload,
-  UpdateCelebReview,
-} from 'types';
-import { getEventsAsync, createEventAsync, updateEventCelebReviewAsync } from 'store/reducer/event';
+import { GetListRequestPayload, SearchEvent, CreateRequestPayload, CreateEvent } from 'types';
+import { getEventsAsync, createEventAsync } from 'store/reducer/event';
 
 // saga
 
@@ -42,18 +35,18 @@ function* getEvents(action: PayloadAction<string, GetListRequestPayload<SearchEv
   }
 }
 
-function* updateEventCelebReview(action: PayloadAction<string, UpdateRequestPayload<UpdateCelebReview>>) {
-  const { id, data } = action.payload;
-  try {
-    const res = yield call(() => Api.put('/events' + id + '/celeb-review', data));
-    yield put(updateEventCelebReviewAsync.success(res));
-  } catch (error) {
-    yield put(updateEventCelebReviewAsync.failure(error));
-  }
-}
+// function* updateEventCelebReview(action: PayloadAction<string, UpdateRequestPayload<UpdateCelebReview>>) {
+//   const { id, data } = action.payload;
+//   try {
+//     const res = yield call(() => Api.put('/events/' + id + '/celeb-review', data));
+//     yield put(updateEventCelebReviewAsync.success(res));
+//   } catch (error) {
+//     yield put(updateEventCelebReviewAsync.failure(error));
+//   }
+// }
 
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
-  yield takeEvery(Actions.UPDATE_EVENT_CELEB_REVIEW_REQUEST, updateEventCelebReview);
+  // yield takeEvery(Actions.UPDATE_EVENT_CELEB_REVIEW_REQUEST, updateEventCelebReview);
 }

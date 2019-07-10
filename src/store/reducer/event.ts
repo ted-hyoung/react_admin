@@ -13,8 +13,6 @@ import {
   ResponseEvent,
   CreateRequestPayload,
   CreateEvent,
-  UpdateRequestPayload,
-  UpdateCelebReview,
 } from 'types';
 import { AxiosError, AxiosResponse } from 'axios';
 import { EventStatus } from 'enums';
@@ -35,12 +33,6 @@ export const getEventsAsync = createAsyncAction(
   Actions.GET_EVENTS_SUCCESS,
   Actions.GET_EVENTS_FAILURE,
 )<GetListRequestPayload, AxiosResponse, AxiosError>();
-
-export const updateEventCelebReviewAsync = createAsyncAction(
-  Actions.UPDATE_EVENT_CELEB_REVIEW_REQUEST,
-  Actions.UPDATE_EVENT_CELEB_REVIEW_SUCCESS,
-  Actions.UPDATE_EVENT_CELEB_REVIEW_FAILURE,
-)<UpdateRequestPayload<UpdateCelebReview>, AxiosResponse, AxiosError>();
 
 const initialState: EventState = {
   events: {
