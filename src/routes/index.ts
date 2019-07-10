@@ -38,4 +38,9 @@ export default [
     component: lazy(() => import('../pages/Login')),
     secret: false,
   },
+  {
+    path: '/event/detail',
+    component: lazy(() => import('../pages/event/EventDetail')),
+    secret: false,
+  }
 ];
