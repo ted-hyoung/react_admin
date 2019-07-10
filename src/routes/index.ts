@@ -14,6 +14,15 @@ export default [
     secret: false,
   },
   {
+    path: '/review',
+    component: lazy(() => import('../pages/Review')),
+  },
+  {
+    path: '/events',
+    component: lazy(() => import('../pages/event/EventList')),
+    secret: false,
+  },
+  {
     path: '/event/detail',
     component: lazy(() => import('../pages/event/EventDetail')),
     secret: false,
