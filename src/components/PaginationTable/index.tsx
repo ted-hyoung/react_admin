@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 // modules
 import { Table, Button, Select, Row, Col } from 'antd';
-import { TableComponents, TableProps } from 'antd/lib/table';
+import { TableComponents, TableProps, PaginationConfig } from 'antd/lib/table';
 
 // defines
 const pageSizeRange = [10, 20, 50, 100];
@@ -11,6 +11,7 @@ const pageSizeRange = [10, 20, 50, 100];
 interface Props<T> extends TableProps<T> {
   onChangePageSize?: (value: number) => void;
   onChangeExpose?: (value: boolean) => void;
+  pagination: PaginationConfig | false;
 }
 
 function PaginationTable<T>(props: Props<T>) {

@@ -1,20 +1,21 @@
 // base
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 // modules
-import { Table } from 'antd';
 import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
 
 // components
-import { PaginationTable } from 'components';
+import { PaginationTable, AffixButton } from 'components';
 
 // types
 import { EventStatus } from 'enums';
-import { useSelector, useDispatch } from 'react-redux';
 import { StoreState } from 'store';
 import { getEventsAsync } from 'store/reducer/event';
 import { SearchEvent } from 'types';
+import { Button } from 'antd';
 
 interface EventList {
   key: number;
@@ -23,7 +24,7 @@ interface EventList {
   turn: number;
   brand: string;
   created: string;
-  eventStatus: string;
+  eventStatus: EventStatus;
 }
 
 const colums: ColumnProps<EventList>[] = [
@@ -70,25 +71,12 @@ const colums: ColumnProps<EventList>[] = [
 ];
 
 function EventList() {
-  const [page, setPage] = useState(0);
-  const [searchCondition, setSearchCondition] = useState({});
-
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
 
-  const { size: pageSize } = events;
+  console.log(events);
 
-  const data: EventList[] = events.content.map((event, i) => {
-    return {
-      key: i + 1,
-      period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
-      name: event.name,
-      turn: event.turn,
-      brand: event.brandName,
-      created: moment(event.created).format('YYYY-MM-DD'),
-      eventStatus: EventStatus[event.eventStatus],
-    };
-  });
+  const { size: pageSize = 10 } = events;
 
   const getEvents = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchEvent) => {
@@ -105,7 +93,7 @@ function EventList() {
   );
 
   useEffect(() => {
-    getEvents(page);
+    getEvents(0);
   }, []);
 
   const handleChangePageSize = useCallback(
@@ -124,9 +112,22 @@ function EventList() {
     [getEvents],
   );
 
+  const data: EventList[] = events.content.map((event, i) => {
+    return {
+      key: i + 1,
+      period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
+      name: event.name,
+      turn: event.turn,
+      brand: event.brandName,
+      created: moment(event.created).format('YYYY-MM-DD'),
+      eventStatus: EventStatus[event.eventStatus],
+    };
+  });
+
   return (
     <div className="event-list">
       <PaginationTable
+        bordered
         columns={colums}
         dataSource={data}
         onChangePageSize={handleChangePageSize}
@@ -136,6 +137,11 @@ function EventList() {
           onChange: handlePaginationChange,
         }}
       />
+      <Link to="/events/new">
+        <Button type="primary" icon="setting" size="large" style={{ position: 'absolute', right: 50 }}>
+          신규 등록
+        </Button>
+      </Link>
     </div>
   );
 }
