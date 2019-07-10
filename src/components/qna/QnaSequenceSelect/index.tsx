@@ -5,27 +5,14 @@ import { useDispatch } from 'react-redux';
 // modules
 import { Select, Button, Row, Col } from 'antd';
 
-// utils
-import { QnaOrderType } from 'enums/QnaOrderType';
+// enums
+import { QnaOrderType, TOP_OPTIONS } from 'enums';
 
 // store
 import { updateQnaSequenceAsync } from 'store/reducer/qna';
 
 // defines
 const { Option } = Select;
-const TOP_OPTIONS = [
-  { name: '선택', value: 0 },
-  { name: '1', value: 1 },
-  { name: '2', value: 2 },
-  { name: '3', value: 3 },
-  { name: '4', value: 4 },
-  { name: '5', value: 5 },
-  { name: '6', value: 6 },
-  { name: '7', value: 7 },
-  { name: '8', value: 8 },
-  { name: '9', value: 9 },
-  { name: '10', value: 10 },
-];
 
 interface Props {
   textOrderType: QnaOrderType;

@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { Row, Col, Button, Input, Statistic, Popconfirm } from 'antd';
 import moment from 'moment';
 
-// utils
+// types
 import { ResponseQna } from 'types';
 
 // store

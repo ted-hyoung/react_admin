@@ -4,16 +4,11 @@ import React, { useState, useCallback } from 'react';
 // modules
 import { Row, Col, Select, Input, Button } from 'antd';
 
-// utils
-import { QnaStatus } from 'enums';
+// enums
+import { QNA_STATUS_OPTIONS } from 'enums';
 
 // defines
 const { Option } = Select;
-const OPTIONS = [
-  { name: '전체', value: '' },
-  { name: '답변대기', value: QnaStatus[QnaStatus.WAIT] },
-  { name: '답변완료', value: QnaStatus[QnaStatus.COMPLETE] },
-];
 
 interface Props {
   onOk: (qnaStatus: string, searchName: string) => void;
@@ -37,7 +32,7 @@ function QnaSearch(props: Props) {
       <Row type="flex" gutter={8}>
         <Col span={2}>
           <Select style={{ width: '100%' }} value={qnaStatus} onChange={handleChangeQnaStatus}>
-            {OPTIONS.map(option => {
+            {QNA_STATUS_OPTIONS.map(option => {
               return (
                 <Option key={option.name} value={option.value}>
                   {option.name}

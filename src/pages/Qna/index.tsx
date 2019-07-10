@@ -15,14 +15,16 @@ import moment from 'moment';
 import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
 
 // utils
+import { dateFormat } from 'lib/utils';
+
+// types
 import { ResponseQna } from 'types';
+
+// enums
 import { QnaStatus, QnaOrderType } from 'enums';
 
 // assets
 import './index.less';
-
-// defines
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 const Qna = () => {
   const { qna, waitStatusCount } = useSelector((storeState: StoreState) => storeState.qna);
@@ -74,7 +76,7 @@ const Qna = () => {
       key: 'created',
       width: '20%',
       render: (text: string) => {
-        return moment(text).format(DATE_FORMAT);
+        return moment(text).format(dateFormat);
       },
     },
     {
