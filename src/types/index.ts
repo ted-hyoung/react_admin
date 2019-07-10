@@ -1,12 +1,15 @@
+export * from './AsyncAction';
 export * from './Event';
 export * from './Review';
 export * from './Payload';
+export * from './Qna';
+export * from './Review';
+export * from './Modal';
 export * from './Account';
 export * from './Contact';
-export * from './Modal';
 
 export interface PageWrapper<T> {
-  content: Array<T>;
+  content: T[];
   first: boolean;
   last: boolean;
   totalElements: number;
