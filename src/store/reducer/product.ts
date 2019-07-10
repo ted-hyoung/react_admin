@@ -81,7 +81,9 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
         draft.shippingFeeInfo = action.payload.data.shippingFeeInfo;
       });
     }
-    case Actions.CREATE_PRODUCTS_SUCCESS: case Actions.UPDATE_PRODUCTS_SUCCESS: case Actions.DELETED_PRODUCTS_SUCCESS: {
+    case Actions.CREATE_PRODUCTS_SUCCESS:
+    case Actions.UPDATE_PRODUCTS_SUCCESS:
+    case Actions.DELETED_PRODUCTS_SUCCESS: {
       return state;
     }
 
