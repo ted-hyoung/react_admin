@@ -1,7 +1,14 @@
+// base
 import React, { useEffect, useRef, useCallback } from 'react';
+
+// modules
 import { Modal, Carousel, Icon } from 'antd';
-import './index.less';
+
+// types
 import { ModalOptions, GalleryModalContent } from 'types';
+
+// assets
+import './index.less';
 
 interface Props extends ModalOptions {
   content: GalleryModalContent;
@@ -25,14 +32,29 @@ function GalleryModal(props: Props) {
     }
   }, [carouselRef]);
 
+  const goTo = useCallback(
+    (index: number) => {
+      if (carouselRef.current) {
+        carouselRef.current.goTo(index);
+      }
+    },
+    [carouselRef],
+  );
+
   useEffect(() => {
-    if (carouselRef.current && currentIndex) {
-      console.log(currentIndex, carouselRef);
-      carouselRef.current.goTo(currentIndex);
+    if (typeof currentIndex === 'number') {
+      if (carouselRef.current) {
+        goTo(currentIndex);
+      } else {
+        setTimeout(() => {
+          goTo(currentIndex);
+        }, 100);
+      }
     }
-  }, [currentIndex, carouselRef]);
+  }, [currentIndex, carouselRef.current, goTo]);
+
   return (
-    <Modal {...props} wrapClassName="modal-gallery" footer={null} forceRender>
+    <Modal {...props} wrapClassName="modal-gallery" footer={null}>
       <Carousel ref={carouselRef}>
         {images.map((image, i) => (
           <img key={'modal-gallery-' + i} src={image.src + '?text=' + (i + 1)} alt="" />

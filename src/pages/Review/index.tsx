@@ -41,6 +41,7 @@ function Review() {
   const { reviews, review } = useSelector((state: StoreState) => state.review);
   const { content, totalElements, size: pageSize } = reviews;
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchReview>();
 
   const getReviews = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchReview) => {
@@ -51,8 +52,9 @@ function Review() {
           searchCondition,
         }),
       );
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch, pageSize],
+    [dispatch, pageSize, setLastSearchCondition],
   );
 
   const updateReview = useCallback(
@@ -102,17 +104,17 @@ function Review() {
   // pagination onChange
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getReviews(currentPage - 1);
+      getReviews(currentPage - 1, pageSize, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition, pageSize],
   );
 
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
     (value: number) => {
-      getReviews(0, value);
+      getReviews(0, value, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition],
   );
 
   const detailModalData = useMemo(
@@ -139,11 +141,11 @@ function Review() {
         items: [
           {
             label: '아이디',
-            value: 'asdfasdf3323', //review.creator.loginId,
+            value: review.creator.loginId,
           },
           {
             label: '연락처',
-            value: '010-0000-0000', // review.creator.phone,
+            value: review.creator.phone,
           },
           {
             label: '작성일',
@@ -163,6 +165,11 @@ function Review() {
     [review],
   );
 
+  // componentDidMount
+  useEffect(() => {
+    getReviews(0);
+  }, []);
+
   useEffect(() => {
     if (review.reviewId !== 0) {
       openModal({
@@ -171,11 +178,6 @@ function Review() {
       });
     }
   }, [review]);
-
-  // componentDidMount
-  useEffect(() => {
-    getReviews(0);
-  }, []);
 
   const reviewColumns: Array<ColumnProps<ResponseReview>> = useMemo(
     () => [

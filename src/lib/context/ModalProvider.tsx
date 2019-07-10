@@ -45,7 +45,6 @@ function ModalProvider({ children }: { children: JSX.Element }) {
   }, [options]);
 
   const onCancel = useCallback(() => {
-    console.log('');
     if (options.onCancel) {
       options.onCancel();
     }
@@ -55,9 +54,7 @@ function ModalProvider({ children }: { children: JSX.Element }) {
   return (
     <ModalContext.Provider value={{ openModal }}>
       {children}
-      <div>
-        <Modal visible={visible} type={options.type} onOk={onOk} onCancel={onCancel} content={options.content} />
-      </div>
+      <Modal visible={visible} type={options.type} onOk={onOk} onCancel={onCancel} content={options.content} />
     </ModalContext.Provider>
   );
 }

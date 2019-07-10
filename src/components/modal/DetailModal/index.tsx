@@ -7,17 +7,17 @@ interface Props extends ModalOptions {
   visible: boolean;
 }
 
-function FormModal(props: Props) {
+function DetailModal(props: Props) {
   const { content } = props;
   return (
     <Modal {...props} width={800}>
       {Array.isArray(content) &&
-        content.map((item, i) => (
-          <div key={'form-modal-' + i} style={{ paddingBottom: 20 }}>
-            <Descriptions bordered title={item.title} size="small" column={2}>
-              {item.items.map(item2 => (
-                <Descriptions.Item key={item2.label} label={item2.label} span={item2.span}>
-                  {item2.value}
+        content.map((contentGroup, i) => (
+          <div key={'detail-description-' + i} style={{ paddingBottom: 20 }}>
+            <Descriptions bordered title={contentGroup.title} size="small" column={2}>
+              {contentGroup.items.map(item => (
+                <Descriptions.Item key={item.label} label={item.label} span={item.span}>
+                  {item.value}
                 </Descriptions.Item>
               ))}
             </Descriptions>
@@ -27,4 +27,4 @@ function FormModal(props: Props) {
   );
 }
 
-export default FormModal;
+export default DetailModal;

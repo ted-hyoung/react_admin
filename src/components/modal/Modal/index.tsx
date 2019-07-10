@@ -1,9 +1,15 @@
+// base
 import React, { useEffect } from 'react';
+
+// modules
 import { Modal as AntModal } from 'antd';
 import { Button } from 'antd/lib/radio';
-import FormModal from '../FormModal';
-import { ModalTypes, ModalOptions, DetailModalContent, GalleryModalContent } from 'types/Modal';
-import GalleryModal from '../GalleryModal';
+
+// types
+import { ModalTypes, ModalOptions, DetailModalContent, GalleryModalContent } from 'types';
+
+// components
+import { DetailModal, GalleryModal } from 'components';
 
 interface Props extends ModalOptions {
   visible: boolean;
@@ -29,7 +35,7 @@ function Modal(props: Props) {
   switch (type) {
     case 'detail': {
       return (
-        <FormModal
+        <DetailModal
           {...{
             ...props,
             content: content as DetailModalContent[],
@@ -51,16 +57,7 @@ function Modal(props: Props) {
     default: {
       return (
         <AntModal
-          // width={460}
           className="modal"
-          // style={{ borderRadius: 30 }}
-          // bodyStyle={{
-          //   display: 'flex',
-          //   justifyContent: 'center',
-          //   alignItems: 'center',
-          //   flexDirection: 'column',
-          //   whiteSpace: 'normal',
-          // }}
           centered
           closable={false}
           maskClosable={false}

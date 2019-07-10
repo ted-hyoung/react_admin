@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { CreateContactComment, UpdateContactComment, ResponseContact } from 'types';
 import Form, { FormComponentProps } from 'antd/lib/form';
-import { Avatar, Comment, Button, Input, Modal } from 'antd';
+import { Avatar, Comment, Button, Input, Modal, Popconfirm } from 'antd';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deleteContactCommentAsync, updateContactCommentAsync, createContactCommentAsync } from 'store/reducer/contact';
@@ -26,6 +26,8 @@ const answerAvatar = <Avatar icon="check" style={{ background: '#1DA57A' }} />;
 const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: ContactCommentFormProps) => {
   const { contactId, value = '', onCancel, form } = props;
   const { getFieldDecorator, validateFieldsAndScroll } = form;
+
+  const [textLength, setTextLength] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -71,12 +73,26 @@ const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: Contac
               initialValue: value,
               rules: [
                 {
+                  required: true,
+                  message: '내용을 입력해주세요.',
+                },
+                {
                   max: 500,
                   message: '500자 이하로 입력해주세요',
                 },
               ],
-            })(<TextArea style={{ height: 100 }} />)}
+            })(<TextArea style={{ height: 100 }} onChange={e => setTextLength(e.target.value.length)} />)}
           </Form.Item>
+          <div style={{ float: 'right', marginTop: '-1.5em' }}>
+            <span
+              style={{
+                color: textLength > 500 ? 'red' : 'inherit',
+              }}
+            >
+              {textLength}
+            </span>
+            /500
+          </div>
         </Form>
       }
     />
@@ -152,9 +168,9 @@ function ContactCommentRow(props: ContactCommentRowProps) {
             <Button key="showForm" style={{ marginRight: 5 }} onClick={handleModify}>
               수정
             </Button>,
-            <Button key="deleteComment" type="danger" onClick={handleDelete}>
-              삭제
-            </Button>,
+            <Popconfirm key="deleteComment" title="답글이 삭제됩니다. 삭제하시겠습니까?" onConfirm={handleDelete}>
+              <Button type="danger">삭제</Button>
+            </Popconfirm>,
           ]}
         />
       )}

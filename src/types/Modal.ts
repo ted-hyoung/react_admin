@@ -10,8 +10,8 @@ export interface DetailModalContent {
 }
 
 export interface GalleryModalContent {
-  currentIndex: number;
   images: any[];
+  currentIndex?: number;
 }
 
 export interface ModalOptions {

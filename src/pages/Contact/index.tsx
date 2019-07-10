@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // store
@@ -15,19 +15,56 @@ import { Tag, Divider, Select, Input, Form } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, PaginationTable, GalleryModal, SearchBar } from 'components';
+import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
+
+// lib
 import useModal from 'lib/hooks/useModal';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
+
+const contactColumns: Array<ColumnProps<ResponseContact>> = [
+  {
+    title: 'No',
+    dataIndex: 'contactId',
+    key: 'contactId',
+  },
+  {
+    title: '상태',
+    dataIndex: 'status',
+    key: 'status',
+    render: status => <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>,
+  },
+  {
+    title: '분류',
+    dataIndex: 'category',
+    key: 'category',
+    render: category => CsrCategory[category],
+  },
+  {
+    title: '공구명',
+    dataIndex: 'eventName',
+    key: 'eventName',
+  },
+  {
+    title: '문의 내용',
+    dataIndex: 'contents',
+    key: 'contents',
+    width: 500,
+  },
+  {
+    title: '접수일',
+    dataIndex: 'created',
+    key: 'created',
+    render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
+  },
+];
 
 function Contact() {
   const dispatch = useDispatch();
   const openModal = useModal();
   const { contacts, counts } = useSelector((state: StoreState) => state.contact);
   const { content, size: pageSize, totalElements } = contacts;
-
-  const [galleryVisible, setGalleryVisible] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchContact>();
 
   const getContacts = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchContact) => {
@@ -38,8 +75,9 @@ function Contact() {
           searchCondition,
         }),
       );
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch, pageSize],
+    [dispatch, pageSize, setLastSearchCondition],
   );
 
   const getCounts = useCallback(() => {
@@ -48,29 +86,27 @@ function Contact() {
 
   const handleChangePageSize = useCallback(
     (value: number) => {
-      getContacts(value);
+      getContacts(0, value, lastSearchCondition);
     },
-    [getContacts],
+    [getContacts, lastSearchCondition],
   );
 
   const handleClickImage = useCallback(
     (imageIndex: number) => {
-      setCurrentImageIndex(imageIndex);
-      setGalleryVisible(true);
-      // openModal({
-      //   type: 'gallery',
-      //   content: {
-      //     images: dummy,
-      //     currentIndex: imageIndex,
-      //   },
-      // });
+      openModal({
+        type: 'gallery',
+        content: {
+          images: dummy,
+          currentIndex: imageIndex,
+        },
+      });
     },
-    [setCurrentImageIndex, setGalleryVisible],
+    [openModal],
   );
 
   const handleSearch = useCallback(
     (val: any) => {
-      Object.keys(val).map(key => {
+      Object.keys(val).forEach(key => {
         if (key === 'status' && val[key] === 'ENTIRE') {
           delete val[key];
           return;
@@ -84,9 +120,9 @@ function Contact() {
   // pagination onChange
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getContacts(currentPage - 1);
+      getContacts(currentPage - 1, pageSize, lastSearchCondition);
     },
-    [getContacts],
+    [getContacts, lastSearchCondition, pageSize],
   );
 
   // componentDidMount
@@ -94,48 +130,6 @@ function Contact() {
     getContacts(0);
     getCounts();
   }, []);
-
-  const contactColumns: Array<ColumnProps<ResponseContact>> = useMemo(
-    () => [
-      {
-        title: 'No',
-        dataIndex: 'contactId',
-        key: 'contactId',
-      },
-      {
-        title: '상태',
-        dataIndex: 'status',
-        key: 'status',
-        render: status => (
-          <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>
-        ),
-      },
-      {
-        title: '분류',
-        dataIndex: 'category',
-        key: 'category',
-        render: category => CsrCategory[category],
-      },
-      {
-        title: '공구명',
-        dataIndex: 'eventName',
-        key: 'eventName',
-      },
-      {
-        title: '문의 내용',
-        dataIndex: 'contents',
-        key: 'contents',
-        width: 500,
-      },
-      {
-        title: '접수일',
-        dataIndex: 'created',
-        key: 'created',
-        render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
-      },
-    ],
-    [],
-  );
 
   return (
     <div>
@@ -176,17 +170,6 @@ function Contact() {
         }}
         expandedRowRender={contact => <ContactCommentRow {...contact} onClickImage={handleClickImage} />}
         expandRowByClick
-      />
-      <GalleryModal
-        type="gallery"
-        visible={galleryVisible}
-        // setVisible={setGalleryVisible}
-        // todo : images
-        // images={contact.images}
-        content={{
-          images: dummy,
-          currentIndex: currentImageIndex,
-        }}
       />
     </div>
   );
