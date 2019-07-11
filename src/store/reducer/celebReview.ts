@@ -1,9 +1,11 @@
-import * as Actions from 'store/action/celebReviewAction';
-import { createAsyncAction, PayloadAction } from 'typesafe-actions';
-import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload, ResponseCelebReview } from 'types';
-import { AxiosResponse, AxiosError } from 'axios';
 import { AnyAction } from 'redux';
 import produce from 'immer';
+import { createAsyncAction } from 'typesafe-actions';
+
+import * as Actions from 'store/action/celebReviewAction';
+
+import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload, ResponseCelebReview } from 'types';
+import { AxiosResponse, AxiosError } from 'axios';
 
 export interface CelebReviewState {
   celebReview: ResponseCelebReview;
