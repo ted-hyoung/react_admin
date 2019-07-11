@@ -1,7 +1,7 @@
 // base
 import { produce } from 'immer';
 import { AnyAction } from 'redux';
-import { createAsyncAction, createReducer, PayloadAction } from 'typesafe-actions';
+import { createAsyncAction, createReducer, PayloadAction, action } from 'typesafe-actions';
 import { AxiosError, AxiosResponse } from 'axios';
 
 // actions
@@ -15,26 +15,47 @@ import {
   ResponseEvent,
   CreateRequestPayload,
   CreateEvent,
+  GetRequestPayload,
+  UpdateRequestPayload,
+  UpdateEvent,
 } from 'types';
 
 import { EventStatus } from 'enums';
 
 export interface EventState {
-  events: PageWrapper<ResponseEventForList[]>;
+  events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
 }
 
+// 공구 생성
 export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_REQUEST,
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
 )<CreateRequestPayload<CreateEvent>, AxiosResponse, AxiosError>();
 
+// 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
   Actions.GET_EVENTS_REQUEST,
   Actions.GET_EVENTS_SUCCESS,
   Actions.GET_EVENTS_FAILURE,
 )<GetListRequestPayload, AxiosResponse, AxiosError>();
+
+// 공구 조회
+export const getEventByIdAsync = createAsyncAction(
+  Actions.GET_EVENT_REQUEST,
+  Actions.GET_EVENT_SUCCESS,
+  Actions.GET_EVENT_FAILURE,
+)<GetRequestPayload, AxiosResponse, AxiosError>();
+
+// 공구 수정
+export const updateEventByIdAsync = createAsyncAction(
+  Actions.UPDATE_EVENT_REQUEST,
+  Actions.UPDATE_EVENT_SUCCESS,
+  Actions.UPDATE_EVENT_FAILURE,
+)<UpdateRequestPayload<UpdateEvent>, AxiosResponse, AxiosError>();
+
+export const clearEvent = action(Actions.CLEAR_EVENT);
 
 const initialState: EventState = {
   events: {
@@ -57,8 +78,12 @@ const initialState: EventState = {
     created: '',
     choiceReview: '',
     detail: '',
+    targetAmount: 0,
     videoUrl: '',
-    shippingFeeInfo: null,
+    shippingFeeInfo: {
+      shippingFee: 0,
+      shippingFreeCondition: 0,
+    },
     images: [],
     celebReview: null,
     products: [],
@@ -74,6 +99,16 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.GET_EVENTS_SUCCESS: {
       return produce(state, draft => {
         draft.events = action.payload;
+      });
+    }
+    case Actions.GET_EVENT_SUCCESS: {
+      return produce(state, draft => {
+        draft.event = action.payload;
+      });
+    }
+    case Actions.CLEAR_EVENT: {
+      return produce(state, draft => {
+        draft.event = initialState.event;
       });
     }
     default: {

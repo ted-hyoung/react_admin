@@ -1,5 +1,5 @@
 // base
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // modules
 import moment from 'moment';
@@ -9,13 +9,11 @@ import {
   Input,
   Row,
   Col,
-  Mentions,
   Button,
   DatePicker,
   TimePicker,
   Typography,
   InputNumber,
-  Modal,
   message,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
@@ -25,9 +23,8 @@ import { SelectOptionModal } from 'components';
 
 import './index.less';
 import { useDispatch } from 'react-redux';
-import { createEventAsync } from 'store/reducer/event';
-import { CreateEvent } from 'types';
-import { OptionProps } from 'rc-mentions/lib/Option';
+import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
+import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
 import { LabeledValue } from 'antd/lib/select';
 
 // defines
@@ -43,9 +40,20 @@ function FlexRow(props: RowProps) {
   );
 }
 
-function CreateEventForm(props: FormComponentProps) {
-  const { form } = props;
-  const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll } = form;
+interface Props extends FormComponentProps {
+  event: ResponseEvent;
+}
+
+function EventForm(props: Props) {
+  const { event, form } = props;
+  const {
+    getFieldDecorator,
+    getFieldValue,
+    setFieldsValue,
+    isFieldsTouched,
+    resetFields,
+    validateFieldsAndScroll,
+  } = form;
 
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
@@ -55,22 +63,39 @@ function CreateEventForm(props: FormComponentProps) {
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
-        const data: CreateEvent = {
-          name: values.name,
-          brandName: values.brandName,
-          choiceReview: values.choiceReview,
-          detail: values.detail,
-          salesStarted: moment(values.salesStarted).format('YYYY-MM-DDTHH:mm'),
-          salesEnded: moment(values.salesEnded).format('YYYY-MM-DDTHH:mm'),
-          targetAmount: values.targetAmount,
-          videoUrl: values.videoUrl,
-        };
+        const { name, brandName, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
 
-        dispatch(createEventAsync.request({ data }));
+        if (event.eventId) {
+          const data: UpdateEvent = {
+            name,
+            brandName,
+            choiceReview,
+            salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
+            salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
+            targetAmount,
+            videoUrl,
+          };
+
+          dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
+        } else {
+          const data: CreateEvent = {
+            name,
+            brandName,
+            choiceReview,
+            salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
+            salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
+            targetAmount,
+            videoUrl,
+          };
+
+          dispatch(createEventAsync.request({ data }));
+        }
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
     });
+
+    resetFields();
   };
 
   const handleSelectBrandName = (value: LabeledValue) => {
@@ -78,10 +103,29 @@ function CreateEventForm(props: FormComponentProps) {
     setVisible(false);
   };
 
+  useEffect(() => {
+    if (event.eventId) {
+      setFieldsValue({
+        name: event.name,
+        brandName: event.brandName,
+        choiceReview: event.choiceReview,
+        salesStarted: moment(event.salesStarted),
+        salesEnded: moment(event.salesEnded),
+        targetAmount: event.targetAmount,
+        videoUrl: event.videoUrl,
+      });
+    }
+
+    return () => {
+      if (isFieldsTouched()) {
+        window.alert('현재 작성중인 데이터가 있습니다.');
+      }
+    };
+  }, [event.eventId]);
+
   return (
     <>
       <Form className="create-event" onSubmit={handleSubmit}>
-        <button type="submit">등록</button>
         <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
@@ -242,6 +286,11 @@ function CreateEventForm(props: FormComponentProps) {
             <Form.Item>{getFieldDecorator('videoUrl')(<Input />)}</Form.Item>
           </Descriptions.Item>
         </Descriptions>
+        <Form.Item style={{ textAlign: 'right' }}>
+          <Button type="primary" htmlType="submit">
+            {event.eventId ? '수정' : '등록'}
+          </Button>
+        </Form.Item>
       </Form>
       <SelectOptionModal
         placeholder="브랜드 선택"
@@ -253,4 +302,4 @@ function CreateEventForm(props: FormComponentProps) {
   );
 }
 
-export default Form.create()(CreateEventForm);
+export default Form.create<Props>()(EventForm);

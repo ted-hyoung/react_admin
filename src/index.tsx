@@ -13,15 +13,25 @@ import 'moment/locale/ko';
 // assets
 import './index.less';
 
+import { createBrowserHistory } from 'history';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
+
 // defines
+const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(reducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+
+const store = createStore(
+  reducer(history),
+  composeWithDevTools(applyMiddleware(sagaMiddleware, routerMiddleware(history))),
+);
 
 sagaMiddleware.run(saga);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ConnectedRouter history={history}>
+      <App />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('root'),
 );

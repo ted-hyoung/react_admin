@@ -6,12 +6,13 @@ export interface CreateEvent {
   brandName: string;
   salesStarted: string;
   salesEnded: string;
-  targetAmount?: number;
+  targetAmount: number;
   detail?: string;
   videoUrl?: string;
 }
 
 export interface ResponseEvent extends ResponseEventForList {
+  targetAmount: number;
   choiceReview: string;
   detail: string;
   videoUrl: string;
@@ -31,6 +32,17 @@ export interface ResponseEventForList {
   salesStarted: string;
   salesEnded: string;
   created: string;
+}
+
+export interface UpdateEvent {
+  name: string;
+  choiceReview: string;
+  brandName: string;
+  salesStarted: string;
+  salesEnded: string;
+  targetAmount: number;
+  detail?: string;
+  videoUrl?: string;
 }
 
 export interface SearchEvent {

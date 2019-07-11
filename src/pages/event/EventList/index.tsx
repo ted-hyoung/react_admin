@@ -1,6 +1,6 @@
 // base
 import React, { useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
@@ -70,7 +70,9 @@ const colums: ColumnProps<EventList>[] = [
   },
 ];
 
-function EventList() {
+function EventList(props: RouteComponentProps) {
+  const { history } = props;
+
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
 
@@ -110,6 +112,12 @@ function EventList() {
     [getEvents],
   );
 
+  const handleRowEvent = (recode: EventList) => {
+    return {
+      onClick: () => history.push('/events/detail/' + recode.key),
+    };
+  };
+
   const data: EventList[] = events.content.map((event, i) => {
     return {
       key: i + 1,
@@ -134,8 +142,9 @@ function EventList() {
           pageSize: events.size,
           onChange: handlePaginationChange,
         }}
+        onRow={handleRowEvent}
       />
-      <Link to="/events/new">
+      <Link to="/events/detail">
         <Button type="primary" icon="setting" size="large" style={{ position: 'absolute', right: 50 }}>
           신규 등록
         </Button>
@@ -144,4 +153,4 @@ function EventList() {
   );
 }
 
-export default EventList;
+export default withRouter(EventList);
