@@ -19,11 +19,13 @@ import {
 
 // types
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
+import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
-import { ReviewSearch, ReviewDetailModal, PaginationTable } from 'components';
+import { PaginationTable, SearchBar } from 'components';
+import useModal from 'lib/hooks/useModal';
 
-const reviewSearchConditions = [
+const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
   { key: 'creatorPhone', text: '연락처' },
   { key: 'eventName', text: '공구명' },
@@ -35,8 +37,11 @@ const reviewSearchConditions = [
 
 function Review() {
   const dispatch = useDispatch();
-  const { content, totalElements, size: pageSize } = useSelector((state: StoreState) => state.review.reviews);
+  const openModal = useModal();
+  const { reviews, review } = useSelector((state: StoreState) => state.review);
+  const { content, totalElements, size: pageSize } = reviews;
   const [selectedReviews, setSelectedReviews] = useState<number[] | string[]>([]);
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchReview>();
 
   const getReviews = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchReview) => {
@@ -47,8 +52,9 @@ function Review() {
           searchCondition,
         }),
       );
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch, pageSize],
+    [dispatch, pageSize, setLastSearchCondition],
   );
 
   const updateReview = useCallback(
@@ -98,23 +104,80 @@ function Review() {
   // pagination onChange
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getReviews(currentPage - 1);
+      getReviews(currentPage - 1, pageSize, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition, pageSize],
   );
 
   // pageSize select onChange
   const handlePageSizeChange = useCallback(
     (value: number) => {
-      getReviews(0, value);
+      getReviews(0, value, lastSearchCondition);
     },
-    [getReviews],
+    [getReviews, lastSearchCondition],
+  );
+
+  const detailModalData = useMemo(
+    () => [
+      {
+        title: '주문정보',
+        items: [
+          {
+            label: '공구명',
+            value: '비클 앰플 공구 1차',
+          },
+          {
+            label: '주문번호',
+            value: '0000-0000-0000-0000',
+          },
+          {
+            label: '구매상품',
+            value: '01. 비클 앰플 1세트(옵션 : 주황마스크)',
+          },
+        ],
+      },
+      {
+        title: '상품 후기',
+        items: [
+          {
+            label: '아이디',
+            value: review.creator.loginId,
+          },
+          {
+            label: '연락처',
+            value: review.creator.phone,
+          },
+          {
+            label: '작성일',
+            value: moment(review.created).format('YYYY-MM-DD HH:mm:ss'),
+          },
+          {
+            label: '평점',
+            value: <Rate disabled value={review.starRate} />,
+          },
+          {
+            label: '내용',
+            value: review.contents,
+          },
+        ],
+      },
+    ],
+    [review],
   );
 
   // componentDidMount
   useEffect(() => {
     getReviews(0);
   }, []);
+
+  useEffect(() => {
+    if (review.reviewId !== 0) {
+      openModal({
+        type: 'detail',
+        content: detailModalData,
+      });
+    }
+  }, [review]);
 
   const reviewColumns: Array<ColumnProps<ResponseReview>> = useMemo(
     () => [
@@ -203,10 +266,13 @@ function Review() {
     ],
     [updateReviewsExpose, updateReview, getReview],
   );
-
   return (
     <>
-      <ReviewSearch getData={getReviews} pageSize={pageSize} searchConditions={reviewSearchConditions} />
+      <SearchBar
+        onSearch={value => getReviews(0, pageSize, value)}
+        onReset={() => getReviews(0)}
+        searchConditions={reviewSearchConditions}
+      />
       <Divider />
       <PaginationTable
         onChangeExpose={handleUpdateReviewsExpose}
@@ -223,7 +289,6 @@ function Review() {
           onChange: handlePaginationChange,
         }}
       />
-      <ReviewDetailModal />
     </>
   );
 }

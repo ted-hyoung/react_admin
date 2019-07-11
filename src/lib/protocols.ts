@@ -18,7 +18,7 @@ const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
-    return error.response.data.message || '에러 발생';
+    return error.response.data.message || error.response.data.errors[0].message || '에러 발생';
   }
 };
 
@@ -111,6 +111,23 @@ export const put: AxiosFunction = (url, data, cb) => {
 export const patch: AxiosFunction = (url, data, cb) => {
   return axios
     .patch(host + url, data ? data : {}, {
+      headers: authHeader,
+    })
+    .then(res => (cb ? cb(res) : res))
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};
+
+/**
+ *
+ * @param url api url
+ * @param data api data
+ * @param cb callback function
+ */
+export const del: AxiosFunction = (url, data, cb) => {
+  return axios
+    .delete(host + url, {
       headers: authHeader,
     })
     .then(res => (cb ? cb(res) : res))

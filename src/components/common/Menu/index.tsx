@@ -72,7 +72,7 @@ const MENU_LIST = [
         name: 'Q & A 관리',
       },
       {
-        key: 'question',
+        key: 'contact',
         name: '1:1 문의 관리',
       },
       {

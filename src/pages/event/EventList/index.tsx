@@ -8,7 +8,7 @@ import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
 
 // components
-import { PaginationTable, AffixButton } from 'components';
+import { PaginationTable } from 'components';
 
 // types
 import { EventStatus } from 'enums';

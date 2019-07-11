@@ -12,6 +12,7 @@ import 'moment/locale/ko';
 
 // assets
 import './index.less';
+import ModalProvider from 'lib/context/ModalProvider';
 
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
@@ -29,9 +30,11 @@ sagaMiddleware.run(saga);
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <App />
-    </ConnectedRouter>
+    <ModalProvider>
+      <ConnectedRouter history={history}>
+        <App />
+      </ConnectedRouter>
+    </ModalProvider>
   </Provider>,
   document.getElementById('root'),
 );

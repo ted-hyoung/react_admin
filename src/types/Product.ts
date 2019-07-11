@@ -28,7 +28,6 @@ export interface ResponseShippingFeeInfo {
   shippingFreeCondition: number;
 }
 
-
 export interface CreateProduct {
   productName: string;
   normalSalesPrice: number;
