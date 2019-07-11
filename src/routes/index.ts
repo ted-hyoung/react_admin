@@ -24,6 +24,11 @@ export default [
     secret: false,
   },
   {
+    path: '/qna',
+    component: lazy(() => import('../pages/Qna')),
+    secret: false,
+  },
+  {
     path: '/review',
     component: lazy(() => import('../pages/Review')),
     secret: false,
@@ -36,5 +41,11 @@ export default [
   {
     path: '/',
     component: lazy(() => import('../pages/Login')),
+    secret: false,
   },
+  {
+    path: '/event/detail',
+    component: lazy(() => import('../pages/event/EventDetail')),
+    secret: false,
+  }
 ];

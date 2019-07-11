@@ -18,7 +18,7 @@ const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
-    return error.response.data.message || '에러 발생';
+    return error.response.data.message || error.response.data.errors[0].message || '에러 발생';
   }
 };
 
@@ -41,7 +41,7 @@ const host = getHost();
 const authHeader = {
   Accept: 'application/json',
   Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyOTEzODkzLCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYyMzA5MDkzfQ.Ger-XVQD5pYfJvxlEHiXl2ut_jv4-FEC41AFEDML_i8',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyMzA0MTM5LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYxNjk5MzM5fQ.dSHGYtG8Vxbwy8ppsufx0FrvWDeCY0tU-vmpKBJRLAM',
 };
 
 /**

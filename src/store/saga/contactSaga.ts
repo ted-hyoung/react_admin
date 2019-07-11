@@ -1,5 +1,7 @@
-import * as Actions from 'store/action/contactAction';
+import { put, call, takeEvery } from 'redux-saga/effects';
+import * as Api from 'lib/protocols';
 import { PayloadAction } from 'typesafe-actions';
+
 import {
   GetListRequestPayload,
   ResponseContact,
@@ -10,8 +12,6 @@ import {
   DeleteRequestPayload,
   GetRequestPayload,
 } from 'types';
-import { put, call, takeEvery } from 'redux-saga/effects';
-import { get, post, put as axiosPut, del } from 'lib/protocols';
 import {
   getContactsAsync,
   createContactCommentAsync,
@@ -20,12 +20,14 @@ import {
   getContactAsync,
   getContactsCountAsync,
 } from 'store/reducer/contact';
+import * as Actions from 'store/action/contactAction';
+
 import { message } from 'antd';
 
 function* getContacts(action: PayloadAction<string, GetListRequestPayload<ResponseContact>>) {
   const { page, size, searchCondition } = action.payload;
   try {
-    const res = yield call(() => get('/contacts', { params: { page, size, ...searchCondition } }));
+    const res = yield call(() => Api.get('/contacts', { params: { page, size, ...searchCondition } }));
     yield put(getContactsAsync.success(res.data));
   } catch (error) {
     yield put(getContactsAsync.failure(error));
@@ -35,7 +37,7 @@ function* getContacts(action: PayloadAction<string, GetListRequestPayload<Respon
 function* getContact(action: PayloadAction<string, GetRequestPayload>) {
   const { id } = action.payload;
   try {
-    const res = yield call(() => get('/contacts/' + id));
+    const res = yield call(() => Api.get('/contacts/' + id));
     yield put(getContactAsync.success(res.data));
   } catch (error) {
     yield put(getContactAsync.failure(error));
@@ -45,7 +47,7 @@ function* getContact(action: PayloadAction<string, GetRequestPayload>) {
 function* createContactComment(action: PayloadAction<string, CreateRequestPayload<CreateContactComment>>) {
   const { parentId, data } = action.payload;
   try {
-    yield call(() => post('/contacts/' + parentId + '/comment', data));
+    yield call(() => Api.post('/contacts/' + parentId + '/comment', data));
     yield put(createContactCommentAsync.success({}));
     message.success('답변이 등록되었습니다');
     if (parentId) {
@@ -63,7 +65,7 @@ function* createContactComment(action: PayloadAction<string, CreateRequestPayloa
 function* updateContactComment(action: PayloadAction<string, UpdateRequestPayload<UpdateContactComment>>) {
   const { id, data } = action.payload;
   try {
-    yield call(() => axiosPut('/contacts/' + id + '/comment', data));
+    yield call(() => Api.put('/contacts/' + id + '/comment', data));
     yield put(updateContactCommentAsync.success({}));
     message.success('답변이 수정되었습니다');
     yield put(getContactAsync.request({ id }));
@@ -75,7 +77,7 @@ function* updateContactComment(action: PayloadAction<string, UpdateRequestPayloa
 function* deleteContactComment(action: PayloadAction<string, DeleteRequestPayload>) {
   const { id } = action.payload;
   try {
-    yield call(() => del('/contacts/' + id + '/comment'));
+    yield call(() => Api.del('/contacts/' + id + '/comment'));
     yield put(deleteContactCommentAsync.success({}));
     message.success('답변을 삭제했습니다');
     yield put(getContactAsync.request({ id }));
@@ -86,7 +88,7 @@ function* deleteContactComment(action: PayloadAction<string, DeleteRequestPayloa
 
 function* getContactsCount() {
   try {
-    const res = yield call(() => get('/contacts/count'));
+    const res = yield call(() => Api.get('/contacts/count'));
     yield put(getContactsCountAsync.success(res.data));
   } catch (error) {
     yield put(getContactsCountAsync.failure(error));
