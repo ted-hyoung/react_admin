@@ -12,13 +12,18 @@ import { TextEditor } from 'components';
 // store
 import { StoreState } from 'store';
 import { getCelebReviewAsync, updateCelebReviewAsync } from 'store/reducer/celebReview';
+import { QuillContentProp } from 'components/TextEditor';
 
 function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
   const { match } = props;
 
   const dispatch = useDispatch();
   const { celebReview } = useSelector((state: StoreState) => state.celebReview);
-  const [contents, setContents] = useState('');
+  const [value, setValue] = useState<QuillContentProp>({});
+
+  const handleChange = (value: QuillContentProp) => {
+    setValue(value);
+  };
 
   const handleConfirm = useCallback(() => {
     const id = Number(match.params.id);
@@ -27,13 +32,13 @@ function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
         updateCelebReviewAsync.request({
           id,
           data: {
-            contents,
+            contents: value.resultContent || '',
             instagramUrl: 'asdf',
           },
         }),
       );
     }
-  }, [dispatch, contents, match.params.id]);
+  }, [dispatch, value, match.params.id]);
 
   useEffect(() => {
     if (Number(match.params.id)) {
@@ -41,16 +46,10 @@ function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
     }
   }, [match.params.id]);
 
-  useEffect(() => {
-    if (celebReview.contents) {
-      setContents(celebReview.contents);
-    }
-  }, [celebReview.contents, setContents]);
-
   return (
     <>
       <h2 style={{ marginBottom: 20 }}>셀럽 리뷰 등록</h2>
-      <TextEditor value={contents} onChange={val => setContents(val)} />
+      <TextEditor value={value} onChange={handleChange} defaultValue={celebReview.contents || undefined} />
       <Button onClick={handleConfirm} style={{ marginTop: 10 }}>
         확인
       </Button>

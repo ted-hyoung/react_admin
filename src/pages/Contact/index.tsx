@@ -7,7 +7,7 @@ import { getContactsAsync, getContactsCountAsync } from 'store/reducer/contact';
 
 // types
 import { SearchContact, ResponseContact } from 'types';
-import { QnaStatus, CsrCategory } from 'enums';
+import { QnaStatus, CsrCategory, QNA_STATUS_OPTIONS } from 'enums';
 import { ColumnProps } from 'antd/lib/table';
 
 // modules
@@ -143,10 +143,9 @@ function Contact() {
                 initialValue: 'ENTIRE',
               })(
                 <Select style={{ width: 120, marginRight: 5 }}>
-                  <Select.Option value="ENTIRE">전체</Select.Option>
-                  {Object.keys(QnaStatus).map((key: any) => (
-                    <Select.Option key={key} value={key}>
-                      {QnaStatus[key]}
+                  {QNA_STATUS_OPTIONS.map(option => (
+                    <Select.Option key={option.value} value={option.value === '' ? 'ENTIRE' : option.value}>
+                      {option.name}
                     </Select.Option>
                   ))}
                 </Select>,
