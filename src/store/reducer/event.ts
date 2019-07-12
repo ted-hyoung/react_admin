@@ -1,7 +1,7 @@
 // base
 import { produce } from 'immer';
 import { AnyAction } from 'redux';
-import { createAsyncAction, createReducer, PayloadAction, action } from 'typesafe-actions';
+import { createAsyncAction, action } from 'typesafe-actions';
 import { AxiosError, AxiosResponse } from 'axios';
 
 // actions
@@ -18,6 +18,7 @@ import {
   GetRequestPayload,
   UpdateRequestPayload,
   UpdateEvent,
+  UpdateEventNotices,
 } from 'types';
 
 import { EventStatus } from 'enums';
@@ -54,6 +55,20 @@ export const updateEventByIdAsync = createAsyncAction(
   Actions.UPDATE_EVENT_SUCCESS,
   Actions.UPDATE_EVENT_FAILURE,
 )<UpdateRequestPayload<UpdateEvent>, AxiosResponse, AxiosError>();
+
+// 공구 공지 생성
+export const updateEventNoticesAsync = createAsyncAction(
+  Actions.UPDATE_EVENT_NOTICES_REQUEST,
+  Actions.UPDATE_EVENT_NOTICES_SUCCESS,
+  Actions.UPDATE_EVENT_NOTICES_FAILURE,
+)<UpdateRequestPayload<UpdateEventNotices>, AxiosResponse, AxiosError>();
+
+// 공구 공지 조회
+// export const getEventNoticesAsync = createAsyncAction(
+//   Actions.GET_EVENT_NOTICES_REQUEST,
+//   Actions.GET_EVENT_NOTICES_SUCCESS,
+//   Actions.GET_EVENT_NOTICES_FAILURE,
+// )<GetRequestPayload, AxiosResponse, AxiosError>();
 
 export const clearEvent = action(Actions.CLEAR_EVENT);
 
@@ -105,6 +120,9 @@ export default (state = initialState, action: AnyAction) => {
       return produce(state, draft => {
         draft.event = action.payload;
       });
+    }
+    case Actions.UPDATE_EVENT_NOTICES_SUCCESS: {
+      return state;
     }
     case Actions.CLEAR_EVENT: {
       return produce(state, draft => {

@@ -17,9 +17,8 @@ import {
   message,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import { RowProps } from 'antd/lib/row';
 import { calcStringByte } from 'lib/utils';
-import { SelectOptionModal } from 'components';
+import { SelectOptionModal, FlexRow } from 'components';
 
 import './index.less';
 import { useDispatch } from 'react-redux';
@@ -30,15 +29,7 @@ import { LabeledValue } from 'antd/lib/select';
 // defines
 const { TextArea } = Input;
 const { Text } = Typography;
-const format = 'HH:mm A';
-
-function FlexRow(props: RowProps) {
-  return (
-    <Row type="flex" align="middle" gutter={10} {...props}>
-      {props.children}
-    </Row>
-  );
-}
+const TIME_FORMAT = 'HH:mm A';
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -125,7 +116,7 @@ function EventForm(props: Props) {
 
   return (
     <>
-      <Form className="create-event" onSubmit={handleSubmit}>
+      <Form className="event-form" onSubmit={handleSubmit}>
         <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
@@ -217,8 +208,8 @@ function EventForm(props: Props) {
                     <TimePicker
                       use12Hours
                       placeholder="시작시간"
-                      defaultOpenValue={moment('00:00 AM', format)}
-                      format={format}
+                      defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+                      format={TIME_FORMAT}
                     />,
                   )}
                 </Form.Item>
@@ -251,8 +242,8 @@ function EventForm(props: Props) {
                     <TimePicker
                       use12Hours
                       placeholder="종료시간"
-                      defaultOpenValue={moment('00:00 AM', format)}
-                      format={format}
+                      defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+                      format={TIME_FORMAT}
                     />,
                   )}
                 </Form.Item>
@@ -286,7 +277,7 @@ function EventForm(props: Props) {
             <Form.Item>{getFieldDecorator('videoUrl')(<Input />)}</Form.Item>
           </Descriptions.Item>
         </Descriptions>
-        <Form.Item style={{ textAlign: 'right' }}>
+        <Form.Item style={{ textAlign: 'right', marginTop: 10 }}>
           <Button type="primary" htmlType="submit">
             {event.eventId ? '수정' : '등록'}
           </Button>
@@ -295,7 +286,7 @@ function EventForm(props: Props) {
       <SelectOptionModal
         placeholder="브랜드 선택"
         visible={visible}
-        options={[{ key: 'test', label: 'test' }]}
+        options={[{ key: '비클', label: '비클' }]}
         onSelect={handleSelectBrandName}
       />
     </>

@@ -9,7 +9,7 @@ import { getEventByIdAsync, clearEvent } from 'store/reducer/event';
 import { Tabs } from 'antd';
 
 // components
-import { ProductDetail, EventForm } from 'components';
+import { ProductDetail, EventForm, EventNotice } from 'components';
 
 function EventDetail(props: RouteComponentProps) {
   const { location } = props;
@@ -29,7 +29,7 @@ function EventDetail(props: RouteComponentProps) {
 
   useEffect(() => {
     getEvent(eventId);
-  }, [eventId]);
+  }, [eventId, location.key]);
 
   useEffect(() => {
     return () => {
@@ -54,7 +54,7 @@ function EventDetail(props: RouteComponentProps) {
           셀럽 리뷰
         </Tabs.TabPane>
         <Tabs.TabPane tab="긴급 공지" key="NOTICE" disabled={!event.eventId}>
-          긴급 공지
+          <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
     </div>

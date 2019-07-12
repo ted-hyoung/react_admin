@@ -17,8 +17,15 @@ import {
   GetRequestPayload,
   UpdateRequestPayload,
   UpdateEvent,
+  UpdateEventNotices,
 } from 'types';
-import { getEventsAsync, createEventAsync, getEventByIdAsync, updateEventByIdAsync } from 'store/reducer/event';
+import {
+  getEventsAsync,
+  createEventAsync,
+  getEventByIdAsync,
+  updateEventByIdAsync,
+  updateEventNoticesAsync,
+} from 'store/reducer/event';
 
 // sagas
 function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateEvent>>) {
@@ -71,9 +78,22 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
   }
 }
 
+function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<UpdateEventNotices>>) {
+  const { id, data } = action.payload;
+
+  try {
+    const res = yield call(() => Api.put(`/events/${id}/notices`, data));
+    yield put(updateEventNoticesAsync.success(res.data));
+    yield put(replace(window.location.pathname));
+  } catch (error) {
+    yield put(updateEventNoticesAsync.failure(error));
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
   yield takeEvery(Actions.GET_EVENT_REQUEST, getEventById);
   yield takeLatest(Actions.UPDATE_EVENT_REQUEST, updateEventById);
+  yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
 }
