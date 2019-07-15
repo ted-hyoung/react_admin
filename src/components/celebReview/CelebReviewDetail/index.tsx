@@ -14,8 +14,8 @@ import { StoreState } from 'store';
 import { getCelebReviewAsync, updateCelebReviewAsync } from 'store/reducer/celebReview';
 import { QuillContentProp } from 'components/TextEditor';
 
-function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
-  const { match } = props;
+function CelebReviewDetail(props: { id: number }) {
+  const { id } = props;
 
   const dispatch = useDispatch();
   const { celebReview } = useSelector((state: StoreState) => state.celebReview);
@@ -26,7 +26,6 @@ function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
   };
 
   const handleConfirm = useCallback(() => {
-    const id = Number(match.params.id);
     if (id) {
       dispatch(
         updateCelebReviewAsync.request({
@@ -38,13 +37,11 @@ function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
         }),
       );
     }
-  }, [dispatch, value, match.params.id]);
+  }, [dispatch, value, id]);
 
   useEffect(() => {
-    if (Number(match.params.id)) {
-      dispatch(getCelebReviewAsync.request({ id: Number(match.params.id) }));
-    }
-  }, [match.params.id]);
+    dispatch(getCelebReviewAsync.request({ id }));
+  }, [id]);
 
   return (
     <>
@@ -57,4 +54,4 @@ function UpdateCelebReviewForm(props: RouteComponentProps<{ id: string }>) {
   );
 }
 
-export default withRouter(UpdateCelebReviewForm);
+export default CelebReviewDetail;

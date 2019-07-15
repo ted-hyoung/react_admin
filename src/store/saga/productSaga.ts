@@ -15,12 +15,12 @@ import {
   updateShippingFeeInfoAsync,
   updateProductAsync,
   deleteProductsAsync,
-  soldOutProductsAsync
+  soldOutProductsAsync,
 } from 'store/reducer/product';
 
 function* getEvent(action: RequestAsyncAction) {
   try {
-    const eventId  = action.payload;
+    const eventId = action.payload;
     const res = yield call(() => Api.get(`/events/${eventId}`));
     yield put(getEventAsync.success(res));
   } catch (error) {
@@ -31,7 +31,7 @@ function* getEvent(action: RequestAsyncAction) {
 function* createProduct(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    const res = yield call(() => Api.post(`/event/${eventId}/product`, data));
+    const res = yield call(() => Api.post(`/events/${eventId}/product`, data));
     yield put(createProductAsync.success(res.data));
     yield put(getEventAsync.request(eventId));
   } catch (error) {

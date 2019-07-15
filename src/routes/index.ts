@@ -9,11 +9,6 @@ export default [
     secret: false,
   },
   {
-    path: '/events/:id/celeb-review',
-    component: lazy(() => import('../pages/event/UpdateCelebReviewForm')),
-    secret: false,
-  },
-  {
     path: '/events',
     component: lazy(() => import('../pages/event/EventList')),
     secret: false,
@@ -47,5 +42,5 @@ export default [
     path: '/event/detail',
     component: lazy(() => import('../pages/event/EventDetail')),
     secret: false,
-  }
+  },
 ];
