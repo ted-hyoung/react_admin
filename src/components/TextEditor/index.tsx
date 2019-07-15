@@ -99,7 +99,9 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   const instagramHandler = (value: string) => {
     // quill focus 문제로 setTimeout 추가
     setTimeout(() => {
-      quillRef.current!.getEditor().insertEmbed(lastSelection, 'instagram', value);
+      if (quillRef.current) {
+        quillRef.current.getEditor().insertEmbed(lastSelection, 'instagram', value);
+      }
     }, 0);
   };
 
@@ -132,16 +134,18 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
 
   const saveLastRange = () => {
     const editor = quillRef.current;
-    const range = editor!.getEditor().getSelection();
-    if (range) {
-      setLastSelection(range.index);
+    if (editor) {
+      const range = editor.getEditor().getSelection();
+      if (range) {
+        setLastSelection(range.index);
+      }
     }
   };
 
   useEffect(() => {
     setTimeout(() => {
-      if (defaultValue) {
-        quillRef.current!.getEditor().pasteHTML(defaultValue);
+      if (quillRef.current && defaultValue) {
+        quillRef.current.getEditor().pasteHTML(defaultValue);
       }
     }, 0);
   }, [defaultValue, quillRef]);
