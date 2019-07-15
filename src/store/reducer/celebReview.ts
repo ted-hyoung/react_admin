@@ -28,7 +28,6 @@ const initialState: CelebReviewState = {
     created: '',
     contents: '',
     modified: '',
-    instagramUrl: '',
   },
 };
 
