@@ -3,12 +3,14 @@ import { ResponseOrderItem } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders } from './Payment';
 import { paymentStatus, ShippingStatus } from 'enums';
+import { ResponseEventForOrders } from './Event';
 
 export interface ResponseOrder {
   orderId: number;
   shippingDestination: ResponseShippingDestination;
   orderItems: ResponseOrderItem[];
   account: ResponseOrderAccount;
+  event: ResponseEventForOrders;
   payment: ResponsePaymentForOrders;
   shipping: ResponseShippingForOrders;
 }

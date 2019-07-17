@@ -11,6 +11,28 @@ import { getOrdersAsync } from 'store/reducer/order';
 // types
 import { RequestAsyncAction } from 'types/AsyncAction';
 
+const parseParams = (params: any) => {
+  const keys = Object.keys(params);
+  let options = '';
+
+  keys.forEach(key => {
+    const isParamTypeObject = typeof params[key] === 'object';
+    const isParamTypeArray = isParamTypeObject && params[key].length >= 0;
+
+    if (!isParamTypeObject) {
+      options += `${key}=${params[key]}&`;
+    }
+
+    if (isParamTypeObject && isParamTypeArray) {
+      params[key].forEach((element: any) => {
+        options += `${key}=${element}&`;
+      });
+    }
+  });
+
+  return options ? options.slice(0, -1) : options;
+};
+
 function* getOrders(action: RequestAsyncAction) {
   try {
     const { page, size, searchCondition } = action.payload;
@@ -22,9 +44,9 @@ function* getOrders(action: RequestAsyncAction) {
           size,
           ...searchCondition,
         },
+        paramsSerializer: (params: any) => parseParams(params),
       }),
     );
-
     yield put(getOrdersAsync.success(res));
   } catch (error) {
     yield put(getOrdersAsync.failure(error));

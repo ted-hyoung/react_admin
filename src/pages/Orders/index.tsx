@@ -9,8 +9,8 @@ import { getOrdersAsync } from 'store/reducer/order';
 // modules
 import { Table, Button, Row, Col } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
+import { utils, writeFile } from 'xlsx';
 import moment from 'moment';
-import { read, WorkBook } from 'xlsx';
 
 // components
 import { OrderSearchBar } from 'components';
@@ -20,6 +20,9 @@ import { SearchOrder } from 'types/Order';
 
 // enums
 import { ShippingStatus } from 'enums';
+
+// utils
+import { getNowYMD } from 'lib/utils';
 
 // defines
 const defaultSearchCondition = {
@@ -60,32 +63,37 @@ const Orders = () => {
     [dispatch, pageSize, setLastSearchCondition],
   );
 
-  const getOrdersExcel = useCallback(() => {
-    // let data = [[
-    //   'NO',
-    //   '결제일',
-    //   '주문번호',
-    //   '브랜드명',
-    //   '주문자',
-    //   '수량',
-    //   '상품명/옵션',
-    //   '실 결제금액',
-    //   '배송상태',
-    //   '택배사'
-    // ]]
-    // if (orders) {
-    //   orders.content.forEach(item => {
-    //     data.push([
-    //       item.orderId
-    //     ])
-    //   })
-    // }
-    // const wb: WorkBook = read(data, options);
-  }, []);
-
   useEffect(() => {
     getOrders(0, pageSize, defaultSearchCondition);
   }, []);
+
+  const getOrdersExcel = () => {
+    const data = [
+      ['NO', '결제일', '주문번호', '브랜드명', '주문자', '수량', '상품명/옵션', '실 결제금액', '배송상태', '택배사'],
+    ];
+
+    if (orders.content.length > 0) {
+      orders.content.forEach(item => {
+        data.push([
+          item.orderId.toString(),
+          moment(item.payment.paymentDate).format('YYYY-MM-DD HH:mm:ss'),
+          item.orderId.toString(),
+          item.event.brandName,
+          item.account.username,
+          item.orderItems[0].quantity.toString(),
+          item.orderItems[0].product.productName + '/' + item.orderItems[0].option.optionName,
+          item.payment.amount.toString(),
+          ShippingStatus[item.shipping.shippingStatus],
+          item.shipping.shippingCompany,
+        ]);
+      });
+
+      const ws = utils.aoa_to_sheet(data);
+      const wb = utils.book_new();
+      utils.book_append_sheet(wb, ws, 'orders');
+      writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
+    }
+  };
 
   const columns: Array<ColumnProps<Orders>> = [
     { title: 'NO', dataIndex: 'key', key: 'key' },
@@ -105,7 +113,7 @@ const Orders = () => {
       key: i + 1,
       paymentDate: moment(order.payment.paymentDate).format('YYYY-MM-DD HH:mm:ss'),
       orderNumber: order.orderId,
-      brandName: '비클',
+      brandName: order.event.brandName,
       username: order.account.username,
       quantity: order.orderItems[0].quantity,
       product: `${order.orderItems[0].product.productName} / ${order.orderItems[0].option.optionName}`,
