@@ -25,7 +25,7 @@
     "start:dev": "REACT_APP_BUILD_MODE=sandbox craco start",
     "build": "craco build",
     "build:dev": "REACT_APP_BUILD_MODE=sandbox craco build",
-    "test": "craco start"
+    "test": "craco test"
   },
   "browserslist": {
     "production": [
