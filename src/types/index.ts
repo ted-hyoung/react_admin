@@ -8,6 +8,8 @@ export * from './Modal';
 export * from './Account';
 export * from './Contact';
 export * from './Product';
+export * from './Order';
+export * from './Payment';
 
 export interface PageWrapper<T> {
   content: T[];

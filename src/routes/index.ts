@@ -34,6 +34,11 @@ export default [
     secret: false,
   },
   {
+    path: '/orders',
+    component: lazy(() => import('../pages/Orders')),
+    secret: false,
+  },
+  {
     path: '/',
     component: lazy(() => import('../pages/Login')),
     secret: false,
@@ -42,5 +47,5 @@ export default [
     path: '/event/detail',
     component: lazy(() => import('../pages/event/EventDetail')),
     secret: false,
-  }
+  },
 ];

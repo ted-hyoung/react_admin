@@ -4,6 +4,7 @@ export * from './qna';
 export * from './contact';
 export * from './event';
 export * from './product';
+export * from './order';
 
 export { default as Menu } from './Menu';
 export { default as PaginationTable } from './PaginationTable';

@@ -8,6 +8,7 @@ import qna, { QnaState } from './reducer/qna';
 import review, { ReviewState } from './reducer/review';
 import contact, { ContactState } from './reducer/contact';
 import product, { ProductState } from './reducer/product';
+import order, { OrderState } from './reducer/order';
 
 // saga
 import eventSaga from './saga/eventSaga';
@@ -15,6 +16,7 @@ import qnaSaga from './saga/qnaSaga';
 import reviewSaga from './saga/reviewSaga';
 import contactSaga from './saga/contactSaga';
 import productSaga from './saga/productSaga';
+import orderSaga from './saga/orderSaga';
 
 export interface StoreState {
   event: EventState;
@@ -22,10 +24,11 @@ export interface StoreState {
   review: ReviewState;
   contact: ContactState;
   product: ProductState;
+  order: OrderState;
 }
 
 export function* saga() {
-  yield all([eventSaga(), qnaSaga(), reviewSaga(), contactSaga(), productSaga()]);
+  yield all([eventSaga(), qnaSaga(), reviewSaga(), contactSaga(), productSaga(), orderSaga()]);
 }
 
 const reducer = combineReducers<StoreState>({
@@ -33,7 +36,8 @@ const reducer = combineReducers<StoreState>({
   qna,
   review,
   contact,
-  product
+  product,
+  order,
 });
 
 export default reducer;

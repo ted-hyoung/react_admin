@@ -41,7 +41,7 @@ const host = getHost();
 const authHeader = {
   Accept: 'application/json',
   Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyMzA0MTM5LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYxNjk5MzM5fQ.dSHGYtG8Vxbwy8ppsufx0FrvWDeCY0tU-vmpKBJRLAM',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYzMzMyMjA0LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYyNzI3NDA0fQ.Q5cyjCaoAb0kuvbGiifE-T_sip347qrL779XU7q8k0I',
 };
 
 /**
