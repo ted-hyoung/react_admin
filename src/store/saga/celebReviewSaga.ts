@@ -5,12 +5,14 @@ import * as Actions from 'store/action/celebReviewAction';
 import { PayloadAction } from 'typesafe-actions';
 import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload } from 'types';
 import { updateCelebReviewAsync, getCelebReviewAsync } from 'store/reducer/celebReview';
+import { replace } from 'connected-react-router';
 
 function* updateCelebReview(action: PayloadAction<string, UpdateRequestPayload<UpdateCelebReview>>) {
   const { id, data } = action.payload;
   try {
     const res = yield call(() => Api.put('/events/' + id + '/celeb-review', data));
     yield put(updateCelebReviewAsync.success(res));
+    yield put(replace('/events/detail/' + id));
   } catch (error) {
     yield put(updateCelebReviewAsync.failure(error));
   }
