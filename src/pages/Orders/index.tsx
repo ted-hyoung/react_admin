@@ -47,13 +47,12 @@ const Orders = () => {
   const dispatch = useDispatch();
 
   const getOrders = useCallback(
-    (page: number, size = pageSize, searchCondition?: SearchOrder, excel?: boolean) => {
+    (page: number, size = pageSize, searchCondition?: SearchOrder) => {
       dispatch(
         getOrdersAsync.request({
           page,
           size,
           searchCondition,
-          excel,
         }),
       );
       setLastSearchCondition(searchCondition);
