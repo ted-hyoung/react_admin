@@ -51,3 +51,7 @@ export interface SearchEvent {
   salesStarted: string;
   salesEnded: string;
 }
+
+export interface UpdateEventStatus {
+  eventStatus: EventStatus;
+}

@@ -18,6 +18,7 @@ import {
   UpdateRequestPayload,
   UpdateEvent,
   UpdateEventNotices,
+  UpdateEventStatus,
 } from 'types';
 import {
   getEventsAsync,
@@ -25,6 +26,7 @@ import {
   getEventByIdAsync,
   updateEventByIdAsync,
   updateEventNoticesAsync,
+  updateEventStatusAsync,
 } from 'store/reducer/event';
 
 // sagas
@@ -90,10 +92,24 @@ function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<
   }
 }
 
+function* updateEventStatus(action: PayloadAction<string, UpdateRequestPayload<UpdateEventStatus>>) {
+  const { id, data } = action.payload;
+
+  try {
+    const res = yield call(() => Api.put(`/events/${id}/status`, data));
+    yield put(updateEventStatusAsync.success(res.data));
+    yield message.success('공구가 오픈되었습니다.');
+  } catch (error) {
+    yield put(updateEventStatusAsync.failure(error));
+    yield message.error(error);
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
   yield takeEvery(Actions.GET_EVENT_REQUEST, getEventById);
   yield takeLatest(Actions.UPDATE_EVENT_REQUEST, updateEventById);
   yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
+  yield takeLatest(Actions.UPDATE_EVENT_STATUS_REQUEST, updateEventStatus);
 }

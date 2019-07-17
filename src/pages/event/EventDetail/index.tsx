@@ -3,13 +3,16 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
-import { getEventByIdAsync, clearEvent } from 'store/reducer/event';
+import { getEventByIdAsync, clearEvent, updateEventStatusAsync } from 'store/reducer/event';
 
 // modules
-import { Tabs } from 'antd';
+import { Tabs, Button } from 'antd';
 
 // components
-import { ProductDetail, EventForm, EventNotice } from 'components';
+import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'components';
+
+import './index.less';
+import { EventStatus } from 'enums';
 
 function EventDetail(props: RouteComponentProps) {
   const { location } = props;
@@ -26,6 +29,14 @@ function EventDetail(props: RouteComponentProps) {
     },
     [eventId],
   );
+
+  const handleOpenEvent = () => {
+    const data = {
+      eventStatus: EventStatus[EventStatus.IN_PROGRESS],
+    };
+
+    dispatch(updateEventStatusAsync.request({ id: eventId, data }));
+  };
 
   useEffect(() => {
     getEvent(eventId);
@@ -51,12 +62,15 @@ function EventDetail(props: RouteComponentProps) {
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={!event.eventId}>
-          셀럽 리뷰
+          <CelebReviewDetail />
         </Tabs.TabPane>
         <Tabs.TabPane tab="긴급 공지" key="NOTICE" disabled={!event.eventId}>
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
+      <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
+        오픈
+      </Button>
     </div>
   );
 }

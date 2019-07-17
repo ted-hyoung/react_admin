@@ -19,6 +19,7 @@ import {
   UpdateRequestPayload,
   UpdateEvent,
   UpdateEventNotices,
+  UpdateEventStatus,
 } from 'types';
 
 import { EventStatus } from 'enums';
@@ -63,12 +64,12 @@ export const updateEventNoticesAsync = createAsyncAction(
   Actions.UPDATE_EVENT_NOTICES_FAILURE,
 )<UpdateRequestPayload<UpdateEventNotices>, AxiosResponse, AxiosError>();
 
-// 공구 공지 조회
-// export const getEventNoticesAsync = createAsyncAction(
-//   Actions.GET_EVENT_NOTICES_REQUEST,
-//   Actions.GET_EVENT_NOTICES_SUCCESS,
-//   Actions.GET_EVENT_NOTICES_FAILURE,
-// )<GetRequestPayload, AxiosResponse, AxiosError>();
+// 공구 오픈
+export const updateEventStatusAsync = createAsyncAction(
+  Actions.UPDATE_EVENT_STATUS_REQUEST,
+  Actions.UPDATE_EVENT_STATUS_SUCCESS,
+  Actions.UPDATE_EVENT_STATUS_FAILURE,
+)<UpdateRequestPayload<UpdateEventStatus>, AxiosResponse, AxiosError>();
 
 export const clearEvent = action(Actions.CLEAR_EVENT);
 
@@ -121,7 +122,8 @@ export default (state = initialState, action: AnyAction) => {
         draft.event = action.payload;
       });
     }
-    case Actions.UPDATE_EVENT_NOTICES_SUCCESS: {
+    case Actions.UPDATE_EVENT_NOTICES_SUCCESS:
+    case Actions.UPDATE_EVENT_STATUS_SUCCESS: {
       return state;
     }
     case Actions.CLEAR_EVENT: {
