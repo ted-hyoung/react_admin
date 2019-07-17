@@ -23,7 +23,7 @@ function* createProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.post(`/events/${eventId}/product`, data));
     yield put(createProductAsync.success(res.data));
-    yield put(getEventByIdAsync.request({ id: eventId }));
+    // yield put(getEventByIdAsync.request({ id: eventId }));
   } catch (error) {
     yield put(createProductAsync.failure(error));
   }
@@ -34,7 +34,7 @@ function* updateProduct(action: RequestAsyncAction) {
     const { eventId, productId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/${productId}`, data));
     yield put(updateProductAsync.success(res.data));
-    yield put(getEventByIdAsync.request({ id: eventId }));
+    // yield put(getEventByIdAsync.request({ id: eventId }));
   } catch (error) {
     yield put(updateProductAsync.failure(error));
   }
@@ -45,7 +45,7 @@ function* deleteProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/disabled`, data));
     yield put(deleteProductsAsync.success(res.data));
-    yield put(getEventByIdAsync.request({ id: eventId }));
+    // yield put(getEventByIdAsync.request({ id: eventId }));
   } catch (error) {
     yield put(deleteProductsAsync.failure(error));
   }
@@ -56,7 +56,7 @@ function* soldOutProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/sold-out`, data));
     yield put(soldOutProductsAsync.success(res.data));
-    yield put(getEventByIdAsync.request({ id: eventId }));
+    // yield put(getEventByIdAsync.request({ id: eventId }));
   } catch (error) {
     yield put(soldOutProductsAsync.failure(error));
   }

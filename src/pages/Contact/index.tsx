@@ -19,6 +19,7 @@ import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
 
 // lib
 import useModal from 'lib/hooks/useModal';
+import { mapEnums } from 'lib/utils';
 
 const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
 
@@ -58,6 +59,8 @@ const contactColumns: Array<ColumnProps<ResponseContact>> = [
     render: created => moment(created).format('YYYY-MM-DD HH:mm:ss'),
   },
 ];
+
+const qnaStatus = mapEnums(QnaStatus);
 
 function Contact() {
   const dispatch = useDispatch();
@@ -107,7 +110,7 @@ function Contact() {
   const handleSearch = useCallback(
     (val: any) => {
       Object.keys(val).forEach(key => {
-        if (key === 'status' && val[key] === 'ENTIRE') {
+        if (key === 'status' && val[key] === '') {
           delete val[key];
           return;
         }
@@ -140,13 +143,13 @@ function Contact() {
           <div style={{ display: 'flex' }} key="test">
             <Form.Item>
               {form.getFieldDecorator('status', {
-                initialValue: 'ENTIRE',
+                initialValue: '',
               })(
                 <Select style={{ width: 120, marginRight: 5 }}>
-                  <Select.Option value="ENTIRE">전체</Select.Option>
-                  {Object.keys(QnaStatus).map((key: any) => (
-                    <Select.Option key={key} value={key}>
-                      {QnaStatus[key]}
+                  <Select.Option value="">전체</Select.Option>
+                  {qnaStatus.map(option => (
+                    <Select.Option key={option.value} value={option.value}>
+                      {option.key}
                     </Select.Option>
                   ))}
                 </Select>,
