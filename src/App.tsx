@@ -42,27 +42,6 @@ function App() {
             </Content>
           </Layout>
         </Layout>
-        {/* <Row>
-          <Col span={6}>
-            <Menu />
-          </Col>
-          <Col span={18}>
-            <Content style={{ padding: 50 }}>
-              <Suspense fallback={<div>Loading...</div>}>
-                <Switch>
-                  {routes.map(({ path, component, secret }, index) => {
-                    if (secret) {
-                      return <PrivateRoute exact key={index} path={path} component={component} />;
-                    }
-
-                    return <Route exact key={index} path={path} component={component} />;
-                  })}
-                  <Route path="*" component={NotFound} />
-                </Switch>
-              </Suspense>
-            </Content>
-          </Col>
-        </Row> */}
       </div>
     </Router>
   );
