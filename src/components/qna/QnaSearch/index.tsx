@@ -5,10 +5,13 @@ import React, { useState, useCallback } from 'react';
 import { Row, Col, Select, Input, Button } from 'antd';
 
 // enums
-import { QNA_STATUS_OPTIONS } from 'enums';
+import { QnaStatus } from 'enums';
+import { mapEnums } from 'lib/utils';
 
 // defines
 const { Option } = Select;
+
+const qnaStatusList = mapEnums(QnaStatus);
 
 interface Props {
   onOk: (qnaStatus: string, searchName: string) => void;
@@ -30,15 +33,14 @@ function QnaSearch(props: Props) {
   return (
     <div className="qna-search">
       <Row type="flex" gutter={8}>
-        <Col span={2}>
-          <Select style={{ width: '100%' }} value={qnaStatus} onChange={handleChangeQnaStatus}>
-            {QNA_STATUS_OPTIONS.map(option => {
-              return (
-                <Option key={option.name} value={option.value}>
-                  {option.name}
-                </Option>
-              );
-            })}
+        <Col>
+          <Select style={{ width: 120 }} value={qnaStatus} onChange={handleChangeQnaStatus}>
+            <Option value="">전체</Option>
+            {qnaStatusList.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.key}
+              </Option>
+            ))}
           </Select>
         </Col>
         <Col span={8}>
