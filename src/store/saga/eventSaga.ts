@@ -71,8 +71,7 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
   try {
     const res = yield call(() => Api.put(`/events/${id}`, data));
     yield put(updateEventByIdAsync.success(res.data));
-
-    message.success('공구가 수정되었습니다.');
+    yield message.success('공구가 수정되었습니다.');
   } catch (error) {
     yield put(updateEventByIdAsync.failure(error));
   }
@@ -85,6 +84,7 @@ function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<
     const res = yield call(() => Api.put(`/events/${id}/notices`, data));
     yield put(updateEventNoticesAsync.success(res.data));
     yield put(replace(window.location.pathname));
+    yield message.success('공지가 등록되었습니다.');
   } catch (error) {
     yield put(updateEventNoticesAsync.failure(error));
   }

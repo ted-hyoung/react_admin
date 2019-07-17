@@ -63,11 +63,11 @@ const colums: ColumnProps<EventList>[] = [
     dataIndex: 'eventStatus',
     key: 'eventStatus',
   },
-  {
-    title: '복사',
-    dataIndex: 'copy',
-    key: 'copy',
-  },
+  // {
+  //   title: '복사',
+  //   dataIndex: 'copy',
+  //   key: 'copy',
+  // },
 ];
 
 function EventList(props: RouteComponentProps) {
@@ -78,19 +78,15 @@ function EventList(props: RouteComponentProps) {
 
   const { size: pageSize = 10 } = events;
 
-  const getEvents = useCallback(
-    (page: number, size = pageSize, searchCondition?: SearchEvent) => {
-      dispatch(
-        getEventsAsync.request({
-          page,
-          size,
-          searchCondition,
-        }),
-      );
-    },
-
-    [dispatch, pageSize],
-  );
+  const getEvents = (page: number, size = pageSize, searchCondition?: SearchEvent) => {
+    dispatch(
+      getEventsAsync.request({
+        page,
+        size,
+        searchCondition,
+      }),
+    );
+  };
 
   useEffect(() => {
     getEvents(0);
@@ -144,8 +140,8 @@ function EventList(props: RouteComponentProps) {
         }}
         onRow={handleRowEvent}
       />
-      <Link to="/events/detail">
-        <Button type="primary" icon="setting" size="large" style={{ position: 'absolute', right: 50 }}>
+      <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
+        <Button type="primary" icon="setting" size="large">
           신규 등록
         </Button>
       </Link>

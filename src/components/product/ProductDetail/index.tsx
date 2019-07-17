@@ -130,11 +130,9 @@ function ProductDetail(props: Props) {
           eventId,
           productId: selectProductId,
           data: product.options.reduce((ac, option, index) => {
-            if (index === product.options.length) {
-              return ac;
+            if (index === ac.options.length - 1) {
+              ac.options = ac.options.slice(0, ac.options.length - 1);
             }
-
-            ac.options[index] = option;
 
             return ac;
           }, product),

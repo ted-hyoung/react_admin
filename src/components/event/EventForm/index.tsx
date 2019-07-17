@@ -81,12 +81,12 @@ function EventForm(props: Props) {
 
           dispatch(createEventAsync.request({ data }));
         }
+
+        resetFields();
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
     });
-
-    resetFields();
   };
 
   const handleSelectBrandName = (value: LabeledValue) => {
@@ -132,7 +132,14 @@ function EventForm(props: Props) {
                         message: '공구명을 입력해주세요.',
                       },
                     ],
-                  })(<Input maxLength={100} size="large" />)}
+                  })(
+                    <TextArea
+                      spellCheck={false}
+                      maxLength={100}
+                      autosize={{ minRows: 3, maxRows: 3 }}
+                      style={{ resize: 'none' }}
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
@@ -151,7 +158,14 @@ function EventForm(props: Props) {
                         message: '초이스리뷰를 입력해주세요.',
                       },
                     ],
-                  })(<TextArea maxLength={500} autosize={{ minRows: 3, maxRows: 5 }} style={{ resize: 'none' }} />)}
+                  })(
+                    <TextArea
+                      spellCheck={false}
+                      maxLength={500}
+                      autosize={{ minRows: 3, maxRows: 5 }}
+                      style={{ resize: 'none' }}
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
@@ -252,7 +266,7 @@ function EventForm(props: Props) {
           </Descriptions.Item>
           <Descriptions.Item label="목표 구매액" span={24}>
             <FlexRow>
-              <Col span={4}>
+              <Col span={6}>
                 <Form.Item>
                   {getFieldDecorator('targetAmount')(
                     <InputNumber
