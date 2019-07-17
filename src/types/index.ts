@@ -7,6 +7,7 @@ export * from './Review';
 export * from './Modal';
 export * from './Account';
 export * from './Contact';
+export * from './CelebReview';
 export * from './Product';
 
 export interface PageWrapper<T> {

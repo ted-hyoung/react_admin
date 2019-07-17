@@ -42,5 +42,5 @@ export default [
     path: '/event/detail',
     component: lazy(() => import('../pages/event/EventDetail')),
     secret: false,
-  }
+  },
 ];
