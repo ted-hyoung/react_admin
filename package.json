@@ -5,11 +5,13 @@
   "dependencies": {
     "antd": "^3.19.8",
     "axios": "^0.19.0",
+    "connected-react-router": "^6.5.0",
     "craco-antd": "^1.11.0",
     "immer": "^3.1.3",
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-quill": "^1.3.3",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
@@ -24,8 +26,8 @@
     "start": "craco start",
     "start:dev": "REACT_APP_BUILD_MODE=sandbox craco start",
     "build": "craco build",
-    "build:dev": "REACT_APP_BUILD_MODE=sandbox craco start",
-    "test": "craco start"
+    "build:dev": "REACT_APP_BUILD_MODE=sandbox craco build",
+    "test": "craco test"
   },
   "browserslist": {
     "production": [

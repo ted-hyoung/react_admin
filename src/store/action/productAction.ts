@@ -1,8 +1,3 @@
-// 공구 정보 조회 (추후 공구와 취합해야함)
-export const GET_EVENT_REQUEST = 'event/GET_EVENT_REQUEST';
-export const GET_EVENT_SUCCESS = 'event/GET_EVENT_SUCCESS';
-export const GET_EVENT_FAILURE = 'event/GET_EVENT_FAILURE';
-
 // 배송비 설정 변경 (추후 공구와 취합해야함)
 export const UPDATE_SHIPPING_FEE_INFO_REQUEST = 'event/UPDATE_SHIPPING_FEE_INFO_REQUEST';
 export const UPDATE_SHIPPING_FEE_INFO_SUCCESS = 'event/UPDATE_SHIPPING_FEE_INFO_SUCCESS';

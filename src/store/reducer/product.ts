@@ -25,40 +25,34 @@ export interface ProductState {
   requestState: ProductRequestState;
 }
 
-export const getEventAsync = createAsyncAction(
-  Actions.GET_EVENT_REQUEST,
-  Actions.GET_EVENT_SUCCESS,
-  Actions.GET_EVENT_FAILURE
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
-
 export const createProductAsync = createAsyncAction(
   Actions.CREATE_PRODUCTS_REQUEST,
   Actions.CREATE_PRODUCTS_SUCCESS,
-  Actions.CREATE_PRODUCTS_FAILURE
+  Actions.CREATE_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const updateProductAsync = createAsyncAction(
   Actions.UPDATE_PRODUCTS_REQUEST,
   Actions.UPDATE_PRODUCTS_SUCCESS,
-  Actions.UPDATE_PRODUCTS_FAILURE
+  Actions.UPDATE_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const updateShippingFeeInfoAsync = createAsyncAction(
   Actions.UPDATE_SHIPPING_FEE_INFO_REQUEST,
   Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS,
-  Actions.UPDATE_SHIPPING_FEE_INFO_FAILURE
+  Actions.UPDATE_SHIPPING_FEE_INFO_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const deleteProductsAsync = createAsyncAction(
   Actions.DELETED_PRODUCTS_REQUEST,
   Actions.DELETED_PRODUCTS_SUCCESS,
-  Actions.DELETED_PRODUCTS_FAILURE
+  Actions.DELETED_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const soldOutProductsAsync = createAsyncAction(
   Actions.SOLD_OUT_PRODUCTS_REQUEST,
   Actions.SOLD_OUT_PRODUCTS_SUCCESS,
-  Actions.SOLD_OUT_PRODUCTS_FAILURE
+  Actions.SOLD_OUT_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 // reducers
@@ -66,7 +60,7 @@ const initialState: ProductState = {
   products: [],
   shippingFeeInfo: {
     shippingFee: 0,
-    shippingFreeCondition: 0
+    shippingFreeCondition: 0,
   },
   requestState: {
     message: '',
@@ -75,12 +69,6 @@ const initialState: ProductState = {
 
 const product = (state = initialState, action: ResponseAsyncAction) => {
   switch (action.type) {
-    case Actions.GET_EVENT_SUCCESS: {
-      return produce(state, draft => {
-        draft.products = action.payload.data.products;
-        draft.shippingFeeInfo = action.payload.data.shippingFeeInfo;
-      });
-    }
     case Actions.CREATE_PRODUCTS_SUCCESS:
     case Actions.UPDATE_PRODUCTS_SUCCESS:
     case Actions.DELETED_PRODUCTS_SUCCESS: {
@@ -89,7 +77,7 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
 
     case Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS: {
       return produce(state, draft => {
-        draft.shippingFeeInfo = action.payload.shippingFeeInfo
+        draft.shippingFeeInfo = action.payload.shippingFeeInfo;
       });
     }
     default: {

@@ -86,7 +86,7 @@ const MENU_LIST = [
 function Menu(props: RouteComponentProps) {
   const { history, location } = props;
 
-  const defaultSelectedKeys = useMemo(() => location.pathname.split('/')[1], [location.pathname]);
+  const defaultSelectedKeys = location.pathname.split('/')[1];
   const defaultOpenKeys = useMemo(
     () =>
       MENU_LIST.reduce((ac, menu) => {

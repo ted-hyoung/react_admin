@@ -1,5 +1,6 @@
 export * from './AsyncAction';
 export * from './Event';
+export * from './EventNotice';
 export * from './Review';
 export * from './Payload';
 export * from './Qna';
@@ -7,6 +8,7 @@ export * from './Review';
 export * from './Modal';
 export * from './Account';
 export * from './Contact';
+export * from './CelebReview';
 export * from './Product';
 export * from './Order';
 export * from './Payment';
