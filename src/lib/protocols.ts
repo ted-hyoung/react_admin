@@ -34,7 +34,7 @@ const fileHost = getFileHost();
 const authHeader = {
   Accept: 'application/json',
   Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYzODQyNDUxLCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYzMjM3NjUxfQ.sYZ9Cz2ANqZqdguOsKdJgvtWVs3v4RJhJG6nDzuRtqA',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiVVNFUl9ST0xFIjoiUk9MRV9BRE1JTiIsImlhdCI6MTU2MzMzNDEzM30.tw3cc1n2cFpO49-S7UsC_d8H-sHOD-fgqnu_HGN0D9g',
 };
 
 /**

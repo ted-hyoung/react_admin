@@ -5,7 +5,6 @@ export const calcStringByte = (str: string) => {
     return 0;
   }
 };
-
 export const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 interface EnumType {
