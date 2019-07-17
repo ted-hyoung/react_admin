@@ -22,20 +22,13 @@ const extractErrorMsg = (error: any) => {
   }
 };
 
-const getHost = () => {
-  if (process.env.NODE_ENV === 'production') {
-    if (process.env.REACT_APP_BUILD_MODE === 'sandbox') {
-      return 'https://fromc-api.ifdev.cc/api' + getAPIVersion();
-    } else {
-      return 'https://fromc-api.ifprod.cc/api' + getAPIVersion();
-    }
-  } else {
-    return 'http://localhost:8080/api' + getAPIVersion();
-  }
-};
+const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
+
+const getFileHost = () => process.env.REACT_APP_FILE_API_URL;
 
 // config
 const host = getHost();
+const fileHost = getFileHost();
 
 // todo: 임시 auth header
 const authHeader = {
