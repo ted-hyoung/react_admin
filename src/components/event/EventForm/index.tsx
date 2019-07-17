@@ -1,5 +1,5 @@
 // base
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // modules
 import moment from 'moment';
@@ -9,43 +9,42 @@ import {
   Input,
   Row,
   Col,
-  Mentions,
   Button,
   DatePicker,
   TimePicker,
   Typography,
   InputNumber,
-  Modal,
   message,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import { RowProps } from 'antd/lib/row';
 import { calcStringByte } from 'lib/utils';
-import { SelectOptionModal } from 'components';
+import { SelectOptionModal, FlexRow } from 'components';
 
 import './index.less';
 import { useDispatch } from 'react-redux';
-import { createEventAsync } from 'store/reducer/event';
-import { CreateEvent } from 'types';
-import { OptionProps } from 'rc-mentions/lib/Option';
+import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
+import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
 import { LabeledValue } from 'antd/lib/select';
 
 // defines
 const { TextArea } = Input;
 const { Text } = Typography;
-const format = 'HH:mm A';
+const TIME_FORMAT = 'HH:mm A';
 
-function FlexRow(props: RowProps) {
-  return (
-    <Row type="flex" align="middle" gutter={10} {...props}>
-      {props.children}
-    </Row>
-  );
+interface Props extends FormComponentProps {
+  event: ResponseEvent;
 }
 
-function CreateEventForm(props: FormComponentProps) {
-  const { form } = props;
-  const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll } = form;
+function EventForm(props: Props) {
+  const { event, form } = props;
+  const {
+    getFieldDecorator,
+    getFieldValue,
+    setFieldsValue,
+    isFieldsTouched,
+    resetFields,
+    validateFieldsAndScroll,
+  } = form;
 
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
@@ -54,20 +53,36 @@ function CreateEventForm(props: FormComponentProps) {
     e.preventDefault();
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
-      console.log(error);
       if (!error) {
-        const data: CreateEvent = {
-          name: values.name,
-          brandName: values.brandName,
-          choiceReview: values.choiceReview,
-          detail: values.detail,
-          salesStarted: moment(values.salesStarted).format('YYYY-MM-DDTHH:mm'),
-          salesEnded: moment(values.salesEnded).format('YYYY-MM-DDTHH:mm'),
-          targetAmount: values.targetAmount,
-          videoUrl: values.videoUrl,
-        };
+        const { name, brandName, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
 
-        dispatch(createEventAsync.request({ data }));
+        if (event.eventId) {
+          const data: UpdateEvent = {
+            name,
+            brandName,
+            choiceReview,
+            salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
+            salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
+            targetAmount,
+            videoUrl,
+          };
+
+          dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
+        } else {
+          const data: CreateEvent = {
+            name,
+            brandName,
+            choiceReview,
+            salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
+            salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
+            targetAmount,
+            videoUrl,
+          };
+
+          dispatch(createEventAsync.request({ data }));
+        }
+
+        resetFields();
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
@@ -75,21 +90,34 @@ function CreateEventForm(props: FormComponentProps) {
   };
 
   const handleSelectBrandName = (value: LabeledValue) => {
-    console.log(value);
-
-    if (typeof value === 'string' || typeof value === 'number') {
-      return false;
-    }
-
     setFieldsValue({ brandName: value.label });
     setVisible(false);
   };
 
+  useEffect(() => {
+    if (event.eventId) {
+      setFieldsValue({
+        name: event.name,
+        brandName: event.brandName,
+        choiceReview: event.choiceReview,
+        salesStarted: moment(event.salesStarted),
+        salesEnded: moment(event.salesEnded),
+        targetAmount: event.targetAmount,
+        videoUrl: event.videoUrl,
+      });
+    }
+
+    return () => {
+      if (isFieldsTouched()) {
+        window.alert('현재 작성중인 데이터가 있습니다.');
+      }
+    };
+  }, [event.eventId]);
+
   return (
     <>
-      <Form className="create-event" onSubmit={handleSubmit}>
-        <button type="submit">등록</button>
-        <Descriptions bordered title="공구 정보">
+      <Form className="event-form" onSubmit={handleSubmit}>
+        <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
               <Col>
@@ -104,11 +132,18 @@ function CreateEventForm(props: FormComponentProps) {
                         message: '공구명을 입력해주세요.',
                       },
                     ],
-                  })(<Input maxLength={100} size="large" />)}
+                  })(
+                    <TextArea
+                      spellCheck={false}
+                      maxLength={100}
+                      autosize={{ minRows: 3, maxRows: 3 }}
+                      style={{ resize: 'none' }}
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('name'))}/500</span>
+                <span>{calcStringByte(getFieldValue('name'))}/100</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -123,11 +158,18 @@ function CreateEventForm(props: FormComponentProps) {
                         message: '초이스리뷰를 입력해주세요.',
                       },
                     ],
-                  })(<TextArea maxLength={500} autosize={{ minRows: 3, maxRows: 5 }} style={{ resize: 'none' }} />)}
+                  })(
+                    <TextArea
+                      spellCheck={false}
+                      maxLength={500}
+                      autosize={{ minRows: 3, maxRows: 5 }}
+                      style={{ resize: 'none' }}
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('choiceReview'))}/100</span>
+                <span>{calcStringByte(getFieldValue('choiceReview'))}/500</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -180,8 +222,8 @@ function CreateEventForm(props: FormComponentProps) {
                     <TimePicker
                       use12Hours
                       placeholder="시작시간"
-                      defaultOpenValue={moment('00:00 AM', format)}
-                      format={format}
+                      defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+                      format={TIME_FORMAT}
                     />,
                   )}
                 </Form.Item>
@@ -214,20 +256,21 @@ function CreateEventForm(props: FormComponentProps) {
                     <TimePicker
                       use12Hours
                       placeholder="종료시간"
-                      defaultOpenValue={moment('00:00 AM', format)}
-                      format={format}
+                      defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+                      format={TIME_FORMAT}
                     />,
                   )}
                 </Form.Item>
               </Col>
             </FlexRow>
           </Descriptions.Item>
-          <Descriptions.Item label="*목표 구매액" span={24}>
+          <Descriptions.Item label="목표 구매액" span={24}>
             <FlexRow>
-              <Col span={4}>
+              <Col span={6}>
                 <Form.Item>
                   {getFieldDecorator('targetAmount')(
                     <InputNumber
+                      min={0}
                       step={10000}
                       style={{ width: '100%' }}
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -248,15 +291,20 @@ function CreateEventForm(props: FormComponentProps) {
             <Form.Item>{getFieldDecorator('videoUrl')(<Input />)}</Form.Item>
           </Descriptions.Item>
         </Descriptions>
+        <Form.Item style={{ textAlign: 'right', marginTop: 10 }}>
+          <Button type="primary" htmlType="submit">
+            {event.eventId ? '수정' : '등록'}
+          </Button>
+        </Form.Item>
       </Form>
       <SelectOptionModal
         placeholder="브랜드 선택"
         visible={visible}
-        options={[{ key: 'test', label: 'test' }]}
+        options={[{ key: '비클', label: '비클' }]}
         onSelect={handleSelectBrandName}
       />
     </>
   );
 }
 
-export default Form.create()(CreateEventForm);
+export default Form.create<Props>()(EventForm);

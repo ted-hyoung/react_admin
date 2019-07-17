@@ -1,6 +1,8 @@
 // base
 import { combineReducers } from 'redux';
+import { connectRouter, RouterState } from 'connected-react-router';
 import { all } from 'redux-saga/effects';
+import { History } from 'history';
 
 // reducer
 import event, { EventState } from './reducer/event';
@@ -19,6 +21,7 @@ import celebReviewSaga from './saga/celebReviewSaga';
 import productSaga from './saga/productSaga';
 
 export interface StoreState {
+  router: RouterState;
   event: EventState;
   qna: QnaState;
   review: ReviewState;
@@ -31,13 +34,15 @@ export function* saga() {
   yield all([eventSaga(), qnaSaga(), reviewSaga(), contactSaga(), productSaga(), , celebReviewSaga()]);
 }
 
-const reducer = combineReducers<StoreState>({
-  event,
-  qna,
-  review,
-  contact,
-  celebReview,
-  product,
-});
+const reducer = (history: History) =>
+  combineReducers<StoreState>({
+    router: connectRouter(history),
+    event,
+    qna,
+    review,
+    contact,
+    celebReview,
+    product,
+  });
 
 export default reducer;

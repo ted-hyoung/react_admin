@@ -12,18 +12,25 @@ import { TextEditor } from 'components';
 import { StoreState } from 'store';
 import { getCelebReviewAsync, updateCelebReviewAsync } from 'store/reducer/celebReview';
 
-function CelebReviewDetail(props: { id: number }) {
-  const { id } = props;
-
+function CelebReviewDetail() {
   const dispatch = useDispatch();
-  const { celebReview } = useSelector((state: StoreState) => state.celebReview);
+
+  const { eventId, celebReview } = useSelector((state: StoreState) => {
+    const { event } = state.event;
+    const { celebReview } = state.celebReview;
+
+    return {
+      eventId: event.eventId,
+      celebReview,
+    };
+  });
   const [value, setValue] = useState('');
 
   const handleConfirm = () => {
-    if (id) {
+    if (eventId) {
       dispatch(
         updateCelebReviewAsync.request({
-          id,
+          id: eventId,
           data: {
             contents: value,
             instagramUrl: 'asdf',
@@ -34,8 +41,8 @@ function CelebReviewDetail(props: { id: number }) {
   };
 
   useEffect(() => {
-    dispatch(getCelebReviewAsync.request({ id }));
-  }, [id, dispatch]);
+    dispatch(getCelebReviewAsync.request({ id: eventId }));
+  }, [eventId, dispatch]);
 
   return (
     <>

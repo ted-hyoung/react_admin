@@ -1,6 +1,6 @@
 // base
 import React, { useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
@@ -8,7 +8,7 @@ import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
 
 // components
-import { PaginationTable, AffixButton } from 'components';
+import { PaginationTable } from 'components';
 
 // types
 import { EventStatus } from 'enums';
@@ -63,34 +63,30 @@ const colums: ColumnProps<EventList>[] = [
     dataIndex: 'eventStatus',
     key: 'eventStatus',
   },
-  {
-    title: '복사',
-    dataIndex: 'copy',
-    key: 'copy',
-  },
+  // {
+  //   title: '복사',
+  //   dataIndex: 'copy',
+  //   key: 'copy',
+  // },
 ];
 
-function EventList() {
+function EventList(props: RouteComponentProps) {
+  const { history } = props;
+
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
 
-  console.log(events);
-
   const { size: pageSize = 10 } = events;
 
-  const getEvents = useCallback(
-    (page: number, size = pageSize, searchCondition?: SearchEvent) => {
-      dispatch(
-        getEventsAsync.request({
-          page,
-          size,
-          searchCondition,
-        }),
-      );
-    },
-
-    [dispatch, pageSize],
-  );
+  const getEvents = (page: number, size = pageSize, searchCondition?: SearchEvent) => {
+    dispatch(
+      getEventsAsync.request({
+        page,
+        size,
+        searchCondition,
+      }),
+    );
+  };
 
   useEffect(() => {
     getEvents(0);
@@ -111,6 +107,12 @@ function EventList() {
 
     [getEvents],
   );
+
+  const handleRowEvent = (recode: EventList) => {
+    return {
+      onClick: () => history.push('/events/detail/' + recode.key),
+    };
+  };
 
   const data: EventList[] = events.content.map((event, i) => {
     return {
@@ -136,9 +138,10 @@ function EventList() {
           pageSize: events.size,
           onChange: handlePaginationChange,
         }}
+        onRow={handleRowEvent}
       />
-      <Link to="/events/new">
-        <Button type="primary" icon="setting" size="large" style={{ position: 'absolute', right: 50 }}>
+      <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
+        <Button type="primary" icon="setting" size="large">
           신규 등록
         </Button>
       </Link>
@@ -146,4 +149,4 @@ function EventList() {
   );
 }
 
-export default EventList;
+export default withRouter(EventList);

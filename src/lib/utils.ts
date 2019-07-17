@@ -1,5 +1,3 @@
-import { Key } from 'react';
-
 export const calcStringByte = (str: string) => {
   if (str) {
     return String(str).length;
@@ -8,9 +6,11 @@ export const calcStringByte = (str: string) => {
   }
 };
 export const dateFormat = 'YYYY-MM-DD HH:mm:ss';
+
 interface EnumType {
   [i: number]: string;
 }
+
 export function mapEnums(targetEnum: EnumType) {
   const result: {
     key: string;

@@ -1,6 +1,6 @@
 // base
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // components
 import { ProductTable, ShippingFreeInfo } from 'components';
@@ -14,7 +14,7 @@ import {
   deleteProductsAsync,
   updateProductAsync,
   updateShippingFeeInfoAsync,
-  soldOutProductsAsync
+  soldOutProductsAsync,
 } from 'store/reducer/product';
 
 // types
@@ -26,23 +26,24 @@ import { ProductMode, ProductSold } from 'enums';
 
 // less
 import './index.less';
+import { StoreState } from 'store';
 
 // todo : validate 추후 적용 필요 (이종현)
 interface Props {
+  eventId: number;
   responseProducts: ResponseProduct[];
   responseShippingFeeInfo: ResponseShippingFeeInfo;
 }
 
 function ProductDetail(props: Props) {
+  const { eventId, responseProducts, responseShippingFeeInfo } = props;
 
-  const { responseProducts, responseShippingFeeInfo } = props;
-
-  const [ productModalVisible, setProductModalVisible ] = useState(false);
-  const [ productMode, setProductMode ] = useState(ProductMode.CREATE);
+  const [productModalVisible, setProductModalVisible] = useState(false);
+  const [productMode, setProductMode] = useState(ProductMode.CREATE);
 
   const dispatch = useDispatch();
 
-  const initCreateProduct:CreateProduct = {
+  const initCreateProduct: CreateProduct = {
     productName: '',
     normalSalesPrice: 0,
     discountSalesPrice: 0,
@@ -51,47 +52,49 @@ function ProductDetail(props: Props) {
     disabledOptionSafeStock: 0,
     freebie: '',
     enableOption: true,
-    options: [{
-      optionName: "",
-      salePrice: 0,
-      stock: 0,
-      safeStock: 0,
-      totalStock: 0
-    }]
+    options: [
+      {
+        optionName: '',
+        salePrice: 0,
+        stock: 0,
+        safeStock: 0,
+        totalStock: 0,
+      },
+    ],
   };
 
-  const initOption:CreateOption = {
-    optionName: "",
+  const initOption: CreateOption = {
+    optionName: '',
     salePrice: 0,
     stock: 0,
     safeStock: 0,
-    totalStock: 0
+    totalStock: 0,
   };
 
-  const initShippingFreeInfo:ResponseShippingFeeInfo = {
+  const initShippingFreeInfo: ResponseShippingFeeInfo = {
     shippingFee: 0,
-    shippingFreeCondition: 0
+    shippingFreeCondition: 0,
   };
 
-  const initProducts:ResponseProduct[] = [];
-  const initSelectedRowKeys:string[] = [];
+  const initProducts: ResponseProduct[] = [];
+  const initSelectedRowKeys: string[] = [];
 
-  const [ product, setProduct ] = useState(initCreateProduct);
-  const [ products, setProducts ] = useState(initProducts);
-  const [ shippingFee, setShippingFree ] = useState(initShippingFreeInfo);
-  const [ selectProductId, setSelectProductId ] = useState(0);
-  const [ selectedRowKeys, setSelectedRowKeys ] = useState(initSelectedRowKeys);
+  const [product, setProduct] = useState(initCreateProduct);
+  const [products, setProducts] = useState(initProducts);
+  const [shippingFee, setShippingFree] = useState(initShippingFreeInfo);
+  const [selectProductId, setSelectProductId] = useState(0);
+  const [selectedRowKeys, setSelectedRowKeys] = useState(initSelectedRowKeys);
 
   useEffect(() => {
     setProducts(() => responseProducts);
     setShippingFree(() => responseShippingFeeInfo);
   }, [responseProducts, responseShippingFeeInfo]);
 
-  const rowSelection:TableRowSelection<string[]> = {
+  const rowSelection: TableRowSelection<string[]> = {
     selectedRowKeys,
     onChange: useCallback(selectedRowKeys => {
-      setSelectedRowKeys(selectedRowKeys)
-    }, [])
+      setSelectedRowKeys(selectedRowKeys);
+    }, []),
   };
 
   const handleProductModalOpen = useCallback(() => {
@@ -106,149 +109,173 @@ function ProductDetail(props: Props) {
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
-
     switch (productMode) {
       case ProductMode.CREATE:
         const createData = {
-          eventId: 1,
-          data: product
+          eventId,
+          data: product.options.reduce((ac, option, index) => {
+            if (index === ac.options.length - 1) {
+              ac.options = ac.options.slice(0, ac.options.length - 1);
+            }
+
+            return ac;
+          }, product),
         };
-        dispatch(
-          createProductAsync.request(createData)
-        );
+        dispatch(createProductAsync.request(createData));
         setProduct(initCreateProduct);
         setProductModalVisible(false);
         break;
       case ProductMode.UPDATE:
         const updateData = {
-          eventId: 1,
+          eventId,
           productId: selectProductId,
-          data: product
+          data: product.options.reduce((ac, option, index) => {
+            if (index === ac.options.length - 1) {
+              ac.options = ac.options.slice(0, ac.options.length - 1);
+            }
+
+            return ac;
+          }, product),
         };
-        dispatch(
-          updateProductAsync.request(updateData)
-        );
+        dispatch(updateProductAsync.request(updateData));
         setProduct(initCreateProduct);
         setProductModalVisible(false);
         break;
     }
   }, [selectProductId, dispatch, product, initCreateProduct, productMode]);
 
-  const onChangeEnableOption = useCallback((value:number) => {
-    if (product.options.length === 0 && value === 0) {
-      setProduct({
-        ...product,
-        disabledOptionStock: 0,
-        disabledOptionSafeStock: 0,
-        disabledOptionTotalStock: 0,
-        options: product.options.concat(initOption),
-        enableOption: true
-      });
-    } else {
-      setProduct({
-        ...product,
-        enableOption: value === 0,
-        options: []
-      });
-    }
-  }, [initOption, product]);
+  const onChangeEnableOption = useCallback(
+    (value: number) => {
+      if (product.options.length === 0 && value === 0) {
+        setProduct({
+          ...product,
+          disabledOptionStock: 0,
+          disabledOptionSafeStock: 0,
+          disabledOptionTotalStock: 0,
+          options: product.options.concat(initOption),
+          enableOption: true,
+        });
+      } else {
+        setProduct({
+          ...product,
+          enableOption: value === 0,
+          options: [],
+        });
+      }
+    },
+    [initOption, product],
+  );
 
-  const onChangeOptionValue = useCallback((e, index) => {
-    const name = e.target.name;
-    const value = e.target.value;
+  const onChangeOptionValue = useCallback(
+    (e, index) => {
+      const name = e.target.name;
+      const value = e.target.value;
 
-    if (name === 'optionName') {
-      product.options[index].optionName = value;
-    } else if (name === 'salePrice') {
-      product.options[index].salePrice = Number(value) < 0 ? 0 : Number(value);
-    } else if (name === 'stock') {
-      product.options[index].stock = Number(value) < 0 ? 0 : Number(value);
-      product.options[index].totalStock = Number(value) < 0 ? 0 : Number(value);
-    } else if (name === 'safeStock') {
-      product.options[index].safeStock = Number(value) < 0 ? 0 : Number(value);
-    }
-    setProduct({
-      ...product,
-      options: product.options
-    });
-  }, [product]);
-
-  const onChangeProductValue = useCallback((e) => {
-    if (e.target.name === 'disabledOptionStock') {
+      if (name === 'optionName') {
+        product.options[index].optionName = value;
+      } else if (name === 'salePrice') {
+        product.options[index].salePrice = Number(value) < 0 ? 0 : Number(value);
+      } else if (name === 'stock') {
+        product.options[index].stock = Number(value) < 0 ? 0 : Number(value);
+        product.options[index].totalStock = Number(value) < 0 ? 0 : Number(value);
+      } else if (name === 'safeStock') {
+        product.options[index].safeStock = Number(value) < 0 ? 0 : Number(value);
+      }
       setProduct({
         ...product,
-        disabledOptionStock: Number(e.target.value),
-        disabledOptionTotalStock: Number(e.target.value)
-      })
-    } else {
-      setProduct({
-        ...product,
-        [e.target.name]: e.target.type === 'number' ? Number(e.target.value) < 0 ? 0 : Number(e.target.value) : e.target.value
+        options: product.options,
       });
-    }
-  }, [product]);
+    },
+    [product],
+  );
+
+  const onChangeProductValue = useCallback(
+    e => {
+      if (e.target.name === 'disabledOptionStock') {
+        setProduct({
+          ...product,
+          disabledOptionStock: Number(e.target.value),
+          disabledOptionTotalStock: Number(e.target.value),
+        });
+      } else {
+        setProduct({
+          ...product,
+          [e.target.name]:
+            e.target.type === 'number' ? (Number(e.target.value) < 0 ? 0 : Number(e.target.value)) : e.target.value,
+        });
+      }
+    },
+    [product],
+  );
 
   const addOptionRow = useCallback(() => {
     setProduct({
       ...product,
-      options: product.options.concat(initOption)
+      options: product.options.concat(initOption),
     });
   }, [product, initOption]);
 
-  const removeOptionRow = useCallback((index:number) => {
-    const tempOptions:ResponseOption | CreateOption[] = [];
-    product.options.forEach((item, itemIndex) => {
-      if (index !== itemIndex) {
-        tempOptions.push(item);
-      }
-    });
+  const removeOptionRow = useCallback(
+    (index: number) => {
+      const tempOptions: ResponseOption | CreateOption[] = [];
+      product.options.forEach((item, itemIndex) => {
+        if (index !== itemIndex) {
+          tempOptions.push(item);
+        }
+      });
 
-    setProduct({
-      ...product,
-      enableOption: tempOptions.length !== 0,
-      options: tempOptions
-    });
-  }, [product]);
+      setProduct({
+        ...product,
+        enableOption: tempOptions.length !== 0,
+        options: tempOptions,
+      });
+    },
+    [product],
+  );
 
-  const onChangeShippingFreeInfoValue = useCallback((e) => {
-    setShippingFree({
-      ...shippingFee,
-      [e.target.name] : Number(e.target.value) < 0 ? 0 : Number(e.target.value)
-    });
-  }, [shippingFee]);
+  const onChangeShippingFreeInfoValue = useCallback(
+    e => {
+      setShippingFree({
+        ...shippingFee,
+        [e.target.name]: Number(e.target.value) < 0 ? 0 : Number(e.target.value),
+      });
+    },
+    [shippingFee],
+  );
 
   const handleShippingFreeInfo = useCallback(() => {
     const data = {
-      eventId: 1,
+      eventId,
       data: {
-        shippingFeeInfo: shippingFee
-      }
+        shippingFeeInfo: shippingFee,
+      },
     };
-    dispatch(
-      updateShippingFeeInfoAsync.request(data)
-    );
+    dispatch(updateShippingFeeInfoAsync.request(data));
   }, [dispatch, shippingFee]);
 
-  const handleSelectedRow = useCallback((record:ProductList) => {
-    setProduct({
-      ...product,
-      productName: record.productName,
-      normalSalesPrice: record.normalSalesPrice,
-      discountSalesPrice: record.discountSalesPrice,
-      disabledOptionTotalStock: record.disabledOptionTotalStock,
-      disabledOptionStock: record.disabledOptionStock,
-      disabledOptionSafeStock: record.disabledOptionSafeStock,
-      freebie: record.freebie,
-      enableOption: record.enableOption,
-      options: record.options
-    });
-    setSelectProductId(record.productId);
-    setProductMode(ProductMode.UPDATE);
-    setProductModalVisible(true);
-  }, [product]);
+  const handleSelectedRow = useCallback(
+    (record: ProductList) => {
+      setProduct({
+        ...product,
+        productName: record.productName,
+        normalSalesPrice: record.normalSalesPrice,
+        discountSalesPrice: record.discountSalesPrice,
+        disabledOptionTotalStock: record.disabledOptionTotalStock,
+        disabledOptionStock: record.disabledOptionStock,
+        disabledOptionSafeStock: record.disabledOptionSafeStock,
+        freebie: record.freebie,
+        enableOption: record.enableOption,
+        options: record.options,
+      });
+      setSelectProductId(record.productId);
+      setProductMode(ProductMode.UPDATE);
+      setProductModalVisible(true);
+    },
+    [product],
+  );
 
   const handleProductDelete = useCallback(() => {
-    const selectedIds:number[] = [];
+    const selectedIds: number[] = [];
 
     selectedRowKeys.forEach(index => {
       const selectIndex = Number(index) - 1;
@@ -256,36 +283,35 @@ function ProductDetail(props: Props) {
     });
 
     const data = {
-      eventId: 1,
-      data: {
-        productIds: selectedIds
-      }
-    };
-    dispatch(
-      deleteProductsAsync.request(data)
-    );
-    setSelectedRowKeys([]);
-  }, [dispatch, products, selectedRowKeys]);
-
-  const handleProductSoldOut = useCallback((productSold:ProductSold) => {
-    const selectedIds:number[] = [];
-
-    selectedRowKeys.map(index => {
-      return selectedIds.push(products[Number(index) - 1].productId);
-    });
-
-    const data = {
-      eventId: 1,
+      eventId,
       data: {
         productIds: selectedIds,
-        soldOut: productSold === ProductSold.SOLD_OUT
-      }
+      },
     };
-    dispatch(
-      soldOutProductsAsync.request(data)
-    );
+    dispatch(deleteProductsAsync.request(data));
     setSelectedRowKeys([]);
   }, [dispatch, products, selectedRowKeys]);
+
+  const handleProductSoldOut = useCallback(
+    (productSold: ProductSold) => {
+      const selectedIds: number[] = [];
+
+      selectedRowKeys.map(index => {
+        return selectedIds.push(products[Number(index) - 1].productId);
+      });
+
+      const data = {
+        eventId,
+        data: {
+          productIds: selectedIds,
+          soldOut: productSold === ProductSold.SOLD_OUT,
+        },
+      };
+      dispatch(soldOutProductsAsync.request(data));
+      setSelectedRowKeys([]);
+    },
+    [dispatch, products, selectedRowKeys],
+  );
 
   return (
     <div id="product">
@@ -319,7 +345,7 @@ function ProductDetail(props: Props) {
         onChangeShippingFreeInfoValue={onChangeShippingFreeInfoValue}
       />
     </div>
-  )
+  );
 }
 
 export default ProductDetail;

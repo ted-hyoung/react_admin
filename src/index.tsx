@@ -14,16 +14,26 @@ import 'moment/locale/ko';
 import './index.less';
 import ModalProvider from 'lib/context/ModalProvider';
 
+import { createBrowserHistory } from 'history';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
+
 // defines
+const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(reducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+
+const store = createStore(
+  reducer(history),
+  composeWithDevTools(applyMiddleware(sagaMiddleware, routerMiddleware(history))),
+);
 
 sagaMiddleware.run(saga);
 
 ReactDOM.render(
   <Provider store={store}>
     <ModalProvider>
-      <App />
+      <ConnectedRouter history={history}>
+        <App />
+      </ConnectedRouter>
     </ModalProvider>
   </Provider>,
   document.getElementById('root'),
