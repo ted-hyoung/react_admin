@@ -18,30 +18,23 @@ const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
-    return error.response.data.message || '에러 발생';
+    return error.response.data.message || error.response.data.errors[0].message || '에러 발생';
   }
 };
 
-const getHost = () => {
-  if (process.env.NODE_ENV === 'production') {
-    if (process.env.REACT_APP_BUILD_MODE === 'sandbox') {
-      return 'https://fromc-api.ifdev.cc/api' + getAPIVersion();
-    } else {
-      return 'https://fromc-api.ifprod.cc/api' + getAPIVersion();
-    }
-  } else {
-    return 'http://localhost:8080/api' + getAPIVersion();
-  }
-};
+const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
+
+const getFileHost = () => process.env.REACT_APP_FILE_API_URL;
 
 // config
 const host = getHost();
+const fileHost = getFileHost();
 
 // todo: 임시 auth header
 const authHeader = {
   Accept: 'application/json',
   Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiZXhwIjoxNTYyMDU2NTc1LCJVU0VSX1JPTEUiOiJST0xFX0FETUlOIiwiaWF0IjoxNTYxNDUxNzc1fQ.8RWWnRD_fnikzeltxSWlgDxFtTQhfBrKH3Zx_LUghQk',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiVVNFUl9ST0xFIjoiUk9MRV9BRE1JTiIsImlhdCI6MTU2MzMzNDEzM30.tw3cc1n2cFpO49-S7UsC_d8H-sHOD-fgqnu_HGN0D9g',
 };
 
 /**
@@ -111,6 +104,23 @@ export const put: AxiosFunction = (url, data, cb) => {
 export const patch: AxiosFunction = (url, data, cb) => {
   return axios
     .patch(host + url, data ? data : {}, {
+      headers: authHeader,
+    })
+    .then(res => (cb ? cb(res) : res))
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};
+
+/**
+ *
+ * @param url api url
+ * @param data api data
+ * @param cb callback function
+ */
+export const del: AxiosFunction = (url, data, cb) => {
+  return axios
+    .delete(host + url, {
       headers: authHeader,
     })
     .then(res => (cb ? cb(res) : res))

@@ -6,22 +6,35 @@ import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import App from './App';
-import reducer from './store';
+import reducer, { saga } from './store';
 import * as serviceWorker from './serviceWorker';
+import 'moment/locale/ko';
 
 // assets
-// import 'moment/locale/ko';
 import './index.less';
+import ModalProvider from 'lib/context/ModalProvider';
+
+import { createBrowserHistory } from 'history';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 
 // defines
+const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
-const store = createStore(reducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
 
-// sagaMiddleware.run(saga);
+const store = createStore(
+  reducer(history),
+  composeWithDevTools(applyMiddleware(sagaMiddleware, routerMiddleware(history))),
+);
+
+sagaMiddleware.run(saga);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ModalProvider>
+      <ConnectedRouter history={history}>
+        <App />
+      </ConnectedRouter>
+    </ModalProvider>
   </Provider>,
   document.getElementById('root'),
 );
