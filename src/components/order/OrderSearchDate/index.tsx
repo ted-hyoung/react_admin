@@ -6,14 +6,16 @@ import { DatePicker, Button } from 'antd';
 import { DatePickerDecorator, RangePickerProps, RangePickerValue } from 'antd/lib/date-picker/interface';
 import moment, { Moment } from 'moment';
 
+// utils
+import { defaultDateFormat } from 'lib/utils';
+
+// defines
 enum DateRange {
   RECENT_3DAYS = '최근 3일',
   RECENT_WEEK = '최근 7일',
   RECENT_MONTH = '최근 1개월',
   RECENT_3MONTHS = '최근 3개월',
 }
-
-const dateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
 export function validateDate(val: any, key: string) {
   if (val[key].length > 0) {
@@ -58,11 +60,11 @@ const OrderSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>(
               if (i === 0) {
                 const start = item.startOf('day');
                 newDates[i] = start;
-                newDateStrings[i] = start.format(dateFormat);
+                newDateStrings[i] = start.format(defaultDateFormat);
               } else {
                 const end = item.endOf('day');
                 newDates[i] = end;
-                newDateStrings[i] = end.format(dateFormat);
+                newDateStrings[i] = end.format(defaultDateFormat);
               }
             }
           });

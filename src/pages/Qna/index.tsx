@@ -15,7 +15,7 @@ import moment from 'moment';
 import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
 
 // utils
-import { dateFormat } from 'lib/utils';
+import { dateTimeFormat } from 'lib/utils';
 
 // types
 import { ResponseQna } from 'types';
@@ -76,7 +76,7 @@ const Qna = () => {
       key: 'created',
       width: '20%',
       render: (text: string) => {
-        return moment(text).format(dateFormat);
+        return moment(text).format(dateTimeFormat);
       },
     },
     {

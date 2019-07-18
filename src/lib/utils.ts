@@ -1,3 +1,11 @@
+export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
+
+export const startDateFormat = 'YYYY-MM-DDT00:00:00';
+
+export const endDateFormat = 'YYYY-MM-DDT23:59:59';
+
+export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+
 export const calcStringByte = (str: string) => {
   if (str) {
     return String(str).length;
@@ -5,8 +13,6 @@ export const calcStringByte = (str: string) => {
     return 0;
   }
 };
-
-export const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 interface EnumType {
   [i: number]: string;
