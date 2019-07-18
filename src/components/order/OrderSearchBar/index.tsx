@@ -13,15 +13,14 @@ import OrderSearchDate, {
   validateDate,
 } from 'components/order/OrderSearchDate';
 
+// utils
+import { startDateFormat, endDateFormat } from 'lib/utils';
+
 // enums
 import { PAYMENT_STATUSES, SHIPPING_STATUSES, DEFAULT_PAYMENT_STATUSES, DEFAULT_SHIPPING_STATUSES } from 'enums';
 
 // assets
 import './index.less';
-
-// defines
-const startDateFormat = 'YYYY-MM-DDT00:00:00';
-const endDateFormat = 'YYYY-MM-DDT23:59:59';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
