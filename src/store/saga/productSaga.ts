@@ -1,5 +1,6 @@
 // base
 import { call, put, takeEvery } from 'redux-saga/effects';
+import { replace } from 'connected-react-router';
 
 // lib
 import * as Api from 'lib/protocols';
@@ -16,14 +17,13 @@ import {
   deleteProductsAsync,
   soldOutProductsAsync,
 } from 'store/reducer/product';
-import { getEventByIdAsync } from 'store/reducer/event';
 
 function* createProduct(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.post(`/events/${eventId}/product`, data));
     yield put(createProductAsync.success(res.data));
-    // yield put(getEventByIdAsync.request({ id: eventId }));
+    yield put(replace('/events/detail/' + eventId));
   } catch (error) {
     yield put(createProductAsync.failure(error));
   }
@@ -34,7 +34,7 @@ function* updateProduct(action: RequestAsyncAction) {
     const { eventId, productId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/${productId}`, data));
     yield put(updateProductAsync.success(res.data));
-    // yield put(getEventByIdAsync.request({ id: eventId }));
+    yield put(replace('/events/detail/' + eventId));
   } catch (error) {
     yield put(updateProductAsync.failure(error));
   }
@@ -45,7 +45,7 @@ function* deleteProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/disabled`, data));
     yield put(deleteProductsAsync.success(res.data));
-    // yield put(getEventByIdAsync.request({ id: eventId }));
+    yield put(replace('/events/detail/' + eventId));
   } catch (error) {
     yield put(deleteProductsAsync.failure(error));
   }
@@ -56,7 +56,7 @@ function* soldOutProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/sold-out`, data));
     yield put(soldOutProductsAsync.success(res.data));
-    // yield put(getEventByIdAsync.request({ id: eventId }));
+    yield put(replace('/events/detail/' + eventId));
   } catch (error) {
     yield put(soldOutProductsAsync.failure(error));
   }
@@ -67,6 +67,7 @@ function* updateShippingFeeInfo(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     yield call(() => Api.put(`/events/${eventId}/shipping-fee`, data));
     yield put(updateShippingFeeInfoAsync.success(data));
+    yield put(replace('/events/detail/' + eventId));
   } catch (error) {
     yield put(updateShippingFeeInfoAsync.failure(error));
   }
