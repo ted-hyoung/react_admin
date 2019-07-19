@@ -1,0 +1,3 @@
+export const GET_ORDERS_REQUEST = 'order/GET_ORDERS_REQUEST';
+export const GET_ORDERS_SUCCESS = 'order/GET_ORDERS_SUCCESS';
+export const GET_ORDERS_FAILURE = 'order/GET_ORDERS_FAILURE';

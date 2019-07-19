@@ -4,9 +4,9 @@ export interface ResponseProduct {
   productName: string;
   normalSalesPrice: number;
   discountSalesPrice: number;
-  disabledOptionTotalStock: number,
-  disabledOptionStock: number,
-  disabledOptionSafeStock: number,
+  disabledOptionTotalStock: number;
+  disabledOptionStock: number;
+  disabledOptionSafeStock: number;
   disabled: boolean;
   soldOut: boolean;
   freebie: string;
@@ -37,7 +37,7 @@ export interface CreateProduct {
   disabledOptionSafeStock: number;
   freebie: string;
   enableOption: boolean;
-  options: CreateOption[]
+  options: CreateOption[];
 }
 
 export interface CreateOption {
@@ -46,4 +46,9 @@ export interface CreateOption {
   stock: number;
   safeStock: number;
   totalStock: number;
+}
+
+export interface ResponseOrderItemProduct {
+  productId: number;
+  productName: string;
 }

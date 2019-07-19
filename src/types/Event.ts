@@ -34,6 +34,10 @@ export interface ResponseEventForList {
   created: string;
 }
 
+export interface ResponseEventForOrders {
+  brandName: string;
+}
+
 export interface UpdateEvent {
   name: string;
   choiceReview: string;

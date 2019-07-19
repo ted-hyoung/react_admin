@@ -24,6 +24,11 @@ export default [
     secret: false,
   },
   {
+    path: '/orders',
+    component: lazy(() => import('../pages/Orders')),
+    secret: false,
+  },
+  {
     path: '/events/detail/:id',
     component: lazy(() => import('../pages/event/EventDetail')),
     secret: false,
