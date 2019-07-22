@@ -20,6 +20,7 @@
     "redux-saga": "^1.0.3",
     "typesafe-actions": "^4.4.2",
     "typescript": "3.5.2",
+    "universal-cookie": "^4.0.2",
     "xlsx": "^0.14.3"
   },
   "scripts": {

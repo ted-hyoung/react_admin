@@ -1,3 +1,5 @@
+import Cookies from 'universal-cookie';
+
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
 export const startDateFormat = 'YYYY-MM-DDT00:00:00';
@@ -42,3 +44,31 @@ export const getNowYMD = () => {
   const result = y + '-' + m + '-' + d;
   return result;
 };
+
+export function isLoggedIn() {
+  const cookies = new Cookies();
+  return cookies.get('access_token');
+}
+
+export function getToken() {
+  const cookies = new Cookies();
+  return cookies.get('access_token');
+}
+
+export function getRefreshToken() {
+  const cookies = new Cookies();
+  return cookies.get('refresh_token');
+}
+
+export function setToken(token: string, refreshToken: string) {
+  const cookies = new Cookies();
+  cookies.set('access_token', token);
+  cookies.set('refresh_token', token);
+}
+
+export function logout() {
+  const cookies = new Cookies();
+  cookies.set('access_token', '');
+  cookies.set('refresh_token', '');
+  window.location.href = '/';
+}

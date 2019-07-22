@@ -1,22 +1,31 @@
 // base
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import routes, { PrivateRoute } from './routes';
 
 // modules
-import { Layout, Row, Col } from 'antd';
-import { Menu } from 'components';
+import { Layout } from 'antd';
 
 // components
+import { Menu, Header } from 'components';
+
+// pages
+import { Login } from 'pages';
+
+// lib
+import { isLoggedIn } from 'lib/utils';
 
 // defines
-const { Content, Sider, Header } = Layout;
+const { Content, Sider } = Layout;
 
 const NotFound = () => {
   return <div>Not Found!</div>;
 };
 
 function App() {
+  if (!isLoggedIn()) {
+    return <Login />;
+  }
   return (
     <div id="app">
       <Layout style={{ minHeight: '100vh' }}>
@@ -24,7 +33,7 @@ function App() {
           <Menu />
         </Sider>
         <Layout style={{ backgroundColor: '#ffffff' }}>
-          <Header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e8e8e8' }}>FROM C</Header>
+          <Header />
           <Content id="content" style={{ padding: 50 }}>
             <Suspense fallback={<div>Loading...</div>}>
               <Switch>

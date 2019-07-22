@@ -1,5 +1,8 @@
 // base
 import axios, { AxiosPromise, AxiosResponse } from 'axios';
+import { getToken, getRefreshToken, logout, setToken } from './utils';
+import { LoginAccount } from 'types';
+import { message } from 'antd';
 
 // defines
 type AxiosFunction = (
@@ -14,7 +17,7 @@ const getAPIVersion = () => {
   return '';
 };
 
-const extractErrorMsg = (error: any) => {
+export const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
@@ -26,16 +29,55 @@ const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
 
 const getFileHost = () => process.env.REACT_APP_FILE_API_URL;
 
+const getAuthHeader = () => ({
+  Accept: 'application/json',
+  Authorization: 'Bearer ' + getToken(),
+});
+
 // config
 const host = getHost();
 const fileHost = getFileHost();
+const axiosInstance = axios.create();
 
-// todo: 임시 auth header
-const authHeader = {
-  Accept: 'application/json',
-  Authorization:
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJMT0dJTl9JRCI6ImZyb21jIiwiaXNzIjoiaHR0cHM6Ly93d3cuZnJvbWMuY29tIiwiVVNFUl9ST0xFIjoiUk9MRV9BRE1JTiIsImlhdCI6MTU2MzMzNDEzM30.tw3cc1n2cFpO49-S7UsC_d8H-sHOD-fgqnu_HGN0D9g',
-};
+axiosInstance.interceptors.request.use(
+  config => {
+    config.headers = getAuthHeader();
+    return config;
+  },
+  err => {
+    return Promise.reject(err);
+  },
+);
+
+axiosInstance.interceptors.response.use(
+  res => {
+    return res;
+  },
+  err => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(host + '/accounts/authorize', {
+          params: {
+            grant_type: 'refresh_token',
+            access_token: getToken(),
+            refresh_token: getRefreshToken(),
+          },
+        })
+        .then(res => {
+          err.config.__isRetryRequest = true;
+          err.config.headers.Authorization = 'Bearer ' + res.data.access_token;
+          resolve(
+            axios(err.config).catch(err2 => {
+              throw extractErrorMsg(err2);
+            }),
+          );
+        })
+        .catch(refreshTokenErr => {
+          logout();
+        });
+    });
+  },
+);
 
 /**
  *
@@ -44,19 +86,7 @@ const authHeader = {
  * @param cb callback function
  */
 export const get: AxiosFunction = (url, data, cb) => {
-  let options = data ? data : {};
-
-  options = {
-    ...options,
-    headers: authHeader,
-  };
-
-  return axios
-    .get(host + url, options)
-    .then(res => (cb ? cb(res) : res))
-    .catch(error => {
-      throw extractErrorMsg(error);
-    });
+  return axiosInstance.get(host + url, { headers: getAuthHeader(), ...data }).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -67,15 +97,7 @@ export const get: AxiosFunction = (url, data, cb) => {
  * @param withCredentials withCredentials
  */
 export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
-  return axios
-    .post(host + url, data ? data : {}, {
-      headers: authHeader,
-      withCredentials,
-    })
-    .then(res => (cb ? cb(res) : res))
-    .catch(error => {
-      throw extractErrorMsg(error);
-    });
+  return axiosInstance.post(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -85,14 +107,7 @@ export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
  * @param cb callback function
  */
 export const put: AxiosFunction = (url, data, cb) => {
-  return axios
-    .put(host + url, data ? data : {}, {
-      headers: authHeader,
-    })
-    .then(res => (cb ? cb(res) : res))
-    .catch(error => {
-      throw extractErrorMsg(error);
-    });
+  return axiosInstance.put(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -102,14 +117,7 @@ export const put: AxiosFunction = (url, data, cb) => {
  * @param cb callback function
  */
 export const patch: AxiosFunction = (url, data, cb) => {
-  return axios
-    .patch(host + url, data ? data : {}, {
-      headers: authHeader,
-    })
-    .then(res => (cb ? cb(res) : res))
-    .catch(error => {
-      throw extractErrorMsg(error);
-    });
+  return axiosInstance.patch(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -119,12 +127,21 @@ export const patch: AxiosFunction = (url, data, cb) => {
  * @param cb callback function
  */
 export const del: AxiosFunction = (url, data, cb) => {
-  return axios
-    .delete(host + url, {
-      headers: authHeader,
-    })
-    .then(res => (cb ? cb(res) : res))
-    .catch(error => {
-      throw extractErrorMsg(error);
-    });
+  return axiosInstance.delete(host + url).then(res => (cb ? cb(res) : res));
 };
+
+/**
+ *
+ * @param account login account : loginId, password
+ */
+export function login(account: LoginAccount) {
+  return axios
+    .post(host + '/accounts/login', account)
+    .then(res => {
+      setToken(res.data.access_token, res.data.refresh_token);
+      window.location.reload();
+    })
+    .catch(error => {
+      message.error('로그인에 실패했습니다. 다시 시도해주세요');
+    });
+}
