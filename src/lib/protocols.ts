@@ -17,7 +17,7 @@ const getAPIVersion = () => {
   return '';
 };
 
-export const extractErrorMsg = (error: any) => {
+const extractErrorMsg = (error: any) => {
   if (!error.response) {
     return '서버에 접속할 수 없습니다';
   } else {
@@ -86,7 +86,7 @@ axiosInstance.interceptors.response.use(
  * @param cb callback function
  */
 export const get: AxiosFunction = (url, data, cb) => {
-  return axiosInstance.get(host + url, { headers: getAuthHeader(), ...data }).then(res => (cb ? cb(res) : res));
+  return axiosInstance.get(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -97,7 +97,7 @@ export const get: AxiosFunction = (url, data, cb) => {
  * @param withCredentials withCredentials
  */
 export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
-  return axiosInstance.post(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
+  return axiosInstance.post(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -107,7 +107,7 @@ export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
  * @param cb callback function
  */
 export const put: AxiosFunction = (url, data, cb) => {
-  return axiosInstance.put(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
+  return axiosInstance.put(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
 /**
@@ -117,7 +117,7 @@ export const put: AxiosFunction = (url, data, cb) => {
  * @param cb callback function
  */
 export const patch: AxiosFunction = (url, data, cb) => {
-  return axiosInstance.patch(host + url, data ? data : {}).then(res => (cb ? cb(res) : res));
+  return axiosInstance.patch(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
 /**
