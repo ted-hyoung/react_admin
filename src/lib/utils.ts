@@ -47,28 +47,28 @@ export const getNowYMD = () => {
 
 export function isLoggedIn() {
   const cookies = new Cookies();
-  return cookies.get('access_token');
+  return cookies.get('fromc_admin_access_token');
 }
 
 export function getToken() {
   const cookies = new Cookies();
-  return cookies.get('access_token');
+  return cookies.get('fromc_admin_access_token');
 }
 
 export function getRefreshToken() {
   const cookies = new Cookies();
-  return cookies.get('refresh_token');
+  return cookies.get('fromc_admin_refresh_token');
 }
 
 export function setToken(token: string, refreshToken: string) {
   const cookies = new Cookies();
-  cookies.set('access_token', token);
-  cookies.set('refresh_token', token);
+  cookies.set('fromc_admin_access_token', token);
+  cookies.set('fromc_admin_refresh_token', refreshToken);
 }
 
 export function logout() {
   const cookies = new Cookies();
-  cookies.set('access_token', '');
-  cookies.set('refresh_token', '');
+  cookies.set('fromc_admin_access_token', '');
+  cookies.set('fromc_admin_refresh_token', '');
   window.location.href = '/';
 }
