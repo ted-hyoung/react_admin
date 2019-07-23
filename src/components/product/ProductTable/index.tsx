@@ -1,5 +1,5 @@
 // base
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 // modules
 import { Button, Table } from 'antd';
@@ -9,7 +9,7 @@ import { ColumnProps } from 'antd/lib/table';
 import { ProductModal } from 'components';
 
 // types
-import { CreateProduct, ResponseOption, ResponseProduct } from 'types';
+import { CreateProduct, ResponseOption, ResponseProduct, FileObject } from 'types';
 
 // enums
 import { ProductMode, ProductSold } from 'enums';
@@ -34,6 +34,8 @@ interface Props {
   handleSelectedRow: (value:ProductList) => void;
   onClickProductDelete: () => void;
   onClickProductSoldOut: (productSold:ProductSold) => void;
+  fileObjectList: FileObject[];
+  setFileObjectList: Dispatch<SetStateAction<FileObject[]>>;
 }
 
 export interface ProductList {
@@ -48,6 +50,7 @@ export interface ProductList {
   disabledOptionTotalStock: number;
   disabledOptionSafeStock: number;
   options: ResponseOption[];
+  images: FileObject[];
 }
 
 const columns : Array<ColumnProps<ProductList>> = [
@@ -78,13 +81,13 @@ const columns : Array<ColumnProps<ProductList>> = [
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionIndex.push(
-                  <div key={record.options[index].optionId}>
+                  <div key={index}>
                     <span>{index + 1}</span>
                   </div>
                 );
               } else {
                 optionIndex.push(
-                  <div key={record.options[index].optionId} className="product-table-border-bottom">
+                  <div key={index} className="product-table-border-bottom">
                     <span>{index + 1}</span>
                   </div>)
                 ;
@@ -109,12 +112,12 @@ const columns : Array<ColumnProps<ProductList>> = [
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionName.push(
-                  <div key={record.options[index].optionId}>
+                  <div key={index}>
                     <span>{record.options[index].optionName}</span>
                   </div>);
               } else {
                 optionName.push(
-                  <div key={record.options[index].optionId} className="product-table-border-bottom">
+                  <div key={index} className="product-table-border-bottom">
                     <span>{record.options[index].optionName}</span>
                   </div>
                 );
@@ -142,13 +145,13 @@ const columns : Array<ColumnProps<ProductList>> = [
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionSalePrice.push(
-                  <div key={record.options[index].optionId}>
+                  <div key={index}>
                     <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
                   </div>
                 );
               } else {
                 optionSalePrice.push(
-                  <div key={record.options[index].optionId} className="product-table-border-bottom">
+                  <div key={index} className="product-table-border-bottom">
                     <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
                   </div>
                 );
@@ -171,13 +174,13 @@ const columns : Array<ColumnProps<ProductList>> = [
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionStock.push(
-                  <div key={record.options[index].optionId}>
+                  <div key={index}>
                     <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
                   </div>
                 );
               } else {
                 optionStock.push(
-                  <div key={record.options[index].optionId} className="product-table-border-bottom">
+                  <div key={index} className="product-table-border-bottom">
                     <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
                   </div>
                 );
@@ -200,13 +203,13 @@ const columns : Array<ColumnProps<ProductList>> = [
             record.options.forEach((option, index) => {
               if (index === (record.options.length - 1)) {
                 optionSafeStock.push(
-                  <div key={record.options[index].optionId}>
+                  <div key={index}>
                     <span>{record.options[index].safeStock.toLocaleString()}</span>
                   </div>
                 );
               } else {
                 optionSafeStock.push(
-                  <div key={record.options[index].optionId} className="product-table-border-bottom">
+                  <div key={index} className="product-table-border-bottom">
                     <span>{record.options[index].safeStock.toLocaleString()}</span>
                   </div>
                 );
@@ -246,7 +249,9 @@ function ProductTable(props: Props) {
     rowSelection,
     handleSelectedRow,
     onClickProductDelete,
-    onClickProductSoldOut
+    onClickProductSoldOut,
+    fileObjectList,
+    setFileObjectList
   } = props;
 
   const data: ProductList[] = products.map((product, i) => {
@@ -261,7 +266,8 @@ function ProductTable(props: Props) {
       disabledOptionStock: product.disabledOptionStock,
       disabledOptionTotalStock: product.disabledOptionTotalStock,
       disabledOptionSafeStock: product.disabledOptionSafeStock,
-      options: product.options
+      options: product.options,
+      images: product.images
     }
   });
 
@@ -302,7 +308,8 @@ function ProductTable(props: Props) {
         onChangeEnableOption={onChangeEnableOption}
         addOptionRow={addOptionRow}
         removeOptionRow={removeOptionRow}
-      />
+        fileObjectList={fileObjectList}
+        setFileObjectList={setFileObjectList} />
     </div>
   )
 }

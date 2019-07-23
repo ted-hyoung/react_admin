@@ -18,7 +18,7 @@ import {
 } from 'store/reducer/product';
 
 // types
-import { CreateOption, CreateProduct, ResponseOption, ResponseProduct, ResponseShippingFeeInfo } from 'types';
+import { CreateOption, CreateProduct, ResponseOption, ResponseProduct, ResponseShippingFeeInfo, FileObject } from 'types';
 import { ProductList } from '../ProductTable';
 
 // enums
@@ -26,7 +26,6 @@ import { ProductMode, ProductSold } from 'enums';
 
 // less
 import './index.less';
-import { StoreState } from 'store';
 
 // todo : validate 추후 적용 필요 (이종현)
 interface Props {
@@ -61,6 +60,7 @@ function ProductDetail(props: Props) {
         totalStock: 0,
       },
     ],
+    images: []
   };
 
   const initOption: CreateOption = {
@@ -84,6 +84,7 @@ function ProductDetail(props: Props) {
   const [shippingFee, setShippingFree] = useState(initShippingFreeInfo);
   const [selectProductId, setSelectProductId] = useState(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState(initSelectedRowKeys);
+  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   useEffect(() => {
     setProducts(() => responseProducts);
@@ -106,9 +107,11 @@ function ProductDetail(props: Props) {
     setSelectProductId(0);
     setProduct(initCreateProduct);
     setProductMode(ProductMode.CREATE);
+    setFileObjectList([]);
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
+    product.images = fileObjectList;
     switch (productMode) {
       case ProductMode.CREATE:
         const createData = {
@@ -253,8 +256,7 @@ function ProductDetail(props: Props) {
     dispatch(updateShippingFeeInfoAsync.request(data));
   }, [dispatch, shippingFee]);
 
-  const handleSelectedRow = useCallback(
-    (record: ProductList) => {
+  const handleSelectedRow = useCallback((record: ProductList) => {
       setProduct({
         ...product,
         productName: record.productName,
@@ -265,8 +267,15 @@ function ProductDetail(props: Props) {
         disabledOptionSafeStock: record.disabledOptionSafeStock,
         freebie: record.freebie,
         enableOption: record.enableOption,
-        options: record.options,
+        options: record.enableOption ? record.options.concat({
+          optionName: '',
+          salePrice: 0,
+          stock: 0,
+          totalStock: 0,
+          safeStock: 0,
+        }) : record.options
       });
+      setFileObjectList(record.images);
       setSelectProductId(record.productId);
       setProductMode(ProductMode.UPDATE);
       setProductModalVisible(true);
@@ -338,7 +347,8 @@ function ProductDetail(props: Props) {
         handleSelectedRow={handleSelectedRow}
         onClickProductDelete={handleProductDelete}
         onClickProductSoldOut={handleProductSoldOut}
-      />
+        fileObjectList={fileObjectList}
+        setFileObjectList={setFileObjectList} />
       <ShippingFreeInfo
         shippingFreeInfo={shippingFee}
         onClickShippingFreeInfo={handleShippingFreeInfo}

@@ -1,9 +1,11 @@
 // base
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 // modules
 import { Button, Col, Input, Modal as AntModal, Row, Select, Table, Typography } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
+import ImageUpload from 'components/ImageUpload';
+import { FileObject } from 'types/FileObject';
 
 // types
 import { CreateOption, CreateProduct, ResponseOption, ResponseProduct } from 'types';
@@ -31,6 +33,8 @@ interface Props {
   onChangeEnableOption: (value: number) => void;
   addOptionRow: () => void;
   removeOptionRow: (value: number) => void;
+  fileObjectList: FileObject[];
+  setFileObjectList: Dispatch<SetStateAction<FileObject[]>>;
 }
 
 function ProductModal(props: Props) {
@@ -46,6 +50,8 @@ function ProductModal(props: Props) {
     onChangeEnableOption,
     addOptionRow,
     removeOptionRow,
+    fileObjectList,
+    setFileObjectList
   } = props;
 
   const columns: Array<ColumnProps<CreateOption | ResponseOption>> = [
@@ -199,6 +205,14 @@ function ProductModal(props: Props) {
         onCancel={onClickProductModalClose}
         width="1200px"
       >
+        <Row>
+          <Col span={3} className="product-modal-col-3">
+            <Text type="danger">* 제품 이미지</Text>
+          </Col>
+          <Col span={8} className="product-modal-col-8">
+            <ImageUpload fileObjectList={fileObjectList} setFileObjectList={setFileObjectList} />
+          </Col>
+        </Row>
         <Row>
           <Col span={3} className="product-modal-col-3">
             <Text type="danger">* 제품명</Text>
