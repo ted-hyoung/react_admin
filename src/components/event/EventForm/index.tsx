@@ -347,7 +347,11 @@ function EventForm(props: Props) {
                   <Col span={24}>
                     <Form.Item>
                       {getFieldDecorator(`images`)(
-                        <ImageUpload fileObjectList={fileObjectList} setFileObjectList={setFileObjectList} />,
+                        <ImageUpload
+                          fileObjectList={fileObjectList}
+                          setFileObjectList={setFileObjectList}
+                          // options={{ limit: 10 }}
+                        />,
                       )}
                     </Form.Item>
                   </Col>

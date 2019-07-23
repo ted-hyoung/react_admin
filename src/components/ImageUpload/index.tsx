@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // modules
 import { Upload, Icon, message } from 'antd';
 import { UploadChangeParam } from 'antd/lib/upload';
-import { UploadFile } from 'antd/lib/upload/interface';
+import { UploadFile, UploadProps } from 'antd/lib/upload/interface';
 
 // libs
 import { uploadImage } from 'lib/protocols';
@@ -13,13 +13,27 @@ import { getThumbUrl } from 'lib/utils';
 // types
 import { FileObject } from 'types/FileObject';
 
-interface Props {
+// defeins
+const MB = 1048576;
+const defaultOptions = {
+  limit: 5,
+  size: 5,
+};
+
+interface ImageUploadOptions {
+  limit?: number;
+  size?: number;
+}
+
+interface Props extends UploadProps {
   fileObjectList: FileObject[];
   setFileObjectList: React.Dispatch<React.SetStateAction<FileObject[]>>;
+  options?: ImageUploadOptions;
 }
 
 const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
-  const { fileObjectList = [], setFileObjectList } = props;
+  const { fileObjectList = [], setFileObjectList, options = defaultOptions } = props;
+  const { limit = 5, size = 5 } = options;
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -29,9 +43,16 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
     const { file, fileList } = info;
 
     if (file.uid === fileList[fileList.length - 1].uid) {
-      if (fileList.length > 5) {
-        message.error('이미지는 최대 5개까지만 등록 가능합니다.');
+      if (fileList.length > limit) {
+        message.error(`이미지는 최대 ${limit}개까지만 등록 가능합니다.`);
         return false;
+      }
+
+      for (const file of fileList) {
+        if (file.size > size * MB) {
+          message.error(`파일 사이즈가 ${size}MB 보다 큽니다.`);
+          return false;
+        }
       }
 
       const startIndex = fileObjectList.length > 0 ? fileList.length - fileObjectList.length : 0;
@@ -79,7 +100,6 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
     <Upload
       ref={ref}
       multiple
-      className="image-upload"
       listType="picture-card"
       accept="image/*"
       fileList={fileList}
@@ -88,7 +108,7 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
       onChange={handleChange}
       onRemove={handleRemove}
     >
-      {fileList.length >= 5 ? null : uploadButton}
+      {fileList.length >= limit ? null : uploadButton}
     </Upload>
   );
 });
