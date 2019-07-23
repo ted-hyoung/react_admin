@@ -101,7 +101,12 @@ const initialState: EventState = {
       shippingFreeCondition: 0,
     },
     images: [],
-    celebReview: null,
+    celebReview: {
+      created: '',
+      instagramUrl: null,
+      contents: null,
+      modified: null,
+    },
     products: [],
     eventNotices: [],
   },

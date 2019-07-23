@@ -1,5 +1,5 @@
 // base
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // modules
 import moment from 'moment';
@@ -17,6 +17,7 @@ import {
   message,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import ReactPlayer from 'react-player';
 import { calcStringByte } from 'lib/utils';
 import { SelectOptionModal, FlexRow } from 'components';
 
@@ -25,10 +26,12 @@ import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
 import { LabeledValue } from 'antd/lib/select';
+import ImageUpload from 'components/ImageUpload';
+import { FileObject } from 'types/FileObject';
 
 // defines
 const { TextArea } = Input;
-const { Text } = Typography;
+const { Paragraph, Text } = Typography;
 const TIME_FORMAT = 'HH:mm A';
 
 interface Props extends FormComponentProps {
@@ -47,6 +50,8 @@ function EventForm(props: Props) {
   } = form;
 
   const [visible, setVisible] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
@@ -65,6 +70,7 @@ function EventForm(props: Props) {
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
             targetAmount,
             videoUrl,
+            images: fileObjectList,
           };
 
           dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
@@ -77,6 +83,7 @@ function EventForm(props: Props) {
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
             targetAmount,
             videoUrl,
+            images: fileObjectList,
           };
 
           dispatch(createEventAsync.request({ data }));
@@ -94,6 +101,16 @@ function EventForm(props: Props) {
     setVisible(false);
   };
 
+  const handleUpdateVideoUrl = () => {
+    const videoUrl = getFieldValue('videoUrl');
+
+    setVideoUrl(videoUrl);
+  };
+
+  const handleRemoveVideoUrl = () => {
+    setVideoUrl('');
+  };
+
   useEffect(() => {
     if (event.eventId) {
       setFieldsValue({
@@ -105,6 +122,8 @@ function EventForm(props: Props) {
         targetAmount: event.targetAmount,
         videoUrl: event.videoUrl,
       });
+      setVideoUrl(event.videoUrl);
+      setFileObjectList(event.images);
     }
 
     return () => {
@@ -112,7 +131,7 @@ function EventForm(props: Props) {
         window.alert('현재 작성중인 데이터가 있습니다.');
       }
     };
-  }, [event.eventId]);
+  }, [event]);
 
   return (
     <>
@@ -288,7 +307,71 @@ function EventForm(props: Props) {
             </FlexRow>
           </Descriptions.Item>
           <Descriptions.Item label="*썸네일" span={24}>
-            <Form.Item>{getFieldDecorator('videoUrl')(<Input />)}</Form.Item>
+            <FlexRow align="top">
+              <Col span={12}>
+                <span>동영상(인스타/유튜브)</span>
+                <Row type="flex" justify="start" align="middle" gutter={10}>
+                  <Col span={18}>
+                    <Form.Item>
+                      {getFieldDecorator('videoUrl', {
+                        initialValue: event.videoUrl,
+                      })(<Input />)}
+                    </Form.Item>
+                  </Col>
+                  <Col>
+                    <Button onClick={handleUpdateVideoUrl}>영상등록</Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <ReactPlayer
+                      width="100%"
+                      height="300px"
+                      url={videoUrl}
+                      controls={false}
+                      config={{
+                        youtube: {
+                          playerVars: { showinfo: 0, fs: 0, modestbranding: 1 },
+                        },
+                      }}
+                    />
+                  </Col>
+                  <Col span={24} style={{ marginTop: 10, textAlign: 'center' }}>
+                    <Button onClick={handleRemoveVideoUrl}>영상삭제</Button>
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={12}>
+                <span>*이미지</span>
+                <Row type="flex">
+                  <Col span={24}>
+                    <Form.Item>
+                      {getFieldDecorator(`images`)(
+                        <ImageUpload
+                          fileObjectList={fileObjectList}
+                          setFileObjectList={setFileObjectList}
+                          // options={{ limit: 10 }}
+                        />,
+                      )}
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Paragraph>
+                      <strong># 썸네일 이미지 업로드 시 주의 사항</strong>
+                      <br />
+                      1. 이미지 최소 3개 ~ 최대 5개 업로드
+                      <br />
+                      2. 이미지는 JPG, PNG, GIF, BMP 확장자만 가능
+                      <br />
+                      3. 권장 이미지 사이즈 - 가로 500px / 세로 400px
+                      <br />
+                      4. 이미지 파일 용량 제한: 한 파일 당 5MB 이하
+                      <br />
+                    </Paragraph>
+                  </Col>
+                </Row>
+              </Col>
+            </FlexRow>
           </Descriptions.Item>
         </Descriptions>
         <Form.Item style={{ textAlign: 'right', marginTop: 10 }}>

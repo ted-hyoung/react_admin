@@ -26,6 +26,7 @@ export const getCelebReviewAsync = createAsyncAction(
 const initialState: CelebReviewState = {
   celebReview: {
     created: '',
+    instagramUrl: '',
     contents: '',
     modified: '',
   },

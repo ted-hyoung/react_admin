@@ -6,7 +6,7 @@ import { StoreState } from 'store';
 import { getEventByIdAsync, clearEvent, updateEventStatusAsync } from 'store/reducer/event';
 
 // modules
-import { Tabs, Button } from 'antd';
+import { Tabs, Button, message } from 'antd';
 
 // components
 import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'components';
@@ -31,6 +31,12 @@ function EventDetail(props: RouteComponentProps) {
   );
 
   const handleOpenEvent = () => {
+    if (event.eventStatus === EventStatus[EventStatus.IN_PROGRESS]) {
+      message.info('해당 공구는 현재 오픈중입니다.');
+
+      return false;
+    }
+
     const data = {
       eventStatus: EventStatus[EventStatus.IN_PROGRESS],
     };
@@ -68,9 +74,11 @@ function EventDetail(props: RouteComponentProps) {
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
-      <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
-        오픈
-      </Button>
+      {event.celebReview.contents && event.products && (
+        <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
+          오픈
+        </Button>
+      )}
     </div>
   );
 }
