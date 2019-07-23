@@ -1,5 +1,5 @@
 // base
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -16,6 +16,7 @@ import { StoreState } from 'store';
 import { getEventsAsync } from 'store/reducer/event';
 import { SearchEvent } from 'types';
 import { Button } from 'antd';
+import { sortedString } from 'lib/utils';
 
 interface EventList {
   key: number;
@@ -32,6 +33,7 @@ const colums: ColumnProps<EventList>[] = [
     title: 'NO',
     dataIndex: 'key',
     key: 'key',
+    sorter: (a, b) => a.key - b.key,
   },
   {
     title: '공구기간',
@@ -42,26 +44,45 @@ const colums: ColumnProps<EventList>[] = [
     title: '공구명',
     dataIndex: 'name',
     key: 'name',
+    sorter: (a, b) => sortedString(a.name, b.name),
   },
   {
     title: '회차',
     dataIndex: 'turn',
     key: 'turn',
+    sorter: (a, b) => a.turn - b.turn,
   },
   {
     title: '브랜드',
     dataIndex: 'brand',
     key: 'brand',
+    sorter: (a, b) => sortedString(a.brand, b.brand),
   },
   {
     title: '등록일',
     dataIndex: 'created',
     key: 'created',
+    sorter: (a, b) => moment(a.created).unix() - moment(b.created).unix(),
   },
   {
     title: '상태',
     dataIndex: 'eventStatus',
     key: 'eventStatus',
+    filters: [
+      {
+        text: EventStatus.READY,
+        value: EventStatus.READY,
+      },
+      {
+        text: EventStatus.IN_PROGRESS,
+        value: EventStatus.IN_PROGRESS,
+      },
+      {
+        text: EventStatus.COMPLETE,
+        value: EventStatus.COMPLETE,
+      },
+    ],
+    onFilter: (value, record) => record.eventStatus.indexOf(value) === 0,
   },
   // {
   //   title: '복사',
@@ -96,7 +117,6 @@ function EventList(props: RouteComponentProps) {
     (value: number) => {
       getEvents(0, value);
     },
-
     [getEvents],
   );
 
@@ -104,9 +124,16 @@ function EventList(props: RouteComponentProps) {
     (currentPage: number) => {
       getEvents(currentPage - 1);
     },
-
     [getEvents],
   );
+
+  const pagination = useMemo(() => {
+    return {
+      total: events.totalElements,
+      pageSize: events.size,
+      onShowSizeChange: handlePaginationChange,
+    };
+  }, [events]);
 
   const handleRowEvent = (recode: EventList) => {
     return {
@@ -133,11 +160,7 @@ function EventList(props: RouteComponentProps) {
         columns={colums}
         dataSource={data}
         onChangePageSize={handleChangePageSize}
-        pagination={{
-          total: events.totalElements,
-          pageSize: events.size,
-          onChange: handlePaginationChange,
-        }}
+        pagination={pagination}
         onRow={handleRowEvent}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
