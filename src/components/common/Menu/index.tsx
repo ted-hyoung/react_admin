@@ -7,24 +7,24 @@ import { Menu as AntMenu, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
 const MENU_LIST = [
-  {
-    key: 'store',
-    name: '상점 관리',
-    subMenus: [
-      {
-        key: 'account',
-        name: '계정 관리',
-      },
-      {
-        key: 'celeb',
-        name: '셀럽 관리',
-      },
-      {
-        key: 'settlement',
-        name: '결산 관리',
-      },
-    ],
-  },
+  // {
+  //   key: 'store',
+  //   name: '상점 관리',
+  //   subMenus: [
+  //     {
+  //       key: 'account',
+  //       name: '계정 관리',
+  //     },
+  //     {
+  //       key: 'celeb',
+  //       name: '셀럽 관리',
+  //     },
+  //     {
+  //       key: 'settlement',
+  //       name: '결산 관리',
+  //     },
+  //   ],
+  // },
   {
     key: 'product',
     name: '상품 관리',
@@ -49,16 +49,16 @@ const MENU_LIST = [
       },
     ],
   },
-  {
-    key: 'statistics',
-    name: '통계 관리',
-    subMenus: [
-      {
-        key: 'sales',
-        name: '매출 통계',
-      },
-    ],
-  },
+  // {
+  //   key: 'statistics',
+  //   name: '통계 관리',
+  //   subMenus: [
+  //     {
+  //       key: 'sales',
+  //       name: '매출 통계',
+  //     },
+  //   ],
+  // },
   {
     key: 'board',
     name: '게시판 관리',
@@ -75,10 +75,10 @@ const MENU_LIST = [
         key: 'contact',
         name: '1:1 문의 관리',
       },
-      {
-        key: 'cs',
-        name: 'cs 관리',
-      },
+      // {
+      //   key: 'cs',
+      //   name: 'cs 관리',
+      // },
     ],
   },
 ];
