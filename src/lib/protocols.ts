@@ -26,12 +26,14 @@ const extractErrorMsg = (error: any) => {
 };
 
 const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
-
-const getFileHost = () => process.env.REACT_APP_FILE_API_URL;
+const getFileHost = () => process.env.REACT_APP_FILE_API_URL + '/buckets/ifd-fromc/';
+const getFileUrl = () => process.env.REACT_APP_FILE_URL + '';
 
 // config
-const host = getHost();
-const fileHost = getFileHost();
+export const host = getHost();
+export const fileHost = getFileHost();
+export const fileUrl = getFileUrl();
+
 const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(async res => {
@@ -141,3 +143,47 @@ export function requestRefreshToken(token: string, refreshToken: string) {
       return err;
     });
 }
+
+export const uploadImage = (file: File | File[], cb?: (res: AxiosResponse) => void) => {
+  const formData = new FormData();
+
+  if (Array.isArray(file)) {
+    file.forEach(f => {
+      formData.append('files', f);
+    });
+  } else {
+    formData.append('file', file);
+  }
+
+  return axios
+    .post(fileHost + (Array.isArray(file) ? 'images' : 'image'), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then(res => {
+      if (cb) {
+        cb(res);
+      }
+
+      return res;
+    })
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};
+
+export const deleteImage = (fileKey: string, cb?: (res: AxiosResponse) => void) => {
+  return axios
+    .delete(fileHost + 'files/' + fileKey)
+    .then(res => {
+      if (cb) {
+        cb(res);
+      }
+
+      return res;
+    })
+    .catch(error => {
+      throw extractErrorMsg(error);
+    });
+};

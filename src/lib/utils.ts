@@ -1,5 +1,6 @@
 import Cookies from 'universal-cookie';
 import decode from 'jwt-decode';
+import { fileUrl } from './protocols';
 
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -45,6 +46,24 @@ export function mapEnums(targetEnum: EnumType) {
   return result;
 }
 
+export function sortedString(a: string, b: string) {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+
+  return 0;
+}
+
+export function getThumbUrl(fileKey: string, width: number = 120, height: number = 120, option?: 'fit' | 'scale') {
+  if (fileKey.indexOf('/static') > -1) {
+    return fileKey;
+  }
+
+  return fileUrl + '/' + fileKey + `?size=${width}x${height}${option ? '&option=' + option : ''}`;
+}
 export const getNowYMD = () => {
   const dt = new Date();
   const y = dt.getFullYear();

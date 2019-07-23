@@ -25,17 +25,17 @@ export default [
   },
   {
     path: '/events/detail/:id',
-    component: lazy(() => import('../pages/event/EventDetail')),
+    component: lazy(() => import('../pages/EventDetail')),
     secret: false,
   },
   {
     path: '/events/detail',
-    component: lazy(() => import('../pages/event/EventDetail')),
+    component: lazy(() => import('../pages/EventDetail')),
     secret: false,
   },
   {
     path: '/events',
-    component: lazy(() => import('../pages/event/EventList')),
+    component: lazy(() => import('../pages/EventList')),
     secret: false,
   },
   {

@@ -1,14 +1,22 @@
 // base
-import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { push, replace } from 'connected-react-router';
 import * as Api from 'lib/protocols';
 import * as Actions from 'store/action/eventAction';
+import {
+  getEventsAsync,
+  createEventAsync,
+  getEventByIdAsync,
+  updateEventByIdAsync,
+  updateEventNoticesAsync,
+  updateEventStatusAsync,
+} from 'store/reducer/event';
 
 // modules
+import { PayloadAction } from 'typesafe-actions';
 import { message } from 'antd';
 
 // types
-import { PayloadAction } from 'typesafe-actions';
 import {
   GetListRequestPayload,
   SearchEvent,
@@ -20,14 +28,6 @@ import {
   UpdateEventNotices,
   UpdateEventStatus,
 } from 'types';
-import {
-  getEventsAsync,
-  createEventAsync,
-  getEventByIdAsync,
-  updateEventByIdAsync,
-  updateEventNoticesAsync,
-  updateEventStatusAsync,
-} from 'store/reducer/event';
 
 // sagas
 function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateEvent>>) {
@@ -69,10 +69,12 @@ function* getEventById(action: PayloadAction<string, GetRequestPayload>) {
 
 function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<UpdateEvent>>) {
   const { id, data } = action.payload;
+  const state = yield select();
 
   try {
     const res = yield call(() => Api.put(`/events/${id}`, data));
     yield put(updateEventByIdAsync.success(res.data));
+    yield put(replace(state.router.location.pathname));
     yield message.success('공구가 수정되었습니다.');
   } catch (error) {
     yield put(updateEventByIdAsync.failure(error));
@@ -81,11 +83,12 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
 
 function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<UpdateEventNotices>>) {
   const { id, data } = action.payload;
+  const state = yield select();
 
   try {
     const res = yield call(() => Api.put(`/events/${id}/notices`, data));
     yield put(updateEventNoticesAsync.success(res.data));
-    yield put(replace(window.location.pathname));
+    yield put(replace(state.router.location.pathname));
     yield message.success('공지가 등록되었습니다.');
   } catch (error) {
     yield put(updateEventNoticesAsync.failure(error));
