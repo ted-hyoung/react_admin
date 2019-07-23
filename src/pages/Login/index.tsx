@@ -1,20 +1,31 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Form, Input, Button, Icon } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import './index.less';
 import { login } from 'lib/protocols';
+import { getToken, isTokenExpired } from 'lib/utils';
+import { withRouter, RouteComponentProps } from 'react-router';
 
-function Login(props: FormComponentProps) {
-  const { form } = props;
+interface Props extends FormComponentProps, RouteComponentProps {}
+
+function Login(props: Props) {
+  const { form, history } = props;
   const { getFieldDecorator, validateFieldsAndScroll } = form;
 
-  const handleConfirm = useCallback(() => {
+  useEffect(() => {
+    if (getToken()) {
+      history.push('/');
+    }
+  }, []);
+
+  const handleConfirm = () => {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
         login(val);
       }
     });
-  }, []);
+  };
+
   return (
     <div className="login-box">
       <h2>FROM C</h2>
@@ -54,4 +65,4 @@ function Login(props: FormComponentProps) {
   );
 }
 
-export default Form.create()(Login);
+export default withRouter(Form.create<Props>()(Login));

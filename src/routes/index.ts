@@ -39,11 +39,6 @@ export default [
     secret: false,
   },
   {
-    path: '/login',
-    component: lazy(() => import('../pages/Login')),
-    secret: false,
-  },
-  {
     path: '/',
     component: lazy(() => import('../pages/Home')),
     secret: false,
