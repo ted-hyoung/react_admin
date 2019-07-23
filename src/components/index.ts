@@ -7,5 +7,6 @@ export * from './contact';
 export * from './event';
 export * from './product';
 export * from './celebReview';
+export * from './order';
 
 export { default as TextEditor } from './TextEditor';
