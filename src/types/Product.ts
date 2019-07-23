@@ -5,9 +5,9 @@ export interface ResponseProduct {
   productName: string;
   normalSalesPrice: number;
   discountSalesPrice: number;
-  disabledOptionTotalStock: number,
-  disabledOptionStock: number,
-  disabledOptionSafeStock: number,
+  disabledOptionTotalStock: number;
+  disabledOptionStock: number;
+  disabledOptionSafeStock: number;
   disabled: boolean;
   soldOut: boolean;
   freebie: string;
