@@ -111,18 +111,29 @@ function ProductDetail(props: Props) {
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
-    product.images = fileObjectList;
+    product.options.reduce((ac, option, index) => {
+      if (index === ac.options.length - 1) {
+        ac.options = ac.options.slice(0, ac.options.length - 1);
+      }
+      return ac;
+    }, product);
+
     switch (productMode) {
       case ProductMode.CREATE:
         const createData = {
           eventId,
-          data: product.options.reduce((ac, option, index) => {
-            if (index === ac.options.length - 1) {
-              ac.options = ac.options.slice(0, ac.options.length - 1);
-            }
-
-            return ac;
-          }, product),
+          data: {
+            productName: product.productName,
+            normalSalesPrice: product.normalSalesPrice,
+            discountSalesPrice: product.discountSalesPrice,
+            disabledOptionTotalStock: product.disabledOptionTotalStock,
+            disabledOptionStock: product.disabledOptionStock,
+            disabledOptionSafeStock: product.disabledOptionSafeStock,
+            freebie: product.freebie,
+            enableOption: product.enableOption,
+            options: product.options,
+            images: fileObjectList
+          }
         };
         dispatch(createProductAsync.request(createData));
         setProduct(initCreateProduct);
@@ -132,13 +143,18 @@ function ProductDetail(props: Props) {
         const updateData = {
           eventId,
           productId: selectProductId,
-          data: product.options.reduce((ac, option, index) => {
-            if (index === ac.options.length - 1) {
-              ac.options = ac.options.slice(0, ac.options.length - 1);
-            }
-
-            return ac;
-          }, product),
+          data: {
+            productName: product.productName,
+            normalSalesPrice: product.normalSalesPrice,
+            discountSalesPrice: product.discountSalesPrice,
+            disabledOptionTotalStock: product.disabledOptionTotalStock,
+            disabledOptionStock: product.disabledOptionStock,
+            disabledOptionSafeStock: product.disabledOptionSafeStock,
+            freebie: product.freebie,
+            enableOption: product.enableOption,
+            options: product.options,
+            images: fileObjectList
+          }
         };
         dispatch(updateProductAsync.request(updateData));
         setProduct(initCreateProduct);
@@ -169,24 +185,31 @@ function ProductDetail(props: Props) {
     [initOption, product],
   );
 
-  const onChangeOptionValue = useCallback(
-    (e, index) => {
+  const onChangeOptionValue = useCallback((e, index) => {
       const name = e.target.name;
       const value = e.target.value;
 
-      if (name === 'optionName') {
-        product.options[index].optionName = value;
-      } else if (name === 'salePrice') {
-        product.options[index].salePrice = Number(value) < 0 ? 0 : Number(value);
-      } else if (name === 'stock') {
-        product.options[index].stock = Number(value) < 0 ? 0 : Number(value);
-        product.options[index].totalStock = Number(value) < 0 ? 0 : Number(value);
-      } else if (name === 'safeStock') {
-        product.options[index].safeStock = Number(value) < 0 ? 0 : Number(value);
-      }
+      const newOptions:CreateOption[] = [];
+
+      product.options.forEach((optionItem, optionIndex) => {
+        if (optionIndex === index) {
+          if (name === 'optionName') {
+            optionItem.optionName = value;
+          } else if (name === 'salePrice') {
+            optionItem.salePrice = Number(value) < 0 ? 0 : Number(value);
+          } else if (name === 'stock') {
+            optionItem.stock = Number(value) < 0 ? 0 : Number(value);
+            optionItem.totalStock = Number(value) < 0 ? 0 : Number(value);
+          } else if (name === 'safeStock') {
+            optionItem.safeStock = Number(value) < 0 ? 0 : Number(value);
+          }
+        }
+        newOptions.push(optionItem)
+      });
+
       setProduct({
         ...product,
-        options: product.options,
+        options: newOptions
       });
     },
     [product],
