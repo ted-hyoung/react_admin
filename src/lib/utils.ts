@@ -1,3 +1,5 @@
+import Cookies from 'universal-cookie';
+import decode from 'jwt-decode';
 import { fileUrl } from './protocols';
 
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
@@ -18,6 +20,14 @@ export const calcStringByte = (str: string) => {
 
 interface EnumType {
   [i: number]: string;
+}
+
+interface Token {
+  LOGIN_ID: string;
+  USER_ROLE: string;
+  exp: number;
+  iat: number;
+  iss: string;
 }
 
 export function mapEnums(targetEnum: EnumType) {
@@ -62,3 +72,38 @@ export const getNowYMD = () => {
   const result = y + '-' + m + '-' + d;
   return result;
 };
+
+const ACCESS_TOKEN = 'fromc_admin_access_token';
+const REFRESH_TOKEN = 'fromc_admin_refresh_token';
+
+export function getToken() {
+  const cookies = new Cookies();
+  return cookies.get(ACCESS_TOKEN);
+}
+
+export function getRefreshToken() {
+  const cookies = new Cookies();
+  return cookies.get(REFRESH_TOKEN);
+}
+
+export function setToken(token: string, refreshToken: string) {
+  const cookies = new Cookies();
+  cookies.set(ACCESS_TOKEN, token);
+  cookies.set(REFRESH_TOKEN, refreshToken);
+}
+
+export function logout() {
+  const cookies = new Cookies();
+  cookies.set(ACCESS_TOKEN, '');
+  cookies.set(REFRESH_TOKEN, '');
+  window.location.href = '/';
+}
+
+export function isTokenExpired(token?: string) {
+  if (!token) {
+    return true;
+  }
+  const decoded = decode<Token>(token);
+  const now = Math.floor(Date.now() / 1000);
+  return decoded.exp < now;
+}
