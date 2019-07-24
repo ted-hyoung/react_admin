@@ -12,6 +12,7 @@ export * from './CelebReview';
 export * from './Product';
 export * from './Order';
 export * from './Payment';
+export * from './FileObject';
 
 export interface PageWrapper<T> {
   content: T[];
