@@ -111,12 +111,7 @@ function ProductDetail(props: Props) {
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
-    product.options.reduce((ac, option, index) => {
-      if (index === ac.options.length - 1) {
-        ac.options = ac.options.slice(0, ac.options.length - 1);
-      }
-      return ac;
-    }, product);
+    const newOptions = product.options.slice(0, product.options.length -1);
 
     switch (productMode) {
       case ProductMode.CREATE:
@@ -131,13 +126,11 @@ function ProductDetail(props: Props) {
             disabledOptionSafeStock: product.disabledOptionSafeStock,
             freebie: product.freebie,
             enableOption: product.enableOption,
-            options: product.options,
+            options: newOptions,
             images: fileObjectList
           }
         };
         dispatch(createProductAsync.request(createData));
-        setProduct(initCreateProduct);
-        setProductModalVisible(false);
         break;
       case ProductMode.UPDATE:
         const updateData = {
@@ -152,15 +145,16 @@ function ProductDetail(props: Props) {
             disabledOptionSafeStock: product.disabledOptionSafeStock,
             freebie: product.freebie,
             enableOption: product.enableOption,
-            options: product.options,
+            options: newOptions,
             images: fileObjectList
           }
         };
         dispatch(updateProductAsync.request(updateData));
-        setProduct(initCreateProduct);
-        setProductModalVisible(false);
         break;
     }
+    setFileObjectList([]);
+    setProduct(initCreateProduct);
+    setProductModalVisible(false);
   }, [selectProductId, dispatch, product, initCreateProduct, productMode]);
 
   const onChangeEnableOption = useCallback(
@@ -186,32 +180,23 @@ function ProductDetail(props: Props) {
   );
 
   const onChangeOptionValue = useCallback((e, index) => {
-      const name = e.target.name;
-      const value = e.target.value;
+    const name = e.target.name;
+    const value = e.target.value;
 
-      const newOptions:CreateOption[] = [];
+    const newOptions:CreateOption[] = product.options.map((optionItem, optionIndex) => optionIndex === index ? ({
+      ...optionItem,
+      optionName: name === 'optionName' ? value : optionItem.optionName,
+      salePrice: name === 'salePrice' ? Number(value) < 0 ? 0 : Number(value) : optionItem.salePrice,
+      stock: name === 'stock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.stock,
+      totalStock: name === 'stock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.totalStock,
+      safeStock: name === 'safeStock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.safeStock
+    }) : optionItem);
 
-      product.options.forEach((optionItem, optionIndex) => {
-        if (optionIndex === index) {
-          if (name === 'optionName') {
-            optionItem.optionName = value;
-          } else if (name === 'salePrice') {
-            optionItem.salePrice = Number(value) < 0 ? 0 : Number(value);
-          } else if (name === 'stock') {
-            optionItem.stock = Number(value) < 0 ? 0 : Number(value);
-            optionItem.totalStock = Number(value) < 0 ? 0 : Number(value);
-          } else if (name === 'safeStock') {
-            optionItem.safeStock = Number(value) < 0 ? 0 : Number(value);
-          }
-        }
-        newOptions.push(optionItem)
-      });
-
-      setProduct({
-        ...product,
-        options: newOptions
-      });
-    },
+    setProduct({
+      ...product,
+      options: newOptions
+    });
+  },
     [product],
   );
 
