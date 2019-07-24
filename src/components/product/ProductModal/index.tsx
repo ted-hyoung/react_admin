@@ -5,10 +5,9 @@ import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { Button, Col, Input, Modal as AntModal, Row, Select, Table, Typography } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import ImageUpload from 'components/ImageUpload';
-import { FileObject } from 'types/FileObject';
 
 // types
-import { CreateOption, CreateProduct, ResponseOption, ResponseProduct } from 'types';
+import { CreateOption, CreateProduct, ResponseOption, ResponseProduct, FileObject } from 'types';
 
 // enums
 import { ProductMode } from 'enums';
