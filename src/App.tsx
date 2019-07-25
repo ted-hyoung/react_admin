@@ -6,6 +6,9 @@ import routes, { PrivateRoute } from './routes';
 // modules
 import { Layout, Row, Col } from 'antd';
 import { Menu } from 'components';
+import { useSelector } from 'react-redux';
+import { StoreState } from 'store';
+import { EventTemplate } from 'pages';
 
 // components
 
@@ -17,6 +20,12 @@ const NotFound = () => {
 };
 
 function App() {
+  const { location, action } = useSelector((state: StoreState) => state.router);
+
+  if (location.pathname.indexOf('template') !== -1) {
+    return <Route exact path="/events/:id/template" component={EventTemplate} />;
+  }
+
   return (
     <div id="app">
       <Layout style={{ minHeight: '100vh' }}>
