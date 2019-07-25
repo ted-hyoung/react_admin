@@ -1,0 +1,3 @@
+export const GET_SHIPPING_REQUEST = 'shipping/GET_SHIPPING_REQUEST';
+export const GET_SHIPPING_SUCCESS = 'shipping/GET_SHIPPING_SUCCESS';
+export const GET_SHIPPING_FAILURE = 'shipping/GET_SHIPPING_FAILURE';
