@@ -8,7 +8,6 @@ export interface ResponseProduct {
   disabledOptionTotalStock: number;
   disabledOptionStock: number;
   disabledOptionSafeStock: number;
-  disabled: boolean;
   soldOut: boolean;
   freebie: string;
   enableOption: boolean;
@@ -17,7 +16,7 @@ export interface ResponseProduct {
 }
 
 export interface ResponseOption {
-  optionId?: number;
+  optionId: number;
   optionName: string;
   salePrice: number;
   stock: number;
@@ -38,7 +37,7 @@ export interface CreateProduct {
   disabledOptionStock: number;
   disabledOptionSafeStock: number;
   freebie: string;
-  enableOption: boolean;
+  enableOption: boolean | number;
   options: CreateOption[];
   images:CreateFileObject[];
 }

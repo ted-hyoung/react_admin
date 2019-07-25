@@ -61,11 +61,7 @@ function EventDetail(props: RouteComponentProps) {
           <EventForm event={event} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={!event.eventId}>
-          <ProductDetail
-            eventId={event.eventId}
-            responseProducts={event.products}
-            responseShippingFeeInfo={event.shippingFeeInfo}
-          />
+          <ProductDetail eventId={event.eventId} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={!event.eventId}>
           <CelebReviewDetail />

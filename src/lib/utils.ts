@@ -107,3 +107,12 @@ export function isTokenExpired(token?: string) {
   const now = Math.floor(Date.now() / 1000);
   return decoded.exp < now;
 }
+
+export function checkInputNumber(text: string, beforeText: string) {
+  const reg = /[^0-9]/g;
+  if (!reg.test(text)) {
+    return text;
+  } else {
+    return beforeText;
+  }
+}

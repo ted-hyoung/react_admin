@@ -1,41 +1,28 @@
 // base
-import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import React, { useCallback, useState } from 'react';
 
 // modules
 import { Button, Table } from 'antd';
-import { ColumnProps } from 'antd/lib/table';
+import { ColumnProps, TableRowSelection } from 'antd/lib/table';
 
 // components
 import { ProductModal } from 'components';
 
+// store
+import { StoreState } from 'store';
+
 // types
-import { CreateProduct, ResponseOption, ResponseProduct, FileObject } from 'types';
+import { FileObject, ResponseOption, ResponseProduct } from 'types';
 
 // enums
-import { ProductMode, ProductSold } from 'enums';
+import { EventStatus, ProductSold } from 'enums';
 
 // less
 import './index.less';
+import { useSelector } from 'react-redux';
 
 interface Props {
-  products: ResponseProduct[];
-  productModalVisible: boolean;
-  productMode: ProductMode;
-  product: CreateProduct | ResponseProduct;
-  onClickProductModalOpen: () => void;
-  onClickProductModalClose: () => void;
-  onClickProductModalOk: () => void;
-  onChangeProductValue: (e: ChangeEvent) => void;
-  onChangeOptionValue: (e: ChangeEvent, index:number) => void;
-  onChangeEnableOption: (value:number) => void;
-  addOptionRow: () => void;
-  removeOptionRow: (value:number) => void;
-  rowSelection: object;
-  handleSelectedRow: (value:ProductList) => void;
-  onClickProductDelete: () => void;
-  onClickProductSoldOut: (productSold:ProductSold) => void;
-  fileObjectList: FileObject[];
-  setFileObjectList: Dispatch<SetStateAction<FileObject[]>>;
+  responseProducts: ResponseProduct[];
 }
 
 export interface ProductList {
@@ -45,6 +32,7 @@ export interface ProductList {
   discountSalesPrice: number;
   freebie: string;
   normalSalesPrice: number;
+  soldOut: boolean;
   enableOption: boolean;
   disabledOptionStock: number;
   disabledOptionTotalStock: number;
@@ -233,43 +221,135 @@ const columns : Array<ColumnProps<ProductList>> = [
 // todo : 현재 공구 상태에 따라 버튼 분기 처리 필요 (이종현)
 function ProductTable(props: Props) {
 
-  const {
-    products,
-    product,
-    productModalVisible,
-    productMode,
-    onClickProductModalOpen,
-    onClickProductModalClose,
-    onClickProductModalOk,
-    onChangeProductValue,
-    onChangeOptionValue,
-    onChangeEnableOption,
-    addOptionRow,
-    removeOptionRow,
-    rowSelection,
-    handleSelectedRow,
-    onClickProductDelete,
-    onClickProductSoldOut,
-    fileObjectList,
-    setFileObjectList
-  } = props;
+  const { responseProducts } = props;
+  const eventStatus = useSelector((state: StoreState) => state.event.event.eventStatus);
 
-  const data: ProductList[] = products.map((product, i) => {
+  const data: ProductList[] = responseProducts.map((product, index) => {
     return {
-      key: i + 1,
+      key: index + 1,
       productId: product.productId,
       productName: product.productName,
       discountSalesPrice: product.discountSalesPrice,
       freebie: product.freebie,
       normalSalesPrice: product.normalSalesPrice,
+      soldOut: product.soldOut,
       enableOption: product.enableOption,
       disabledOptionStock: product.disabledOptionStock,
       disabledOptionTotalStock: product.disabledOptionTotalStock,
       disabledOptionSafeStock: product.disabledOptionSafeStock,
       options: product.options,
-      images: product.images
+      images: product.images,
     }
   });
+
+  const initProduct:ResponseProduct = {
+    productId: 0,
+    productName: '',
+    normalSalesPrice: 0,
+    discountSalesPrice: 0,
+    disabledOptionTotalStock: 0,
+    disabledOptionStock: 0,
+    disabledOptionSafeStock: 0,
+    soldOut: false,
+    freebie: '',
+    enableOption: true,
+    options: [],
+    images: [],
+  };
+
+  const [ product, setProduct ] = useState(initProduct);
+  const [ selectedRowKeys, setSelectedRowKeys ] = useState<string[]>([]);
+  const [ productModalVisible, setProductModalVisible ] = useState(false);
+
+  const rowSelection: TableRowSelection<ProductList> = {
+    selectedRowKeys,
+    onChange: useCallback(selectedRowKeys => {
+      setSelectedRowKeys(selectedRowKeys);
+    }, []),
+  };
+
+  const handleRowProduct = (record: ProductList) => {
+    return {
+      onClick: () => {
+        setProductModalVisible(true);
+        setProduct({
+          ...product,
+          productId: record.productId,
+          productName: record.productName,
+          normalSalesPrice: record.normalSalesPrice,
+          discountSalesPrice: record.discountSalesPrice,
+          disabledOptionTotalStock: record.disabledOptionTotalStock,
+          disabledOptionStock: record.disabledOptionStock,
+          disabledOptionSafeStock: record.disabledOptionSafeStock,
+          soldOut: record.soldOut,
+          freebie: record.freebie,
+          enableOption: record.enableOption,
+          options: record.options
+        });
+      }
+    }
+  };
+
+  const handleProductModalOpen = () => {
+    setProductModalVisible(true);
+    setProduct({
+      ...product,
+      productId: 0,
+      productName: '',
+      normalSalesPrice: 0,
+      discountSalesPrice: 0,
+      disabledOptionTotalStock: 0,
+      disabledOptionStock: 0,
+      disabledOptionSafeStock: 0,
+      soldOut: false,
+      freebie: '',
+      enableOption: true,
+      options: [{
+        optionId: 0,
+        optionName: '',
+        salePrice: 0,
+        stock: 0,
+        safeStock: 0,
+        totalStock: 0
+      }]
+    });
+  };
+
+  const handleProductDelete = () => {
+    // const selectedIds: number[] = [];
+    //
+    // selectedRowKeys.forEach(index => {
+    //   const selectIndex = Number(index) - 1;
+    //   selectedIds.push(products[selectIndex].productId);
+    // });
+    //
+    // const data = {
+    //   eventId,
+    //   data: {
+    //     productIds: selectedIds,
+    //   },
+    // };
+    // dispatch(deleteProductsAsync.request(data));
+    // setSelectedRowKeys([]);
+  };
+
+  const handleProductSoldOut = (productSold: ProductSold) => {
+    // const selectedIds: number[] = [];
+    //
+    // selectedRowKeys.map(index => {
+    //   return selectedIds.push(products[Number(index) - 1].productId);
+    // });
+    //
+    // const data = {
+    //   eventId,
+    //   data: {
+    //     productIds: selectedIds,
+    //     soldOut: productSold === ProductSold.SOLD_OUT,
+    //   },
+    // };
+    // dispatch(soldOutProductsAsync.request(data));
+    // setSelectedRowKeys([]);
+  };
 
   return (
     <div className="product-table">
@@ -281,35 +361,25 @@ function ProductTable(props: Props) {
         dataSource={data}
         pagination={false}
         size="middle"
-        onRow={(record) => {
-            return {
-              onClick: () => {
-                handleSelectedRow(record);
-              }
-            }
-          }
-        }
-      />
+        onRow={handleRowProduct} />
       <div className="product-table-button">
-        <Button type="primary" size="large" onClick={onClickProductModalOpen}>제품 등록</Button>
-        <Button type="danger" size="large" onClick={onClickProductDelete}>선택 제품 삭제</Button>
-        <Button type="primary" size="large" onClick={() => onClickProductSoldOut(ProductSold.SOLD_OUT)}>품절 처리</Button>
-        <Button type="danger" size="large" onClick={() => onClickProductSoldOut(ProductSold.SOLD_IN)}>품절 해제</Button>
+        {eventStatus === EventStatus[EventStatus.READY] ?
+          <>
+            <Button type="primary" size="large" onClick={handleProductModalOpen}>제품 등록</Button>
+            <Button type="danger" size="large" onClick={handleProductDelete}>선택 제품 삭제</Button>
+          </>
+          :
+          <>
+            <Button type="primary" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_OUT)}>품절 처리</Button>
+            <Button type="danger" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_IN)}>품절 해제</Button>
+          </>
+        }
       </div>
       <ProductModal
-        productMode={productMode}
-        selectedProduct={product}
+        product={product}
+        setProduct={setProduct}
         productModalVisible={productModalVisible}
-        onClickProductModalOpen={onClickProductModalOpen}
-        onClickProductModalClose={onClickProductModalClose}
-        onClickProductModalOk={onClickProductModalOk}
-        onChangeProductValue={onChangeProductValue}
-        onChangeOptionValue={onChangeOptionValue}
-        onChangeEnableOption={onChangeEnableOption}
-        addOptionRow={addOptionRow}
-        removeOptionRow={removeOptionRow}
-        fileObjectList={fileObjectList}
-        setFileObjectList={setFileObjectList} />
+        setProductModalVisible={setProductModalVisible}/>
     </div>
   )
 }
