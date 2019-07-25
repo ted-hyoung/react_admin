@@ -13,6 +13,9 @@ import { getThumbUrl } from 'lib/utils';
 // types
 import { FileObject } from 'types/FileObject';
 
+// style
+import './index.less';
+
 // defeins
 const MB = 1048576;
 const defaultOptions = {
@@ -36,6 +39,7 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
   const { limit = 5, size = 5 } = options;
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [inProgress, setInProgress] = useState(false);
 
   const beforeUpload = () => false;
 
@@ -60,8 +64,11 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
       const originFileList = fileList.slice(startIndex).map(file => file.originFileObj as File);
 
       try {
+        setInProgress(true);
+
         const res = await uploadImage(originFileList);
 
+        setInProgress(false);
         setFileObjectList(fileObjectList.concat(res.data));
       } catch (error) {
         message.error('이미지 등록에 실패했습니다.');
@@ -97,19 +104,26 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
   }, [fileObjectList]);
 
   return (
-    <Upload
-      ref={ref}
-      multiple
-      listType="picture-card"
-      accept="image/*"
-      fileList={fileList}
-      showUploadList={{ showPreviewIcon: false }}
-      beforeUpload={beforeUpload}
-      onChange={handleChange}
-      onRemove={handleRemove}
-    >
-      {fileList.length >= limit ? null : uploadButton}
-    </Upload>
+    <div className="image-upload">
+      <Upload
+        ref={ref}
+        multiple
+        listType="picture-card"
+        accept="image/*"
+        fileList={fileList}
+        showUploadList={{ showPreviewIcon: false }}
+        beforeUpload={beforeUpload}
+        onChange={handleChange}
+        onRemove={handleRemove}
+      >
+        {fileList.length >= limit ? null : uploadButton}
+      </Upload>
+      {inProgress && (
+        <div className="spinner">
+          <Icon type="loading" />
+        </div>
+      )}
+    </div>
   );
 });
 
