@@ -29,7 +29,7 @@ interface Shipping {
   invoice: string;
   shippingFee: string;
   shippingCompany: ShippingCompany;
-  orderItems: JSX.Element[];
+  orderItems: string;
   totalSalePrice: string;
   totalAmount: string;
   paymentMethod: string;
@@ -154,28 +154,30 @@ const Shipping = () => {
             ' / ' +
             item.order.orderItems[0].option.optionName +
             ' / ' +
-            item.order.orderItems[0].quantity.toString(),
+            item.order.orderItems[0].quantity.toString() +
+            `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
           (item.order.payment.totalAmount - item.shippingFee).toLocaleString(),
           item.order.payment.totalAmount.toLocaleString(),
           PaymentMethod[item.order.payment.paymentMethod],
           ShippingStatus[item.shippingStatus],
         ]);
 
-        if (item.order.orderItems.length > 0) {
-          const orderItemsAdd = [];
-          for (let i = 1; i < item.order.orderItems.length; i++) {
-            orderItemsAdd[i] =
-              item.order.orderItems[i].product.productName +
-              ' / ' +
-              item.order.orderItems[i].option.optionName +
-              ' / ' +
-              item.order.orderItems[i].quantity;
-          }
+        // 임시 소스
+        // if (item.order.orderItems.length > 0) {
+        //   const orderItemsAdd = [];
+        //   for (let i = 1; i < item.order.orderItems.length; i++) {
+        //     orderItemsAdd[i] =
+        //       item.order.orderItems[i].product.productName +
+        //       ' / ' +
+        //       item.order.orderItems[i].option.optionName +
+        //       ' / ' +
+        //       item.order.orderItems[i].quantity;
+        //   }
 
-          orderItemsAdd.forEach(orderItem => {
-            data.push(['', '', '', '', '', '', orderItem]);
-          });
-        }
+        //   orderItemsAdd.forEach(orderItem => {
+        //     data.push(['', '', '', '', '', '', orderItem]);
+        //   });
+        // }
       });
 
       const ws = utils.aoa_to_sheet(data);
@@ -186,7 +188,6 @@ const Shipping = () => {
   };
 
   const columns: Array<ColumnProps<Shipping>> = [
-    // { title: 'NO', dataIndex: 'shippingId', key: 'shippingId',  },
     { title: '결제일', dataIndex: 'paymentDate', key: 'paymentDate' },
     { title: '주문번호', dataIndex: 'orderNo', key: 'orderNo' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
@@ -199,7 +200,7 @@ const Shipping = () => {
     },
     { title: '배송비', dataIndex: 'shippingFee', key: 'shippingFee' },
     { title: '택배사', dataIndex: 'shippingCompany', key: 'shippingCompany' },
-    { title: '상품명 / 옵션 / 수량', dataIndex: 'orderItems', key: 'orderItems' },
+    { title: '상품명 / 옵션 / 수량', dataIndex: 'orderItems', key: 'orderItems', width: '250px' },
     { title: '상품구매금액', dataIndex: 'totalSalePrice', key: 'totalSalePrice' },
     { title: '실 결제금액', dataIndex: 'totalAmount', key: 'totalAmount' },
     { title: '결제수단', dataIndex: 'paymentMethod', key: 'paymentMethod' },
@@ -216,11 +217,10 @@ const Shipping = () => {
       invoice: shipping.invoice,
       shippingFee: shipping.shippingFee.toLocaleString(),
       shippingCompany: ShippingCompany[shipping.shippingCompany],
-      orderItems: shipping.order.orderItems.map(item => (
-        <div key={item.orderItemId}>
-          {item.product.productName} / {item.option.optionName} / {item.quantity}
-        </div>
-      )),
+      orderItems:
+        `${shipping.order.orderItems[0].product.productName} / ${shipping.order.orderItems[0].option.optionName} / ${
+          shipping.order.orderItems[0].quantity
+        }` + ` ${shipping.order.orderItems.length > 1 ? `외 ${shipping.order.orderItems.length - 1}건` : ''}`,
       totalSalePrice: (shipping.order.payment.totalAmount - shipping.shippingFee).toLocaleString(),
       totalAmount: shipping.order.payment.totalAmount.toLocaleString(),
       paymentMethod: PaymentMethod[shipping.order.payment.paymentMethod],
