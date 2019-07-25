@@ -88,14 +88,14 @@ export function getRefreshToken() {
 
 export function setToken(token: string, refreshToken: string) {
   const cookies = new Cookies();
-  cookies.set(ACCESS_TOKEN, token);
-  cookies.set(REFRESH_TOKEN, refreshToken);
+  cookies.set(ACCESS_TOKEN, token, { path: '/' });
+  cookies.set(REFRESH_TOKEN, refreshToken, { path: '/' });
 }
 
 export function logout() {
   const cookies = new Cookies();
-  cookies.set(ACCESS_TOKEN, '');
-  cookies.set(REFRESH_TOKEN, '');
+  cookies.set(ACCESS_TOKEN, '', { path: '/' });
+  cookies.set(REFRESH_TOKEN, '', { path: '/' });
   window.location.href = '/';
 }
 
