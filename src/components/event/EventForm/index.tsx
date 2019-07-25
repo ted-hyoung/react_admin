@@ -19,7 +19,7 @@ import {
 import { FormComponentProps } from 'antd/lib/form';
 import ReactPlayer from 'react-player';
 import { calcStringByte } from 'lib/utils';
-import { SelectOptionModal, FlexRow } from 'components';
+import { SelectOptionModal, FlexRow, TextEditor } from 'components';
 
 import './index.less';
 import { useDispatch } from 'react-redux';
@@ -51,6 +51,7 @@ function EventForm(props: Props) {
 
   const [visible, setVisible] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
+  const [detail, setDetail] = useState('');
   const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
   const dispatch = useDispatch();
 
@@ -70,6 +71,7 @@ function EventForm(props: Props) {
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
             targetAmount,
             videoUrl,
+            detail,
             images: fileObjectList,
           };
 
@@ -83,6 +85,7 @@ function EventForm(props: Props) {
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
             targetAmount,
             videoUrl,
+            detail,
             images: fileObjectList,
           };
 
@@ -372,6 +375,14 @@ function EventForm(props: Props) {
                 </Row>
               </Col>
             </FlexRow>
+          </Descriptions.Item>
+          <Descriptions.Item label="제품 상세" span={24}>
+            <TextEditor
+              name="event-editor"
+              value={detail}
+              onChange={value => setDetail(value)}
+              defaultValue={event.detail || undefined}
+            />
           </Descriptions.Item>
         </Descriptions>
         <Form.Item style={{ textAlign: 'right', marginTop: 10 }}>

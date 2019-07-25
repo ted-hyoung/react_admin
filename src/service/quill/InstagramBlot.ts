@@ -37,4 +37,5 @@ class InstagramBlot extends QuillBlot {
 InstagramBlot.blotName = 'instagram';
 InstagramBlot.className = 'instagram-media';
 InstagramBlot.tagName = 'blockquote';
+
 export default InstagramBlot;
