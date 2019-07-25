@@ -18,7 +18,14 @@ import {
 } from 'store/reducer/product';
 
 // types
-import { CreateOption, CreateProduct, ResponseOption, ResponseProduct, ResponseShippingFeeInfo, FileObject } from 'types';
+import {
+  CreateOption,
+  CreateProduct,
+  ResponseOption,
+  ResponseProduct,
+  ResponseShippingFeeInfo,
+  FileObject,
+} from 'types';
 import { ProductList } from '../ProductTable';
 
 // enums
@@ -60,7 +67,7 @@ function ProductDetail(props: Props) {
         totalStock: 0,
       },
     ],
-    images: []
+    images: [],
   };
 
   const initOption: CreateOption = {
@@ -111,7 +118,7 @@ function ProductDetail(props: Props) {
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
-    const newOptions = product.options.slice(0, product.options.length -1);
+    const newOptions = product.options.slice(0, product.options.length - 1);
 
     switch (productMode) {
       case ProductMode.CREATE:
@@ -127,8 +134,8 @@ function ProductDetail(props: Props) {
             freebie: product.freebie,
             enableOption: product.enableOption,
             options: newOptions,
-            images: fileObjectList
-          }
+            images: fileObjectList,
+          },
         };
         dispatch(createProductAsync.request(createData));
         break;
@@ -146,8 +153,8 @@ function ProductDetail(props: Props) {
             freebie: product.freebie,
             enableOption: product.enableOption,
             options: newOptions,
-            images: fileObjectList
-          }
+            images: fileObjectList,
+          },
         };
         dispatch(updateProductAsync.request(updateData));
         break;
@@ -179,24 +186,29 @@ function ProductDetail(props: Props) {
     [initOption, product],
   );
 
-  const onChangeOptionValue = useCallback((e, index) => {
-    const name = e.target.name;
-    const value = e.target.value;
+  const onChangeOptionValue = useCallback(
+    (e, index) => {
+      const name = e.target.name;
+      const value = e.target.value;
 
-    const newOptions:CreateOption[] = product.options.map((optionItem, optionIndex) => optionIndex === index ? ({
-      ...optionItem,
-      optionName: name === 'optionName' ? value : optionItem.optionName,
-      salePrice: name === 'salePrice' ? Number(value) < 0 ? 0 : Number(value) : optionItem.salePrice,
-      stock: name === 'stock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.stock,
-      totalStock: name === 'stock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.totalStock,
-      safeStock: name === 'safeStock' ? Number(value) < 0 ? 0 : Number(value) : optionItem.safeStock
-    }) : optionItem);
+      const newOptions: CreateOption[] = product.options.map((optionItem, optionIndex) =>
+        optionIndex === index
+          ? {
+              ...optionItem,
+              optionName: name === 'optionName' ? value : optionItem.optionName,
+              salePrice: name === 'salePrice' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.salePrice,
+              stock: name === 'stock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.stock,
+              totalStock: name === 'stock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.totalStock,
+              safeStock: name === 'safeStock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.safeStock,
+            }
+          : optionItem,
+      );
 
-    setProduct({
-      ...product,
-      options: newOptions
-    });
-  },
+      setProduct({
+        ...product,
+        options: newOptions,
+      });
+    },
     [product],
   );
 
@@ -264,7 +276,8 @@ function ProductDetail(props: Props) {
     dispatch(updateShippingFeeInfoAsync.request(data));
   }, [dispatch, shippingFee]);
 
-  const handleSelectedRow = useCallback((record: ProductList) => {
+  const handleSelectedRow = useCallback(
+    (record: ProductList) => {
       setProduct({
         ...product,
         productName: record.productName,
@@ -275,13 +288,15 @@ function ProductDetail(props: Props) {
         disabledOptionSafeStock: record.disabledOptionSafeStock,
         freebie: record.freebie,
         enableOption: record.enableOption,
-        options: record.enableOption ? record.options.concat({
-          optionName: '',
-          salePrice: 0,
-          stock: 0,
-          totalStock: 0,
-          safeStock: 0,
-        }) : record.options
+        options: record.enableOption
+          ? record.options.concat({
+              optionName: '',
+              salePrice: 0,
+              stock: 0,
+              totalStock: 0,
+              safeStock: 0,
+            })
+          : record.options,
       });
       setFileObjectList(record.images);
       setSelectProductId(record.productId);
@@ -293,10 +308,8 @@ function ProductDetail(props: Props) {
 
   const handleProductDelete = useCallback(() => {
     const selectedIds: number[] = [];
-
-    selectedRowKeys.forEach(index => {
-      const selectIndex = Number(index) - 1;
-      selectedIds.push(products[selectIndex].productId);
+    selectedRowKeys.forEach(productId => {
+      selectedIds.push(Number(productId));
     });
 
     const data = {
@@ -356,7 +369,8 @@ function ProductDetail(props: Props) {
         onClickProductDelete={handleProductDelete}
         onClickProductSoldOut={handleProductSoldOut}
         fileObjectList={fileObjectList}
-        setFileObjectList={setFileObjectList} />
+        setFileObjectList={setFileObjectList}
+      />
       <ShippingFreeInfo
         shippingFreeInfo={shippingFee}
         onClickShippingFreeInfo={handleShippingFreeInfo}

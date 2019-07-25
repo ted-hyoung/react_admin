@@ -83,12 +83,11 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
 
 function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<UpdateEventNotices>>) {
   const { id, data } = action.payload;
-  const state = yield select();
 
   try {
     const res = yield call(() => Api.put(`/events/${id}/notices`, data));
     yield put(updateEventNoticesAsync.success(res.data));
-    yield put(replace(state.router.location.pathname));
+    yield put(getEventByIdAsync.request({ id }));
     yield message.success('공지가 등록되었습니다.');
   } catch (error) {
     yield put(updateEventNoticesAsync.failure(error));

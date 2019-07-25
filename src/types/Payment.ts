@@ -2,7 +2,7 @@ import { PaymentMethod } from 'enums';
 
 export interface ResponsePaymentForOrders {
   paymentDate: string;
-  amount: number;
+  totalAmount: number;
 }
 
 export interface ResponsePaymentForShipping {
