@@ -8,6 +8,9 @@ import { RequestAsyncAction } from 'types/AsyncAction';
 import * as Api from 'lib/protocols';
 import { parseParams } from 'lib/utils';
 
+// modules
+import { Modal } from 'antd';
+
 // store
 import * as Action from 'store/action/shippingAction';
 import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
@@ -44,6 +47,7 @@ function* updateShipping(action: RequestAsyncAction) {
     yield put(updateShippingAsync.success(action.payload));
   } catch (error) {
     yield put(updateShippingAsync.failure(error));
+    Modal.error({ title: error });
   }
 }
 
