@@ -1,9 +1,9 @@
-import { ShippingStatus } from 'enums';
+import { ShippingStatus, ShippingCompany } from 'enums';
 import { ResponseOrderForShipping } from './Order';
 
 export interface ResponseShipping {
   shippingId: number;
-  shippingCompany: string;
+  shippingCompany: ShippingCompany;
   invoice: string;
   shippingStatus: ShippingStatus;
   shippingFee: number;

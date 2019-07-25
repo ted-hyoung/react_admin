@@ -6,21 +6,24 @@ import { RequestAsyncAction } from 'types/AsyncAction';
 
 // lib
 import * as Api from 'lib/protocols';
+import { parseParams } from 'lib/utils';
 
 // store
 import * as Action from 'store/action/shippingAction';
-import { getShippingAsync } from 'store/reducer/shipping';
+import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
 
 function* getShipping(action: RequestAsyncAction) {
   try {
-    const { page, size, qnaStatus, searchName } = action.payload;
+    const { page, size, searchCondition } = action.payload;
 
     const res = yield call(() =>
       Api.get('/shipping', {
         params: {
           page,
           size,
+          ...searchCondition,
         },
+        paramsSerializer: (params: any) => parseParams(params),
       }),
     );
 
@@ -30,6 +33,21 @@ function* getShipping(action: RequestAsyncAction) {
   }
 }
 
+function* updateShipping(action: RequestAsyncAction) {
+  try {
+    const { shippingId, invoice } = action.payload;
+    const data = {
+      invoice,
+    };
+
+    yield call(() => Api.put(`/shipping/${shippingId}`, data));
+    yield put(updateShippingAsync.success(action.payload));
+  } catch (error) {
+    yield put(updateShippingAsync.failure(error));
+  }
+}
+
 export default function* qnaSaga() {
   yield takeEvery(Action.GET_SHIPPING_REQUEST, getShipping);
+  yield takeEvery(Action.UPDATE_SHIPPING_REQUEST, updateShipping);
 }

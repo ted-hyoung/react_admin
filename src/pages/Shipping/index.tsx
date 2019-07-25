@@ -3,19 +3,20 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
-import { Table, Row, Col, Button } from 'antd';
+import { Table, Row, Col, Button, Input, Popconfirm } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 import { utils, writeFile } from 'xlsx';
 
 // store
-import { StoreState } from 'store';
-import { getShippingAsync } from 'store/reducer/shipping';
+import reducer, { StoreState } from 'store';
+import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
 
 // uilts
-import { ShippingStatus, PaymentMethod } from 'enums';
+import { ShippingStatus, PaymentMethod, ShippingCompany } from 'enums';
 import { SearchShipping } from 'types/Shipping';
 import { getNowYMD } from 'lib/utils';
+import { ShippingSearchBar } from 'components';
 
 // defines
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -27,7 +28,7 @@ interface Shipping {
   username: string;
   invoice: string;
   shippingFee: string;
-  shippingCompany: string;
+  shippingCompany: ShippingCompany;
   orderItems: JSX.Element[];
   totalSalePrice: string;
   totalAmount: string;
@@ -35,6 +36,61 @@ interface Shipping {
   memo: string;
   shippingStatus: ShippingStatus;
 }
+
+interface ShippingInvoiceFormProps {
+  text: string;
+  shippingId: number;
+}
+
+const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
+  const { text, shippingId } = props;
+  const [invoice, setInvoice] = useState('');
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleChangeInvoice = useCallback(e => {
+    setInvoice(e.target.value);
+  }, []);
+
+  const handleChangeOpen = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const handleUpdateInvoice = useCallback(() => {
+    dispatch(updateShippingAsync.request({ shippingId, invoice }));
+  }, [dispatch, shippingId, invoice]);
+
+  useEffect(() => {
+    setInvoice(text);
+
+    if (text) {
+      setOpen(true);
+    }
+  }, [text]);
+
+  return (
+    <>
+      <Input disabled={open} value={invoice} onChange={handleChangeInvoice} />
+
+      {!open ? (
+        <Popconfirm
+          title="운송장번호를 등록하시겠습니까?"
+          onConfirm={handleUpdateInvoice}
+          okText="확인"
+          cancelText="취소"
+        >
+          <Button type="primary" style={{ width: '100%' }}>
+            등록
+          </Button>
+        </Popconfirm>
+      ) : (
+        <Button type="dashed" style={{ width: '100%' }} onClick={handleChangeOpen}>
+          수정
+        </Button>
+      )}
+    </>
+  );
+};
 
 const Shipping = () => {
   const shipping = useSelector((state: StoreState) => state.shipping.shipping);
@@ -93,7 +149,7 @@ const Shipping = () => {
           item.order.consumer.username,
           item.invoice,
           item.shippingFee.toLocaleString(),
-          item.shippingCompany,
+          ShippingCompany[item.shippingCompany],
           item.order.orderItems[0].product.productName +
             ' / ' +
             item.order.orderItems[0].option.optionName +
@@ -130,11 +186,17 @@ const Shipping = () => {
   };
 
   const columns: Array<ColumnProps<Shipping>> = [
-    // { title: 'NO', dataIndex: 'shippingId', key: 'shippingId' },
+    // { title: 'NO', dataIndex: 'shippingId', key: 'shippingId',  },
     { title: '결제일', dataIndex: 'paymentDate', key: 'paymentDate' },
     { title: '주문번호', dataIndex: 'orderNo', key: 'orderNo' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
-    { title: '운송장번호', dataIndex: 'invoice', key: 'invoice' },
+    {
+      title: '운송장번호',
+      dataIndex: 'invoice',
+      key: 'invoice',
+      width: '300px',
+      render: (text, recoder) => <ShippingInvoiceForm text={text} shippingId={recoder.shippingId} />,
+    },
     { title: '배송비', dataIndex: 'shippingFee', key: 'shippingFee' },
     { title: '택배사', dataIndex: 'shippingCompany', key: 'shippingCompany' },
     { title: '상품명 / 옵션 / 수량', dataIndex: 'orderItems', key: 'orderItems' },
@@ -153,7 +215,7 @@ const Shipping = () => {
       username: shipping.order.consumer.username,
       invoice: shipping.invoice,
       shippingFee: shipping.shippingFee.toLocaleString(),
-      shippingCompany: shipping.shippingCompany,
+      shippingCompany: ShippingCompany[shipping.shippingCompany],
       orderItems: shipping.order.orderItems.map(item => (
         <div key={item.orderItemId}>
           {item.product.productName} / {item.option.optionName} / {item.quantity}
@@ -169,6 +231,8 @@ const Shipping = () => {
 
   return (
     <div className="shipping">
+      <ShippingSearchBar onSearch={value => getShipping(0, pageSize, value)} onReset={() => getShipping(0, pageSize)} />
+
       <Table
         rowKey={record => record.shippingId.toString()}
         title={() => (
