@@ -32,10 +32,11 @@ interface Props extends UploadProps {
   fileObjectList: FileObject[];
   setFileObjectList: React.Dispatch<React.SetStateAction<FileObject[]>>;
   options?: ImageUploadOptions;
+  disabled?: boolean;
 }
 
 const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
-  const { fileObjectList = [], setFileObjectList, options = defaultOptions } = props;
+  const { fileObjectList = [], setFileObjectList, options = defaultOptions, disabled = false } = props;
   const { limit = 5, size = 5 } = options;
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -115,6 +116,7 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
         beforeUpload={beforeUpload}
         onChange={handleChange}
         onRemove={handleRemove}
+        disabled={disabled}
       >
         {fileList.length >= limit ? null : uploadButton}
       </Upload>

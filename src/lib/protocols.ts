@@ -106,7 +106,7 @@ export const patch: AxiosFunction = (url, data, cb) => {
  * @param cb callback function
  */
 export const del: AxiosFunction = (url, data, cb) => {
-  return axiosInstance.delete(host + url).then(res => (cb ? cb(res) : res));
+  return axiosInstance.delete(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
 /**

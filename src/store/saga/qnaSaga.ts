@@ -79,7 +79,7 @@ function* deleteQnaComment(action: RequestAsyncAction) {
   try {
     const { qnaId, qnaCommentId } = action.payload;
 
-    yield call(() => Api.del(`/qna/${qnaId}/comment/${qnaCommentId}`));
+    yield call(() => Api.del(`/qna/${qnaId}/comment/${qnaCommentId}`, {}));
 
     const state = yield select();
 
