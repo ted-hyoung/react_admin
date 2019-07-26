@@ -5,33 +5,14 @@ import * as Api from 'lib/protocols';
 // action
 import * as Action from 'store/action/orderAction';
 
-// reducer
+// store
 import { getOrdersAsync } from 'store/reducer/order';
+
+// lib
+import { parseParams } from 'lib/utils';
 
 // types
 import { RequestAsyncAction } from 'types/AsyncAction';
-
-const parseParams = (params: any) => {
-  const keys = Object.keys(params);
-  let options = '';
-
-  keys.forEach(key => {
-    const isParamTypeObject = typeof params[key] === 'object';
-    const isParamTypeArray = isParamTypeObject && params[key].length >= 0;
-
-    if (!isParamTypeObject) {
-      options += `${key}=${params[key]}&`;
-    }
-
-    if (isParamTypeObject && isParamTypeArray) {
-      params[key].forEach((element: any) => {
-        options += `${key}=${element}&`;
-      });
-    }
-  });
-
-  return options ? options.slice(0, -1) : options;
-};
 
 function* getOrders(action: RequestAsyncAction) {
   try {

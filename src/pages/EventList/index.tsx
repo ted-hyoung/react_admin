@@ -97,21 +97,22 @@ function EventList(props: RouteComponentProps) {
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
 
-  const { size: pageSize = 10 } = events;
-
-  const getEvents = (page: number, size = pageSize, searchCondition?: SearchEvent) => {
-    dispatch(
-      getEventsAsync.request({
-        page,
-        size,
-        searchCondition,
-      }),
-    );
-  };
+  const getEvents = useCallback(
+    (page: number, size = 10, searchCondition?: SearchEvent) => {
+      dispatch(
+        getEventsAsync.request({
+          page,
+          size,
+          searchCondition,
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
-    getEvents(0);
-  }, []);
+    getEvents(0, events.size);
+  }, [getEvents]);
 
   const handleChangePageSize = useCallback(
     (value: number) => {

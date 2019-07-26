@@ -1,6 +1,7 @@
 import Cookies from 'universal-cookie';
 import decode from 'jwt-decode';
 import { fileUrl } from './protocols';
+import runes from 'runes';
 
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -73,6 +74,27 @@ export const getNowYMD = () => {
   return result;
 };
 
+export function replaceText(text: string) {
+  return text.split('\r').join('\n');
+}
+
+export function splitToLine(text: string, limit: number) {
+  const limitLengthPerLine = 27; // 한 줄에 보여지는 글자 수
+  const replaceAndSplit = replaceText(text).split('\n');
+
+  const resultList: string[] = [];
+  replaceAndSplit.forEach((textRow, i) => {
+    if (runes(textRow).length > limitLengthPerLine) {
+      const contentsSplitRegex = new RegExp(`(.{1,${limitLengthPerLine}})`, 'g');
+      const sliceTextRow = textRow.match(contentsSplitRegex) as string[];
+      resultList.push(...sliceTextRow);
+    } else {
+      resultList.push(textRow);
+    }
+  });
+  return resultList;
+}
+
 const ACCESS_TOKEN = 'fromc_admin_access_token';
 const REFRESH_TOKEN = 'fromc_admin_refresh_token';
 
@@ -112,3 +134,25 @@ export function pad(num: number, length: number) {
   const n = num.toString();
   return n.length >= length ? n : new Array(length - n.length + 1).join('0') + num;
 }
+
+export const parseParams = (params: any) => {
+  const keys = Object.keys(params);
+  let options = '';
+
+  keys.forEach(key => {
+    const isParamTypeObject = typeof params[key] === 'object';
+    const isParamTypeArray = isParamTypeObject && params[key].length >= 0;
+
+    if (!isParamTypeObject) {
+      options += `${key}=${params[key]}&`;
+    }
+
+    if (isParamTypeObject && isParamTypeArray) {
+      params[key].forEach((element: any) => {
+        options += `${key}=${element}&`;
+      });
+    }
+  });
+
+  return options ? options.slice(0, -1) : options;
+};

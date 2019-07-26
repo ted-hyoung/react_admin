@@ -1,0 +1,23 @@
+.btn-more {
+  font-size: 18px;
+  font-weight: 700;
+  color: @primary-color;
+
+  .arrow {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid @primary-color;
+    border-right: 2px solid @primary-color;
+    display: inline-block;
+    margin-left: 0.5em;
+    margin-bottom: -2px;
+    transform: rotate(-45deg);
+    transition: all 0.5s ease;
+
+    &.reverse {
+      transform: rotate(-225deg);
+      margin-bottom: 3px;
+    }
+  }
+}

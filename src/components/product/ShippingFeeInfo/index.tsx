@@ -1,72 +1,120 @@
 // base
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // modules
-import { Input, Row, Col, Button } from 'antd';
+import { Row, Col, Button, Form, message, InputNumber } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
+import { useDispatch } from 'react-redux';
 
 // types
-import { ResponseShippingFeeInfo } from 'types';
+import { ResponseEvent, ResponseShippingFeeInfo, UpdateEventShippingFeeInfo } from 'types';
+
+// store
+import { updateEventShippingFeeInfoAsync } from 'store/reducer/event';
 
 // less
 import './index.less';
 
-interface Props {
+interface Props extends FormComponentProps {
   shippingFreeInfo : ResponseShippingFeeInfo;
-  onClickShippingFreeInfo: () => void;
-  onChangeShippingFreeInfoValue: (e: React.ChangeEvent) => void;
+  event: ResponseEvent;
 }
 
 function ShippingFeeInfo(props: Props) {
 
-  const { shippingFreeInfo, onClickShippingFreeInfo, onChangeShippingFreeInfoValue } = props;
+  const { form } = props;
+  const { getFieldDecorator, setFieldsValue, validateFieldsAndScroll } = form;
+  const { shippingFreeInfo, event } = props;
+  const { eventId } = event;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setFieldsValue({
+      shippingFee: shippingFreeInfo.shippingFee,
+      shippingFreeCondition: shippingFreeInfo.shippingFreeCondition
+    })
+  }, [shippingFreeInfo]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    validateFieldsAndScroll((error, values: UpdateEventShippingFeeInfo) => {
+
+      if (!error) {
+        const { shippingFee, shippingFreeCondition } = values;
+        const data = {
+          eventId,
+          data: {
+            shippingFeeInfo: {
+              shippingFee,
+              shippingFreeCondition
+            },
+          },
+        };
+        dispatch(updateEventShippingFeeInfoAsync.request(data));
+      } else {
+        Object.keys(error).map(key => message.error(error[key].errors[0].message));
+      }
+    });
+  };
 
   return (
     <div className="shippingFee-info">
-      <div className="shippingFee-info-title">
-        <h2>배송비 설정</h2>
-      </div>
-      <Row className="shippingFee-info-row" justify="space-around">
-        <Col span={3} className="shippingFee-info-col-center">
-          배송비
-        </Col>
-        <Col span={2} className="shippingFee-info-col-right">
-          배송비
-        </Col>
-        <Col span={3} className="shippingFee-info-col-padding">
-          <Input
-            className="shippingFee-info-input"
-            name="shippingFee"
-            value={shippingFreeInfo.shippingFee}
-            size="small"
-            type="Number"
-            onChange={e => onChangeShippingFreeInfoValue(e)}
-          />
-        </Col>
-        <Col span={1} className="shippingFee-info-col-right">
-          원
-        </Col>
-        <Col span={4} className="shippingFee-info-col-right">
-          * 배송비 무료 조건 (금액 :
-        </Col>
-        <Col span={3} className="shippingFee-info-col-padding">
-          <Input
-            className="shippingFee-info-input"
-            name="shippingFreeCondition"
-            value={shippingFreeInfo.shippingFreeCondition}
-            size="small"
-            type="Number"
-            onChange={e => onChangeShippingFreeInfoValue(e)}
-          />
-        </Col>
-        <Col span={4} className="shippingFee-info-col-left">
-          원 이상 구매시 무료)
-        </Col>
-      </Row>
-      <div className="shippingFee-info-button">
-        <Button type="primary" size="large" onClick={onClickShippingFreeInfo}>배송비 수정</Button>
-      </div>
+      <Form onSubmit={handleSubmit}>
+        <div className="shippingFee-info-title">
+          <h2>배송비 설정</h2>
+        </div>
+        <Row className="shippingFee-info-row" justify="space-around">
+          <Col span={3} className="shippingFee-info-col-center">
+            배송비
+          </Col>
+          <Col span={2} className="shippingFee-info-col-right">
+            배송비
+          </Col>
+          <Col span={3} className="shippingFee-info-col-margin">
+            <Form.Item>
+              {getFieldDecorator('shippingFee')
+              (<InputNumber
+                  min={0}
+                  style={{ width: '100%' }}
+                  className="product-modal-input"
+                  size="small"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                />
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={1} className="shippingFee-info-col-right">
+            원
+          </Col>
+          <Col span={4} className="shippingFee-info-col-right">
+            * 배송비 무료 조건 (금액 :
+          </Col>
+          <Col span={3} className="shippingFee-info-col-margin">
+            <Form.Item>
+              {getFieldDecorator('shippingFreeCondition')
+              (<InputNumber
+                  min={0}
+                  style={{ width: '100%' }}
+                  className="product-modal-input"
+                  size="small"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                />
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={4} className="shippingFee-info-col-left">
+            원 이상 구매시 무료)
+          </Col>
+        </Row>
+        <div className="shippingFee-info-button">
+          <Button type="primary" size="large" htmlType="submit">배송비 수정</Button>
+        </div>
+      </Form>
     </div>
   )
 }
 
-export default ShippingFeeInfo;
+export default Form.create<Props>()(ShippingFeeInfo);

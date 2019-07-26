@@ -1,9 +1,10 @@
 import { ResponseShippingDestination, ResponseShippingForOrders } from './Shipping';
 import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
-import { ResponsePaymentForOrders } from './Payment';
+import { ResponsePaymentForOrders, ResponsePaymentForShipping } from './Payment';
 import { paymentStatus, ShippingStatus } from 'enums';
 import { ResponseEventForOrders } from './Event';
+import { ResponseOrderConsumer } from './Consumer';
 
 export interface ResponseOrder {
   orderId: number;
@@ -13,6 +14,14 @@ export interface ResponseOrder {
   event: ResponseEventForOrders;
   payment: ResponsePaymentForOrders;
   shipping: ResponseShippingForOrders;
+}
+
+export interface ResponseOrderForShipping {
+  orderNo: string;
+  memo: string;
+  orderItems: ResponseOrderItem[];
+  consumer: ResponseOrderConsumer;
+  payment: ResponsePaymentForShipping;
 }
 
 export interface SearchOrder {
