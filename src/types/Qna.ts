@@ -19,4 +19,10 @@ export interface QnaComment {
   qnaCommentId: number;
   comment: string;
   created: string;
+  creator: QnaCommentCreator;
+}
+
+interface QnaCommentCreator {
+  loginId: string;
+  username: string;
 }
