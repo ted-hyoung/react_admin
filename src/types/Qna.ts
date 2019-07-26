@@ -1,20 +1,21 @@
 import { QnaOrderType } from 'enums/QnaOrderType';
+import { ResponseEventForQna } from './Event';
+import { QnaStatus } from 'enums';
 
 export interface ResponseQna {
   qnaId: number;
-  qnaStatus: string;
-  eventName: string;
+  qnaStatus: QnaStatus;
+  event: ResponseEventForQna;
   contents: string;
-  expose?: boolean;
+  expose: boolean;
   enable?: boolean;
   orderType: QnaOrderType;
   sequence: number;
-  creator?: string;
-  created?: string;
+  created: string;
   qnaComment: QnaComment | null;
 }
 
-interface QnaComment {
+export interface QnaComment {
   qnaCommentId: number;
   comment: string;
   created: string;

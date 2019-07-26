@@ -18,13 +18,25 @@ import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
 import { dateTimeFormat } from 'lib/utils';
 
 // types
-import { ResponseQna } from 'types';
+import { ResponseQna, ResponseEventForQna, QnaComment } from 'types';
 
 // enums
 import { QnaStatus, QnaOrderType } from 'enums';
 
 // assets
 import './index.less';
+
+interface Qna {
+  qnaId: number;
+  qnaStatus: QnaStatus;
+  event: ResponseEventForQna;
+  contents: string;
+  created: string;
+  orderType: QnaOrderType;
+  sequence: number;
+  expose: boolean;
+  qnaComment: QnaComment | null;
+}
 
 const Qna = () => {
   const { qna, waitStatusCount } = useSelector((storeState: StoreState) => storeState.qna);
@@ -61,14 +73,22 @@ const Qna = () => {
       key: 'qnaStatus',
       width: '10%',
       render: (status: string) => {
-        return status === QnaStatus[QnaStatus.WAIT] ? (
-          <Tag color="#f50">{QnaStatus[QnaStatus.답변대기]}</Tag>
+        return status === QnaStatus[QnaStatus.답변완료] ? (
+          <Tag color="#f50">{status}</Tag>
         ) : (
-          <Tag color="#a6a6a6">{QnaStatus[QnaStatus.답변완료]}</Tag>
+          <Tag color="#a6a6a6">{status}</Tag>
         );
       },
     },
-    { title: '공구명', dataIndex: 'eventName', key: 'eventName', width: '10%' },
+    {
+      title: '공구명',
+      dataIndex: 'event',
+      key: 'event',
+      width: '10%',
+      render: (text, record) => {
+        return record.event.name;
+      },
+    },
     { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '30%' },
     {
       title: '접수일',
@@ -96,6 +116,20 @@ const Qna = () => {
     },
   ];
 
+  const dataSource: Array<Qna> = qna.content.map(item => {
+    return {
+      qnaId: item.qnaId,
+      qnaStatus: QnaStatus[item.qnaStatus],
+      event: item.event,
+      contents: item.contents,
+      created: moment(item.created).format(dateTimeFormat),
+      orderType: item.orderType,
+      sequence: item.sequence,
+      expose: item.expose,
+      qnaComment: item.qnaComment,
+    };
+  });
+
   return (
     <div className="qna">
       <QnaSearch onOk={getQna} />
@@ -107,7 +141,7 @@ const Qna = () => {
       <div className="qna-table">
         <Table
           rowKey={record => record.qnaId.toString()}
-          dataSource={qna.content}
+          dataSource={dataSource}
           columns={columns}
           // expandIconAsCell={false}
           // expandRowByClick
