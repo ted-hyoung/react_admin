@@ -382,6 +382,7 @@ function EventForm(props: Props) {
               value={detail}
               onChange={value => setDetail(value)}
               defaultValue={event.detail || undefined}
+              instagramTool={false}
             />
           </Descriptions.Item>
         </Descriptions>

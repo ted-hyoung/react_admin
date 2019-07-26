@@ -14,9 +14,13 @@ import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'compon
 import './index.less';
 import { EventStatus } from 'enums';
 
-function EventDetail(props: RouteComponentProps) {
-  const { location } = props;
-  const eventId = useMemo(() => Number(location.pathname.split('/')[3]), [location.pathname]);
+interface Params {
+  id: string;
+}
+
+function EventDetail(props: RouteComponentProps<Params>) {
+  const { match } = props;
+  const eventId = Number(match.params.id);
 
   const { event } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
@@ -46,7 +50,7 @@ function EventDetail(props: RouteComponentProps) {
 
   useEffect(() => {
     getEvent(eventId);
-  }, [eventId, location.key]);
+  }, [eventId]);
 
   useEffect(() => {
     return () => {
