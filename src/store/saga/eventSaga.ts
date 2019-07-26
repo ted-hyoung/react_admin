@@ -10,6 +10,7 @@ import {
   updateEventByIdAsync,
   updateEventNoticesAsync,
   updateEventStatusAsync,
+  updateEventShippingFeeInfoAsync
 } from 'store/reducer/event';
 
 // modules
@@ -27,6 +28,7 @@ import {
   UpdateEvent,
   UpdateEventNotices,
   UpdateEventStatus,
+  RequestAsyncAction,
 } from 'types';
 
 // sagas
@@ -74,7 +76,7 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
   try {
     const res = yield call(() => Api.put(`/events/${id}`, data));
     yield put(updateEventByIdAsync.success(res.data));
-    yield put(replace(state.router.location.pathname));
+    yield put(getEventByIdAsync.request({ id }));
     yield message.success('공구가 수정되었습니다.');
   } catch (error) {
     yield put(updateEventByIdAsync.failure(error));
@@ -107,6 +109,23 @@ function* updateEventStatus(action: PayloadAction<string, UpdateRequestPayload<U
   }
 }
 
+function* updateEventShippingFeeInfo(action: RequestAsyncAction) {
+  try {
+    const { eventId, data } = action.payload;
+    yield call(() => Api.put(`/events/${eventId}/shipping-fee`, data));
+    yield put(updateEventShippingFeeInfoAsync.success(data));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('배송비 설정을 수정했습니다.');
+  } catch (error) {
+    yield put(updateEventShippingFeeInfoAsync.failure(error));
+    message.error('배송비 설정 수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
@@ -114,4 +133,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_REQUEST, updateEventById);
   yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
   yield takeLatest(Actions.UPDATE_EVENT_STATUS_REQUEST, updateEventStatus);
+  yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
 }

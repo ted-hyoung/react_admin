@@ -4,7 +4,10 @@ import { Switch, Route, Redirect, withRouter, RouteComponentProps } from 'react-
 import routes, { PrivateRoute } from './routes';
 
 // modules
-import { Layout } from 'antd';
+import { Layout, Row, Col } from 'antd';
+import { useSelector } from 'react-redux';
+import { StoreState } from 'store';
+import { EventTemplate } from 'pages';
 
 // components
 import { Menu, Header } from 'components';
@@ -27,6 +30,8 @@ function App(props: RouteComponentProps) {
   const accessToken = getToken();
   const tokenExpired = isTokenExpired(accessToken);
 
+  const { location, action } = useSelector((state: StoreState) => state.router);
+
   useEffect(() => {
     // componentDidMount
     if (accessToken && tokenExpired) {
@@ -38,6 +43,10 @@ function App(props: RouteComponentProps) {
       props.history.push('/login');
     }
   }, []);
+
+  if (location.pathname.indexOf('template') !== -1) {
+    return <Route exact path="/events/:id/template" component={EventTemplate} />;
+  }
 
   return (
     <div id="app">

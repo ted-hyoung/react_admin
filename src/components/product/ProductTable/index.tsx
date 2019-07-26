@@ -1,41 +1,30 @@
 // base
-import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
-
+import React, { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
 // modules
-import { Button, Table } from 'antd';
-import { ColumnProps } from 'antd/lib/table';
+
+import { Button, message, Table } from 'antd';
+import { ColumnProps, TableRowSelection } from 'antd/lib/table';
+import { useModal } from 'lib/hooks';
 
 // components
 import { ProductModal } from 'components';
 
+// store
+import { deleteProductsAsync, soldOutProductsAsync } from 'store/reducer/product';
+
 // types
-import { CreateProduct, ResponseOption, ResponseProduct, FileObject } from 'types';
+import { FileObject, ResponseEvent, ResponseOption, ResponseProduct } from 'types';
 
 // enums
-import { ProductMode, ProductSold } from 'enums';
+import { EventStatus, ProductSold } from 'enums';
 
 // less
 import './index.less';
 
 interface Props {
   products: ResponseProduct[];
-  productModalVisible: boolean;
-  productMode: ProductMode;
-  product: CreateProduct | ResponseProduct;
-  onClickProductModalOpen: () => void;
-  onClickProductModalClose: () => void;
-  onClickProductModalOk: () => void;
-  onChangeProductValue: (e: ChangeEvent) => void;
-  onChangeOptionValue: (e: ChangeEvent, index: number) => void;
-  onChangeEnableOption: (value: number) => void;
-  addOptionRow: () => void;
-  removeOptionRow: (value: number) => void;
-  rowSelection: object;
-  handleSelectedRow: (value: ProductList) => void;
-  onClickProductDelete: () => void;
-  onClickProductSoldOut: (productSold: ProductSold) => void;
-  fileObjectList: FileObject[];
-  setFileObjectList: Dispatch<SetStateAction<FileObject[]>>;
+  event: ResponseEvent;
 }
 
 export interface ProductList {
@@ -45,286 +34,346 @@ export interface ProductList {
   discountSalesPrice: number;
   freebie: string;
   normalSalesPrice: number;
+  soldOut: boolean;
   enableOption: boolean;
-  disabled: boolean;
   disabledOptionStock: number;
   disabledOptionTotalStock: number;
   disabledOptionSafeStock: number;
   options: ResponseOption[];
   images: FileObject[];
+  eventStatus: EventStatus;
 }
 
-const columns: Array<ColumnProps<ProductList>> = [
+const columns : Array<ColumnProps<ProductList>> = [
   { title: 'NO', key: 'key', dataIndex: 'key', align: 'center' },
   { title: '제품명', key: 'productName', dataIndex: 'productName', align: 'center' },
-  {
-    title: '제품가격',
-    key: 'discountSalesPrice',
-    dataIndex: 'discountSalesPrice',
-    align: 'center',
+  { title: '제품가격', key: 'discountSalesPrice', dataIndex: 'discountSalesPrice', align: 'center',
     render: (text, record) => {
-      return (
-        <div>
-          <span className="product-table-price-text">
-            {record.normalSalesPrice.toLocaleString()}원<br />
-          </span>
-          <strong className="product-table-price-size">{record.discountSalesPrice.toLocaleString()}원</strong>
-        </div>
-      );
-    },
+      return <div>
+        <span className="product-table-price-text">{record.normalSalesPrice.toLocaleString()}원<br /></span>
+        <strong className="product-table-price-size">{record.discountSalesPrice.toLocaleString()}원</strong>
+      </div>;
+    }
   },
   { title: '사은품', key: 'freebie', dataIndex: 'freebie', align: 'center' },
-  {
-    title: '옵션',
-    key: 'options',
-    dataIndex: 'options',
-    align: 'center',
+  { title: '옵션', key: 'options', dataIndex: 'options', align: 'center',
     children: [
-      {
-        title: 'NO',
-        key: 'optionNo',
-        align: 'center',
+      { title: 'NO', key: 'optionNo', align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                colSpan: 3,
+                colSpan: 3
               },
-              children: (
-                <div>
-                  <span>없음</span>
-                </div>
-              ),
-            };
+              children: <div><span>없음</span></div>
+            }
           } else {
             const optionIndex: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === record.options.length - 1) {
-                optionIndex.push(
-                  <div key={index}>
-                    <span>{index + 1}</span>
-                  </div>,
-                );
-              } else {
-                optionIndex.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{index + 1}</span>
-                  </div>,
-                );
-              }
+              optionIndex.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{index + 1}</span>
+                </div>
+              );
             });
             return {
-              children: optionIndex,
+              children: optionIndex
             };
           }
-        },
+        }
       },
-      {
-        title: '옵션명',
-        key: 'optionName',
-        dataIndex: 'optionName',
-        align: 'center',
+      { title: '옵션명', key: 'optionName', dataIndex: 'optionName', align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                style: { display: 'none' },
-              },
+                style: { "display" : 'none' }
+              }
             };
           } else {
             const optionName: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === record.options.length - 1) {
-                optionName.push(
-                  <div key={index}>
-                    <span>{record.options[index].optionName}</span>
-                  </div>,
-                );
-              } else {
-                optionName.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{record.options[index].optionName}</span>
-                  </div>,
-                );
-              }
+              optionName.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].optionName}</span>
+                </div>
+              );
             });
             return {
               props: {
-                style: { padding: 0 },
+                style: { "padding" : 0 }
               },
-              children: optionName,
+              children: optionName
             };
           }
-        },
+        }
       },
-      {
-        title: '옵션 추가 금액',
-        key: 'salePrice',
-        dataIndex: 'salePrice',
-        align: 'center',
+      { title: '옵션 추가 금액', key: 'salePrice', dataIndex: 'salePrice', align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                style: { display: 'none' },
-              },
+                style: { "display" : 'none' }
+              }
             };
           } else {
             const optionSalePrice: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === record.options.length - 1) {
-                optionSalePrice.push(
-                  <div key={index}>
-                    <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
-                  </div>,
-                );
-              } else {
-                optionSalePrice.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
-                  </div>,
-                );
-              }
+              optionSalePrice.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
+                </div>
+              );
             });
             return {
-              children: optionSalePrice,
+              children: optionSalePrice
             };
           }
-        },
-      },
+        }
+      }
     ],
   },
-  {
-    title: '재고',
-    key: 'stockInfo',
-    dataIndex: 'stockInfo',
-    align: 'center',
+  { title: '재고', key: 'stockInfo', dataIndex: 'stockInfo', align: 'center',
     children: [
-      {
-        title: '현 재고/총 재고',
-        key: 'stock',
-        dataIndex: 'stock',
-        align: 'center',
+      { title: '현 재고/총 재고', key: 'stock', dataIndex: 'stock', align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
             const optionStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === record.options.length - 1) {
-                optionStock.push(
-                  <div key={index}>
-                    <span>
-                      {record.options[index].stock.toLocaleString()} /{' '}
-                      {record.options[index].totalStock.toLocaleString()}
-                    </span>
-                  </div>,
-                );
-              } else {
-                optionStock.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>
-                      {record.options[index].stock.toLocaleString()} /{' '}
-                      {record.options[index].totalStock.toLocaleString()}
-                    </span>
-                  </div>,
-                );
-              }
+              optionStock.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
+                </div>
+              );
             });
             return {
-              children: optionStock,
+              children: optionStock
             };
           } else {
-            return (
-              <div key={record.productId}>
-                <span>
-                  {record.disabledOptionStock.toLocaleString()} / {record.disabledOptionTotalStock.toLocaleString()}
-                </span>
-              </div>
-            );
+            return <div key={record.productId}>
+              <span>{record.disabledOptionStock.toLocaleString()} / {record.disabledOptionTotalStock.toLocaleString()}</span>
+            </div>;
           }
-        },
+        }
       },
-      {
-        title: '안전 재고',
-        key: 'safeStock',
-        dataIndex: 'safeStock',
-        align: 'center',
+      { title: '안전 재고', key: 'safeStock', dataIndex: 'safeStock', align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
             const optionSafeStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === record.options.length - 1) {
-                optionSafeStock.push(
-                  <div key={index}>
-                    <span>{record.options[index].safeStock.toLocaleString()}</span>
-                  </div>,
-                );
-              } else {
-                optionSafeStock.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{record.options[index].safeStock.toLocaleString()}</span>
-                  </div>,
-                );
-              }
+              optionSafeStock.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].safeStock.toLocaleString()}</span>
+                </div>
+              );
             });
             return {
-              children: optionSafeStock,
+              children: optionSafeStock
             };
           } else {
-            return (
-              <div key={record.productId}>
-                <span>{record.disabledOptionSafeStock.toLocaleString()}</span>
-              </div>
-            );
+            return <div key={record.productId}>
+              <span>{record.disabledOptionSafeStock.toLocaleString()}</span>
+            </div>;
           }
-        },
-      },
+        }
+      }
     ],
   },
   { title: '상태', key: 'status', dataIndex: 'status', align: 'center' },
 ];
 
-// todo : 현재 공구 상태에 따라 버튼 분기 처리 필요 (이종현)
 function ProductTable(props: Props) {
-  const {
-    products,
-    product,
-    productModalVisible,
-    productMode,
-    onClickProductModalOpen,
-    onClickProductModalClose,
-    onClickProductModalOk,
-    onChangeProductValue,
-    onChangeOptionValue,
-    onChangeEnableOption,
-    addOptionRow,
-    removeOptionRow,
-    rowSelection,
-    handleSelectedRow,
-    onClickProductDelete,
-    onClickProductSoldOut,
-    fileObjectList,
-    setFileObjectList,
-  } = props;
 
-  const data: ProductList[] = products
-    .filter(item => item.disabled)
-    .map((product, i) => {
-      return {
-        key: i + 1,
-        productId: product.productId,
-        productName: product.productName,
-        discountSalesPrice: product.discountSalesPrice,
-        freebie: product.freebie,
-        normalSalesPrice: product.normalSalesPrice,
-        enableOption: product.enableOption,
-        disabled: product.disabled,
-        disabledOptionStock: product.disabledOptionStock,
-        disabledOptionTotalStock: product.disabledOptionTotalStock,
-        disabledOptionSafeStock: product.disabledOptionSafeStock,
-        options: product.options,
-        images: product.images,
-      };
+  const { products, event } = props;
+  const { eventId, eventStatus } = event;
+
+  const data: ProductList[] = products.map((product, index) => {
+    return {
+      key: index + 1,
+      productId: product.productId,
+      productName: product.productName,
+      discountSalesPrice: product.discountSalesPrice,
+      freebie: product.freebie,
+      normalSalesPrice: product.normalSalesPrice,
+      soldOut: product.soldOut,
+      enableOption: product.enableOption,
+      disabledOptionStock: product.disabledOptionStock,
+      disabledOptionTotalStock: product.disabledOptionTotalStock,
+      disabledOptionSafeStock: product.disabledOptionSafeStock,
+      options: product.options,
+      images: product.images,
+      eventStatus,
+    }
+  });
+
+  const initProduct:ResponseProduct = {
+    productId: 0,
+    productName: '',
+    normalSalesPrice: 0,
+    discountSalesPrice: 0,
+    disabledOptionTotalStock: 0,
+    disabledOptionStock: 0,
+    disabledOptionSafeStock: 0,
+    soldOut: false,
+    freebie: '',
+    enableOption: true,
+    options: [],
+    images: [],
+  };
+
+  const [ product, setProduct ] = useState(initProduct);
+  const [ selectedRowKeys, setSelectedRowKeys ] = useState<string[]>([]);
+  const [ productModalVisible, setProductModalVisible ] = useState(false);
+  const openModal = useModal();
+  const dispatch = useDispatch();
+
+  const rowSelection: TableRowSelection<ProductList> = {
+    selectedRowKeys,
+    onChange: useCallback(selectedRowKeys => {
+      setSelectedRowKeys(selectedRowKeys);
+    }, []),
+  };
+
+  const handleRowProduct = (record: ProductList) => {
+    return {
+      onClick: () => {
+        setProductModalVisible(true);
+        if (eventStatus === EventStatus[EventStatus.READY]) {
+          setProduct({
+            ...product,
+            productId: record.productId,
+            productName: record.productName,
+            normalSalesPrice: record.normalSalesPrice,
+            discountSalesPrice: record.discountSalesPrice,
+            disabledOptionTotalStock: record.disabledOptionTotalStock,
+            disabledOptionStock: record.disabledOptionStock,
+            disabledOptionSafeStock: record.disabledOptionSafeStock,
+            soldOut: record.soldOut,
+            freebie: record.freebie,
+            enableOption: record.enableOption,
+            options: record.options.concat({
+              optionId: 0,
+              optionName: '',
+              salePrice: 0,
+              stock: 0,
+              safeStock: 0,
+              totalStock: 0
+            }),
+            images: record.images
+          });
+        } else {
+          setProduct({
+            ...product,
+            productId: record.productId,
+            productName: record.productName,
+            normalSalesPrice: record.normalSalesPrice,
+            discountSalesPrice: record.discountSalesPrice,
+            disabledOptionTotalStock: record.disabledOptionTotalStock,
+            disabledOptionStock: record.disabledOptionStock,
+            disabledOptionSafeStock: record.disabledOptionSafeStock,
+            soldOut: record.soldOut,
+            freebie: record.freebie,
+            enableOption: record.enableOption,
+            options: record.options,
+            images: record.images
+          });
+        }
+      }
+    }
+  };
+
+  const handleProductModalOpen = () => {
+    setProductModalVisible(true);
+    setProduct({
+      ...product,
+      productId: 0,
+      productName: '',
+      normalSalesPrice: 0,
+      discountSalesPrice: 0,
+      disabledOptionTotalStock: 0,
+      disabledOptionStock: 0,
+      disabledOptionSafeStock: 0,
+      soldOut: false,
+      freebie: '',
+      enableOption: true,
+      options: [{
+        optionId: 0,
+        optionName: '',
+        salePrice: 0,
+        stock: 0,
+        safeStock: 0,
+        totalStock: 0
+      }]
     });
+  };
+
+  const handleProductDelete = () => {
+    const selectedIds: number[] = [];
+    selectedRowKeys.forEach((item) => {
+      selectedIds.push(Number(item));
+    });
+
+    if (selectedIds.length === 0) {
+      return message.error("삭제할 상품을 선택해주세요.");
+    } else {
+      const data = {
+        eventId,
+        data: {
+          productIds: selectedIds,
+        },
+      };
+
+      openModal({
+        type: 'confirm',
+        content: (
+          <>
+            <p>해당 제품을</p>
+            <br />
+            <p>삭제처리 하시겠습니까?</p>
+          </>
+        ),
+        onOk() {
+          dispatch(deleteProductsAsync.request(data));
+          setSelectedRowKeys([]);
+        }
+      });
+    }
+  };
+
+  const handleProductSoldOut = (productSold: ProductSold) => {
+    const selectedIds: number[] = [];
+    selectedRowKeys.forEach((item) => {
+      selectedIds.push(Number(item));
+    });
+
+    if (selectedIds.length === 0) {
+      return message.error("품절 처리할 상품을 선택해주세요.");
+    } else {
+      const data = {
+        eventId,
+        data: {
+          productIds: selectedIds,
+          soldOut: productSold === ProductSold.SOLD_OUT,
+        },
+      };
+
+      openModal({
+        type: 'confirm',
+        content: (
+          <>
+            <p>해당 제품을</p>
+            <br />
+            <p>{productSold} 하시겠습니까?</p>
+          </>
+        ),
+        onOk() {
+          dispatch(soldOutProductsAsync.request(data));
+          setSelectedRowKeys([]);
+        }
+      });
+    }
+
+  };
 
   return (
     <div className="product-table">
@@ -336,45 +385,28 @@ function ProductTable(props: Props) {
         dataSource={data}
         pagination={false}
         size="middle"
-        onRow={record => {
-          return {
-            onClick: () => {
-              handleSelectedRow(record);
-            },
-          };
-        }}
-      />
+        onRow={handleRowProduct} />
       <div className="product-table-button">
-        <Button type="primary" size="large" onClick={onClickProductModalOpen}>
-          제품 등록
-        </Button>
-        <Button type="danger" size="large" onClick={onClickProductDelete}>
-          선택 제품 삭제
-        </Button>
-        <Button type="primary" size="large" onClick={() => onClickProductSoldOut(ProductSold.SOLD_OUT)}>
-          품절 처리
-        </Button>
-        <Button type="danger" size="large" onClick={() => onClickProductSoldOut(ProductSold.SOLD_IN)}>
-          품절 해제
-        </Button>
+        {eventStatus === EventStatus[EventStatus.READY] ?
+          <>
+            <Button type="primary" size="large" onClick={handleProductModalOpen}>제품 등록</Button>
+            <Button type="danger" size="large" onClick={handleProductDelete}>선택 제품 삭제</Button>
+          </>
+          :
+          <>
+            <Button type="primary" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_OUT)}>품절 처리</Button>
+            <Button type="danger" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_IN)}>품절 해제</Button>
+          </>
+        }
       </div>
       <ProductModal
-        productMode={productMode}
-        selectedProduct={product}
+        product={product}
+        setProduct={setProduct}
+        event={event}
         productModalVisible={productModalVisible}
-        onClickProductModalOpen={onClickProductModalOpen}
-        onClickProductModalClose={onClickProductModalClose}
-        onClickProductModalOk={onClickProductModalOk}
-        onChangeProductValue={onChangeProductValue}
-        onChangeOptionValue={onChangeOptionValue}
-        onChangeEnableOption={onChangeEnableOption}
-        addOptionRow={addOptionRow}
-        removeOptionRow={removeOptionRow}
-        fileObjectList={fileObjectList}
-        setFileObjectList={setFileObjectList}
-      />
+        setProductModalVisible={setProductModalVisible}/>
     </div>
-  );
+  )
 }
 
 export default ProductTable;
