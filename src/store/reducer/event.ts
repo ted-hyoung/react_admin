@@ -103,7 +103,6 @@ const initialState: EventState = {
     images: [],
     celebReview: {
       created: '',
-      instagramUrl: null,
       contents: null,
       modified: null,
     },

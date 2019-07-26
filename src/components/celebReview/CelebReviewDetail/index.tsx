@@ -33,7 +33,6 @@ function CelebReviewDetail() {
           id: eventId,
           data: {
             contents: value,
-            instagramUrl: 'asdf',
           },
         }),
       );

@@ -1,4 +1,4 @@
-import { CreateFileObject, UpdateFileObject } from './FileObject';
+import { CreateFileObject, UpdateFileObject, FileObject } from './FileObject';
 
 export interface ResponseProduct {
   productId: number;
@@ -40,7 +40,7 @@ export interface CreateProduct {
   freebie: string;
   enableOption: boolean;
   options: CreateOption[];
-  images:CreateFileObject[];
+  images: CreateFileObject[];
 }
 
 export interface CreateOption {
@@ -52,6 +52,12 @@ export interface CreateOption {
 }
 
 export interface ResponseOrderItemProduct {
+  productId: number;
+  productName: string;
+}
+
+export interface ResponseOrderItemProductForReview {
+  images: FileObject[];
   productId: number;
   productName: string;
 }

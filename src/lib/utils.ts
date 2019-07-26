@@ -107,3 +107,8 @@ export function isTokenExpired(token?: string) {
   const now = Math.floor(Date.now() / 1000);
   return decoded.exp < now;
 }
+
+export function pad(num: number, length: number) {
+  const n = num.toString();
+  return n.length >= length ? n : new Array(length - n.length + 1).join('0') + num;
+}
