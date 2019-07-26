@@ -1,5 +1,4 @@
 // base
-import produce from 'immer';
 import { createAsyncAction } from 'typesafe-actions';
 
 // action

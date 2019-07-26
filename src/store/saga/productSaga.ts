@@ -1,6 +1,5 @@
 // base
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { replace } from 'connected-react-router';
 
 // lib
 import * as Api from 'lib/protocols';
