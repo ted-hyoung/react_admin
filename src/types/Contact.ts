@@ -1,5 +1,6 @@
 import { QnaStatus, CsrCategory } from 'enums';
 import { ResponseAccount } from './Account';
+import { FileObject } from './FileObject';
 
 export interface ResponseContactComment {
   contactCommentId: number;
@@ -22,7 +23,8 @@ export interface ResponseContact {
   contents: string;
   creator: ResponseAccount;
   created: string;
-  comment?: ResponseContactComment;
+  contactComment?: ResponseContactComment;
+  images: FileObject[];
 }
 
 export interface SearchContact {

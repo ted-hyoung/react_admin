@@ -9,6 +9,7 @@ import { ModalOptions, GalleryModalContent } from 'types';
 
 // assets
 import './index.less';
+import { getThumbUrl } from 'lib/utils';
 
 interface Props extends ModalOptions {
   content: GalleryModalContent;
@@ -57,7 +58,14 @@ function GalleryModal(props: Props) {
     <Modal {...props} wrapClassName="modal-gallery" footer={null}>
       <Carousel ref={carouselRef}>
         {images.map((image, i) => (
-          <img key={'modal-gallery-' + i} src={image.src + '?text=' + (i + 1)} alt="" />
+          <div key={image.fileKey}>
+            <div
+              className="image-container"
+              style={{
+                backgroundImage: `url(${getThumbUrl(image.fileKey, 520, 520, 'scale')})`,
+              }}
+            />
+          </div>
         ))}
       </Carousel>
       <Icon type="left" onClick={handlePrev} className="carousel-btn prev" />
