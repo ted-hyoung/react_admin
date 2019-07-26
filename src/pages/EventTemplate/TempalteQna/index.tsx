@@ -6,7 +6,7 @@ import { Row, Select, Col, Input, Button } from 'antd';
 
 import './index.less';
 
-const Qna = () => {
+const TempalteQna = () => {
   return (
     <div className="qna">
       <div className="link-text" style={{ padding: '50px 0 0 30px' }}>
@@ -33,4 +33,4 @@ const Qna = () => {
   );
 };
 
-export default Qna;
+export default TempalteQna;

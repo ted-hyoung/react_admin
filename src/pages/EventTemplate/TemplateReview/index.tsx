@@ -44,7 +44,7 @@ function ScoreGraph({ counts }: { counts: number[] }) {
   );
 }
 
-function Review() {
+function TemplateReview() {
   return (
     <>
       <div className="review-report">
@@ -63,4 +63,4 @@ function Review() {
   );
 }
 
-export default Review;
+export default TemplateReview;

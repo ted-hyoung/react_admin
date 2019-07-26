@@ -18,11 +18,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { StoreState } from 'store';
 import { getEventByIdAsync } from 'store/reducer/event';
 import { MainTabsKey } from 'components/template/TemplateMainTabs';
-// import CelebChoiceReview from './CelebChoiceReview';
-// import Product from './Product';
-// import Review from './Review';
 import TempalteQna from './TempalteQna';
 import TemplateReview from './TemplateReview';
+import TemplateCelebrity from './TemplateCelebrity';
+import TemplateProduct from './TemplateProduct';
 
 interface Match {
   id: string;
@@ -66,8 +65,8 @@ function EventTemplate(props: RouteComponentProps<Match>) {
           <TemplateEventNotice eventNotices={event.eventNotices} />
         </div>
         <TemplateMainTabs onChange={handleChangeTabs} />
-        {/* {activeKey === MainTabsKey.CELEBRITY && <CelebChoiceReview />}
-        {activeKey === MainTabsKey.PRODUCT && <Product />} */}
+        {activeKey === MainTabsKey.CELEBRITY && <TemplateCelebrity />}
+        {activeKey === MainTabsKey.PRODUCT && <TemplateProduct />}
         {activeKey === MainTabsKey.REVIEW && <TemplateReview />}
         {activeKey === MainTabsKey.QNA && <TempalteQna />}
       </div>

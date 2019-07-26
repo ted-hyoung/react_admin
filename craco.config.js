@@ -29,6 +29,11 @@ module.exports = {
         customizeTheme: {
           '@primary-color': '#6a98f8',
           '@link-color': '#6a98f8',
+          '@font-size-base': '14px',
+          '@font-size-xl': '@font-size-base + 4px',
+          '@text-color': '#000000',
+          '@tab-content-padding': '30px',
+          '@border-grey': '#c6c6c6',
         },
       },
     },
