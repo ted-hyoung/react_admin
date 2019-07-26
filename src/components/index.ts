@@ -8,5 +8,6 @@ export * from './event';
 export * from './product';
 export * from './celebReview';
 export * from './order';
+export * from './template';
 
 export { default as TextEditor } from './TextEditor';

@@ -58,6 +58,10 @@ function EventDetail(props: RouteComponentProps<Params>) {
     };
   }, []);
 
+  const handleOpenPreview = () => {
+    window.open(`/events/${event.eventId}/template`);
+  };
+
   return (
     <div className="event-detail">
       <Tabs defaultActiveKey="EVENT">
@@ -78,6 +82,9 @@ function EventDetail(props: RouteComponentProps<Params>) {
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
+      <Button className="btn-event-preview" type="primary" onClick={handleOpenPreview}>
+        미리보기
+      </Button>
       {event.celebReview.contents && event.products && (
         <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
           오픈
