@@ -26,7 +26,7 @@ const extractErrorMsg = (error: any) => {
 };
 
 const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
-const getFileHost = () => process.env.REACT_APP_FILE_API_URL + '/buckets/ifd-fromc/';
+const getFileHost = () => process.env.REACT_APP_FILE_API_URL + '/buckets/' + process.env.REACT_APP_S3_BUCKET + '/';
 const getFileUrl = () => process.env.REACT_APP_FILE_URL + '';
 
 // config
