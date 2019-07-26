@@ -85,12 +85,11 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
 
 function* updateEventNotices(action: PayloadAction<string, UpdateRequestPayload<UpdateEventNotices>>) {
   const { id, data } = action.payload;
-  const state = yield select();
 
   try {
     const res = yield call(() => Api.put(`/events/${id}/notices`, data));
     yield put(updateEventNoticesAsync.success(res.data));
-    yield put(replace(state.router.location.pathname));
+    yield put(getEventByIdAsync.request({ id }));
     yield message.success('공지가 등록되었습니다.');
   } catch (error) {
     yield put(updateEventNoticesAsync.failure(error));
@@ -115,9 +114,15 @@ function* updateEventShippingFeeInfo(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     yield call(() => Api.put(`/events/${eventId}/shipping-fee`, data));
     yield put(updateEventShippingFeeInfoAsync.success(data));
-    yield put(replace('/events/detail/' + eventId));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('배송비 설정을 수정했습니다.');
   } catch (error) {
     yield put(updateEventShippingFeeInfoAsync.failure(error));
+    message.error('배송비 설정 수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 

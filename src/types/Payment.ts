@@ -1,4 +1,4 @@
 export interface ResponsePaymentForOrders {
   paymentDate: string;
-  amount: number;
+  totalAmount: number;
 }

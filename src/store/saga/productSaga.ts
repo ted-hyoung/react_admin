@@ -16,15 +16,23 @@ import {
   deleteProductsAsync,
   soldOutProductsAsync,
 } from 'store/reducer/product';
+import { getEventByIdAsync } from 'store/reducer/event';
+import { message } from 'antd';
 
 function* createProduct(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.post(`/events/${eventId}/product`, data));
     yield put(createProductAsync.success(res.data));
-    yield put(replace('/events/detail/' + eventId));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('제품 정보를 등록하였습니다.');
   } catch (error) {
     yield put(createProductAsync.failure(error));
+    message.error('제품 정보 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 
@@ -33,9 +41,15 @@ function* updateProduct(action: RequestAsyncAction) {
     const { eventId, productId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/${productId}`, data));
     yield put(updateProductAsync.success(res.data));
-    yield put(replace('/events/detail/' + eventId));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('제품 정보를 수정했습니다.');
   } catch (error) {
     yield put(updateProductAsync.failure(error));
+    message.error('제품 정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 
@@ -44,9 +58,15 @@ function* deleteProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
     yield put(deleteProductsAsync.success(res.data));
-    yield put(replace('/events/detail/' + eventId));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('해당 제품을 삭제했습니다.');
   } catch (error) {
     yield put(deleteProductsAsync.failure(error));
+    message.error('해당 제품 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 
@@ -55,9 +75,15 @@ function* soldOutProduct(action: RequestAsyncAction) {
     const { eventId, data } = action.payload;
     const res = yield call(() => Api.put(`/products/sold-out`, data));
     yield put(soldOutProductsAsync.success(res.data));
-    yield put(replace('/events/detail/' + eventId));
+    yield put(
+      getEventByIdAsync.request({
+        id: eventId,
+      }),
+    );
+    message.success('해당 제품을 품절처리 또는 품절해제를처리하였습니다.');
   } catch (error) {
     yield put(soldOutProductsAsync.failure(error));
+    message.error('해당 제품을 품절처리 또는 품절해제를 실패하였습니다.');
   }
 }
 

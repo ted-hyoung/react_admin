@@ -95,28 +95,11 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           totalStock: 0
         }],
       });
-
-      setFieldsValue({
-        enableOption: value,
-        options: [{
-          optionId: 0,
-          optionName: '',
-          salePrice: 0,
-          stock: 0,
-          safeStock: 0,
-          totalStock: 0
-        }]
-      });
     } else if (value === 1) { // 옵션 미사용
       setProduct({
         ...product,
         enableOption: false,
         options: [],
-      });
-
-      setFieldsValue({
-        enableOption: value,
-        options: []
       });
     }
   };
@@ -387,6 +370,9 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
 
           dispatch(updateProductAsync.request({eventId, productId, data: updateProduct}));
         }
+        resetFields();
+        setFileObjectList([]);
+        setProductModalVisible(false)
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }

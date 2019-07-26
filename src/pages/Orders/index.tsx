@@ -37,7 +37,7 @@ interface Orders {
   brandName: string;
   username: string;
   orderItems: JSX.Element[];
-  totalSalePrice: number;
+  totalAmount: number;
   shippingStatus: ShippingStatus;
   shippingCompany: string;
 }
@@ -86,13 +86,13 @@ const Orders = () => {
           moment(item.payment.paymentDate).format(dateTimeFormat),
           item.orderId.toString(),
           item.event.brandName,
-          item.account.username,
+          item.consumer.username,
           item.orderItems[0].product.productName +
             ' / ' +
             item.orderItems[0].option.optionName +
             ' / ' +
             item.orderItems[0].quantity.toString(),
-          item.payment.amount.toString(),
+          item.payment.totalAmount.toString(),
           ShippingStatus[item.shipping.shippingStatus],
           item.shipping.shippingCompany,
         ]);
@@ -128,7 +128,7 @@ const Orders = () => {
     { title: '브랜드명', dataIndex: 'brandName', key: 'brandName' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
     { title: '상품명 / 옵션 / 수량', dataIndex: 'orderItems', key: 'orderItems' },
-    { title: '실 결제금액', dataIndex: 'totalSalePrice', key: 'totalSalePrice' },
+    { title: '실 결제금액', dataIndex: 'totalAmount', key: 'totalAmount' },
     { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
     { title: '택배사', dataIndex: 'shippingCompany', key: 'shippingCompany' },
   ];
@@ -139,13 +139,13 @@ const Orders = () => {
       paymentDate: moment(order.payment.paymentDate).format(dateTimeFormat),
       orderNumber: order.orderId,
       brandName: order.event.brandName,
-      username: order.account.username,
+      username: order.consumer.username,
       orderItems: order.orderItems.map(item => (
         <div key={item.orderItemId}>
           {item.product.productName} / {item.option.optionName} / {item.quantity}
         </div>
       )),
-      totalSalePrice: order.payment.amount,
+      totalAmount: order.payment.totalAmount,
       shippingStatus: ShippingStatus[order.shipping.shippingStatus],
       shippingCompany: order.shipping.shippingCompany,
     };

@@ -179,61 +179,7 @@ const columns : Array<ColumnProps<ProductList>> = [
       }
     ],
   },
-  { title: '상태', key: 'productStatus', dataIndex: 'productStatus', align: 'center',
-    render: (text, record) => {
-      const productStatus: JSX.Element[] = [];
-      if (record.enableOption) {
-        record.options.forEach((option, index) => {
-          if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
-            productStatus.push(
-              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
-                <span>품절 처리</span>
-              </div>
-            );
-          } else if (!record.soldOut && option.stock === 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
-            productStatus.push(
-              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
-                <span>판매 종료</span>
-              </div>
-            );
-          } else if (!record.soldOut && option.stock !== 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
-            productStatus.push(
-              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
-                <span>판매중</span>
-              </div>
-            );
-          }
-        });
-        return {
-          children: productStatus
-        };
-      } else {
-        const productStatus: JSX.Element[] = [];
-        if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
-          productStatus.push(
-            <div key={record.productId}>
-              <span>품절 처리</span>
-            </div>
-          );
-        } else if (!record.soldOut && record.disabledOptionStock === 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
-          productStatus.push(
-            <div key={record.productId}>
-              <span>판매 종료</span>
-            </div>
-          );
-        } else if (!record.soldOut && record.disabledOptionStock !== 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
-          productStatus.push(
-            <div key={record.productId}>
-              <span>판매중</span>
-            </div>
-          );
-        }
-        return {
-          children: productStatus
-        };
-      }
-    }
-  },
+  { title: '상태', key: 'status', dataIndex: 'status', align: 'center' },
 ];
 
 function ProductTable(props: Props) {

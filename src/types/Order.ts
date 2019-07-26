@@ -9,7 +9,7 @@ export interface ResponseOrder {
   orderId: number;
   shippingDestination: ResponseShippingDestination;
   orderItems: ResponseOrderItem[];
-  account: ResponseOrderAccount;
+  consumer: ResponseOrderAccount;
   event: ResponseEventForOrders;
   payment: ResponsePaymentForOrders;
   shipping: ResponseShippingForOrders;
