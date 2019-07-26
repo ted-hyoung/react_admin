@@ -18,7 +18,14 @@ import {
 } from 'store/reducer/product';
 
 // types
-import { CreateOption, CreateProduct, ResponseOption, ResponseProduct, ResponseShippingFeeInfo } from 'types';
+import {
+  CreateOption,
+  CreateProduct,
+  ResponseOption,
+  ResponseProduct,
+  ResponseShippingFeeInfo,
+  FileObject,
+} from 'types';
 import { ProductList } from '../ProductTable';
 
 // enums
@@ -26,7 +33,6 @@ import { ProductMode, ProductSold } from 'enums';
 
 // less
 import './index.less';
-import { StoreState } from 'store';
 
 // todo : validate 추후 적용 필요 (이종현)
 interface Props {
@@ -61,6 +67,7 @@ function ProductDetail(props: Props) {
         totalStock: 0,
       },
     ],
+    images: [],
   };
 
   const initOption: CreateOption = {
@@ -84,6 +91,7 @@ function ProductDetail(props: Props) {
   const [shippingFee, setShippingFree] = useState(initShippingFreeInfo);
   const [selectProductId, setSelectProductId] = useState(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState(initSelectedRowKeys);
+  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   useEffect(() => {
     setProducts(() => responseProducts);
@@ -106,42 +114,54 @@ function ProductDetail(props: Props) {
     setSelectProductId(0);
     setProduct(initCreateProduct);
     setProductMode(ProductMode.CREATE);
+    setFileObjectList([]);
   }, [setProductModalVisible, setSelectProductId, setProduct, initCreateProduct, setProductMode]);
 
   const handleProductModalOk = useCallback(() => {
+    const newOptions = product.options.slice(0, product.options.length - 1);
+
     switch (productMode) {
       case ProductMode.CREATE:
         const createData = {
           eventId,
-          data: product.options.reduce((ac, option, index) => {
-            if (index === ac.options.length - 1) {
-              ac.options = ac.options.slice(0, ac.options.length - 1);
-            }
-
-            return ac;
-          }, product),
+          data: {
+            productName: product.productName,
+            normalSalesPrice: product.normalSalesPrice,
+            discountSalesPrice: product.discountSalesPrice,
+            disabledOptionTotalStock: product.disabledOptionTotalStock,
+            disabledOptionStock: product.disabledOptionStock,
+            disabledOptionSafeStock: product.disabledOptionSafeStock,
+            freebie: product.freebie,
+            enableOption: product.enableOption,
+            options: newOptions,
+            images: fileObjectList,
+          },
         };
         dispatch(createProductAsync.request(createData));
-        setProduct(initCreateProduct);
-        setProductModalVisible(false);
         break;
       case ProductMode.UPDATE:
         const updateData = {
           eventId,
           productId: selectProductId,
-          data: product.options.reduce((ac, option, index) => {
-            if (index === ac.options.length - 1) {
-              ac.options = ac.options.slice(0, ac.options.length - 1);
-            }
-
-            return ac;
-          }, product),
+          data: {
+            productName: product.productName,
+            normalSalesPrice: product.normalSalesPrice,
+            discountSalesPrice: product.discountSalesPrice,
+            disabledOptionTotalStock: product.disabledOptionTotalStock,
+            disabledOptionStock: product.disabledOptionStock,
+            disabledOptionSafeStock: product.disabledOptionSafeStock,
+            freebie: product.freebie,
+            enableOption: product.enableOption,
+            options: newOptions,
+            images: fileObjectList,
+          },
         };
         dispatch(updateProductAsync.request(updateData));
-        setProduct(initCreateProduct);
-        setProductModalVisible(false);
         break;
     }
+    setFileObjectList([]);
+    setProduct(initCreateProduct);
+    setProductModalVisible(false);
   }, [selectProductId, dispatch, product, initCreateProduct, productMode]);
 
   const onChangeEnableOption = useCallback(
@@ -171,19 +191,22 @@ function ProductDetail(props: Props) {
       const name = e.target.name;
       const value = e.target.value;
 
-      if (name === 'optionName') {
-        product.options[index].optionName = value;
-      } else if (name === 'salePrice') {
-        product.options[index].salePrice = Number(value) < 0 ? 0 : Number(value);
-      } else if (name === 'stock') {
-        product.options[index].stock = Number(value) < 0 ? 0 : Number(value);
-        product.options[index].totalStock = Number(value) < 0 ? 0 : Number(value);
-      } else if (name === 'safeStock') {
-        product.options[index].safeStock = Number(value) < 0 ? 0 : Number(value);
-      }
+      const newOptions: CreateOption[] = product.options.map((optionItem, optionIndex) =>
+        optionIndex === index
+          ? {
+              ...optionItem,
+              optionName: name === 'optionName' ? value : optionItem.optionName,
+              salePrice: name === 'salePrice' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.salePrice,
+              stock: name === 'stock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.stock,
+              totalStock: name === 'stock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.totalStock,
+              safeStock: name === 'safeStock' ? (Number(value) < 0 ? 0 : Number(value)) : optionItem.safeStock,
+            }
+          : optionItem,
+      );
+
       setProduct({
         ...product,
-        options: product.options,
+        options: newOptions,
       });
     },
     [product],
@@ -265,8 +288,17 @@ function ProductDetail(props: Props) {
         disabledOptionSafeStock: record.disabledOptionSafeStock,
         freebie: record.freebie,
         enableOption: record.enableOption,
-        options: record.options,
+        options: record.enableOption
+          ? record.options.concat({
+              optionName: '',
+              salePrice: 0,
+              stock: 0,
+              totalStock: 0,
+              safeStock: 0,
+            })
+          : record.options,
       });
+      setFileObjectList(record.images);
       setSelectProductId(record.productId);
       setProductMode(ProductMode.UPDATE);
       setProductModalVisible(true);
@@ -276,10 +308,8 @@ function ProductDetail(props: Props) {
 
   const handleProductDelete = useCallback(() => {
     const selectedIds: number[] = [];
-
-    selectedRowKeys.forEach(index => {
-      const selectIndex = Number(index) - 1;
-      selectedIds.push(products[selectIndex].productId);
+    selectedRowKeys.forEach(productId => {
+      selectedIds.push(Number(productId));
     });
 
     const data = {
@@ -338,6 +368,8 @@ function ProductDetail(props: Props) {
         handleSelectedRow={handleSelectedRow}
         onClickProductDelete={handleProductDelete}
         onClickProductSoldOut={handleProductSoldOut}
+        fileObjectList={fileObjectList}
+        setFileObjectList={setFileObjectList}
       />
       <ShippingFreeInfo
         shippingFreeInfo={shippingFee}

@@ -1,3 +1,5 @@
+import Cookies from 'universal-cookie';
+import decode from 'jwt-decode';
 import { fileUrl } from './protocols';
 import runes from 'runes';
 
@@ -19,6 +21,14 @@ export const calcStringByte = (str: string) => {
 
 interface EnumType {
   [i: number]: string;
+}
+
+interface Token {
+  LOGIN_ID: string;
+  USER_ROLE: string;
+  exp: number;
+  iat: number;
+  iss: string;
 }
 
 export function mapEnums(targetEnum: EnumType) {
@@ -83,4 +93,39 @@ export function splitToLine(text: string, limit: number) {
     }
   });
   return resultList;
+}
+
+const ACCESS_TOKEN = 'fromc_admin_access_token';
+const REFRESH_TOKEN = 'fromc_admin_refresh_token';
+
+export function getToken() {
+  const cookies = new Cookies();
+  return cookies.get(ACCESS_TOKEN);
+}
+
+export function getRefreshToken() {
+  const cookies = new Cookies();
+  return cookies.get(REFRESH_TOKEN);
+}
+
+export function setToken(token: string, refreshToken: string) {
+  const cookies = new Cookies();
+  cookies.set(ACCESS_TOKEN, token, { path: '/' });
+  cookies.set(REFRESH_TOKEN, refreshToken, { path: '/' });
+}
+
+export function logout() {
+  const cookies = new Cookies();
+  cookies.set(ACCESS_TOKEN, '', { path: '/' });
+  cookies.set(REFRESH_TOKEN, '', { path: '/' });
+  window.location.href = '/';
+}
+
+export function isTokenExpired(token?: string) {
+  if (!token) {
+    return true;
+  }
+  const decoded = decode<Token>(token);
+  const now = Math.floor(Date.now() / 1000);
+  return decoded.exp < now;
 }

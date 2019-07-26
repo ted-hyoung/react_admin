@@ -5,16 +5,19 @@ import * as Actions from 'store/action/celebReviewAction';
 import { PayloadAction } from 'typesafe-actions';
 import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload } from 'types';
 import { updateCelebReviewAsync, getCelebReviewAsync } from 'store/reducer/celebReview';
-import { replace } from 'connected-react-router';
+import { message } from 'antd';
+import { getEventByIdAsync } from 'store/reducer/event';
 
 function* updateCelebReview(action: PayloadAction<string, UpdateRequestPayload<UpdateCelebReview>>) {
   const { id, data } = action.payload;
   try {
     const res = yield call(() => Api.put('/events/' + id + '/celeb-review', data));
     yield put(updateCelebReviewAsync.success(res));
-    yield put(replace('/events/detail/' + id));
+    yield put(getEventByIdAsync.request({ id }));
+    message.success('저장되었습니다');
   } catch (error) {
     yield put(updateCelebReviewAsync.failure(error));
+    message.error('저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 

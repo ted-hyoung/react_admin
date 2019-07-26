@@ -33,7 +33,6 @@ function CelebReviewDetail() {
           id: eventId,
           data: {
             contents: value,
-            instagramUrl: 'asdf',
           },
         }),
       );
@@ -46,7 +45,12 @@ function CelebReviewDetail() {
 
   return (
     <>
-      <TextEditor value={value} onChange={value => setValue(value)} defaultValue={celebReview.contents || undefined} />
+      <TextEditor
+        name="celeb-editor"
+        value={value}
+        onChange={value => setValue(value)}
+        defaultValue={celebReview.contents || undefined}
+      />
       <Button onClick={handleConfirm} style={{ marginTop: 10 }}>
         확인
       </Button>

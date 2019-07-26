@@ -1,4 +1,5 @@
-// todo : 추후 상품 이미지 관련 CommonFile.ts 반영 필요
+import { CreateFileObject, UpdateFileObject } from './FileObject';
+
 export interface ResponseProduct {
   productId: number;
   productName: string;
@@ -12,10 +13,11 @@ export interface ResponseProduct {
   freebie: string;
   enableOption: boolean;
   options: ResponseOption[];
+  images: UpdateFileObject[];
 }
 
 export interface ResponseOption {
-  optionId: number;
+  optionId?: number;
   optionName: string;
   salePrice: number;
   stock: number;
@@ -38,6 +40,7 @@ export interface CreateProduct {
   freebie: string;
   enableOption: boolean;
   options: CreateOption[];
+  images:CreateFileObject[];
 }
 
 export interface CreateOption {

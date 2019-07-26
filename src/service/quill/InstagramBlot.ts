@@ -19,11 +19,22 @@ function convertUrl(text: string) {
 class InstagramBlot extends QuillBlot {
   public static create(data: string) {
     const node: HTMLElement = super.create(data);
+
     if (typeof data === 'string') {
+      let height;
+      const iframes = document.body.querySelectorAll('.instagram-media');
+
+      iframes.forEach(iframe => {
+        const id = iframe.id.charAt(iframe.id.length - 1);
+        if (iframe.id.indexOf(id) !== -1 && iframe.clientHeight > 0) {
+          height = iframe.clientHeight;
+        }
+      });
+
       node.setAttribute('data-instgrm-permalink', convertUrl(data));
       node.setAttribute('data-instgrm-captioned', 'true');
       node.setAttribute('data-instgrm-version', '12');
-      node.setAttribute('style', 'width: 540px; border: 1px solid #ddd;');
+      node.setAttribute('style', `width: 540px; height: ${height}px; border: 1px solid #ddd;`);
     }
     return node;
   }
@@ -37,4 +48,5 @@ class InstagramBlot extends QuillBlot {
 InstagramBlot.blotName = 'instagram';
 InstagramBlot.className = 'instagram-media';
 InstagramBlot.tagName = 'blockquote';
+
 export default InstagramBlot;
