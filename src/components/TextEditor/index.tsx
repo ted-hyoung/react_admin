@@ -13,6 +13,11 @@ import { InstagramBlot } from 'service';
 import 'react-quill/dist/quill.snow.css';
 import './index.less';
 
+const fontSize = Quill.import('attributors/style/size');
+
+fontSize.whitelist = ['14px', '16px', '18px', '20px', '22px', '24px', '28px', '32px'];
+
+Quill.register(fontSize, true);
 Quill.register({
   'formats/instagram': InstagramBlot,
 });
@@ -37,64 +42,83 @@ const InstagramForm = (props: InstagramFormProps) => {
     onOk(text);
   }, [text, onCancel, onOk]);
   return (
-    <Modal visible={visible} onCancel={onCancel} onOk={handleOk} title="인스타그램 url">
+    <Modal visible={visible} onCancel={onCancel} onOk={handleOk} title="인스타그램 URL" okText="확인" cancelText="취소">
       <Input onChange={e => setText(e.target.value)} value={text} />
     </Modal>
   );
 };
 
 interface ToolbarProps {
+  name: string;
+  instagramTool: boolean;
   instagramHandler: (url: string) => void;
   saveLastRange: () => void;
 }
 
 const Toolbar = (props: ToolbarProps) => {
+  const { name, instagramTool, saveLastRange, instagramHandler } = props;
   const [instagramUrlModalVisible, setInstagramUrlModalVisible] = useState(false);
   return (
-    <div id="toolbar">
+    <div id={`${name}-toolbar`}>
       <span className="ql-formats">
         <select className="ql-header" />
-        <button className="ql-bold" />
-        <button className="ql-italic" />
-        <button className="ql-underline" />
+        <button type="button" className="ql-bold" />
+        <button type="button" className="ql-italic" />
+        <button type="button" className="ql-underline" />
+      </span>
+      <span className="ql-formats">
+        <select className="ql-size" defaultValue={fontSize.whitelist[0]}>
+          {fontSize.whitelist.map((value: string, index: number) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
       </span>
       <span className="ql-formats">
         <select className="ql-color" />
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button className="ql-image" />
-        <button className="ql-video" />
-        <button className="ql-link" />
-        <button
-          onClick={() => {
-            setInstagramUrlModalVisible(true);
-            props.saveLastRange();
-          }}
-        >
-          <Icon type="instagram" />
-        </button>
+        <button type="button" className="ql-image" />
+        <button type="button" className="ql-video" />
+        <button type="button" className="ql-link" />
+        {instagramTool && (
+          <button
+            type="button"
+            onClick={() => {
+              setInstagramUrlModalVisible(true);
+              saveLastRange();
+            }}
+          >
+            <Icon type="instagram" />
+          </button>
+        )}
       </span>
-      <InstagramForm
-        visible={instagramUrlModalVisible}
-        onOk={props.instagramHandler}
-        onCancel={() => setInstagramUrlModalVisible(false)}
-      />
+      {instagramTool && (
+        <InstagramForm
+          visible={instagramUrlModalVisible}
+          onOk={instagramHandler}
+          onCancel={() => setInstagramUrlModalVisible(false)}
+        />
+      )}
     </div>
   );
 };
 
 interface ReactQuillProps {
+  name?: string;
   value?: string;
   onChange?: (value: string) => void;
   defaultValue?: string;
+  instagramTool?: boolean;
 }
 
 const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQuillProps, ref) => {
   const quillRef = useRef<ReactQuill>(null);
   const [lastSelection, setLastSelection] = useState(0);
 
-  const { onChange, value: propValue, defaultValue } = props;
+  const { name = 'editor', onChange, value: propValue, defaultValue, instagramTool = true } = props;
 
   const instagramHandler = (value: string) => {
     // quill focus 문제로 setTimeout 추가
@@ -136,6 +160,7 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     const editor = quillRef.current;
     if (editor) {
       const range = editor.getEditor().getSelection();
+
       if (range) {
         setLastSelection(range.index);
       }
@@ -146,17 +171,25 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     setTimeout(() => {
       if (quillRef.current && defaultValue) {
         quillRef.current.getEditor().pasteHTML(defaultValue);
+        quillRef.current.blur();
+        window.scrollTo(0, 0);
       }
     }, 0);
   }, [defaultValue, quillRef]);
 
   return (
-    <>
-      <Toolbar instagramHandler={instagramHandler} saveLastRange={saveLastRange} />
+    <div className={`text-editor ${name}`}>
+      <Toolbar
+        name={name}
+        instagramHandler={instagramHandler}
+        saveLastRange={saveLastRange}
+        instagramTool={instagramTool}
+      />
       <ReactQuill
+        id={name}
         ref={quillRef}
         modules={{
-          toolbar: '#toolbar',
+          toolbar: `#${name}-toolbar`,
         }}
         value={propValue || ''}
         onChange={handleChange}
@@ -164,7 +197,7 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
           height: 500,
         }}
       />
-    </>
+    </div>
   );
 });
 

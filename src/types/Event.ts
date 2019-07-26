@@ -1,4 +1,8 @@
 import { EventStatus } from 'enums';
+import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
+import { ResponseCelebReview } from './CelebReview';
+import { ResponseProduct } from './Product';
+import { ResponseEventNotice } from './EventNotice';
 
 export interface CreateEvent {
   name: string;
@@ -9,6 +13,7 @@ export interface CreateEvent {
   targetAmount: number;
   detail?: string;
   videoUrl?: string;
+  images?: CreateFileObject[];
 }
 
 export interface ResponseEvent extends ResponseEventForList {
@@ -16,11 +21,11 @@ export interface ResponseEvent extends ResponseEventForList {
   choiceReview: string;
   detail: string;
   videoUrl: string;
-  shippingFeeInfo: any;
-  images: any[];
-  celebReview: any;
-  products: any[];
-  eventNotices: any[];
+  shippingFeeInfo: ResponseShippingFeeInfo;
+  images: FileObject[];
+  celebReview: ResponseCelebReview;
+  products: ResponseProduct[];
+  eventNotices: ResponseEventNotice[];
 }
 
 export interface ResponseEventForList {
@@ -34,6 +39,10 @@ export interface ResponseEventForList {
   created: string;
 }
 
+export interface ResponseEventForOrders {
+  brandName: string;
+}
+
 export interface UpdateEvent {
   name: string;
   choiceReview: string;
@@ -43,6 +52,7 @@ export interface UpdateEvent {
   targetAmount: number;
   detail?: string;
   videoUrl?: string;
+  images?: UpdateFileObject[];
 }
 
 export interface SearchEvent {
@@ -54,4 +64,14 @@ export interface SearchEvent {
 
 export interface UpdateEventStatus {
   eventStatus: EventStatus;
+}
+
+export interface ResponseShippingFeeInfo {
+  shippingFee: number;
+  shippingFreeCondition: number;
+}
+
+export interface UpdateEventShippingFeeInfo {
+  shippingFee: number;
+  shippingFreeCondition: number;
 }

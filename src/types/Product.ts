@@ -1,17 +1,18 @@
-// todo : 추후 상품 이미지 관련 CommonFile.ts 반영 필요
+import { CreateFileObject, FileObject, UpdateFileObject } from './FileObject';
+
 export interface ResponseProduct {
   productId: number;
   productName: string;
   normalSalesPrice: number;
   discountSalesPrice: number;
-  disabledOptionTotalStock: number,
-  disabledOptionStock: number,
-  disabledOptionSafeStock: number,
-  disabled: boolean;
+  disabledOptionTotalStock: number;
+  disabledOptionStock: number;
+  disabledOptionSafeStock: number;
   soldOut: boolean;
   freebie: string;
   enableOption: boolean;
   options: ResponseOption[];
+  images: FileObject[];
 }
 
 export interface ResponseOption {
@@ -23,11 +24,6 @@ export interface ResponseOption {
   totalStock: number;
 }
 
-export interface ResponseShippingFeeInfo {
-  shippingFee: number;
-  shippingFreeCondition: number;
-}
-
 export interface CreateProduct {
   productName: string;
   normalSalesPrice: number;
@@ -36,8 +32,9 @@ export interface CreateProduct {
   disabledOptionStock: number;
   disabledOptionSafeStock: number;
   freebie: string;
-  enableOption: boolean;
-  options: CreateOption[]
+  enableOption: boolean | number;
+  options: CreateOption[];
+  images: CreateFileObject[];
 }
 
 export interface CreateOption {
@@ -46,4 +43,31 @@ export interface CreateOption {
   stock: number;
   safeStock: number;
   totalStock: number;
+}
+
+export interface UpdateProduct {
+  productName: string;
+  normalSalesPrice: number;
+  discountSalesPrice: number;
+  disabledOptionTotalStock: number;
+  disabledOptionStock: number;
+  disabledOptionSafeStock: number;
+  freebie: string;
+  enableOption: boolean | number;
+  options: UpdateOption[];
+  images: UpdateFileObject[];
+}
+
+export interface UpdateOption {
+  optionId: number | null;
+  optionName: string;
+  salePrice: number;
+  stock: number;
+  safeStock: number;
+  totalStock: number;
+}
+
+export interface ResponseOrderItemProduct {
+  productId: number;
+  productName: string;
 }

@@ -4,8 +4,8 @@ export { default as PrivateRoute } from './PrivateRoute';
 
 export default [
   {
-    path: '/home',
-    component: lazy(() => import('../pages/Home')),
+    path: '/shipping',
+    component: lazy(() => import('../pages/Shipping')),
     secret: false,
   },
   {
@@ -24,23 +24,28 @@ export default [
     secret: false,
   },
   {
+    path: '/orders',
+    component: lazy(() => import('../pages/Orders')),
+    secret: false,
+  },
+  {
     path: '/events/detail/:id',
-    component: lazy(() => import('../pages/event/EventDetail')),
+    component: lazy(() => import('../pages/EventDetail')),
     secret: false,
   },
   {
     path: '/events/detail',
-    component: lazy(() => import('../pages/event/EventDetail')),
+    component: lazy(() => import('../pages/EventDetail')),
     secret: false,
   },
   {
     path: '/events',
-    component: lazy(() => import('../pages/event/EventList')),
+    component: lazy(() => import('../pages/EventList')),
     secret: false,
   },
   {
     path: '/',
-    component: lazy(() => import('../pages/Login')),
+    component: lazy(() => import('../pages/Home')),
     secret: false,
   },
 ];

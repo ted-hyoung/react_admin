@@ -1,0 +1,117 @@
+// 통계 부분
+.review-report {
+  padding-bottom: 38px;
+
+  .rounded-primary-box {
+    font-size: 26px;
+    color: white;
+    background-color: #6a98f8;
+    margin: 0 30px 13px;
+    border-radius: 30px;
+    text-align: center;
+    padding: 18px 0 16px;
+    margin-top: 50px;
+    font-weight: 100;
+  }
+
+  .rounded-primary-box + div {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .star-rate {
+    width: 140px;
+    margin-right: 50px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: -5px;
+
+    .rating-average {
+      font-size: 46px;
+      margin-bottom: 15px;
+    }
+
+    .ant-rate {
+      color: @primary-color;
+    }
+  }
+
+  .score {
+    width: 220px;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-end;
+
+    li {
+      width: 20%;
+      text-align: center;
+
+      .bar {
+        height: 56px;
+        width: 4px;
+        margin: 0 auto;
+        border-radius: 4px;
+        background: #c7c7c7;
+        position: relative;
+        margin-bottom: 11px;
+        overflow: hidden;
+
+        span {
+          display: block;
+          width: 100%;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          background: #666;
+        }
+      }
+
+      .tooltip {
+        background: @primary-color;
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px;
+        display: inline-block;
+        width: 23px;
+        height: 17px;
+        line-height: 12px;
+        margin-bottom: 14px;
+        position: relative;
+
+        &:before {
+          content: '';
+          display: block;
+          width: 0;
+          height: 0;
+          border: 4px solid transparent;
+          border-top: 8px solid @primary-color;
+          position: absolute;
+          left: 50%;
+          top: 100%;
+          margin-left: -4px;
+        }
+      }
+
+      &.greatest {
+        color: @primary-color;
+
+        .bar span {
+          background: @primary-color;
+        }
+
+        .text {
+          font-weight: 700;
+        }
+      }
+
+      &:not(.greatest) {
+        .tooltip {
+          display: none;
+        }
+      }
+    }
+  }
+}
