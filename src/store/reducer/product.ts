@@ -37,12 +37,6 @@ export const updateProductAsync = createAsyncAction(
   Actions.UPDATE_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
-export const updateShippingFeeInfoAsync = createAsyncAction(
-  Actions.UPDATE_SHIPPING_FEE_INFO_REQUEST,
-  Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS,
-  Actions.UPDATE_SHIPPING_FEE_INFO_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
-
 export const deleteProductsAsync = createAsyncAction(
   Actions.DELETED_PRODUCTS_REQUEST,
   Actions.DELETED_PRODUCTS_SUCCESS,
@@ -73,12 +67,6 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
     case Actions.UPDATE_PRODUCTS_SUCCESS:
     case Actions.DELETED_PRODUCTS_SUCCESS: {
       return state;
-    }
-
-    case Actions.UPDATE_SHIPPING_FEE_INFO_SUCCESS: {
-      return produce(state, draft => {
-        draft.shippingFeeInfo = action.payload.shippingFeeInfo;
-      });
     }
     default: {
       return state;

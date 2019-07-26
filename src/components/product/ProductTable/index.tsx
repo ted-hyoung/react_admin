@@ -1,28 +1,30 @@
 // base
 import React, { useCallback, useState } from 'react';
-
+import { useDispatch } from 'react-redux';
 // modules
-import { Button, Table } from 'antd';
+
+import { Button, message, Table } from 'antd';
 import { ColumnProps, TableRowSelection } from 'antd/lib/table';
+import { useModal } from 'lib/hooks';
 
 // components
 import { ProductModal } from 'components';
 
 // store
-import { StoreState } from 'store';
+import { deleteProductsAsync, soldOutProductsAsync } from 'store/reducer/product';
 
 // types
-import { FileObject, ResponseOption, ResponseProduct } from 'types';
+import { FileObject, ResponseEvent, ResponseOption, ResponseProduct } from 'types';
 
 // enums
 import { EventStatus, ProductSold } from 'enums';
 
 // less
 import './index.less';
-import { useSelector } from 'react-redux';
 
 interface Props {
-  responseProducts: ResponseProduct[];
+  products: ResponseProduct[];
+  event: ResponseEvent;
 }
 
 export interface ProductList {
@@ -39,6 +41,7 @@ export interface ProductList {
   disabledOptionSafeStock: number;
   options: ResponseOption[];
   images: FileObject[];
+  eventStatus: EventStatus;
 }
 
 const columns : Array<ColumnProps<ProductList>> = [
@@ -67,19 +70,11 @@ const columns : Array<ColumnProps<ProductList>> = [
           } else {
             const optionIndex: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === (record.options.length - 1)) {
-                optionIndex.push(
-                  <div key={index}>
-                    <span>{index + 1}</span>
-                  </div>
-                );
-              } else {
-                optionIndex.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{index + 1}</span>
-                  </div>)
-                ;
-              }
+              optionIndex.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{index + 1}</span>
+                </div>
+              );
             });
             return {
               children: optionIndex
@@ -98,18 +93,11 @@ const columns : Array<ColumnProps<ProductList>> = [
           } else {
             const optionName: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === (record.options.length - 1)) {
-                optionName.push(
-                  <div key={index}>
-                    <span>{record.options[index].optionName}</span>
-                  </div>);
-              } else {
-                optionName.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{record.options[index].optionName}</span>
-                  </div>
-                );
-              }
+              optionName.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].optionName}</span>
+                </div>
+              );
             });
             return {
               props: {
@@ -131,19 +119,11 @@ const columns : Array<ColumnProps<ProductList>> = [
           } else {
             const optionSalePrice: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === (record.options.length - 1)) {
-                optionSalePrice.push(
-                  <div key={index}>
-                    <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
-                  </div>
-                );
-              } else {
-                optionSalePrice.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
-                  </div>
-                );
-              }
+              optionSalePrice.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
+                </div>
+              );
             });
             return {
               children: optionSalePrice
@@ -160,19 +140,11 @@ const columns : Array<ColumnProps<ProductList>> = [
           if (record.enableOption) {
             const optionStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === (record.options.length - 1)) {
-                optionStock.push(
-                  <div key={index}>
-                    <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
-                  </div>
-                );
-              } else {
-                optionStock.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
-                  </div>
-                );
-              }
+              optionStock.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
+                </div>
+              );
             });
             return {
               children: optionStock
@@ -189,19 +161,11 @@ const columns : Array<ColumnProps<ProductList>> = [
           if (record.enableOption) {
             const optionSafeStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
-              if (index === (record.options.length - 1)) {
-                optionSafeStock.push(
-                  <div key={index}>
-                    <span>{record.options[index].safeStock.toLocaleString()}</span>
-                  </div>
-                );
-              } else {
-                optionSafeStock.push(
-                  <div key={index} className="product-table-border-bottom">
-                    <span>{record.options[index].safeStock.toLocaleString()}</span>
-                  </div>
-                );
-              }
+              optionSafeStock.push(
+                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                  <span>{record.options[index].safeStock.toLocaleString()}</span>
+                </div>
+              );
             });
             return {
               children: optionSafeStock
@@ -215,16 +179,69 @@ const columns : Array<ColumnProps<ProductList>> = [
       }
     ],
   },
-  { title: '상태', key: 'status', dataIndex: 'status', align: 'center' },
+  { title: '상태', key: 'productStatus', dataIndex: 'productStatus', align: 'center',
+    render: (text, record) => {
+      const productStatus: JSX.Element[] = [];
+      if (record.enableOption) {
+        record.options.forEach((option, index) => {
+          if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <span>품절 처리</span>
+              </div>
+            );
+          } else if (!record.soldOut && option.stock === 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <span>판매 종료</span>
+              </div>
+            );
+          } else if (!record.soldOut && option.stock !== 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <span>판매중</span>
+              </div>
+            );
+          }
+        });
+        return {
+          children: productStatus
+        };
+      } else {
+        const productStatus: JSX.Element[] = [];
+        if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>품절 처리</span>
+            </div>
+          );
+        } else if (!record.soldOut && record.disabledOptionStock === 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>판매 종료</span>
+            </div>
+          );
+        } else if (!record.soldOut && record.disabledOptionStock !== 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>판매중</span>
+            </div>
+          );
+        }
+        return {
+          children: productStatus
+        };
+      }
+    }
+  },
 ];
 
-// todo : 현재 공구 상태에 따라 버튼 분기 처리 필요 (이종현)
 function ProductTable(props: Props) {
 
-  const { responseProducts } = props;
-  const eventStatus = useSelector((state: StoreState) => state.event.event.eventStatus);
+  const { products, event } = props;
+  const { eventId, eventStatus } = event;
 
-  const data: ProductList[] = responseProducts.map((product, index) => {
+  const data: ProductList[] = products.map((product, index) => {
     return {
       key: index + 1,
       productId: product.productId,
@@ -239,6 +256,7 @@ function ProductTable(props: Props) {
       disabledOptionSafeStock: product.disabledOptionSafeStock,
       options: product.options,
       images: product.images,
+      eventStatus,
     }
   });
 
@@ -260,6 +278,8 @@ function ProductTable(props: Props) {
   const [ product, setProduct ] = useState(initProduct);
   const [ selectedRowKeys, setSelectedRowKeys ] = useState<string[]>([]);
   const [ productModalVisible, setProductModalVisible ] = useState(false);
+  const openModal = useModal();
+  const dispatch = useDispatch();
 
   const rowSelection: TableRowSelection<ProductList> = {
     selectedRowKeys,
@@ -272,20 +292,46 @@ function ProductTable(props: Props) {
     return {
       onClick: () => {
         setProductModalVisible(true);
-        setProduct({
-          ...product,
-          productId: record.productId,
-          productName: record.productName,
-          normalSalesPrice: record.normalSalesPrice,
-          discountSalesPrice: record.discountSalesPrice,
-          disabledOptionTotalStock: record.disabledOptionTotalStock,
-          disabledOptionStock: record.disabledOptionStock,
-          disabledOptionSafeStock: record.disabledOptionSafeStock,
-          soldOut: record.soldOut,
-          freebie: record.freebie,
-          enableOption: record.enableOption,
-          options: record.options
-        });
+        if (eventStatus === EventStatus[EventStatus.READY]) {
+          setProduct({
+            ...product,
+            productId: record.productId,
+            productName: record.productName,
+            normalSalesPrice: record.normalSalesPrice,
+            discountSalesPrice: record.discountSalesPrice,
+            disabledOptionTotalStock: record.disabledOptionTotalStock,
+            disabledOptionStock: record.disabledOptionStock,
+            disabledOptionSafeStock: record.disabledOptionSafeStock,
+            soldOut: record.soldOut,
+            freebie: record.freebie,
+            enableOption: record.enableOption,
+            options: record.options.concat({
+              optionId: 0,
+              optionName: '',
+              salePrice: 0,
+              stock: 0,
+              safeStock: 0,
+              totalStock: 0
+            }),
+            images: record.images
+          });
+        } else {
+          setProduct({
+            ...product,
+            productId: record.productId,
+            productName: record.productName,
+            normalSalesPrice: record.normalSalesPrice,
+            discountSalesPrice: record.discountSalesPrice,
+            disabledOptionTotalStock: record.disabledOptionTotalStock,
+            disabledOptionStock: record.disabledOptionStock,
+            disabledOptionSafeStock: record.disabledOptionSafeStock,
+            soldOut: record.soldOut,
+            freebie: record.freebie,
+            enableOption: record.enableOption,
+            options: record.options,
+            images: record.images
+          });
+        }
       }
     }
   };
@@ -316,39 +362,71 @@ function ProductTable(props: Props) {
   };
 
   const handleProductDelete = () => {
-    // const selectedIds: number[] = [];
-    //
-    // selectedRowKeys.forEach(index => {
-    //   const selectIndex = Number(index) - 1;
-    //   selectedIds.push(products[selectIndex].productId);
-    // });
-    //
-    // const data = {
-    //   eventId,
-    //   data: {
-    //     productIds: selectedIds,
-    //   },
-    // };
-    // dispatch(deleteProductsAsync.request(data));
-    // setSelectedRowKeys([]);
+    const selectedIds: number[] = [];
+    selectedRowKeys.forEach((item) => {
+      selectedIds.push(Number(item));
+    });
+
+    if (selectedIds.length === 0) {
+      return message.error("삭제할 상품을 선택해주세요.");
+    } else {
+      const data = {
+        eventId,
+        data: {
+          productIds: selectedIds,
+        },
+      };
+
+      openModal({
+        type: 'confirm',
+        content: (
+          <>
+            <p>해당 제품을</p>
+            <br />
+            <p>삭제처리 하시겠습니까?</p>
+          </>
+        ),
+        onOk() {
+          dispatch(deleteProductsAsync.request(data));
+          setSelectedRowKeys([]);
+        }
+      });
+    }
   };
 
   const handleProductSoldOut = (productSold: ProductSold) => {
-    // const selectedIds: number[] = [];
-    //
-    // selectedRowKeys.map(index => {
-    //   return selectedIds.push(products[Number(index) - 1].productId);
-    // });
-    //
-    // const data = {
-    //   eventId,
-    //   data: {
-    //     productIds: selectedIds,
-    //     soldOut: productSold === ProductSold.SOLD_OUT,
-    //   },
-    // };
-    // dispatch(soldOutProductsAsync.request(data));
-    // setSelectedRowKeys([]);
+    const selectedIds: number[] = [];
+    selectedRowKeys.forEach((item) => {
+      selectedIds.push(Number(item));
+    });
+
+    if (selectedIds.length === 0) {
+      return message.error("품절 처리할 상품을 선택해주세요.");
+    } else {
+      const data = {
+        eventId,
+        data: {
+          productIds: selectedIds,
+          soldOut: productSold === ProductSold.SOLD_OUT,
+        },
+      };
+
+      openModal({
+        type: 'confirm',
+        content: (
+          <>
+            <p>해당 제품을</p>
+            <br />
+            <p>{productSold} 하시겠습니까?</p>
+          </>
+        ),
+        onOk() {
+          dispatch(soldOutProductsAsync.request(data));
+          setSelectedRowKeys([]);
+        }
+      });
+    }
+
   };
 
   return (
@@ -378,6 +456,7 @@ function ProductTable(props: Props) {
       <ProductModal
         product={product}
         setProduct={setProduct}
+        event={event}
         productModalVisible={productModalVisible}
         setProductModalVisible={setProductModalVisible}/>
     </div>

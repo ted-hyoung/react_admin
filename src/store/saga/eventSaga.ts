@@ -10,6 +10,7 @@ import {
   updateEventByIdAsync,
   updateEventNoticesAsync,
   updateEventStatusAsync,
+  updateEventShippingFeeInfoAsync
 } from 'store/reducer/event';
 
 // modules
@@ -27,6 +28,7 @@ import {
   UpdateEvent,
   UpdateEventNotices,
   UpdateEventStatus,
+  RequestAsyncAction,
 } from 'types';
 
 // sagas
@@ -108,6 +110,17 @@ function* updateEventStatus(action: PayloadAction<string, UpdateRequestPayload<U
   }
 }
 
+function* updateEventShippingFeeInfo(action: RequestAsyncAction) {
+  try {
+    const { eventId, data } = action.payload;
+    yield call(() => Api.put(`/events/${eventId}/shipping-fee`, data));
+    yield put(updateEventShippingFeeInfoAsync.success(data));
+    yield put(replace('/events/detail/' + eventId));
+  } catch (error) {
+    yield put(updateEventShippingFeeInfoAsync.failure(error));
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
@@ -115,4 +128,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_REQUEST, updateEventById);
   yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
   yield takeLatest(Actions.UPDATE_EVENT_STATUS_REQUEST, updateEventStatus);
+  yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
 }

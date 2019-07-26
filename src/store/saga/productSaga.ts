@@ -12,7 +12,6 @@ import * as Action from 'store/action/productAction';
 // reducer
 import {
   createProductAsync,
-  updateShippingFeeInfoAsync,
   updateProductAsync,
   deleteProductsAsync,
   soldOutProductsAsync,
@@ -43,7 +42,7 @@ function* updateProduct(action: RequestAsyncAction) {
 function* deleteProduct(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    const res = yield call(() => Api.put(`/products/disabled`, data));
+    const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
     yield put(deleteProductsAsync.success(res.data));
     yield put(replace('/events/detail/' + eventId));
   } catch (error) {
@@ -62,21 +61,9 @@ function* soldOutProduct(action: RequestAsyncAction) {
   }
 }
 
-function* updateShippingFeeInfo(action: RequestAsyncAction) {
-  try {
-    const { eventId, data } = action.payload;
-    yield call(() => Api.put(`/events/${eventId}/shipping-fee`, data));
-    yield put(updateShippingFeeInfoAsync.success(data));
-    yield put(replace('/events/detail/' + eventId));
-  } catch (error) {
-    yield put(updateShippingFeeInfoAsync.failure(error));
-  }
-}
-
 export default function* productSaga() {
   yield takeEvery(Action.CREATE_PRODUCTS_REQUEST, createProduct);
   yield takeEvery(Action.UPDATE_PRODUCTS_REQUEST, updateProduct);
-  yield takeEvery(Action.UPDATE_SHIPPING_FEE_INFO_REQUEST, updateShippingFeeInfo);
   yield takeEvery(Action.DELETED_PRODUCTS_REQUEST, deleteProduct);
   yield takeEvery(Action.SOLD_OUT_PRODUCTS_REQUEST, soldOutProduct);
 }
