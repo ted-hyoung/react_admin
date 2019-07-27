@@ -443,11 +443,11 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         message: '상품명을 입력해주세요.'
                       }
                     ]
-                  })(<Input name="productName" placeholder="텍스트 입력" maxLength={20} disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
+                  })(<Input name="productName" placeholder="텍스트 입력" maxLength={50} disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
                 </Form.Item>
               </Col>
               <Col span={3} className="product-modal-explanation">
-                <span>{calcStringByte(getFieldValue("productName"))}/20자</span>
+                <span>{calcStringByte(getFieldValue("productName"))}/50자</span>
               </Col>
             </Row>
             <Row>
