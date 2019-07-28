@@ -12,6 +12,9 @@ import { InstagramBlot } from 'service';
 // assets
 import 'react-quill/dist/quill.snow.css';
 import './index.less';
+import { uploadImage } from 'lib/protocols';
+import { getThumbUrl } from 'lib/utils';
+import { QlImageIcon } from 'components/common/Icons';
 
 const fontSize = Quill.import('attributors/style/size');
 
@@ -50,14 +53,24 @@ const InstagramForm = (props: InstagramFormProps) => {
 
 interface ToolbarProps {
   name: string;
+  imageHandler: (file: File) => void;
   instagramTool: boolean;
   instagramHandler: (url: string) => void;
   saveLastRange: () => void;
 }
 
 const Toolbar = (props: ToolbarProps) => {
-  const { name, instagramTool, saveLastRange, instagramHandler } = props;
+  const { name, imageHandler, instagramTool, saveLastRange, instagramHandler } = props;
+
   const [instagramUrlModalVisible, setInstagramUrlModalVisible] = useState(false);
+  const fileInputEl = useRef<HTMLInputElement>(null);
+
+  const handleChangeFile = () => {
+    if (fileInputEl.current) {
+      fileInputEl.current.click();
+    }
+  };
+
   return (
     <div id={`${name}-toolbar`}>
       <span className="ql-formats">
@@ -80,7 +93,21 @@ const Toolbar = (props: ToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button type="button" className="ql-image" />
+        <button type="button" onClick={handleChangeFile}>
+          <QlImageIcon />
+          <input
+            ref={fileInputEl}
+            style={{ display: 'none' }}
+            type="file"
+            onChange={e => {
+              if (!e.target.files) {
+                return false;
+              }
+
+              imageHandler(e.target.files[0]);
+            }}
+          />
+        </button>
         <button type="button" className="ql-video" />
         <button type="button" className="ql-link" />
         {instagramTool && (
@@ -127,6 +154,14 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
         quillRef.current.getEditor().insertEmbed(lastSelection, 'instagram', value);
       }
     }, 0);
+  };
+
+  const imageHandler = async (file: File) => {
+    const res = await uploadImage(file);
+
+    if (quillRef.current) {
+      quillRef.current.getEditor().insertEmbed(lastSelection, 'image', getThumbUrl(res.data.fileKey));
+    }
   };
 
   const instgramProcess = useCallback((delta: Delta) => {
@@ -181,6 +216,7 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     <div className={`text-editor ${name}`}>
       <Toolbar
         name={name}
+        imageHandler={imageHandler}
         instagramHandler={instagramHandler}
         saveLastRange={saveLastRange}
         instagramTool={instagramTool}

@@ -1,5 +1,5 @@
 // base
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
@@ -78,9 +78,11 @@ function EventDetail(props: RouteComponentProps<Params>) {
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
-      <Button className="btn-event-preview" type="primary" onClick={handleOpenPreview}>
-        미리보기
-      </Button>
+      {event.eventId !== 0 && (
+        <Button className="btn-event-preview" type="primary" onClick={handleOpenPreview}>
+          미리보기
+        </Button>
+      )}
       {event.celebReview.contents && event.products && (
         <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
           오픈
