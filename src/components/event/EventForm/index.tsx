@@ -55,8 +55,6 @@ function EventForm(props: Props) {
     validateFieldsAndScroll,
   } = form;
 
-  console.log(event);
-
   const [visible, setVisible] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
@@ -225,7 +223,7 @@ function EventForm(props: Props) {
               </Col>
             </FlexRow>
           </Descriptions.Item>
-          <Descriptions.Item label="브랜드명" span={24}>
+          <Descriptions.Item label="*브랜드명" span={24}>
             <FlexRow>
               <Col>
                 <Form.Item>
