@@ -42,6 +42,12 @@ export interface ResponseEventForList {
 export interface ResponseEventForOrders {
   brandName: string;
 }
+export interface ResponseEventForReview {
+  eventId: number;
+  images: FileObject[];
+  name: string;
+  brandName: string;
+}
 
 export interface UpdateEvent {
   name: string;

@@ -1,5 +1,5 @@
 import { ResponseShippingDestination, ResponseShippingForOrders } from './Shipping';
-import { ResponseOrderItem } from './OrderItem';
+import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping } from './Payment';
 import { paymentStatus, ShippingStatus } from 'enums';
@@ -33,4 +33,11 @@ export interface SearchOrder {
   recipientPhone?: string;
   paymentStatuses?: paymentStatus[];
   shippingStatuses?: ShippingStatus[];
+}
+
+export interface ResponseOrderForReview {
+  orderId: number;
+  orderNo: string;
+  created: string;
+  orderItems: ResponseClientOrderItemForReview[];
 }
