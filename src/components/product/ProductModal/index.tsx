@@ -46,56 +46,68 @@ interface ProductModalForm extends FormComponentProps {
 }
 
 const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalForm) => {
-
-  const { product, setProduct, event, productModalVisible, setProductModalVisible, fileObjectList, setFileObjectList, form } = props;
+  const {
+    product,
+    setProduct,
+    event,
+    productModalVisible,
+    setProductModalVisible,
+    fileObjectList,
+    setFileObjectList,
+    form,
+  } = props;
   const { eventId, eventStatus } = event;
   const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll, resetFields } = form;
   const dispatch = useDispatch();
 
   const addOptionRow = () => {
-    const targetOption:ResponseOption = getFieldValue("options")[product.options.length -1];
+    const targetOption: ResponseOption = getFieldValue('options')[product.options.length - 1];
     if (targetOption.optionName === '' || targetOption.salePrice === 0 || targetOption.stock === 0) {
-      return message.error("추가 하려는 옵션 정보를 입력 후 다음 옵션을 추가하실 수 있습니다.")
+      return message.error('추가 하려는 옵션 정보를 입력 후 다음 옵션을 추가하실 수 있습니다.');
     }
     setProduct({
       ...product,
       options: product.options.concat({
-          optionId: 0,
-          optionName: '',
-          salePrice: 0,
-          stock: 0,
-          safeStock: 0,
-          totalStock: 0
-      })
-    })
+        optionId: 0,
+        optionName: '',
+        salePrice: 0,
+        stock: 0,
+        safeStock: 0,
+        totalStock: 0,
+      }),
+    });
   };
 
   const removeOptionRow = (index: number) => {
     setProduct({
       ...product,
-      options: product.options.filter((option, i) => i !== index)
+      options: product.options.filter((option, i) => i !== index),
     });
 
     setFieldsValue({
-      options: getFieldValue("options").filter((option: ResponseOption, i: number) => i !== index),
+      options: getFieldValue('options').filter((option: ResponseOption, i: number) => i !== index),
     });
   };
 
   const onChangeEnableOption = (value: number) => {
-    if (value === 0) { // 옵션 사용
+    if (value === 0) {
+      // 옵션 사용
       setProduct({
         ...product,
         enableOption: true,
-        options: [{
-          optionId: 0,
-          optionName: '',
-          salePrice: 0,
-          stock: 0,
-          safeStock: 0,
-          totalStock: 0
-        }],
+        options: [
+          {
+            optionId: 0,
+            optionName: '',
+            salePrice: 0,
+            stock: 0,
+            safeStock: 0,
+            totalStock: 0,
+          },
+        ],
       });
-    } else if (value === 1) { // 옵션 미사용
+    } else if (value === 1) {
+      // 옵션 미사용
       setProduct({
         ...product,
         enableOption: false,
@@ -107,7 +119,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
   const handleProductModalClose = () => {
     resetFields();
     setFileObjectList([]);
-    setProductModalVisible(false)
+    setProductModalVisible(false);
   };
 
   const columns: Array<ColumnProps<ResponseOption>> = [
@@ -126,11 +138,11 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <div key={index}>
                 <Form.Item>
                   {getFieldDecorator(`options[${index}].optionId`, {
-                    initialValue: record.optionId === undefined ? null : record.optionId
+                    initialValue: record.optionId === undefined ? null : record.optionId,
                   })(<div>{index + 1}</div>)}
                 </Form.Item>
               </div>
-            )
+            );
           },
         },
         {
@@ -143,7 +155,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <div key={index}>
                 <Form.Item>
                   {getFieldDecorator(`options[${index}].optionName`, {
-                    initialValue: record.optionName
+                    initialValue: record.optionName,
                   })(<Input name="optionName" disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
                 </Form.Item>
               </div>
@@ -160,15 +172,16 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <div key={index}>
                 <Form.Item>
                   {getFieldDecorator(`options[${index}].salePrice`, {
-                    initialValue: record.salePrice
-                  })(<InputNumber
+                    initialValue: record.salePrice,
+                  })(
+                    <InputNumber
                       min={0}
                       style={{ width: '100%' }}
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />
+                    />,
                   )}
                 </Form.Item>
               </div>
@@ -201,15 +214,16 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <div key={index}>
                 <Form.Item>
                   {getFieldDecorator(`options[${index}].stock`, {
-                    initialValue: record.stock
-                  })(<InputNumber
+                    initialValue: record.stock,
+                  })(
+                    <InputNumber
                       min={0}
                       style={{ width: '100%' }}
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />
+                    />,
                   )}
                 </Form.Item>
               </div>
@@ -226,15 +240,16 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <div key={index}>
                 <Form.Item>
                   {getFieldDecorator(`options[${index}].safeStock`, {
-                    initialValue: record.safeStock
-                  })(<InputNumber
+                    initialValue: record.safeStock,
+                  })(
+                    <InputNumber
                       min={0}
                       style={{ width: '100%' }}
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />
+                    />,
                   )}
                 </Form.Item>
               </div>
@@ -252,21 +267,29 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               button.push(
                 <div key={index}>
                   <div>
-                    <Button type="primary" onClick={addOptionRow} disabled={eventStatus !== EventStatus[EventStatus.READY]}>
+                    <Button
+                      type="primary"
+                      onClick={addOptionRow}
+                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                    >
                       추가
                     </Button>
                   </div>
-                </div>
+                </div>,
               );
             } else {
               button.push(
                 <div key={index}>
                   <div>
-                    <Button type="danger" onClick={() => removeOptionRow(index)} disabled={eventStatus !== EventStatus[EventStatus.READY]}>
+                    <Button
+                      type="danger"
+                      onClick={() => removeOptionRow(index)}
+                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                    >
                       삭제
                     </Button>
                   </div>
-                </div>
+                </div>,
               );
             }
             return {
@@ -291,10 +314,10 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           disabledOptionSafeStock,
           enableOption,
           freebie,
-          options
+          options,
         } = values;
         if (product.productId === 0) {
-          const createProduct:CreateProduct = {
+          const createProduct: CreateProduct = {
             productName,
             normalSalesPrice: Number(normalSalesPrice),
             discountSalesPrice: Number(discountSalesPrice),
@@ -304,35 +327,37 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             enableOption: true,
             options: [],
             freebie,
-            images: fileObjectList
+            images: fileObjectList,
           };
-          if (enableOption === 0) { // 옵션 사용
-            const newOptions:CreateOption[] = options.slice(0, options.length === 0 ? 0 :  options.length - 1);
+          if (enableOption === 0) {
+            // 옵션 사용
+            const newOptions: CreateOption[] = options.slice(0, options.length === 0 ? 0 : options.length - 1);
 
             if (newOptions.length === 0 && enableOption === 0) {
-              return message.error("옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.")
+              return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map((item) => {
+            newOptions.map(item => {
               createProduct.options.push({
                 optionName: item.optionName,
                 salePrice: Number(item.salePrice),
                 stock: Number(item.stock),
                 safeStock: Number(item.safeStock),
-                totalStock: Number(item.stock)
-              })
+                totalStock: Number(item.stock),
+              });
             });
-          } else if (enableOption === 1) { // 옵션 미사용
+          } else if (enableOption === 1) {
+            // 옵션 미사용
             createProduct.disabledOptionStock = Number(disabledOptionStock);
             createProduct.disabledOptionTotalStock = Number(disabledOptionStock);
             createProduct.disabledOptionSafeStock = Number(disabledOptionSafeStock);
             createProduct.enableOption = false;
           }
 
-          dispatch(createProductAsync.request({eventId, data: createProduct}));
+          dispatch(createProductAsync.request({ eventId, data: createProduct }));
         } else {
-          const productId:number = product.productId;
-          const updateProduct:UpdateProduct = {
+          const productId: number = product.productId;
+          const updateProduct: UpdateProduct = {
             productName,
             normalSalesPrice: Number(normalSalesPrice),
             discountSalesPrice: Number(discountSalesPrice),
@@ -342,37 +367,39 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             enableOption: true,
             options: [],
             freebie,
-            images: fileObjectList
+            images: fileObjectList,
           };
-          if (enableOption === 0) { // 옵션 사용
-            const newOptions:UpdateOption[] = options.slice(0, options.length === 0 ? 0 :  options.length - 1);
+          if (enableOption === 0) {
+            // 옵션 사용
+            const newOptions: UpdateOption[] = options.slice(0, options.length === 0 ? 0 : options.length - 1);
 
             if (newOptions.length === 0 && enableOption === 0) {
-              return message.error("옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.")
+              return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map((item) => {
+            newOptions.map(item => {
               updateProduct.options.push({
                 optionId: item.optionId === 0 ? null : item.optionId,
                 optionName: item.optionName,
                 salePrice: Number(item.salePrice),
                 stock: Number(item.stock),
                 safeStock: Number(item.safeStock),
-                totalStock: Number(item.stock)
-              })
+                totalStock: Number(item.stock),
+              });
             });
-          } else if (enableOption === 1) { // 옵션 미사용
+          } else if (enableOption === 1) {
+            // 옵션 미사용
             updateProduct.disabledOptionStock = Number(disabledOptionStock);
             updateProduct.disabledOptionTotalStock = Number(disabledOptionStock);
             updateProduct.disabledOptionSafeStock = Number(disabledOptionSafeStock);
             updateProduct.enableOption = false;
           }
 
-          dispatch(updateProductAsync.request({eventId, productId, data: updateProduct}));
+          dispatch(updateProductAsync.request({ eventId, productId, data: updateProduct }));
         }
         resetFields();
         setFileObjectList([]);
-        setProductModalVisible(false)
+        setProductModalVisible(false);
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
@@ -382,23 +409,23 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
   useEffect(() => {
     if (product.productId) {
       if (product.enableOption) {
-        const newOptions:ResponseOption[] = [];
+        const newOptions: ResponseOption[] = [];
         setFieldsValue({
           productName: product.productName,
           normalSalesPrice: product.normalSalesPrice,
           discountSalesPrice: product.discountSalesPrice,
           freebie: product.freebie,
           enableOption: product.enableOption ? 0 : 1,
-          options: product.options.forEach((item) => {
+          options: product.options.forEach(item => {
             newOptions.push({
               optionId: item.optionId,
               optionName: item.optionName,
               salePrice: item.salePrice,
               stock: item.stock,
               safeStock: item.safeStock,
-              totalStock: item.totalStock
-            })
-          })
+              totalStock: item.totalStock,
+            });
+          }),
         });
       } else {
         setFieldsValue({
@@ -418,15 +445,26 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
 
   return (
     <>
-      <div className="product-modal" >
-        <AntModal title={product.productId === 0 ? '제품 등록' : '제품 수정'} visible={productModalVisible} footer={false} width={1200} destroyOnClose onCancel={handleProductModalClose}>
+      <div className="product-modal">
+        <AntModal
+          title={product.productId === 0 ? '제품 등록' : '제품 수정'}
+          visible={productModalVisible}
+          footer={false}
+          width={1200}
+          destroyOnClose
+          onCancel={handleProductModalClose}
+        >
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col span={3} className="product-modal-col-3">
                 <Text type="danger">* 제품 이미지</Text>
               </Col>
               <Col span={8} className="product-modal-col-8">
-                <ImageUpload fileObjectList={fileObjectList} setFileObjectList={setFileObjectList} disabled={eventStatus !== EventStatus[EventStatus.READY]}/>
+                <ImageUpload
+                  fileObjectList={fileObjectList}
+                  setFileObjectList={setFileObjectList}
+                  disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                />
               </Col>
             </Row>
             <Row>
@@ -440,14 +478,21 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '상품명을 입력해주세요.'
-                      }
-                    ]
-                  })(<Input name="productName" placeholder="텍스트 입력" maxLength={50} disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
+                        message: '상품명을 입력해주세요.',
+                      },
+                    ],
+                  })(
+                    <Input
+                      name="productName"
+                      placeholder="텍스트 입력"
+                      maxLength={50}
+                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col span={3} className="product-modal-explanation">
-                <span>{calcStringByte(getFieldValue("productName"))}/50자</span>
+                <span>{calcStringByte(getFieldValue('productName'))}/50자</span>
               </Col>
             </Row>
             <Row>
@@ -467,17 +512,18 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                             callback(rule.message);
                           }
                           callback();
-                        }
-                      }
-                    ]
-                  })(<InputNumber
+                        },
+                      },
+                    ],
+                  })(
+                    <InputNumber
                       min={0}
                       style={{ width: '100%' }}
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />
+                    />,
                   )}
                 </Form.Item>
               </Col>
@@ -500,27 +546,28 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                             callback(rule.message);
                           }
                           callback();
-                        }
+                        },
                       },
                       {
                         required: true,
                         message: '정상가는 판매가 보다 클수 없습니다.',
                         validator: (rule, value, callback) => {
-                          if (value > getFieldValue("normalSalesPrice")) {
+                          if (value > getFieldValue('normalSalesPrice')) {
                             callback(rule.message);
                           }
                           callback();
-                        }
-                      }
-                    ]
-                  })(<InputNumber
+                        },
+                      },
+                    ],
+                  })(
+                    <InputNumber
                       min={0}
                       style={{ width: '100%' }}
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />
+                    />,
                   )}
                 </Form.Item>
               </Col>
@@ -535,8 +582,8 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               <Col span={20} style={{ height: 52 }}>
                 <Form.Item>
                   {getFieldDecorator('freebie', {
-                    initialValue: ''
-                  })(<TextArea disabled={eventStatus !== EventStatus[EventStatus.READY]} />) }
+                    initialValue: '',
+                  })(<TextArea disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
                 </Form.Item>
               </Col>
             </Row>
@@ -562,13 +609,19 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '옵션 사용여부를 선택해주세요.'
-                      }
-                    ]
-                  })(<Select style={{ width: 100 }} onChange={onChangeEnableOption} disabled={eventStatus !== EventStatus[EventStatus.READY]} >
-                    <Option value={0}>사용함</Option>
-                    <Option value={1}>사용안함</Option>
-                  </Select>)}
+                        message: '옵션 사용여부를 선택해주세요.',
+                      },
+                    ],
+                  })(
+                    <Select
+                      style={{ width: 100 }}
+                      onChange={onChangeEnableOption}
+                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                    >
+                      <Option value={0}>사용함</Option>
+                      <Option value={1}>사용안함</Option>
+                    </Select>,
+                  )}
                 </Form.Item>
               </Col>
             </Row>
@@ -604,17 +657,18 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                               callback(rule.message);
                             }
                             callback();
-                          }
-                        }
-                      ]
-                    })(<InputNumber
+                          },
+                        },
+                      ],
+                    })(
+                      <InputNumber
                         min={0}
                         style={{ width: '100%' }}
                         className="product-modal-input"
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                         disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                      />
+                      />,
                     )}
                   </Form.Item>
                 </Col>
@@ -628,38 +682,46 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                       rules: [
                         {
                           required: true,
-                          message: '안전 재고를 입력해주세요.'
-                        }
-                      ]
-                    })(<InputNumber
+                          message: '안전 재고를 입력해주세요.',
+                        },
+                      ],
+                    })(
+                      <InputNumber
                         min={0}
                         style={{ width: '100%' }}
                         className="product-modal-input"
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                         disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                      />
+                      />,
                     )}
                   </Form.Item>
                 </Col>
               </Row>
             )}
             <Row>
-              {eventStatus === EventStatus[EventStatus.READY] ?
+              {eventStatus === EventStatus[EventStatus.READY] ? (
                 <div className="product-modal-button">
-                  <Button type="primary" size="large" htmlType="submit">등록</Button>
-                  <Button type="danger" size="large" onClick={handleProductModalClose}>취소</Button>
+                  <Button type="primary" size="large" htmlType="submit">
+                    등록
+                  </Button>
+                  <Button type="danger" size="large" onClick={handleProductModalClose}>
+                    취소
+                  </Button>
                 </div>
-                : <div className="product-modal-button">
-                    <Button type="danger" size="large" onClick={handleProductModalClose}>취소</Button>
+              ) : (
+                <div className="product-modal-button">
+                  <Button type="danger" size="large" onClick={handleProductModalClose}>
+                    취소
+                  </Button>
                 </div>
-              }
+              )}
             </Row>
           </Form>
         </AntModal>
       </div>
     </>
-  )
+  );
 });
 
 interface Props {
@@ -672,7 +734,7 @@ interface Props {
 
 function ProductModal(props: Props) {
   const { product, setProduct, event, productModalVisible, setProductModalVisible } = props;
-  const [ fileObjectList, setFileObjectList ] = useState<FileObject[]>([]);
+  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   return (
     <>
@@ -683,7 +745,8 @@ function ProductModal(props: Props) {
         productModalVisible={productModalVisible}
         setProductModalVisible={setProductModalVisible}
         fileObjectList={fileObjectList}
-        setFileObjectList={setFileObjectList} />
+        setFileObjectList={setFileObjectList}
+      />
     </>
   );
 }

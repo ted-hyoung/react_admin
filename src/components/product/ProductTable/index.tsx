@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 // modules
 
-import { Button, message, Table } from 'antd';
+import { Button, message, Popconfirm, Table } from 'antd';
 import { ColumnProps, TableRowSelection } from 'antd/lib/table';
 import { useModal } from 'lib/hooks';
 
@@ -44,146 +44,258 @@ export interface ProductList {
   eventStatus: EventStatus;
 }
 
-const columns : Array<ColumnProps<ProductList>> = [
+const columns: Array<ColumnProps<ProductList>> = [
   { title: 'NO', key: 'key', dataIndex: 'key', align: 'center' },
   { title: '제품명', key: 'productName', dataIndex: 'productName', align: 'center' },
-  { title: '제품가격', key: 'discountSalesPrice', dataIndex: 'discountSalesPrice', align: 'center',
+  {
+    title: '제품가격',
+    key: 'discountSalesPrice',
+    dataIndex: 'discountSalesPrice',
+    align: 'center',
     render: (text, record) => {
-      return <div>
-        <span className="product-table-price-text">{record.normalSalesPrice.toLocaleString()}원<br /></span>
-        <strong className="product-table-price-size">{record.discountSalesPrice.toLocaleString()}원</strong>
-      </div>;
-    }
+      return (
+        <div>
+          <span className="product-table-price-text">
+            {record.normalSalesPrice.toLocaleString()}원<br />
+          </span>
+          <strong className="product-table-price-size">{record.discountSalesPrice.toLocaleString()}원</strong>
+        </div>
+      );
+    },
   },
   { title: '사은품', key: 'freebie', dataIndex: 'freebie', align: 'center' },
-  { title: '옵션', key: 'options', dataIndex: 'options', align: 'center',
+  {
+    title: '옵션',
+    key: 'options',
+    dataIndex: 'options',
+    align: 'center',
     children: [
-      { title: 'NO', key: 'optionNo', align: 'center',
+      {
+        title: 'NO',
+        key: 'optionNo',
+        align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                colSpan: 3
+                colSpan: 3,
               },
-              children: <div><span>없음</span></div>
-            }
+              children: (
+                <div>
+                  <span>없음</span>
+                </div>
+              ),
+            };
           } else {
             const optionIndex: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               optionIndex.push(
-                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
                   <span>{index + 1}</span>
-                </div>
+                </div>,
               );
             });
             return {
-              children: optionIndex
+              children: optionIndex,
             };
           }
-        }
+        },
       },
-      { title: '옵션명', key: 'optionName', dataIndex: 'optionName', align: 'center',
+      {
+        title: '옵션명',
+        key: 'optionName',
+        dataIndex: 'optionName',
+        align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                style: { "display" : 'none' }
-              }
+                style: { display: 'none' },
+              },
             };
           } else {
             const optionName: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               optionName.push(
-                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
                   <span>{record.options[index].optionName}</span>
-                </div>
+                </div>,
               );
             });
             return {
               props: {
-                style: { "padding" : 0 }
+                style: { padding: 0 },
               },
-              children: optionName
+              children: optionName,
             };
           }
-        }
+        },
       },
-      { title: '옵션 추가 금액', key: 'salePrice', dataIndex: 'salePrice', align: 'center',
+      {
+        title: '옵션 추가 금액',
+        key: 'salePrice',
+        dataIndex: 'salePrice',
+        align: 'center',
         render: (text, record) => {
           if (record.options.length === 0) {
             return {
               props: {
-                style: { "display" : 'none' }
-              }
+                style: { display: 'none' },
+              },
             };
           } else {
             const optionSalePrice: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               optionSalePrice.push(
-                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
                   <span>+ {record.options[index].salePrice.toLocaleString()}원</span>
-                </div>
+                </div>,
               );
             });
             return {
-              children: optionSalePrice
+              children: optionSalePrice,
             };
           }
-        }
-      }
+        },
+      },
     ],
   },
-  { title: '재고', key: 'stockInfo', dataIndex: 'stockInfo', align: 'center',
+  {
+    title: '재고',
+    key: 'stockInfo',
+    dataIndex: 'stockInfo',
+    align: 'center',
     children: [
-      { title: '현 재고/총 재고', key: 'stock', dataIndex: 'stock', align: 'center',
+      {
+        title: '현 재고/총 재고',
+        key: 'stock',
+        dataIndex: 'stock',
+        align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
             const optionStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               optionStock.push(
-                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
-                  <span>{record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}</span>
-                </div>
+                <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
+                  <span>
+                    {record.options[index].stock.toLocaleString()} / {record.options[index].totalStock.toLocaleString()}
+                  </span>
+                </div>,
               );
             });
             return {
-              children: optionStock
+              children: optionStock,
             };
           } else {
-            return <div key={record.productId}>
-              <span>{record.disabledOptionStock.toLocaleString()} / {record.disabledOptionTotalStock.toLocaleString()}</span>
-            </div>;
+            return (
+              <div key={record.productId}>
+                <span>
+                  {record.disabledOptionStock.toLocaleString()} / {record.disabledOptionTotalStock.toLocaleString()}
+                </span>
+              </div>
+            );
           }
-        }
+        },
       },
-      { title: '안전 재고', key: 'safeStock', dataIndex: 'safeStock', align: 'center',
+      {
+        title: '안전 재고',
+        key: 'safeStock',
+        dataIndex: 'safeStock',
+        align: 'center',
         render: (text, record) => {
           if (record.enableOption) {
             const optionSafeStock: JSX.Element[] = [];
             record.options.forEach((option, index) => {
               optionSafeStock.push(
-                <div key={index} className={index !== record.options.length - 1 ? "product-table-border-bottom" : ""}>
+                <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
                   <span>{record.options[index].safeStock.toLocaleString()}</span>
-                </div>
+                </div>,
               );
             });
             return {
-              children: optionSafeStock
+              children: optionSafeStock,
             };
           } else {
-            return <div key={record.productId}>
-              <span>{record.disabledOptionSafeStock.toLocaleString()}</span>
-            </div>;
+            return (
+              <div key={record.productId}>
+                <span>{record.disabledOptionSafeStock.toLocaleString()}</span>
+              </div>
+            );
           }
-        }
-      }
+        },
+      },
     ],
   },
-  { title: '상태', key: 'status', dataIndex: 'status', align: 'center' },
+  {
+    title: '상태',
+    key: 'productStatus',
+    dataIndex: 'productStatus',
+    align: 'center',
+    render: (text, record) => {
+      const productStatus: JSX.Element[] = [];
+      if (record.enableOption) {
+        record.options.forEach((option, index) => {
+          if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
+                <span>품절 처리</span>
+              </div>,
+            );
+          } else if (!record.soldOut && option.stock === 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
+                <span>판매 종료</span>
+              </div>,
+            );
+          } else if (!record.soldOut && option.stock !== 0 && record.eventStatus !== EventStatus[EventStatus.READY]) {
+            productStatus.push(
+              <div key={index} className={index !== record.options.length - 1 ? 'product-table-border-bottom' : ''}>
+                <span>판매중</span>
+              </div>,
+            );
+          }
+        });
+        return {
+          children: productStatus,
+        };
+      } else {
+        const productStatus: JSX.Element[] = [];
+        if (record.soldOut && record.eventStatus !== EventStatus[EventStatus.READY]) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>품절 처리</span>
+            </div>,
+          );
+        } else if (
+          !record.soldOut &&
+          record.disabledOptionStock === 0 &&
+          record.eventStatus !== EventStatus[EventStatus.READY]
+        ) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>판매 종료</span>
+            </div>,
+          );
+        } else if (
+          !record.soldOut &&
+          record.disabledOptionStock !== 0 &&
+          record.eventStatus !== EventStatus[EventStatus.READY]
+        ) {
+          productStatus.push(
+            <div key={record.productId}>
+              <span>판매중</span>
+            </div>,
+          );
+        }
+        return {
+          children: productStatus,
+        };
+      }
+    },
+  },
 ];
 
 function ProductTable(props: Props) {
-
   const { products, event } = props;
   const { eventId, eventStatus } = event;
 
@@ -203,10 +315,10 @@ function ProductTable(props: Props) {
       options: product.options,
       images: product.images,
       eventStatus,
-    }
+    };
   });
 
-  const initProduct:ResponseProduct = {
+  const initProduct: ResponseProduct = {
     productId: 0,
     productName: '',
     normalSalesPrice: 0,
@@ -221,9 +333,9 @@ function ProductTable(props: Props) {
     images: [],
   };
 
-  const [ product, setProduct ] = useState(initProduct);
-  const [ selectedRowKeys, setSelectedRowKeys ] = useState<string[]>([]);
-  const [ productModalVisible, setProductModalVisible ] = useState(false);
+  const [product, setProduct] = useState(initProduct);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [productModalVisible, setProductModalVisible] = useState(false);
   const openModal = useModal();
   const dispatch = useDispatch();
 
@@ -257,9 +369,9 @@ function ProductTable(props: Props) {
               salePrice: 0,
               stock: 0,
               safeStock: 0,
-              totalStock: 0
+              totalStock: 0,
             }),
-            images: record.images
+            images: record.images,
           });
         } else {
           setProduct({
@@ -275,11 +387,11 @@ function ProductTable(props: Props) {
             freebie: record.freebie,
             enableOption: record.enableOption,
             options: record.options,
-            images: record.images
+            images: record.images,
           });
         }
-      }
-    }
+      },
+    };
   };
 
   const handleProductModalOpen = () => {
@@ -296,25 +408,27 @@ function ProductTable(props: Props) {
       soldOut: false,
       freebie: '',
       enableOption: true,
-      options: [{
-        optionId: 0,
-        optionName: '',
-        salePrice: 0,
-        stock: 0,
-        safeStock: 0,
-        totalStock: 0
-      }]
+      options: [
+        {
+          optionId: 0,
+          optionName: '',
+          salePrice: 0,
+          stock: 0,
+          safeStock: 0,
+          totalStock: 0,
+        },
+      ],
     });
   };
 
   const handleProductDelete = () => {
     const selectedIds: number[] = [];
-    selectedRowKeys.forEach((item) => {
+    selectedRowKeys.forEach(item => {
       selectedIds.push(Number(item));
     });
 
     if (selectedIds.length === 0) {
-      return message.error("삭제할 상품을 선택해주세요.");
+      return message.error('삭제할 상품을 선택해주세요.');
     } else {
       const data = {
         eventId,
@@ -322,32 +436,19 @@ function ProductTable(props: Props) {
           productIds: selectedIds,
         },
       };
-
-      openModal({
-        type: 'confirm',
-        content: (
-          <>
-            <p>해당 제품을</p>
-            <br />
-            <p>삭제처리 하시겠습니까?</p>
-          </>
-        ),
-        onOk() {
-          dispatch(deleteProductsAsync.request(data));
-          setSelectedRowKeys([]);
-        }
-      });
+      dispatch(deleteProductsAsync.request(data));
+      setSelectedRowKeys([]);
     }
   };
 
-  const handleProductSoldOut = (productSold: ProductSold) => {
+  const handleProductSoldOutConfirm = (productSold: ProductSold) => {
     const selectedIds: number[] = [];
-    selectedRowKeys.forEach((item) => {
+    selectedRowKeys.forEach(item => {
       selectedIds.push(Number(item));
     });
 
     if (selectedIds.length === 0) {
-      return message.error("품절 처리할 상품을 선택해주세요.");
+      return message.error('품절 처리할 상품을 선택해주세요.');
     } else {
       const data = {
         eventId,
@@ -356,23 +457,9 @@ function ProductTable(props: Props) {
           soldOut: productSold === ProductSold.SOLD_OUT,
         },
       };
-
-      openModal({
-        type: 'confirm',
-        content: (
-          <>
-            <p>해당 제품을</p>
-            <br />
-            <p>{productSold} 하시겠습니까?</p>
-          </>
-        ),
-        onOk() {
-          dispatch(soldOutProductsAsync.request(data));
-          setSelectedRowKeys([]);
-        }
-      });
+      dispatch(soldOutProductsAsync.request(data));
+      setSelectedRowKeys([]);
     }
-
   };
 
   return (
@@ -385,28 +472,59 @@ function ProductTable(props: Props) {
         dataSource={data}
         pagination={false}
         size="middle"
-        onRow={handleRowProduct} />
+        onRow={handleRowProduct}
+      />
       <div className="product-table-button">
-        {eventStatus === EventStatus[EventStatus.READY] ?
+        {eventStatus === EventStatus[EventStatus.READY] ? (
           <>
-            <Button type="primary" size="large" onClick={handleProductModalOpen}>제품 등록</Button>
-            <Button type="danger" size="large" onClick={handleProductDelete}>선택 제품 삭제</Button>
+            <Button type="primary" size="large" onClick={handleProductModalOpen}>
+              제품 등록
+            </Button>
+            <Popconfirm
+              title="해당 제품을 삭제처리 하시겠습니까?"
+              onConfirm={handleProductDelete}
+              okText="확인"
+              cancelText="취소"
+            >
+              <Button type="danger" size="large">
+                선택 제품 삭제
+              </Button>
+            </Popconfirm>
           </>
-          :
+        ) : (
           <>
-            <Button type="primary" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_OUT)}>품절 처리</Button>
-            <Button type="danger" size="large" onClick={() => handleProductSoldOut(ProductSold.SOLD_IN)}>품절 해제</Button>
+            <Popconfirm
+              title="해당 제품을 품절 처리 하시겠습니까?"
+              onConfirm={() => handleProductSoldOutConfirm(ProductSold.SOLD_OUT)}
+              okText="확인"
+              cancelText="취소"
+            >
+              <Button type="primary" size="large">
+                품절 처리
+              </Button>
+            </Popconfirm>
+            <Popconfirm
+              title="해당 제품을 품절 해제 하시겠습니까?"
+              onConfirm={() => handleProductSoldOutConfirm(ProductSold.SOLD_IN)}
+              okText="확인"
+              cancelText="취소"
+            >
+              <Button type="danger" size="large">
+                품절 해제
+              </Button>
+            </Popconfirm>
           </>
-        }
+        )}
       </div>
       <ProductModal
         product={product}
         setProduct={setProduct}
         event={event}
         productModalVisible={productModalVisible}
-        setProductModalVisible={setProductModalVisible}/>
+        setProductModalVisible={setProductModalVisible}
+      />
     </div>
-  )
+  );
 }
 
 export default ProductTable;
