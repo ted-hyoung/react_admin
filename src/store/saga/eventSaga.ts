@@ -1,5 +1,5 @@
 // base
-import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { push, replace } from 'connected-react-router';
 import * as Api from 'lib/protocols';
 import * as Actions from 'store/action/eventAction';
@@ -10,7 +10,8 @@ import {
   updateEventByIdAsync,
   updateEventNoticesAsync,
   updateEventStatusAsync,
-  updateEventShippingFeeInfoAsync
+  updateEventShippingFeeInfoAsync,
+  deleteEventAsync,
 } from 'store/reducer/event';
 
 // modules
@@ -71,7 +72,6 @@ function* getEventById(action: PayloadAction<string, GetRequestPayload>) {
 
 function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<UpdateEvent>>) {
   const { id, data } = action.payload;
-  const state = yield select();
 
   try {
     const res = yield call(() => Api.put(`/events/${id}`, data));
@@ -126,6 +126,18 @@ function* updateEventShippingFeeInfo(action: RequestAsyncAction) {
   }
 }
 
+function* deleteEvent(action: RequestAsyncAction) {
+  try {
+    const { eventId } = action.payload;
+
+    yield call(() => Api.del(`/events/${eventId}`));
+    yield put(deleteEventAsync.success());
+    yield put(replace('/events'));
+  } catch (error) {
+    yield put(deleteEventAsync.failure(error));
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
@@ -134,4 +146,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
   yield takeLatest(Actions.UPDATE_EVENT_STATUS_REQUEST, updateEventStatus);
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
+  yield takeLatest(Actions.DELETE_EVENT_REQUEST, deleteEvent);
 }

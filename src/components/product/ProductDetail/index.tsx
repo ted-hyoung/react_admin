@@ -5,12 +5,14 @@ import { useSelector } from 'react-redux';
 // components
 import { ProductTable, ShippingFreeInfo } from 'components';
 
+// store
+import { StoreState } from 'store';
+
 // types
 import { ResponseEvent } from 'types';
 
 // less
 import './index.less';
-import { StoreState } from 'store';
 
 interface Props {
   event: ResponseEvent;

@@ -6,15 +6,15 @@ import { Upload, Icon, message } from 'antd';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile, UploadProps } from 'antd/lib/upload/interface';
 
+// components
+import Spinner from '../Spinner';
+
 // libs
 import { uploadImage } from 'lib/protocols';
 import { getThumbUrl } from 'lib/utils';
 
 // types
 import { FileObject } from 'types/FileObject';
-
-// style
-import './index.less';
 
 // defeins
 const MB = 1048576;
@@ -120,11 +120,7 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
       >
         {fileList.length >= limit ? null : uploadButton}
       </Upload>
-      {inProgress && (
-        <div className="spinner">
-          <Icon type="loading" />
-        </div>
-      )}
+      {inProgress && <Spinner />}
     </div>
   );
 });

@@ -16,12 +16,11 @@ import { updateEventShippingFeeInfoAsync } from 'store/reducer/event';
 import './index.less';
 
 interface Props extends FormComponentProps {
-  shippingFreeInfo : ResponseShippingFeeInfo;
+  shippingFreeInfo: ResponseShippingFeeInfo;
   event: ResponseEvent;
 }
 
 function ShippingFeeInfo(props: Props) {
-
   const { form } = props;
   const { getFieldDecorator, setFieldsValue, validateFieldsAndScroll } = form;
   const { shippingFreeInfo, event } = props;
@@ -31,15 +30,14 @@ function ShippingFeeInfo(props: Props) {
   useEffect(() => {
     setFieldsValue({
       shippingFee: shippingFreeInfo.shippingFee,
-      shippingFreeCondition: shippingFreeInfo.shippingFreeCondition
-    })
+      shippingFreeCondition: shippingFreeInfo.shippingFreeCondition,
+    });
   }, [shippingFreeInfo]);
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
     validateFieldsAndScroll((error, values: UpdateEventShippingFeeInfo) => {
-
       if (!error) {
         const { shippingFee, shippingFreeCondition } = values;
         const data = {
@@ -47,7 +45,7 @@ function ShippingFeeInfo(props: Props) {
           data: {
             shippingFeeInfo: {
               shippingFee,
-              shippingFreeCondition
+              shippingFreeCondition,
             },
           },
         };
@@ -66,22 +64,22 @@ function ShippingFeeInfo(props: Props) {
         </div>
         <Row className="shippingFee-info-row" justify="space-around">
           <Col span={3} className="shippingFee-info-col-center">
-            배송비
+            배송비 정보
           </Col>
           <Col span={2} className="shippingFee-info-col-right">
             배송비
           </Col>
           <Col span={3} className="shippingFee-info-col-margin">
             <Form.Item>
-              {getFieldDecorator('shippingFee')
-              (<InputNumber
+              {getFieldDecorator('shippingFee')(
+                <InputNumber
                   min={0}
                   style={{ width: '100%' }}
                   className="product-modal-input"
                   size="small"
                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                />
+                />,
               )}
             </Form.Item>
           </Col>
@@ -93,15 +91,15 @@ function ShippingFeeInfo(props: Props) {
           </Col>
           <Col span={3} className="shippingFee-info-col-margin">
             <Form.Item>
-              {getFieldDecorator('shippingFreeCondition')
-              (<InputNumber
+              {getFieldDecorator('shippingFreeCondition')(
+                <InputNumber
                   min={0}
                   style={{ width: '100%' }}
                   className="product-modal-input"
                   size="small"
                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                />
+                />,
               )}
             </Form.Item>
           </Col>
@@ -110,11 +108,13 @@ function ShippingFeeInfo(props: Props) {
           </Col>
         </Row>
         <div className="shippingFee-info-button">
-          <Button type="primary" size="large" htmlType="submit">배송비 수정</Button>
+          <Button type="primary" size="large" htmlType="submit">
+            배송비 수정
+          </Button>
         </div>
       </Form>
     </div>
-  )
+  );
 }
 
 export default Form.create<Props>()(ShippingFeeInfo);

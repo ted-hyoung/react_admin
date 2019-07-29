@@ -1,7 +1,7 @@
 // base
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { Delta } from 'quill';
+import { Delta, Sources } from 'quill';
 
 // modules
 import { Modal, Input, Icon } from 'antd';
@@ -12,6 +12,10 @@ import { InstagramBlot } from 'service';
 // assets
 import 'react-quill/dist/quill.snow.css';
 import './index.less';
+import { uploadImage } from 'lib/protocols';
+import { getThumbUrl } from 'lib/utils';
+import { QlImageIcon } from 'components/common/Icons';
+import Spinner from '../Spinner';
 
 const fontSize = Quill.import('attributors/style/size');
 
@@ -21,12 +25,6 @@ Quill.register(fontSize, true);
 Quill.register({
   'formats/instagram': InstagramBlot,
 });
-
-declare global {
-  interface Window {
-    instgrm: any;
-  }
-}
 
 interface InstagramFormProps {
   onOk: (value: string) => void;
@@ -51,13 +49,24 @@ const InstagramForm = (props: InstagramFormProps) => {
 interface ToolbarProps {
   name: string;
   instagramTool: boolean;
+  imageHandler: (file: File) => void;
   instagramHandler: (url: string) => void;
   saveLastRange: () => void;
 }
 
 const Toolbar = (props: ToolbarProps) => {
-  const { name, instagramTool, saveLastRange, instagramHandler } = props;
+  const { name, imageHandler, instagramTool, saveLastRange, instagramHandler } = props;
+
   const [instagramUrlModalVisible, setInstagramUrlModalVisible] = useState(false);
+  const fileInputEl = useRef<HTMLInputElement>(null);
+
+  const handleClickFileInput = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (fileInputEl.current) {
+      fileInputEl.current.click();
+      saveLastRange();
+    }
+  };
+
   return (
     <div id={`${name}-toolbar`}>
       <span className="ql-formats">
@@ -80,7 +89,24 @@ const Toolbar = (props: ToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button type="button" className="ql-image" />
+        <button type="button" onClick={handleClickFileInput}>
+          <QlImageIcon />
+          <input
+            ref={fileInputEl}
+            style={{ display: 'none' }}
+            type="file"
+            onClick={e => {
+              e.stopPropagation();
+              e.currentTarget.value = '';
+            }}
+            onChange={e => {
+              if (!e.target.files) {
+                return false;
+              }
+              imageHandler(e.target.files[0]);
+            }}
+          />
+        </button>
         <button type="button" className="ql-video" />
         <button type="button" className="ql-link" />
         {instagramTool && (
@@ -108,7 +134,6 @@ const Toolbar = (props: ToolbarProps) => {
 
 interface ReactQuillProps {
   name?: string;
-  value?: string;
   onChange?: (value: string) => void;
   defaultValue?: string;
   instagramTool?: boolean;
@@ -117,44 +142,60 @@ interface ReactQuillProps {
 const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQuillProps, ref) => {
   const quillRef = useRef<ReactQuill>(null);
   const [lastSelection, setLastSelection] = useState(0);
+  const [inProgress, setInProgress] = useState(false);
 
-  const { name = 'editor', onChange, value: propValue, defaultValue, instagramTool = true } = props;
+  const { name = 'editor', onChange, defaultValue, instagramTool = true } = props;
 
   const instagramHandler = (value: string) => {
-    // quill focus 문제로 setTimeout 추가
+    // editor focus 로 인한 비동기 처리
     setTimeout(() => {
       if (quillRef.current) {
-        quillRef.current.getEditor().insertEmbed(lastSelection, 'instagram', value);
+        const editor = quillRef.current.getEditor();
+
+        editor.insertEmbed(lastSelection, 'instagram', value);
+        editor.blur();
       }
     }, 0);
   };
 
+  const imageHandler = async (file: File) => {
+    setInProgress(true);
+
+    const res = await uploadImage(file);
+
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+
+      editor.insertEmbed(lastSelection, 'image', getThumbUrl(res.data.fileKey, 540, 540, 'scale'));
+      editor.blur();
+    }
+
+    setInProgress(false);
+  };
+
   const instgramProcess = useCallback((delta: Delta) => {
     if (delta.ops) {
-      delta.ops.some(op => {
-        if (op.insert && op.insert.instagram) {
-          if (window.instgrm) {
+      delta.ops.forEach(op => {
+        if (op.insert) {
+          if (op.insert.instagram) {
             window.instgrm.Embeds.process();
           }
         }
-        return op.insert && op.insert.instagram;
       });
     }
   }, []);
 
-  const handleChange = useCallback(
-    (editorContent: string) => {
-      const contentDelta = quillRef.current!.getEditor().getContents();
+  const handleChange = (editor: any) => {
+    if (onChange) {
+      const contentDelta = editor.getContents();
 
-      // instagram 있는지 체크해서 instgram.Embeds.process() 실행
       instgramProcess(contentDelta);
 
-      if (onChange) {
-        onChange(editorContent);
-      }
-    },
-    [quillRef, onChange, instgramProcess],
-  );
+      setTimeout(() => {
+        onChange(editor.getHTML());
+      }, 1000);
+    }
+  };
 
   const saveLastRange = () => {
     const editor = quillRef.current;
@@ -170,17 +211,21 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   useEffect(() => {
     setTimeout(() => {
       if (quillRef.current && defaultValue) {
-        quillRef.current.getEditor().pasteHTML(defaultValue);
-        quillRef.current.blur();
+        const editor = quillRef.current.getEditor();
+
+        editor.focus();
+        editor.pasteHTML(defaultValue);
+        editor.blur();
         window.scrollTo(0, 0);
       }
     }, 0);
-  }, [defaultValue, quillRef]);
+  }, [defaultValue]);
 
   return (
     <div className={`text-editor ${name}`}>
       <Toolbar
         name={name}
+        imageHandler={imageHandler}
         instagramHandler={instagramHandler}
         saveLastRange={saveLastRange}
         instagramTool={instagramTool}
@@ -191,12 +236,12 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
         modules={{
           toolbar: `#${name}-toolbar`,
         }}
-        value={propValue || ''}
-        onChange={handleChange}
+        onChange={(content, delta, source, editor) => handleChange(editor)}
         style={{
           height: 500,
         }}
       />
+      {inProgress && <Spinner />}
     </div>
   );
 });

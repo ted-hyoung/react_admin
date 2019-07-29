@@ -56,6 +56,37 @@ export const updateReviewsExposeAsync = createAsyncAction(
   Actions.UPDATE_REVIEWS_EXPOSE_FAILURE,
 )<UpdateReviewExposeRequestPayload[], UpdateReviewExposeRequestPayload[], AxiosError>();
 
+export const clearReview = () => action(Actions.CLEAR_REVIEW);
+
+const defaultReview = {
+  reviewId: 0,
+  starRate: 0,
+  contents: '',
+  created: '',
+  creator: {
+    loginId: '',
+    username: '',
+    phone: '',
+  },
+  expose: true,
+  sequence: 0,
+  images: [],
+  order: {
+    orderId: 0,
+    orderNo: '',
+    orderItems: [],
+    created: '',
+  },
+  event: {
+    name: '',
+    images: [],
+    eventId: 0,
+    brand: {
+      brandName: '',
+    },
+  },
+};
+
 const initialState: ReviewState = {
   reviews: {
     content: [],
@@ -66,19 +97,7 @@ const initialState: ReviewState = {
     page: 0,
     size: 10,
   },
-  review: {
-    reviewId: 0,
-    starRate: 0,
-    contents: '',
-    created: '',
-    creator: {
-      loginId: '',
-      username: '',
-      phone: '',
-    },
-    expose: true,
-    sequence: 0,
-  },
+  review: defaultReview,
 };
 
 const review = (state = initialState, action: AnyAction) => {
@@ -91,7 +110,6 @@ const review = (state = initialState, action: AnyAction) => {
     case Actions.GET_REVIEW_SUCCESS: {
       return produce(state, draft => {
         draft.review = action.payload;
-        // draft.detailModalVisible = true;
       });
     }
     case Actions.UPDATE_REVIEW_SEQUENCE_SUCCESS: {
@@ -113,6 +131,11 @@ const review = (state = initialState, action: AnyAction) => {
           const selected = draft.reviews.content.findIndex(review => review.reviewId === Number(item.reviewId));
           draft.reviews.content[selected].expose = item.expose;
         });
+      });
+    }
+    case Actions.CLEAR_REVIEW: {
+      return produce(state, draft => {
+        draft.review = defaultReview;
       });
     }
     default: {

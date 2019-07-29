@@ -21,8 +21,6 @@ import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
 import useModal from 'lib/hooks/useModal';
 import { mapEnums } from 'lib/utils';
 
-const dummy = Array(5).fill({ src: 'http://placehold.it/300x300' });
-
 const contactColumns: Array<ColumnProps<ResponseContact>> = [
   {
     title: 'No',
@@ -43,8 +41,9 @@ const contactColumns: Array<ColumnProps<ResponseContact>> = [
   },
   {
     title: '공구명',
-    dataIndex: 'eventName',
-    key: 'eventName',
+    dataIndex: 'event',
+    key: 'event',
+    render: event => event.name,
   },
   {
     title: '문의 내용',
@@ -95,16 +94,19 @@ function Contact() {
   );
 
   const handleClickImage = useCallback(
-    (imageIndex: number) => {
-      openModal({
-        type: 'gallery',
-        content: {
-          images: dummy,
-          currentIndex: imageIndex,
-        },
-      });
+    (contactId: number, imageIndex: number) => {
+      const selectedContact = contacts.content.find(contact => contact.contactId === contactId);
+      if (selectedContact) {
+        openModal({
+          type: 'gallery',
+          content: {
+            images: selectedContact.images,
+            currentIndex: imageIndex,
+          },
+        });
+      }
     },
-    [openModal],
+    [openModal, contacts],
   );
 
   const handleSearch = useCallback(

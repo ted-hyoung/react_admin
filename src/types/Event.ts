@@ -3,11 +3,12 @@ import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
 import { ResponseCelebReview } from './CelebReview';
 import { ResponseProduct } from './Product';
 import { ResponseEventNotice } from './EventNotice';
+import { ResponseBrandForEvent, ResponseBrand, BrandInfo } from './Brand';
 
 export interface CreateEvent {
   name: string;
   choiceReview: string;
-  brandName: string;
+  brand: BrandInfo;
   salesStarted: string;
   salesEnded: string;
   targetAmount: number;
@@ -33,20 +34,30 @@ export interface ResponseEventForList {
   name: string;
   eventStatus: EventStatus;
   turn: number;
-  brandName: string;
+  brand: ResponseBrandForEvent;
   salesStarted: string;
   salesEnded: string;
   created: string;
 }
 
 export interface ResponseEventForOrders {
-  brandName: string;
+  brand: ResponseBrand;
+}
+export interface ResponseEventForReview {
+  eventId: number;
+  images: FileObject[];
+  name: string;
+  brand: ResponseBrand;
+}
+
+export interface ResponseEventForQna {
+  name: string; // 공구명
 }
 
 export interface UpdateEvent {
   name: string;
   choiceReview: string;
-  brandName: string;
+  brand: BrandInfo;
   salesStarted: string;
   salesEnded: string;
   targetAmount: number;

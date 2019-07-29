@@ -71,3 +71,9 @@ export interface ResponseOrderItemProduct {
   productId: number;
   productName: string;
 }
+
+export interface ResponseOrderItemProductForReview {
+  images: FileObject[];
+  productId: number;
+  productName: string;
+}

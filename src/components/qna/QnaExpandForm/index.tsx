@@ -117,7 +117,7 @@ function QnaExpandForm(props: Props) {
         </Col>
         <Col span={22}>
           <Row type="flex" style={{ marginBottom: 10 }}>
-            <Col span={18}>조민영</Col>
+            <Col span={18}>{qnaComment && qnaComment.creator.username}</Col>
             <Col span={6} style={{ textAlign: 'right' }}>
               {qnaComment ? (
                 moment(qnaComment.created).format(DATE_FORMAT)

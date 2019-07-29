@@ -1,3 +1,5 @@
+import { FileObject } from './FileObject';
+
 export type ModalTypes = 'info' | 'confirm' | 'detail' | 'gallery';
 
 export interface DetailModalContent {
@@ -10,7 +12,7 @@ export interface DetailModalContent {
 }
 
 export interface GalleryModalContent {
-  images: any[];
+  images: FileObject[];
   currentIndex?: number;
 }
 

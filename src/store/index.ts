@@ -13,6 +13,7 @@ import celebReview, { CelebReviewState } from './reducer/celebReview';
 import product, { ProductState } from './reducer/product';
 import order, { OrderState } from './reducer/order';
 import shipping, { ShippingState } from './reducer/shipping';
+import brand, { BrandState } from './reducer/brand';
 
 // saga
 import eventSaga from './saga/eventSaga';
@@ -23,6 +24,7 @@ import celebReviewSaga from './saga/celebReviewSaga';
 import productSaga from './saga/productSaga';
 import orderSaga from './saga/orderSaga';
 import shippingSaga from './saga/shippingSaga';
+import brandSaga from './saga/brandSaga';
 
 export interface StoreState {
   router: RouterState;
@@ -34,6 +36,7 @@ export interface StoreState {
   celebReview: CelebReviewState;
   order: OrderState;
   shipping: ShippingState;
+  brand: BrandState;
 }
 
 export function* saga() {
@@ -46,6 +49,7 @@ export function* saga() {
     celebReviewSaga(),
     orderSaga(),
     shippingSaga(),
+    brandSaga(),
   ]);
 }
 
@@ -60,6 +64,7 @@ const reducer = (history: History) =>
     celebReview,
     order,
     shipping,
+    brand,
   });
 
 export default reducer;

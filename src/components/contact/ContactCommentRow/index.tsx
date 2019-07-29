@@ -5,6 +5,7 @@ import { Avatar, Comment, Button, Input, Modal, Popconfirm } from 'antd';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deleteContactCommentAsync, updateContactCommentAsync, createContactCommentAsync } from 'store/reducer/contact';
+import { getThumbUrl } from 'lib/utils';
 
 // define
 const { TextArea } = Input;
@@ -100,13 +101,15 @@ const ContactCommentForm = Form.create<ContactCommentFormProps>()((props: Contac
 });
 
 interface ContactCommentRowProps extends ResponseContact {
-  onClickImage: (index: number) => void;
+  onClickImage: (contactId: number, index: number) => void;
 }
 
 function ContactCommentRow(props: ContactCommentRowProps) {
-  const { comment, contents, creator, contactId, onClickImage } = props;
+  const { contactComment, contents, creator, contactId, onClickImage, images } = props;
   const dispatch = useDispatch();
-  const commentCreated = useMemo(() => comment && moment(comment.created).format('YYYY-MM-DD HH:mm:ss'), [comment]);
+  const commentCreated = useMemo(() => contactComment && moment(contactComment.created).format('YYYY-MM-DD HH:mm:ss'), [
+    contactComment,
+  ]);
   const [showForm, setShowForm] = useState(false);
 
   const handleModify = useCallback(() => {
@@ -122,12 +125,12 @@ function ContactCommentRow(props: ContactCommentRowProps) {
   }, [contactId, dispatch]);
 
   useEffect(() => {
-    if (!comment) {
+    if (!contactComment) {
       setShowForm(true);
     } else {
       setShowForm(false);
     }
-  }, [comment]);
+  }, [contactComment]);
 
   return (
     <div>
@@ -142,27 +145,24 @@ function ContactCommentRow(props: ContactCommentRowProps) {
         content={
           <>
             <div style={{ marginBottom: 10 }}>{contents}</div>
-            {/* todo : images */}
             <div>
-              {Array(5)
-                .fill('')
-                .map((image, i) => (
-                  <img
-                    key={i}
-                    src={`http://placehold.it/100x100?text=${(i + 1).toString()}`}
-                    onClick={() => onClickImage(i)}
-                    alt=""
-                    style={{ marginRight: 5, marginBottom: 5 }}
-                  />
-                ))}
+              {images.map((image, i) => (
+                <img
+                  key={i}
+                  src={getThumbUrl(image.fileKey, 100, 100)}
+                  onClick={() => onClickImage(contactId, i)}
+                  alt={image.fileName}
+                  style={{ marginRight: 5, marginBottom: 5 }}
+                />
+              ))}
             </div>
           </>
         }
       />
-      {comment && !showForm && (
+      {contactComment && !showForm && (
         <Comment
           avatar={answerAvatar}
-          content={comment.comment}
+          content={contactComment.comment}
           datetime={commentCreated}
           actions={[
             <Button key="showForm" style={{ marginRight: 5 }} onClick={handleModify}>
@@ -177,7 +177,7 @@ function ContactCommentRow(props: ContactCommentRowProps) {
       {showForm && (
         <ContactCommentForm
           contactId={contactId}
-          value={comment && comment.comment}
+          value={contactComment && contactComment.comment}
           onCancel={() => setShowForm(false)}
         />
       )}

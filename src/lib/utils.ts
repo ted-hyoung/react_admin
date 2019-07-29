@@ -130,6 +130,11 @@ export function isTokenExpired(token?: string) {
   return decoded.exp < now;
 }
 
+export function pad(num: number, length: number) {
+  const n = num.toString();
+  return n.length >= length ? n : new Array(length - n.length + 1).join('0') + num;
+}
+
 export const parseParams = (params: any) => {
   const keys = Object.keys(params);
   let options = '';
