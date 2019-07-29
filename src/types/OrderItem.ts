@@ -1,4 +1,4 @@
-import { ResponseOrderItemProduct } from './Product';
+import { ResponseOrderItemProduct, ResponseOrderItemProductForReview } from './Product';
 import { ResponseOrderItemOption } from './Option';
 
 export interface ResponseOrderItem {
@@ -9,4 +9,16 @@ export interface ResponseOrderItem {
   optionSalePrice: number;
   totalSalePrice: number;
   quantity: number;
+}
+
+export interface ResponseClientOrderItem {
+  orderItemId: number;
+  product: ResponseOrderItemProduct;
+  option: ResponseOrderItemOption;
+}
+
+export interface ResponseClientOrderItemForReview {
+  orderItemId: number;
+  product: ResponseOrderItemProductForReview;
+  option: ResponseOrderItemOption;
 }

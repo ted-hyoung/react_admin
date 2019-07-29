@@ -14,9 +14,13 @@ import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'compon
 import './index.less';
 import { EventStatus } from 'enums';
 
-function EventDetail(props: RouteComponentProps) {
-  const { location } = props;
-  const eventId = useMemo(() => Number(location.pathname.split('/')[3]), [location.pathname]);
+interface Params {
+  id: string;
+}
+
+function EventDetail(props: RouteComponentProps<Params>) {
+  const { match } = props;
+  const eventId = Number(match.params.id);
 
   const { event } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
@@ -46,13 +50,17 @@ function EventDetail(props: RouteComponentProps) {
 
   useEffect(() => {
     getEvent(eventId);
-  }, [eventId, location.key]);
+  }, [eventId]);
 
   useEffect(() => {
     return () => {
       dispatch(clearEvent);
     };
   }, []);
+
+  const handleOpenPreview = () => {
+    window.open(`/events/${event.eventId}/template`);
+  };
 
   return (
     <div className="event-detail">
@@ -61,11 +69,7 @@ function EventDetail(props: RouteComponentProps) {
           <EventForm event={event} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={!event.eventId}>
-          <ProductDetail
-            eventId={event.eventId}
-            responseProducts={event.products}
-            responseShippingFeeInfo={event.shippingFeeInfo}
-          />
+          <ProductDetail event={event} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={!event.eventId}>
           <CelebReviewDetail />
@@ -74,6 +78,9 @@ function EventDetail(props: RouteComponentProps) {
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
       </Tabs>
+      <Button className="btn-event-preview" type="primary" onClick={handleOpenPreview}>
+        미리보기
+      </Button>
       {event.celebReview.contents && event.products && (
         <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
           오픈

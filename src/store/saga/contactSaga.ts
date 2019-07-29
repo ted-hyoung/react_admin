@@ -77,7 +77,7 @@ function* updateContactComment(action: PayloadAction<string, UpdateRequestPayloa
 function* deleteContactComment(action: PayloadAction<string, DeleteRequestPayload>) {
   const { id } = action.payload;
   try {
-    yield call(() => Api.del('/contacts/' + id + '/comment'));
+    yield call(() => Api.del('/contacts/' + id + '/comment', {}));
     yield put(deleteContactCommentAsync.success({}));
     message.success('답변을 삭제했습니다');
     yield put(getContactAsync.request({ id }));

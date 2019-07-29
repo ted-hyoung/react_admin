@@ -1,4 +1,4 @@
-import { CreateFileObject, UpdateFileObject } from './FileObject';
+import { CreateFileObject, FileObject, UpdateFileObject } from './FileObject';
 
 export interface ResponseProduct {
   productId: number;
@@ -8,26 +8,20 @@ export interface ResponseProduct {
   disabledOptionTotalStock: number;
   disabledOptionStock: number;
   disabledOptionSafeStock: number;
-  disabled: boolean;
   soldOut: boolean;
   freebie: string;
   enableOption: boolean;
   options: ResponseOption[];
-  images: UpdateFileObject[];
+  images: FileObject[];
 }
 
 export interface ResponseOption {
-  optionId?: number;
+  optionId: number;
   optionName: string;
   salePrice: number;
   stock: number;
   safeStock: number;
   totalStock: number;
-}
-
-export interface ResponseShippingFeeInfo {
-  shippingFee: number;
-  shippingFreeCondition: number;
 }
 
 export interface CreateProduct {
@@ -38,9 +32,9 @@ export interface CreateProduct {
   disabledOptionStock: number;
   disabledOptionSafeStock: number;
   freebie: string;
-  enableOption: boolean;
+  enableOption: boolean | number;
   options: CreateOption[];
-  images:CreateFileObject[];
+  images: CreateFileObject[];
 }
 
 export interface CreateOption {
@@ -51,7 +45,35 @@ export interface CreateOption {
   totalStock: number;
 }
 
+export interface UpdateProduct {
+  productName: string;
+  normalSalesPrice: number;
+  discountSalesPrice: number;
+  disabledOptionTotalStock: number;
+  disabledOptionStock: number;
+  disabledOptionSafeStock: number;
+  freebie: string;
+  enableOption: boolean | number;
+  options: UpdateOption[];
+  images: UpdateFileObject[];
+}
+
+export interface UpdateOption {
+  optionId: number | null;
+  optionName: string;
+  salePrice: number;
+  stock: number;
+  safeStock: number;
+  totalStock: number;
+}
+
 export interface ResponseOrderItemProduct {
+  productId: number;
+  productName: string;
+}
+
+export interface ResponseOrderItemProductForReview {
+  images: FileObject[];
   productId: number;
   productName: string;
 }

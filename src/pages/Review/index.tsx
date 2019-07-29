@@ -15,6 +15,7 @@ import {
   UpdateReviewExposeRequestPayload,
   updateReviewSequenceAsync,
   getReviewAsync,
+  clearReview,
 } from 'store/reducer/review';
 
 // types
@@ -23,7 +24,10 @@ import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component
 import { PaginationTable, SearchBar } from 'components';
+
+// lib
 import useModal from 'lib/hooks/useModal';
+import { getThumbUrl, pad } from 'lib/utils';
 
 const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorLoginId', text: '아이디' },
@@ -32,7 +36,6 @@ const reviewSearchConditions: SearchCondition[] = [
   { key: 'productName', text: '제품명' },
   { key: 'orderId', text: '주문번호' },
   { key: 'contents', text: '내용' },
-  // todo : brandName?
 ];
 
 function Review() {
@@ -124,15 +127,27 @@ function Review() {
         items: [
           {
             label: '공구명',
-            value: '비클 앰플 공구 1차',
+            value: review.event.name,
           },
           {
             label: '주문번호',
-            value: '0000-0000-0000-0000',
+            value: review.order.orderNo,
           },
           {
             label: '구매상품',
-            value: '01. 비클 앰플 1세트(옵션 : 주황마스크)',
+            value: (
+              <div>
+                {review.order.orderItems.map((orderItem, i) => {
+                  const { product, option } = orderItem;
+                  return (
+                    <div key={`order-item-${i}`}>
+                      {pad(i + 1, 2)}. {product.productName}
+                      {option ? '(옵션 : ' + option.optionName : ''}
+                    </div>
+                  );
+                })}
+              </div>
+            ),
           },
         ],
       },
@@ -158,6 +173,23 @@ function Review() {
           {
             label: '내용',
             value: review.contents,
+            span: 2,
+          },
+          {
+            label: '첨부파일',
+            value: (
+              <div className="review-detail-images">
+                {review.images.map(image => (
+                  <img
+                    key={image.fileKey}
+                    src={getThumbUrl(image.fileKey, 120, 120)}
+                    alt={image.fileName}
+                    style={{ marginTop: 8, marginRight: 8 }}
+                  />
+                ))}
+              </div>
+            ),
+            span: 2,
           },
         ],
       },
@@ -168,6 +200,10 @@ function Review() {
   // componentDidMount
   useEffect(() => {
     getReviews(0);
+    return () => {
+      // will unmount
+      dispatch(clearReview());
+    };
   }, []);
 
   useEffect(() => {
@@ -194,8 +230,9 @@ function Review() {
       },
       {
         title: '브랜드',
-        dataIndex: '',
-        key: '',
+        dataIndex: 'event',
+        key: 'event',
+        render: event => event.brandName,
       },
       {
         title: '작성자',
@@ -211,8 +248,12 @@ function Review() {
         render: (contents, review) => (
           <div style={{ display: 'flex' }}>
             <div>
-              <img src="http://placehold.it/110x110" alt="" />
-              <br />
+              {review.images.length > 0 && (
+                <>
+                  <img src={getThumbUrl(review.images[0].fileKey, 110, 110)} alt={review.images[0].fileName} />
+                  <br />
+                </>
+              )}
               <Rate value={review.starRate} disabled style={{ fontSize: 13 }} />
             </div>
             <div style={{ paddingLeft: 15 }}>

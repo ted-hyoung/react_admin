@@ -1,7 +1,7 @@
 import { EventStatus } from 'enums';
 import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
 import { ResponseCelebReview } from './CelebReview';
-import { ResponseProduct, ResponseShippingFeeInfo } from './Product';
+import { ResponseProduct } from './Product';
 import { ResponseEventNotice } from './EventNotice';
 
 export interface CreateEvent {
@@ -42,6 +42,12 @@ export interface ResponseEventForList {
 export interface ResponseEventForOrders {
   brandName: string;
 }
+export interface ResponseEventForReview {
+  eventId: number;
+  images: FileObject[];
+  name: string;
+  brandName: string;
+}
 
 export interface ResponseEventForQna {
   name: string; // 공구명
@@ -68,4 +74,14 @@ export interface SearchEvent {
 
 export interface UpdateEventStatus {
   eventStatus: EventStatus;
+}
+
+export interface ResponseShippingFeeInfo {
+  shippingFee: number;
+  shippingFreeCondition: number;
+}
+
+export interface UpdateEventShippingFeeInfo {
+  shippingFee: number;
+  shippingFreeCondition: number;
 }

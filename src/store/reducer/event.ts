@@ -19,7 +19,7 @@ import {
   UpdateRequestPayload,
   UpdateEvent,
   UpdateEventNotices,
-  UpdateEventStatus,
+  UpdateEventStatus, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction,
 } from 'types';
 
 import { EventStatus } from 'enums';
@@ -71,6 +71,12 @@ export const updateEventStatusAsync = createAsyncAction(
   Actions.UPDATE_EVENT_STATUS_FAILURE,
 )<UpdateRequestPayload<UpdateEventStatus>, AxiosResponse, AxiosError>();
 
+export const updateEventShippingFeeInfoAsync = createAsyncAction(
+  Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST,
+  Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_SUCCESS,
+  Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 export const clearEvent = action(Actions.CLEAR_EVENT);
 
 const initialState: EventState = {
@@ -103,7 +109,6 @@ const initialState: EventState = {
     images: [],
     celebReview: {
       created: '',
-      instagramUrl: null,
       contents: null,
       modified: null,
     },
@@ -130,6 +135,11 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.UPDATE_EVENT_NOTICES_SUCCESS:
     case Actions.UPDATE_EVENT_STATUS_SUCCESS: {
       return state;
+    }
+    case Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_SUCCESS: {
+      return produce(state, draft => {
+        draft.event.shippingFeeInfo = action.payload.shippingFeeInfo;
+      });
     }
     case Actions.CLEAR_EVENT: {
       return produce(state, draft => {
