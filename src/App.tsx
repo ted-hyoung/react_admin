@@ -36,7 +36,8 @@ function App(props: RouteComponentProps) {
     // componentDidMount
     if (accessToken && tokenExpired) {
       requestRefreshToken(accessToken, getRefreshToken()).then(res => {
-        window.location.reload();
+        // FIXME: 해당 기능으로 인해 API 오류 시 페이지 리로드 발생하여 의도치 않은 동작 발생
+        // window.location.reload();
       });
     }
     if (!accessToken) {

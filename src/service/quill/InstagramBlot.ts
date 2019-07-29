@@ -36,6 +36,7 @@ class InstagramBlot extends QuillBlot {
       node.setAttribute('data-instgrm-version', '12');
       node.setAttribute('style', `width: 540px; height: ${height}px; border: 1px solid #ddd;`);
     }
+
     return node;
   }
 

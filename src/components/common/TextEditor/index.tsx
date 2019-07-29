@@ -12,6 +12,9 @@ import { InstagramBlot } from 'service';
 // assets
 import 'react-quill/dist/quill.snow.css';
 import './index.less';
+import { uploadImage } from 'lib/protocols';
+import { getThumbUrl } from 'lib/utils';
+import { QlImageIcon } from 'components/common/Icons';
 
 const fontSize = Quill.import('attributors/style/size');
 
@@ -21,12 +24,6 @@ Quill.register(fontSize, true);
 Quill.register({
   'formats/instagram': InstagramBlot,
 });
-
-declare global {
-  interface Window {
-    instgrm: any;
-  }
-}
 
 interface InstagramFormProps {
   onOk: (value: string) => void;
@@ -50,14 +47,25 @@ const InstagramForm = (props: InstagramFormProps) => {
 
 interface ToolbarProps {
   name: string;
+  imageHandler: (file: File) => void;
   instagramTool: boolean;
   instagramHandler: (url: string) => void;
   saveLastRange: () => void;
 }
 
 const Toolbar = (props: ToolbarProps) => {
-  const { name, instagramTool, saveLastRange, instagramHandler } = props;
+  const { name, imageHandler, instagramTool, saveLastRange, instagramHandler } = props;
+
   const [instagramUrlModalVisible, setInstagramUrlModalVisible] = useState(false);
+  const fileInputEl = useRef<HTMLInputElement>(null);
+
+  const handleClickFileInput = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (fileInputEl.current) {
+      fileInputEl.current.click();
+      saveLastRange();
+    }
+  };
+
   return (
     <div id={`${name}-toolbar`}>
       <span className="ql-formats">
@@ -80,7 +88,21 @@ const Toolbar = (props: ToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button type="button" className="ql-image" />
+        <button type="button" onClick={handleClickFileInput}>
+          <QlImageIcon />
+          <input
+            ref={fileInputEl}
+            style={{ display: 'none' }}
+            type="file"
+            onClick={e => e.stopPropagation()}
+            onChange={e => {
+              if (!e.target.files) {
+                return false;
+              }
+              imageHandler(e.target.files[0]);
+            }}
+          />
+        </button>
         <button type="button" className="ql-video" />
         <button type="button" className="ql-link" />
         {instagramTool && (
@@ -121,12 +143,26 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   const { name = 'editor', onChange, value: propValue, defaultValue, instagramTool = true } = props;
 
   const instagramHandler = (value: string) => {
-    // quill focus 문제로 setTimeout 추가
+    // editor focus 로 인한 비동기 처리
     setTimeout(() => {
       if (quillRef.current) {
-        quillRef.current.getEditor().insertEmbed(lastSelection, 'instagram', value);
+        const editor = quillRef.current.getEditor();
+
+        editor.insertEmbed(lastSelection, 'instagram', value);
+        editor.blur();
       }
     }, 0);
+  };
+
+  const imageHandler = async (file: File) => {
+    const res = await uploadImage(file);
+
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+
+      editor.insertEmbed(lastSelection, 'image', getThumbUrl(res.data.fileKey, 540, 540, 'scale'));
+      editor.blur();
+    }
   };
 
   const instgramProcess = useCallback((delta: Delta) => {
@@ -170,8 +206,11 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   useEffect(() => {
     setTimeout(() => {
       if (quillRef.current && defaultValue) {
-        quillRef.current.getEditor().pasteHTML(defaultValue);
-        quillRef.current.blur();
+        const editor = quillRef.current.getEditor();
+
+        editor.focus();
+        editor.pasteHTML(defaultValue);
+        editor.blur();
         window.scrollTo(0, 0);
       }
     }, 0);
@@ -181,6 +220,7 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     <div className={`text-editor ${name}`}>
       <Toolbar
         name={name}
+        imageHandler={imageHandler}
         instagramHandler={instagramHandler}
         saveLastRange={saveLastRange}
         instagramTool={instagramTool}

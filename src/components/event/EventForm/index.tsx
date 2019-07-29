@@ -1,8 +1,13 @@
 // base
 import React, { useState, useEffect, useRef } from 'react';
+import { Prompt } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
+import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
+import { FileObject } from 'types/FileObject';
 
 // modules
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import {
   Form,
   Descriptions,
@@ -17,17 +22,17 @@ import {
   message,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import ReactPlayer from 'react-player';
+import { LabeledValue } from 'antd/lib/select';
+import YouTube from 'react-youtube';
+
+// components
+import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components';
+
+// libs
 import { calcStringByte } from 'lib/utils';
-import { SelectOptionModal, FlexRow, TextEditor } from 'components';
 
 import './index.less';
-import { useDispatch } from 'react-redux';
-import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
-import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
-import { LabeledValue } from 'antd/lib/select';
-import ImageUpload from 'components/ImageUpload';
-import { FileObject } from 'types/FileObject';
+import { EventStatus } from 'enums';
 
 // defines
 const { TextArea } = Input;
@@ -53,6 +58,7 @@ function EventForm(props: Props) {
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
   const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
+
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
@@ -61,6 +67,12 @@ function EventForm(props: Props) {
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
         const { name, brandName, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
+
+        if (fileObjectList.length < 3) {
+          message.error('이미지는 최소 3개 이상 등록해주세요.');
+
+          return false;
+        }
 
         if (event.eventId) {
           const data: UpdateEvent = {
@@ -128,12 +140,6 @@ function EventForm(props: Props) {
       setVideoUrl(event.videoUrl);
       setFileObjectList(event.images);
     }
-
-    return () => {
-      if (isFieldsTouched()) {
-        window.alert('현재 작성중인 데이터가 있습니다.');
-      }
-    };
   }, [event]);
 
   return (
@@ -220,16 +226,7 @@ function EventForm(props: Props) {
                 <span>시작일</span>
               </Col>
               <Col>
-                <Form.Item>
-                  {getFieldDecorator('salesStarted', {
-                    rules: [
-                      {
-                        required: true,
-                        message: '시작일을 입력해주세요.',
-                      },
-                    ],
-                  })(<DatePicker placeholder="시작일" />)}
-                </Form.Item>
+                <Form.Item>{getFieldDecorator('salesStarted')(<DatePicker placeholder="시작일" />)}</Form.Item>
               </Col>
               <Col>
                 <Form.Item>
@@ -238,6 +235,19 @@ function EventForm(props: Props) {
                       {
                         required: true,
                         message: '시작일을 입력해주세요.',
+                      },
+                      {
+                        validator: (rule, value: Moment, callback) => {
+                          if (value.isBefore(moment())) {
+                            return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
+                          }
+
+                          if (value.isAfter(getFieldValue('salesEnded'))) {
+                            return callback('공구 시작일은 종료일보다 이전이여야 합니다.');
+                          }
+
+                          return callback();
+                        },
                       },
                     ],
                   })(
@@ -254,16 +264,7 @@ function EventForm(props: Props) {
                 <span> ~ 종료일</span>
               </Col>
               <Col>
-                <Form.Item>
-                  {getFieldDecorator('salesEnded', {
-                    rules: [
-                      {
-                        required: true,
-                        message: '종료일을 입력해주세요.',
-                      },
-                    ],
-                  })(<DatePicker placeholder="종료일" />)}
-                </Form.Item>
+                <Form.Item>{getFieldDecorator('salesEnded')(<DatePicker placeholder="종료일" />)}</Form.Item>
               </Col>
               <Col>
                 <Form.Item>
@@ -312,13 +313,13 @@ function EventForm(props: Props) {
           <Descriptions.Item label="*썸네일" span={24}>
             <FlexRow align="top">
               <Col span={12}>
-                <span>동영상(인스타/유튜브)</span>
+                <span>동영상(유튜브)</span>
                 <Row type="flex" justify="start" align="middle" gutter={10}>
                   <Col span={18}>
                     <Form.Item>
                       {getFieldDecorator('videoUrl', {
                         initialValue: event.videoUrl,
-                      })(<Input />)}
+                      })(<Input placeholder="유튜브 동영상 ID" />)}
                     </Form.Item>
                   </Col>
                   <Col>
@@ -327,17 +328,25 @@ function EventForm(props: Props) {
                 </Row>
                 <Row>
                   <Col span={24}>
-                    <ReactPlayer
-                      width="100%"
-                      height="300px"
-                      url={videoUrl}
-                      controls={false}
-                      config={{
-                        youtube: {
-                          playerVars: { showinfo: 0, fs: 0, modestbranding: 1 },
-                        },
-                      }}
-                    />
+                    {videoUrl && (
+                      <YouTube
+                        videoId={videoUrl}
+                        id={videoUrl}
+                        opts={{
+                          height: '300px',
+                          width: '100%',
+                          playerVars: {
+                            autoplay: 0,
+                            controls: 1,
+                            showinfo: 0,
+                            fs: 0,
+                            modestbranding: 1,
+                            listType: 'user_uploads',
+                            origin: 'https://www.youtube.com',
+                          },
+                        }}
+                      />
+                    )}
                   </Col>
                   <Col span={24} style={{ marginTop: 10, textAlign: 'center' }}>
                     <Button onClick={handleRemoveVideoUrl}>영상삭제</Button>
@@ -353,7 +362,7 @@ function EventForm(props: Props) {
                         <ImageUpload
                           fileObjectList={fileObjectList}
                           setFileObjectList={setFileObjectList}
-                          // options={{ limit: 10 }}
+                          disabled={event.eventStatus !== EventStatus[EventStatus.READY]}
                         />,
                       )}
                     </Form.Item>
@@ -398,6 +407,7 @@ function EventForm(props: Props) {
         options={[{ key: '비클', label: '비클' }]}
         onSelect={handleSelectBrandName}
       />
+      <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
     </>
   );
 }
