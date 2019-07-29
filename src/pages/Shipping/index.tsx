@@ -9,14 +9,16 @@ import moment from 'moment';
 import { utils, writeFile } from 'xlsx';
 
 // store
-import reducer, { StoreState } from 'store';
+import { StoreState } from 'store';
 import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
 
-// uilts
-import { ShippingStatus, PaymentMethod, ShippingCompany } from 'enums';
-import { SearchShipping } from 'types/Shipping';
-import { getNowYMD } from 'lib/utils';
+// components
 import { ShippingSearchBar } from 'components';
+
+// uilts
+import { getNowYMD } from 'lib/utils';
+import { SearchShipping } from 'types/Shipping';
+import { ShippingStatus, PaymentMethod, ShippingCompany } from 'enums';
 
 // defines
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -152,7 +154,7 @@ const Shipping = () => {
           ShippingCompany[item.shippingCompany],
           item.order.orderItems[0].product.productName +
             ' / ' +
-            item.order.orderItems[0].option.optionName +
+            `${item.order.orderItems[0].option ? item.order.orderItems[0].option.optionName : '옵션없음'}` +
             ' / ' +
             item.order.orderItems[0].quantity.toString() +
             `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
@@ -218,9 +220,10 @@ const Shipping = () => {
       shippingFee: shipping.shippingFee.toLocaleString(),
       shippingCompany: ShippingCompany[shipping.shippingCompany],
       orderItems:
-        `${shipping.order.orderItems[0].product.productName} / ${shipping.order.orderItems[0].option.optionName} / ${
-          shipping.order.orderItems[0].quantity
-        }` + ` ${shipping.order.orderItems.length > 1 ? `외 ${shipping.order.orderItems.length - 1}건` : ''}`,
+        `${shipping.order.orderItems[0].product.productName} / ${
+          shipping.order.orderItems[0].option ? `${shipping.order.orderItems[0].option.optionName}` : '옵션없음'
+        } / ${shipping.order.orderItems[0].quantity}` +
+        ` ${shipping.order.orderItems.length > 1 ? `외 ${shipping.order.orderItems.length - 1}건` : ''}`,
       totalSalePrice: (shipping.order.payment.totalAmount - shipping.shippingFee).toLocaleString(),
       totalAmount: shipping.order.payment.totalAmount.toLocaleString(),
       paymentMethod: PaymentMethod[shipping.order.payment.paymentMethod],

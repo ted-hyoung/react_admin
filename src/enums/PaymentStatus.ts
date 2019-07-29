@@ -1,4 +1,4 @@
-export enum paymentStatus {
+export enum PaymentStatus {
   READY = '결제 대기',
   CANCEL = '결제 취소',
   COMPLETE = '결제 완료',
