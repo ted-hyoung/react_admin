@@ -154,7 +154,13 @@ const Shipping = () => {
           ShippingCompany[item.shippingCompany],
           item.order.orderItems[0].product.productName +
             ' / ' +
-            `${item.order.orderItems[0].option ? item.order.orderItems[0].option.optionName : '옵션없음'}` +
+            `${
+              item.order.orderItems[0].option
+                ? `${
+                    item.order.orderItems[0].option.optionName ? item.order.orderItems[0].option.optionName : '옵션없음'
+                  }`
+                : '옵션없음'
+            }` +
             ' / ' +
             item.order.orderItems[0].quantity.toString() +
             `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
