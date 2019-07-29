@@ -31,7 +31,7 @@ function QnaSearch(props: Props) {
   }, []);
 
   return (
-    <div className="qna-search">
+    <div>
       <Row type="flex" gutter={8}>
         <Col>
           <Select style={{ width: 120 }} value={qnaStatus} onChange={handleChangeQnaStatus}>
