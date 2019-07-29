@@ -3,12 +3,12 @@ import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
 import { ResponseCelebReview } from './CelebReview';
 import { ResponseProduct } from './Product';
 import { ResponseEventNotice } from './EventNotice';
-import { ResponseBrandForEvent, CreateBrandForEvent, UpdateBrandForEvent, ResponseBrand } from './Brand';
+import { ResponseBrandForEvent, ResponseBrand, BrandInfo } from './Brand';
 
 export interface CreateEvent {
   name: string;
   choiceReview: string;
-  brand: CreateBrandForEvent;
+  brand: BrandInfo;
   salesStarted: string;
   salesEnded: string;
   targetAmount: number;
@@ -57,7 +57,7 @@ export interface ResponseEventForQna {
 export interface UpdateEvent {
   name: string;
   choiceReview: string;
-  brand: UpdateBrandForEvent;
+  brand: BrandInfo;
   salesStarted: string;
   salesEnded: string;
   targetAmount: number;

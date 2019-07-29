@@ -58,7 +58,7 @@ function EventForm(props: Props) {
   const [visible, setVisible] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>(event.brand);
+  const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
   const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   const dispatch = useDispatch();
@@ -85,9 +85,7 @@ function EventForm(props: Props) {
         if (event.eventId) {
           const data: UpdateEvent = {
             name,
-            brand: {
-              brandId: selectedBrand.brandId,
-            },
+            brand: selectedBrand,
             choiceReview,
             salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
@@ -101,9 +99,7 @@ function EventForm(props: Props) {
         } else {
           const data: CreateEvent = {
             name,
-            brand: {
-              brandId: selectedBrand.brandId,
-            },
+            brand: selectedBrand,
             choiceReview,
             salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
@@ -161,6 +157,9 @@ function EventForm(props: Props) {
       });
       setVideoUrl(event.videoUrl);
       setFileObjectList(event.images);
+      setSelectedBrand({
+        ...event.brand,
+      });
     }
   }, [event]);
 

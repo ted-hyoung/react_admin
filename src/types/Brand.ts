@@ -3,14 +3,11 @@ export interface ResponseBrandForEvent {
   brandName: string;
 }
 
-export interface CreateBrandForEvent {
-  brandId: number;
-}
-
-export interface UpdateBrandForEvent {
-  brandId: number;
-}
-
 export interface ResponseBrand {
+  brandName: string;
+}
+
+export interface BrandInfo {
+  brandId: number;
   brandName: string;
 }
