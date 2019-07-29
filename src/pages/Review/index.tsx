@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // modules
-import { Select, Button, Rate, Divider } from 'antd';
+import { Select, Button, Rate, Divider, Switch } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -91,7 +91,9 @@ function Review() {
   // 숨김/공개 button onChange
   const handleUpdateReviewsExpose = useCallback(
     (expose: boolean) => {
-      updateReviewsExpose(selectedReviews, expose);
+      if (selectedReviews.length > 0) {
+        updateReviewsExpose(selectedReviews, expose);
+      }
     },
     [updateReviewsExpose, selectedReviews],
   );
@@ -270,9 +272,7 @@ function Review() {
         dataIndex: 'expose',
         key: 'expose',
         render: (expose, review) => (
-          <Button onClick={() => updateReviewsExpose([review.reviewId], !expose)} type={expose ? 'danger' : 'primary'}>
-            {expose ? '비공개' : '공개'}
-          </Button>
+          <Switch onChange={() => updateReviewsExpose([review.reviewId], !expose)} checked={expose} />
         ),
       },
       {
