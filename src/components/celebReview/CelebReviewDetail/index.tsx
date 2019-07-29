@@ -47,7 +47,6 @@ function CelebReviewDetail() {
     <>
       <TextEditor
         name="celeb-editor"
-        value={value}
         onChange={value => setValue(value)}
         defaultValue={celebReview.contents || undefined}
       />

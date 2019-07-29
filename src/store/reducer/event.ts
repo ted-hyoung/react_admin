@@ -80,6 +80,13 @@ export const updateEventShippingFeeInfoAsync = createAsyncAction(
   Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// 공구 삭제
+export const deleteEventAsync = createAsyncAction(
+  Actions.DELETE_EVENT_REQUEST,
+  Actions.DELETE_EVENT_SUCCESS,
+  Actions.DELETE_EVENT_FAILURE,
+)<RequestAsyncAction, void, ErrorAsyncAction>();
+
 export const clearEvent = action(Actions.CLEAR_EVENT);
 
 const initialState: EventState = {
@@ -139,7 +146,8 @@ export default (state = initialState, action: AnyAction) => {
       });
     }
     case Actions.UPDATE_EVENT_NOTICES_SUCCESS:
-    case Actions.UPDATE_EVENT_STATUS_SUCCESS: {
+    case Actions.UPDATE_EVENT_STATUS_SUCCESS:
+    case Actions.DELETE_EVENT_SUCCESS: {
       return state;
     }
     case Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_SUCCESS: {

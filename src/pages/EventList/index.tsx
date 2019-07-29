@@ -13,13 +13,14 @@ import { PaginationTable } from 'components';
 // types
 import { EventStatus } from 'enums';
 import { StoreState } from 'store';
-import { getEventsAsync } from 'store/reducer/event';
+import { getEventsAsync, clearEvent } from 'store/reducer/event';
 import { SearchEvent } from 'types';
 import { Button } from 'antd';
 import { sortedString } from 'lib/utils';
 
 interface EventList {
   key: number;
+  id: number;
   period: string;
   name: string;
   turn: number;
@@ -138,13 +139,14 @@ function EventList(props: RouteComponentProps) {
 
   const handleRowEvent = (recode: EventList) => {
     return {
-      onClick: () => history.push('/events/detail/' + recode.key),
+      onClick: () => history.push('/events/detail/' + recode.id),
     };
   };
 
   const data: EventList[] = events.content.map((event, i) => {
     return {
       key: i + 1,
+      id: event.eventId,
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
       turn: event.turn,
@@ -165,7 +167,7 @@ function EventList(props: RouteComponentProps) {
         onRow={handleRowEvent}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
-        <Button type="primary" icon="setting" size="large">
+        <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent)}>
           신규 등록
         </Button>
       </Link>
