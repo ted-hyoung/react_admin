@@ -79,7 +79,7 @@ function* soldOutProduct(action: RequestAsyncAction) {
         id: eventId,
       }),
     );
-    message.success('해당 제품을 품절처리 또는 품절해제를처리하였습니다.');
+    message.success('해당 제품을 품절처리 또는 품절해제를 처리하였습니다.');
   } catch (error) {
     yield put(soldOutProductsAsync.failure(error));
     message.error('해당 제품을 품절처리 또는 품절해제를 실패하였습니다.');
