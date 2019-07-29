@@ -17,12 +17,8 @@ import { OrderSearchBar } from 'components';
 
 // utils
 import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat } from 'lib/utils';
-
-// types
 import { SearchOrder } from 'types/Order';
-
-// enums
-import { ShippingStatus } from 'enums';
+import { ShippingStatus, ShippingCompany, PaymentStatus } from 'enums';
 
 // defines
 const defaultSearchCondition = {
@@ -36,10 +32,12 @@ interface Orders {
   orderNumber: number;
   brandName: string;
   username: string;
+  quantity: JSX.Element[];
   orderItems: JSX.Element[];
   totalAmount: number;
+  paymentStatus: PaymentStatus;
   shippingStatus: ShippingStatus;
-  shippingCompany: string;
+  shippingCompany: ShippingCompany;
 }
 
 const Orders = () => {
@@ -76,7 +74,19 @@ const Orders = () => {
 
   const getOrdersExcel = () => {
     const data = [
-      ['NO', '결제일', '주문번호', '브랜드명', '주문자', '상품명 / 옵션 / 수량', '실 결제금액', '배송상태', '택배사'],
+      [
+        'NO',
+        '결제일',
+        '주문번호',
+        '브랜드명',
+        '주문자',
+        '수량',
+        '상품명 / 옵션',
+        '실 결제금액',
+        '결제상태',
+        '배송상태',
+        '택배사',
+      ],
     ];
 
     if (orders.content.length > 0) {
@@ -87,30 +97,32 @@ const Orders = () => {
           item.orderId.toString(),
           item.event.brandName,
           item.consumer.username,
+          item.orderItems[0].quantity.toString(),
           item.orderItems[0].product.productName +
             ' / ' +
-            item.orderItems[0].option.optionName +
-            ' / ' +
-            item.orderItems[0].quantity.toString(),
+            `${
+              item.orderItems[0].option
+                ? `${item.orderItems[0].option.optionName ? item.orderItems[0].option.optionName : '옵션없음'}`
+                : '옵션없음'
+            }`,
           item.payment.totalAmount.toString(),
+          PaymentStatus[item.payment.paymentStatus],
           ShippingStatus[item.shipping.shippingStatus],
-          item.shipping.shippingCompany,
+          ShippingCompany[item.shipping.shippingCompany],
         ]);
 
         if (item.orderItems.length > 0) {
-          const orderItemsAdd = [];
           for (let i = 1; i < item.orderItems.length; i++) {
-            orderItemsAdd[i] =
-              item.orderItems[i].product.productName +
-              ' / ' +
-              item.orderItems[i].option.optionName +
-              ' / ' +
-              item.orderItems[i].quantity;
+            data.push([
+              '',
+              '',
+              '',
+              '',
+              '',
+              item.orderItems[i].quantity.toString(),
+              item.orderItems[i].product.productName + ' / ' + item.orderItems[i].option.optionName,
+            ]);
           }
-
-          orderItemsAdd.forEach(orderItem => {
-            data.push(['', '', '', '', '', orderItem]);
-          });
         }
       });
 
@@ -127,8 +139,10 @@ const Orders = () => {
     { title: '주문번호', dataIndex: 'orderNumber', key: 'orderNumber' },
     { title: '브랜드명', dataIndex: 'brandName', key: 'brandName' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
-    { title: '상품명 / 옵션 / 수량', dataIndex: 'orderItems', key: 'orderItems' },
+    { title: '수량', dataIndex: 'quantity', key: 'quantity' },
+    { title: '상품명 / 옵션', dataIndex: 'orderItems', key: 'orderItems' },
     { title: '실 결제금액', dataIndex: 'totalAmount', key: 'totalAmount' },
+    { title: '결제상태', dataIndex: 'paymentStatus', key: 'paymentStatus' },
     { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
     { title: '택배사', dataIndex: 'shippingCompany', key: 'shippingCompany' },
   ];
@@ -140,15 +154,17 @@ const Orders = () => {
       orderNumber: order.orderId,
       brandName: order.event.brandName,
       username: order.consumer.username,
+      quantity: order.orderItems.map(item => <div key={item.orderItemId}>{item.quantity}</div>),
       orderItems: order.orderItems.map(item => (
         <div key={item.orderItemId}>
           {item.product.productName}
-          {item.option && <>/ {item.option.optionName}</>}/ {item.quantity}
+          {item.option ? ` / ${item.option.optionName ? item.option.optionName : '옵션없음'}` : ' / 옵션없음'}
         </div>
       )),
       totalAmount: order.payment.totalAmount,
+      paymentStatus: PaymentStatus[order.payment.paymentStatus],
       shippingStatus: ShippingStatus[order.shipping.shippingStatus],
-      shippingCompany: order.shipping.shippingCompany,
+      shippingCompany: ShippingCompany[order.shipping.shippingCompany],
     };
   });
 

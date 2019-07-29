@@ -19,7 +19,7 @@ export interface ResponseShippingDestination {
 }
 
 export interface ResponseShippingForOrders {
-  shippingCompany: string;
+  shippingCompany: ShippingCompany;
   shippingStatus: ShippingStatus;
 }
 
