@@ -1,0 +1,4 @@
+// Event 전용 브랜드 정보 조회
+export const GET_EVENT_BRANDS_REQUEST = 'brand/GET_EVENT_BRANDS_REQUEST';
+export const GET_EVENT_BRANDS_SUCCESS = 'brand/GET_EVENT_BRANDS_SUCCESS';
+export const GET_EVENT_BRANDS_FAILURE = 'brand/GET_EVENT_BRANDS_FAILURE';

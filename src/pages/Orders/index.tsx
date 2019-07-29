@@ -85,7 +85,7 @@ const Orders = () => {
           item.orderId.toString(),
           moment(item.payment.paymentDate).format(dateTimeFormat),
           item.orderId.toString(),
-          item.event.brandName,
+          item.event.brand.brandName,
           item.consumer.username,
           item.orderItems[0].product.productName +
             ' / ' +
@@ -138,7 +138,7 @@ const Orders = () => {
       orderId: order.orderId,
       paymentDate: moment(order.payment.paymentDate).format(dateTimeFormat),
       orderNumber: order.orderId,
-      brandName: order.event.brandName,
+      brandName: order.event.brand.brandName,
       username: order.consumer.username,
       orderItems: order.orderItems.map(item => (
         <div key={item.orderItemId}>

@@ -148,7 +148,7 @@ function EventList(props: RouteComponentProps) {
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
       turn: event.turn,
-      brand: event.brandName,
+      brand: event.brand.brandName,
       created: moment(event.created).format('YYYY-MM-DD'),
       eventStatus: EventStatus[event.eventStatus],
     };

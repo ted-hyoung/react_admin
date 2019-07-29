@@ -234,7 +234,7 @@ function Review() {
         title: '브랜드',
         dataIndex: 'event',
         key: 'event',
-        render: event => event.brandName,
+        render: event => event.brand.brandName,
       },
       {
         title: '작성자',

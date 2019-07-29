@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
-import { CreateEvent, ResponseEvent, UpdateEvent } from 'types';
+import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'types';
 import { FileObject } from 'types/FileObject';
 
 // modules
@@ -41,10 +41,11 @@ const TIME_FORMAT = 'HH:mm A';
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
+  brands: ResponseBrandForEvent[];
 }
 
 function EventForm(props: Props) {
-  const { event, form } = props;
+  const { event, brands, form } = props;
   const {
     getFieldDecorator,
     getFieldValue,
@@ -54,9 +55,12 @@ function EventForm(props: Props) {
     validateFieldsAndScroll,
   } = form;
 
+  console.log(event);
+
   const [visible, setVisible] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>(event.brand);
   const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   const dispatch = useDispatch();
@@ -66,7 +70,7 @@ function EventForm(props: Props) {
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
-        const { name, brandName, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
+        const { name, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
 
         if (fileObjectList.length < 3) {
           message.error('이미지는 최소 3개 이상 등록해주세요.');
@@ -74,10 +78,18 @@ function EventForm(props: Props) {
           return false;
         }
 
+        if (selectedBrand === undefined) {
+          message.error('브랜드명을 선택해주세요.');
+
+          return false;
+        }
+
         if (event.eventId) {
           const data: UpdateEvent = {
             name,
-            brandName,
+            brand: {
+              brandId: selectedBrand.brandId,
+            },
             choiceReview,
             salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
@@ -91,7 +103,9 @@ function EventForm(props: Props) {
         } else {
           const data: CreateEvent = {
             name,
-            brandName,
+            brand: {
+              brandId: selectedBrand.brandId,
+            },
             choiceReview,
             salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
             salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
@@ -111,9 +125,19 @@ function EventForm(props: Props) {
     });
   };
 
-  const handleSelectBrandName = (value: LabeledValue) => {
-    setFieldsValue({ brandName: value.label });
+  const handleSelectBrand = (value: LabeledValue) => {
+    const selectedBrand: ResponseBrandForEvent = {
+      brandId: Number(value.key),
+      brandName: String(value.label),
+    };
+
+    setFieldsValue({
+      brand: {
+        ...selectedBrand,
+      },
+    });
     setVisible(false);
+    setSelectedBrand(selectedBrand);
   };
 
   const handleUpdateVideoUrl = () => {
@@ -130,7 +154,7 @@ function EventForm(props: Props) {
     if (event.eventId) {
       setFieldsValue({
         name: event.name,
-        brandName: event.brandName,
+        brand: event.brand,
         choiceReview: event.choiceReview,
         salesStarted: moment(event.salesStarted),
         salesEnded: moment(event.salesEnded),
@@ -201,15 +225,15 @@ function EventForm(props: Props) {
               </Col>
             </FlexRow>
           </Descriptions.Item>
-          <Descriptions.Item label="*브랜드명" span={24}>
+          <Descriptions.Item label="브랜드명" span={24}>
             <FlexRow>
               <Col>
                 <Form.Item>
-                  {getFieldDecorator('brandName', {
+                  {getFieldDecorator('brand.brandName', {
                     rules: [
                       {
                         required: true,
-                        message: '브랜드명을 입력해주세요.',
+                        message: '브랜드명을 선택해주세요.',
                       },
                     ],
                   })(<Input readOnly />)}
@@ -401,12 +425,7 @@ function EventForm(props: Props) {
           </Button>
         </Form.Item>
       </Form>
-      <SelectOptionModal
-        placeholder="브랜드 선택"
-        visible={visible}
-        options={[{ key: '비클', label: '비클' }]}
-        onSelect={handleSelectBrandName}
-      />
+      <SelectOptionModal placeholder="브랜드 선택" visible={visible} options={brands} onSelect={handleSelectBrand} />
       <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
     </>
   );

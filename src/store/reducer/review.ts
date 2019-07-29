@@ -81,7 +81,9 @@ const defaultReview = {
     name: '',
     images: [],
     eventId: 0,
-    brandName: '',
+    brand: {
+      brandName: '',
+    },
   },
 };
 
