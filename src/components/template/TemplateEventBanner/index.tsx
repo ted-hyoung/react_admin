@@ -47,21 +47,9 @@ function TemplateEventBanner(props: Props) {
         <Carousel autoplay effect="fade">
           {images.map(image => (
             <div key={image.fileObjectId} className="event-banner-carousel-image">
-              <img src={getThumbUrl(image.fileKey)} alt={image.fileName} />
+              <img src={getThumbUrl(image.fileKey, 540, 540, 'fit')} alt={image.fileName} />
             </div>
           ))}
-          {/* <div className="event-banner-carousel-image">
-            <img src={mainImage} alt="" />
-          </div>
-          <div className="event-banner-carousel-image">
-            <img src={mainImage} alt="" />
-          </div>
-          <div className="event-banner-carousel-image">
-            <img src={mainImage} alt="" />
-          </div>
-          <div className="event-banner-carousel-image">
-            <img src={mainImage} alt="" />
-          </div> */}
         </Carousel>
       </div>
       <div className="event-banner-contents">

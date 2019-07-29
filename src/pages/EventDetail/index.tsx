@@ -1,12 +1,12 @@
 // base
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
-import { getEventByIdAsync, clearEvent, updateEventStatusAsync } from 'store/reducer/event';
+import { getEventByIdAsync, clearEvent, updateEventStatusAsync, deleteEventAsync } from 'store/reducer/event';
 
 // modules
-import { Tabs, Button, message } from 'antd';
+import { Tabs, Button, message, Row, Col, Popconfirm } from 'antd';
 
 // components
 import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'components';
@@ -48,19 +48,21 @@ function EventDetail(props: RouteComponentProps<Params>) {
     dispatch(updateEventStatusAsync.request({ id: eventId, data }));
   };
 
-  useEffect(() => {
-    getEvent(eventId);
-  }, [eventId]);
+  const handleOpenTemplate = () => {
+    window.open(`/events/${event.eventId}/template`);
+  };
+
+  const handleDeleteEvent = () => {
+    dispatch(deleteEventAsync.request({ eventId: event.eventId }));
+  };
 
   useEffect(() => {
+    getEvent(eventId);
+
     return () => {
       dispatch(clearEvent);
     };
   }, []);
-
-  const handleOpenPreview = () => {
-    window.open(`/events/${event.eventId}/template`);
-  };
 
   return (
     <div className="event-detail">
@@ -79,15 +81,31 @@ function EventDetail(props: RouteComponentProps<Params>) {
         </Tabs.TabPane>
       </Tabs>
       {event.eventId !== 0 && (
-        <Button className="btn-event-preview" type="primary" onClick={handleOpenPreview}>
+        <Button className="btn-event-template" type="primary" onClick={handleOpenTemplate}>
           미리보기
         </Button>
       )}
-      {event.celebReview.contents && event.products && (
-        <Button className="btn-event-open" type="primary" onClick={handleOpenEvent}>
-          오픈
-        </Button>
-      )}
+      <Row type="flex" align="middle" gutter={10} style={{ position: 'absolute', top: 6, right: 0 }}>
+        <Col>
+          {event.eventId !== 0 && event.eventStatus === EventStatus[EventStatus.READY] && (
+            <Popconfirm
+              title="해당 공구를 삭제하시겠습니까?"
+              onConfirm={handleDeleteEvent}
+              okText="확인"
+              cancelText="닫기"
+            >
+              공구 삭제
+            </Popconfirm>
+          )}
+        </Col>
+        <Col>
+          {event.celebReview.contents && event.products.length > 0 && (
+            <Button type="primary" onClick={handleOpenEvent}>
+              오픈
+            </Button>
+          )}
+        </Col>
+      </Row>
     </div>
   );
 }

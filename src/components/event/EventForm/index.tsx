@@ -68,12 +68,6 @@ function EventForm(props: Props) {
       if (!error) {
         const { name, brandName, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
 
-        if (fileObjectList.length < 3) {
-          message.error('이미지는 최소 3개 이상 등록해주세요.');
-
-          return false;
-        }
-
         if (event.eventId) {
           const data: UpdateEvent = {
             name,
@@ -89,6 +83,12 @@ function EventForm(props: Props) {
 
           dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
         } else {
+          if (fileObjectList.length < 3) {
+            message.error('이미지는 최소 3개 이상 등록해주세요.');
+
+            return false;
+          }
+
           const data: CreateEvent = {
             name,
             brandName,
@@ -323,7 +323,11 @@ function EventForm(props: Props) {
                     </Form.Item>
                   </Col>
                   <Col>
-                    <Button onClick={handleUpdateVideoUrl}>영상등록</Button>
+                    {videoUrl ? (
+                      <Button onClick={handleRemoveVideoUrl}>영상삭제</Button>
+                    ) : (
+                      <Button onClick={handleUpdateVideoUrl}>영상등록</Button>
+                    )}
                   </Col>
                 </Row>
                 <Row>
@@ -347,9 +351,6 @@ function EventForm(props: Props) {
                         }}
                       />
                     )}
-                  </Col>
-                  <Col span={24} style={{ marginTop: 10, textAlign: 'center' }}>
-                    <Button onClick={handleRemoveVideoUrl}>영상삭제</Button>
                   </Col>
                 </Row>
               </Col>
@@ -388,7 +389,6 @@ function EventForm(props: Props) {
           <Descriptions.Item label="제품 상세" span={24}>
             <TextEditor
               name="event-editor"
-              value={detail}
               onChange={value => setDetail(value)}
               defaultValue={event.detail || undefined}
               instagramTool={false}

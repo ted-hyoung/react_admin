@@ -1,5 +1,5 @@
 // base
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // modules
 import { Affix, Tabs } from 'antd';
@@ -25,15 +25,33 @@ function MainTabs(props: Props) {
   const { onChange } = props;
 
   const [affixed, setAffixed] = useState(false);
+  const [offsetTop, setOffsetTop] = useState(0);
+  const mainTabsRef = useRef<HTMLDivElement>(null);
 
   const handleChangeAffix = (affixed: boolean | undefined) => {
     affixed ? setAffixed(affixed) : setAffixed(false);
   };
 
+  const handleChange = (activeKey: string) => {
+    if (onChange) {
+      onChange(activeKey);
+    }
+
+    window.scrollTo(0, offsetTop);
+  };
+
+  useEffect(() => {
+    const mainTabsEl = mainTabsRef.current;
+
+    if (mainTabsEl) {
+      setOffsetTop(mainTabsEl.offsetTop - mainTabsEl.clientHeight);
+    }
+  }, []);
+
   return (
-    <div className="main-tabs">
+    <div ref={mainTabsRef} className="main-tabs">
       <Affix offsetTop={70} onChange={handleChangeAffix}>
-        <Tabs animated={false} tabBarStyle={affixed === false ? { border: 0 } : undefined} onChange={onChange}>
+        <Tabs animated={false} tabBarStyle={affixed === false ? { border: 0 } : undefined} onChange={handleChange}>
           <TabPane tab="CELEBRITY" key={MainTabsKey.CELEBRITY} />
           <TabPane tab="PRODUCT" key={MainTabsKey.PRODUCT} />
           <TabPane tab="REVIEW" key={MainTabsKey.REVIEW} />

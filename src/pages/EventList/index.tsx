@@ -20,6 +20,7 @@ import { sortedString } from 'lib/utils';
 
 interface EventList {
   key: number;
+  id: number;
   period: string;
   name: string;
   turn: number;
@@ -138,13 +139,14 @@ function EventList(props: RouteComponentProps) {
 
   const handleRowEvent = (recode: EventList) => {
     return {
-      onClick: () => history.push('/events/detail/' + recode.key),
+      onClick: () => history.push('/events/detail/' + recode.id),
     };
   };
 
   const data: EventList[] = events.content.map((event, i) => {
     return {
       key: i + 1,
+      id: event.eventId,
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
       turn: event.turn,
