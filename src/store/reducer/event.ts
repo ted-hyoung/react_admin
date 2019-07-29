@@ -19,7 +19,10 @@ import {
   UpdateRequestPayload,
   UpdateEvent,
   UpdateEventNotices,
-  UpdateEventStatus, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction,
+  UpdateEventStatus,
+  RequestAsyncAction,
+  ResponseAsyncAction,
+  ErrorAsyncAction,
 } from 'types';
 
 import { EventStatus } from 'enums';
@@ -94,7 +97,10 @@ const initialState: EventState = {
     name: '',
     eventStatus: EventStatus[EventStatus.READY],
     turn: 0,
-    brandName: '',
+    brand: {
+      brandId: 0,
+      brandName: '',
+    },
     salesStarted: '',
     salesEnded: '',
     created: '',

@@ -1,18 +1,14 @@
 import React from 'react';
 import { Modal, Select } from 'antd';
 import { LabeledValue, AbstractSelectProps } from 'antd/lib/select';
+import { ResponseBrandForEvent } from 'types';
 
 // defines
 const { Option } = Select;
 
-export interface OptionProps {
-  key: string;
-  label: string;
-}
-
 interface Props extends AbstractSelectProps {
   visible: boolean;
-  options: OptionProps[];
+  options: ResponseBrandForEvent[];
   onSelect?: (value: LabeledValue) => void;
 }
 
@@ -34,8 +30,8 @@ function SelectOptionModal(props: Props) {
         onSelect={value => handleSelectOption(value as LabeledValue)}
       >
         {options.map(option => (
-          <Option key={option.key} value={option.key}>
-            {option.label}
+          <Option key={option.brandId} value={option.brandId}>
+            {option.brandName}
           </Option>
         ))}
       </Select>
