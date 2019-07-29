@@ -25,8 +25,6 @@ Quill.register({
   'formats/instagram': InstagramBlot,
 });
 
-declare const instgrm: any;
-
 interface InstagramFormProps {
   onOk: (value: string) => void;
   visible: boolean;
@@ -171,8 +169,8 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     if (delta.ops) {
       delta.ops.some(op => {
         if (op.insert && op.insert.instagram) {
-          if (instgrm) {
-            instgrm.Embeds.process();
+          if (window.instgrm) {
+            window.instgrm.Embeds.process();
           }
         }
         return op.insert && op.insert.instagram;

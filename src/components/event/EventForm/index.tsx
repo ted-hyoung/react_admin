@@ -342,6 +342,7 @@ function EventForm(props: Props) {
                             fs: 0,
                             modestbranding: 1,
                             listType: 'user_uploads',
+                            origin: 'https://www.youtube.com',
                           },
                         }}
                       />
