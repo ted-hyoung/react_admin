@@ -104,7 +104,10 @@ const initialState: EventState = {
     name: '',
     eventStatus: EventStatus[EventStatus.READY],
     turn: 0,
-    brandName: '',
+    brand: {
+      brandId: 0,
+      brandName: '',
+    },
     salesStarted: '',
     salesEnded: '',
     created: '',

@@ -14,6 +14,7 @@ export * from './Order';
 export * from './Payment';
 export * from './FileObject';
 export * from './Consumer';
+export * from './Brand';
 
 export interface PageWrapper<T> {
   content: T[];

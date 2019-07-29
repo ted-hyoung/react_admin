@@ -2,7 +2,7 @@ import { ResponseShippingDestination, ResponseShippingForOrders } from './Shippi
 import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping } from './Payment';
-import { paymentStatus, ShippingStatus } from 'enums';
+import { PaymentStatus, ShippingStatus } from 'enums';
 import { ResponseEventForOrders } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
 
@@ -31,7 +31,7 @@ export interface SearchOrder {
   username?: string;
   recipient?: string;
   recipientPhone?: string;
-  paymentStatuses?: paymentStatus[];
+  paymentStatuses?: PaymentStatus[];
   shippingStatuses?: ShippingStatus[];
 }
 

@@ -8,11 +8,16 @@ import { getEventByIdAsync, clearEvent, updateEventStatusAsync, deleteEventAsync
 // modules
 import { Tabs, Button, message, Row, Col, Popconfirm } from 'antd';
 
+// store
+import { getBrandsAsync } from 'store/reducer/brand';
+
+// enums
+import { EventStatus } from 'enums';
+
 // components
 import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'components';
 
 import './index.less';
-import { EventStatus } from 'enums';
 
 interface Params {
   id: string;
@@ -23,6 +28,7 @@ function EventDetail(props: RouteComponentProps<Params>) {
   const eventId = Number(match.params.id);
 
   const { event } = useSelector((state: StoreState) => state.event);
+  const { brand } = useSelector((state: StoreState) => state.brand);
   const dispatch = useDispatch();
 
   const getEvent = useCallback(
@@ -33,6 +39,10 @@ function EventDetail(props: RouteComponentProps<Params>) {
     },
     [eventId],
   );
+
+  const getBrands = useCallback(() => {
+    dispatch(getBrandsAsync.request({}));
+  }, [dispatch]);
 
   const handleOpenEvent = () => {
     if (event.eventStatus === EventStatus[EventStatus.IN_PROGRESS]) {
@@ -58,17 +68,14 @@ function EventDetail(props: RouteComponentProps<Params>) {
 
   useEffect(() => {
     getEvent(eventId);
-
-    return () => {
-      dispatch(clearEvent);
-    };
-  }, []);
+    getBrands();
+  }, [getBrands]);
 
   return (
     <div className="event-detail">
       <Tabs defaultActiveKey="EVENT">
         <Tabs.TabPane tab="공구 정보" key="EVENT">
-          <EventForm event={event} />
+          <EventForm event={event} brands={brand} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={!event.eventId}>
           <ProductDetail event={event} />
