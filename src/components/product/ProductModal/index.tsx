@@ -712,7 +712,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               ) : (
                 <div className="product-modal-button">
                   <Button type="danger" size="large" onClick={handleProductModalClose}>
-                    취소
+                    닫기
                   </Button>
                 </div>
               )}
