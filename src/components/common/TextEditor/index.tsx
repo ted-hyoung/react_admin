@@ -25,11 +25,7 @@ Quill.register({
   'formats/instagram': InstagramBlot,
 });
 
-declare global {
-  interface Window {
-    instgrm: any;
-  }
-}
+declare const instgrm: any;
 
 interface InstagramFormProps {
   onOk: (value: string) => void;
@@ -65,9 +61,10 @@ const Toolbar = (props: ToolbarProps) => {
   const [instagramUrlModalVisible, setInstagramUrlModalVisible] = useState(false);
   const fileInputEl = useRef<HTMLInputElement>(null);
 
-  const handleChangeFile = () => {
+  const handleClickFileInput = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (fileInputEl.current) {
       fileInputEl.current.click();
+      saveLastRange();
     }
   };
 
@@ -93,17 +90,17 @@ const Toolbar = (props: ToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button type="button" onClick={handleChangeFile}>
+        <button type="button" onClick={handleClickFileInput}>
           <QlImageIcon />
           <input
             ref={fileInputEl}
             style={{ display: 'none' }}
             type="file"
+            onClick={e => e.stopPropagation()}
             onChange={e => {
               if (!e.target.files) {
                 return false;
               }
-
               imageHandler(e.target.files[0]);
             }}
           />
@@ -148,10 +145,13 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   const { name = 'editor', onChange, value: propValue, defaultValue, instagramTool = true } = props;
 
   const instagramHandler = (value: string) => {
-    // quill focus 문제로 setTimeout 추가
+    // editor focus 로 인한 비동기 처리
     setTimeout(() => {
       if (quillRef.current) {
-        quillRef.current.getEditor().insertEmbed(lastSelection, 'instagram', value);
+        const editor = quillRef.current.getEditor();
+
+        editor.insertEmbed(lastSelection, 'instagram', value);
+        editor.blur();
       }
     }, 0);
   };
@@ -160,7 +160,10 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     const res = await uploadImage(file);
 
     if (quillRef.current) {
-      quillRef.current.getEditor().insertEmbed(lastSelection, 'image', getThumbUrl(res.data.fileKey));
+      const editor = quillRef.current.getEditor();
+
+      editor.insertEmbed(lastSelection, 'image', getThumbUrl(res.data.fileKey, 540, 540, 'scale'));
+      editor.blur();
     }
   };
 
@@ -168,8 +171,8 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     if (delta.ops) {
       delta.ops.some(op => {
         if (op.insert && op.insert.instagram) {
-          if (window.instgrm) {
-            window.instgrm.Embeds.process();
+          if (instgrm) {
+            instgrm.Embeds.process();
           }
         }
         return op.insert && op.insert.instagram;
@@ -205,8 +208,11 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   useEffect(() => {
     setTimeout(() => {
       if (quillRef.current && defaultValue) {
-        quillRef.current.getEditor().pasteHTML(defaultValue);
-        quillRef.current.blur();
+        const editor = quillRef.current.getEditor();
+
+        editor.focus();
+        editor.pasteHTML(defaultValue);
+        editor.blur();
         window.scrollTo(0, 0);
       }
     }, 0);
