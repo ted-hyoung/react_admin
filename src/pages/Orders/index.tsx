@@ -142,7 +142,8 @@ const Orders = () => {
       username: order.consumer.username,
       orderItems: order.orderItems.map(item => (
         <div key={item.orderItemId}>
-          {item.product.productName} / {item.option.optionName} / {item.quantity}
+          {item.product.productName}
+          {item.option && <>/ {item.option.optionName}</>}/ {item.quantity}
         </div>
       )),
       totalAmount: order.payment.totalAmount,
