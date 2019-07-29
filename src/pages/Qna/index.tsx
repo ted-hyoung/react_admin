@@ -72,12 +72,8 @@ const Qna = () => {
       dataIndex: 'qnaStatus',
       key: 'qnaStatus',
       width: '10%',
-      render: (status: string) => {
-        return status === QnaStatus[QnaStatus.답변완료] ? (
-          <Tag color="#f50">{status}</Tag>
-        ) : (
-          <Tag color="#a6a6a6">{status}</Tag>
-        );
+      render: (status: QnaStatus) => {
+        return <Tag color={status === QnaStatus[QnaStatus.WAIT] ? '#f50' : '#a6a6a6'}>{QnaStatus[status]}</Tag>;
       },
     },
     {
@@ -119,7 +115,7 @@ const Qna = () => {
   const dataSource: Array<Qna> = qna.content.map(item => {
     return {
       qnaId: item.qnaId,
-      qnaStatus: QnaStatus[item.qnaStatus],
+      qnaStatus: item.qnaStatus,
       event: item.event,
       contents: item.contents,
       created: moment(item.created).format(dateTimeFormat),
