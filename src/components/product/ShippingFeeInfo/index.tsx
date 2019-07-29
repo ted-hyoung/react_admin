@@ -64,7 +64,7 @@ function ShippingFeeInfo(props: Props) {
         </div>
         <Row className="shippingFee-info-row" justify="space-around">
           <Col span={3} className="shippingFee-info-col-center">
-            배송비
+            배송비 정보
           </Col>
           <Col span={2} className="shippingFee-info-col-right">
             배송비
