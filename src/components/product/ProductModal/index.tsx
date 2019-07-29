@@ -703,7 +703,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               {eventStatus === EventStatus[EventStatus.READY] ? (
                 <div className="product-modal-button">
                   <Button type="primary" size="large" htmlType="submit">
-                    등록
+                    {product.productId !== 0 ? '수정' : '등록'}
                   </Button>
                   <Button type="danger" size="large" onClick={handleProductModalClose}>
                     취소
