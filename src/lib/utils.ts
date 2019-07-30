@@ -116,8 +116,10 @@ export function setToken(token: string, refreshToken: string) {
 
 export function logout() {
   const cookies = new Cookies();
+
   cookies.set(ACCESS_TOKEN, '', { path: '/' });
   cookies.set(REFRESH_TOKEN, '', { path: '/' });
+
   window.location.href = '/';
 }
 
@@ -125,8 +127,10 @@ export function isTokenExpired(token?: string) {
   if (!token) {
     return true;
   }
+
   const decoded = decode<Token>(token);
   const now = Math.floor(Date.now() / 1000);
+
   return decoded.exp < now;
 }
 

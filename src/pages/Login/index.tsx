@@ -12,19 +12,21 @@ function Login(props: Props) {
   const { form, history } = props;
   const { getFieldDecorator, validateFieldsAndScroll } = form;
 
-  useEffect(() => {
-    if (getToken()) {
-      history.push('/');
-    }
-  }, []);
-
   const handleConfirm = () => {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
-        login(val);
+        login(val).then(() => {
+          history.push('/home');
+        });
       }
     });
   };
+
+  useEffect(() => {
+    if (!isTokenExpired(getToken())) {
+      history.push('/home');
+    }
+  }, []);
 
   return (
     <div className="login-box">
