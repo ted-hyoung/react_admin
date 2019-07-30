@@ -6,46 +6,51 @@ export default [
   {
     path: '/shipping',
     component: lazy(() => import('../pages/Shipping')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/qna',
     component: lazy(() => import('../pages/Qna')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/review',
     component: lazy(() => import('../pages/Review')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/contact',
     component: lazy(() => import('../pages/Contact')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/orders',
     component: lazy(() => import('../pages/Orders')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/events/detail/:id',
     component: lazy(() => import('../pages/EventDetail')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/events/detail',
     component: lazy(() => import('../pages/EventDetail')),
-    secret: false,
+    secret: true,
   },
   {
     path: '/events',
     component: lazy(() => import('../pages/EventList')),
-    secret: false,
+    secret: true,
+  },
+  {
+    path: '/home',
+    component: lazy(() => import('../pages/Home')),
+    secret: true,
   },
   {
     path: '/',
-    component: lazy(() => import('../pages/Home')),
+    component: lazy(() => import('../pages/Login')),
     secret: false,
   },
 ];
