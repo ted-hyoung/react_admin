@@ -19,6 +19,12 @@ export const getOrdersAsync = createAsyncAction(
   Actions.GET_ORDERS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const updateOrdersPaymentStatusAsync = createAsyncAction(
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST,
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_SUCCESS,
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 // reducers
 const initialState: OrderState = {
   orders: {
