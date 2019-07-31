@@ -38,14 +38,17 @@ const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(async res => {
   let token = getToken();
+
   if (isTokenExpired(token)) {
-    const refreshTokenRes = await requestRefreshToken(token, getRefreshToken());
-    token = refreshTokenRes.data.access_token;
+    const res = await requestRefreshToken(token, getRefreshToken());
+    token = res.data.access_token;
   }
+
   res.headers = {
     Accept: 'application/json',
     Authorization: 'Bearer ' + token,
   };
+
   return res;
 });
 
@@ -118,9 +121,10 @@ export function login(account: LoginAccount) {
     .post(host + '/accounts/login', account)
     .then(res => {
       setToken(res.data.access_token, res.data.refresh_token);
-      window.location.reload();
+
+      return res;
     })
-    .catch(error => {
+    .catch(() => {
       message.error('로그인에 실패했습니다. 다시 시도해주세요');
     });
 }
@@ -136,10 +140,12 @@ export function requestRefreshToken(token: string, refreshToken: string) {
     })
     .then(res => {
       setToken(res.data.access_token, res.data.refresh_token);
+
       return res;
     })
     .catch(err => {
       logout();
+
       return err;
     });
 }
