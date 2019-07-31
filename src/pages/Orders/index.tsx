@@ -41,7 +41,7 @@ interface Orders {
 }
 
 const Orders = () => {
-  const { orders } = useSelector((storeState: StoreState) => storeState.order);
+  const { orders, ordersExcel } = useSelector((storeState: StoreState) => storeState.order);
   const { size: pageSize, totalElements } = orders;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
@@ -89,8 +89,8 @@ const Orders = () => {
       ],
     ];
 
-    if (orders.content.length > 0) {
-      orders.content.forEach(item => {
+    if (ordersExcel.length > 0) {
+      ordersExcel.forEach(item => {
         data.push([
           item.orderId.toString(),
           moment(item.payment.paymentDate).format(dateTimeFormat),
