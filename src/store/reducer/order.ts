@@ -10,6 +10,7 @@ import { PageWrapper, ResponseOrder, RequestAsyncAction, ResponseAsyncAction, Er
 
 export interface OrderState {
   orders: PageWrapper<ResponseOrder>;
+  ordersExcel: ResponseOrder[];
 }
 
 // 주문 목록 조회
@@ -17,6 +18,13 @@ export const getOrdersAsync = createAsyncAction(
   Actions.GET_ORDERS_REQUEST,
   Actions.GET_ORDERS_SUCCESS,
   Actions.GET_ORDERS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+// 주문 목록 Excel 다운로드
+export const getOrdersExcelAsyc = createAsyncAction(
+  Actions.GET_ORDERS_EXCEL_REQUEST,
+  Actions.GET_ORDERS_EXCEL_SUCCESS,
+  Actions.GET_ORDERS_EXCEL_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 // reducers
@@ -30,6 +38,7 @@ const initialState: OrderState = {
     page: 0,
     size: 10,
   },
+  ordersExcel: [],
 };
 
 const order = (state = initialState, action: ResponseAsyncAction) => {
@@ -37,6 +46,11 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
     case Actions.GET_ORDERS_SUCCESS: {
       return produce(state, draft => {
         draft.orders = action.payload.data;
+      });
+    }
+    case Actions.GET_ORDERS_EXCEL_SUCCESS: {
+      return produce(state, draft => {
+        draft.ordersExcel = action.payload.data;
       });
     }
     default: {
