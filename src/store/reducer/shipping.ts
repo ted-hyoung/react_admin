@@ -13,6 +13,7 @@ import { ShippingStatus } from 'enums';
 // types
 export interface ShippingState {
   shipping: PageWrapper<ResponseShipping>;
+  shippingExcel: ResponseShipping[];
 }
 
 export const getShippingAsync = createAsyncAction(
@@ -27,6 +28,12 @@ export const updateShippingAsync = createAsyncAction(
   Actions.UPDATE_SHIPPING_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const getShippingExcelAsync = createAsyncAction(
+  Actions.GET_SHIPPING_EXCEL_REQUEST,
+  Actions.GET_SHIPPING_EXCEL_SUCCESS,
+  Actions.GET_SHIPPING_EXCEL_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 const initialState: ShippingState = {
   shipping: {
     content: [],
@@ -37,6 +44,7 @@ const initialState: ShippingState = {
     page: 0,
     size: 10,
   },
+  shippingExcel: [],
 };
 
 const shipping = (state = initialState, action: ResponseAsyncAction) => {
@@ -45,6 +53,11 @@ const shipping = (state = initialState, action: ResponseAsyncAction) => {
       return produce(state, draft => {
         // const { page, content, last, totalElements } = action.payload;
         draft.shipping = action.payload;
+      });
+    }
+    case Actions.GET_SHIPPING_EXCEL_SUCCESS: {
+      return produce(state, draft => {
+        draft.shippingExcel = action.payload;
       });
     }
     case Actions.UPDATE_SHIPPING_SUCCESS: {
