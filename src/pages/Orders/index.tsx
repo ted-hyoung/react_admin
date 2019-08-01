@@ -1,6 +1,7 @@
 // base
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
@@ -89,6 +90,7 @@ const Orders = () => {
   const { size: pageSize, totalElements } = orders;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
+  const printRef = useRef<any>();
 
   const getOrders = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchOrder) => {
@@ -179,7 +181,12 @@ const Orders = () => {
 
   const columns: Array<ColumnProps<Orders>> = [
     { title: 'NO', dataIndex: 'orderId', key: 'orderId' },
-    { title: '결제일', dataIndex: 'paymentDate', key: 'paymentDate' },
+    {
+      title: '결제일',
+      dataIndex: 'paymentDate',
+      key: 'paymentDate',
+      sorter: (a, b) => a.orderId - b.orderId,
+    },
     { title: '주문번호', dataIndex: 'orderNo', key: 'orderNo' },
     { title: '브랜드명', dataIndex: 'brandName', key: 'brandName' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
@@ -238,9 +245,18 @@ const Orders = () => {
               <Button type="primary" icon="download" onClick={getOrdersExcel}>
                 엑셀 다운로드
               </Button>
+              <ReactToPrint
+                trigger={() => (
+                  <Button style={{ marginLeft: 4 }} type="danger">
+                    인쇄
+                  </Button>
+                )}
+                content={() => printRef.current}
+              />
             </Col>
           </Row>
         )}
+        ref={printRef}
         columns={columns}
         dataSource={dataSource}
         pagination={{
