@@ -13,7 +13,7 @@ import { Modal } from 'antd';
 
 // store
 import * as Action from 'store/action/shippingAction';
-import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
+import { getShippingAsync, updateShippingAsync, getShippingExcelAsync } from 'store/reducer/shipping';
 
 function* getShipping(action: RequestAsyncAction) {
   try {
@@ -31,8 +31,28 @@ function* getShipping(action: RequestAsyncAction) {
     );
 
     yield put(getShippingAsync.success(res.data));
+    yield put(getShippingExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getShippingAsync.failure(error));
+  }
+}
+
+function* getShippingExcel(action: RequestAsyncAction) {
+  try {
+    const { searchCondition } = action.payload;
+
+    const res = yield call(() =>
+      Api.get('/shipping/excel', {
+        params: {
+          ...searchCondition,
+        },
+        paramsSerializer: (params: any) => parseParams(params),
+      }),
+    );
+
+    yield put(getShippingExcelAsync.success(res.data));
+  } catch (error) {
+    yield put(getShippingExcelAsync.failure(error));
   }
 }
 
@@ -54,4 +74,5 @@ function* updateShipping(action: RequestAsyncAction) {
 export default function* qnaSaga() {
   yield takeEvery(Action.GET_SHIPPING_REQUEST, getShipping);
   yield takeEvery(Action.UPDATE_SHIPPING_REQUEST, updateShipping);
+  yield takeEvery(Action.GET_SHIPPING_EXCEL_REQUEST, getShippingExcel);
 }
