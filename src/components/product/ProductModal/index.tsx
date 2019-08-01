@@ -501,7 +501,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
-                  {getFieldDecorator('discountSalesPrice', {
+                  {getFieldDecorator('normalSalesPrice', {
                     initialValue: 0,
                     rules: [
                       {
@@ -535,7 +535,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
-                  {getFieldDecorator('normalSalesPrice', {
+                  {getFieldDecorator('discountSalesPrice', {
                     initialValue: 0,
                     rules: [
                       {
@@ -552,7 +552,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         required: true,
                         message: '판매가는 정상가보다 클 수 없습니다.',
                         validator: (rule, value, callback) => {
-                          if (value > getFieldValue('discountSalesPrice')) {
+                          if (value > getFieldValue('normalSalesPrice')) {
                             callback(rule.message);
                           }
                           callback();
