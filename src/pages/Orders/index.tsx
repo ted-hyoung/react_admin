@@ -62,7 +62,7 @@ const Orders = () => {
 
   useEffect(() => {
     getOrders(0, pageSize, defaultSearchCondition);
-  }, []);
+  }, [getOrders, pageSize]);
 
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
