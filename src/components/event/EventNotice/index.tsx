@@ -1,5 +1,5 @@
 // base
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // modules
 import { Form, Descriptions, Row, Col, Button, Input, message } from 'antd';
@@ -28,30 +28,29 @@ interface Props extends FormComponentProps {
 
 function EventNotice(props: Props) {
   const { eventNotices = [], form } = props;
-  const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = form;
+  const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields, resetFields } = form;
 
   const prevProps = useRef<Props>(props);
   const [notices, setNotices] = useState(() => eventNotices);
   const eventId = useSelector((state: StoreState) => state.event.event.eventId);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (prevProps.current.eventNotices !== props.eventNotices) {
-      setNotices(eventNotices);
-    }
-  }, [props]);
-
-  useEffect(() => {
-    prevProps.current = props;
-  }, [props]);
-
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
     validateFields({ first: true, force: true }, (error, values: UpdateEventNotices) => {
       if (!error) {
+        if (!values.eventNotices[0].contents) {
+          message.info('공지 사항을 입력해주세요.');
+          return;
+        }
+
         const eventNotices = notices.reduce((ac: ResponseEventNotice[], notice, index: number) => {
-          return ac.concat(Object.assign(notice, values.eventNotices[index]));
+          if (values.eventNotices[index].contents) {
+            return ac.concat(Object.assign(notice, values.eventNotices[index]));
+          }
+
+          return ac;
         }, []);
 
         const data: UpdateEventNotices = {
@@ -76,6 +75,10 @@ function EventNotice(props: Props) {
   };
 
   const handleAddNotice = () => {
+    if (getFieldValue('eventNotices').length === MAX_LENGTH) {
+      return;
+    }
+
     setNotices(
       notices.concat({
         contents: '',
@@ -102,8 +105,17 @@ function EventNotice(props: Props) {
 
   const formItems = notices.map((eventNotice: ResponseEventNotice, index: number) => (
     <FlexRow key={index}>
-      <Col>
-        <Button data-index={index} type="primary" icon="minus" onClick={handleRemoveNotice} />
+      <Col style={{ width: 85, textAlign: 'right' }}>
+        {notices.length - 1 === index && <Button type="primary" icon="plus" onClick={handleAddNotice} />}
+        {notices.length !== 1 && (
+          <Button
+            style={{ marginLeft: 10 }}
+            data-index={index}
+            type="primary"
+            icon="minus"
+            onClick={handleRemoveNotice}
+          />
+        )}
       </Col>
       <Col span={16}>
         <Form.Item>
@@ -127,41 +139,24 @@ function EventNotice(props: Props) {
     </FlexRow>
   ));
 
+  useEffect(() => {
+    if (notices.length === 0) {
+      setNotices([{ contents: '' }]);
+    }
+
+    if (prevProps.current.eventNotices !== props.eventNotices) {
+      setNotices(eventNotices);
+    }
+  }, [props]);
+
+  useEffect(() => {
+    prevProps.current = props;
+  }, [props]);
+
   return (
     <Form className="event-notice" onSubmit={handleSubmit} onKeyPress={handleEnterPress}>
       <Descriptions bordered title="공구 정보" column={24}>
-        <Descriptions.Item label="긴급공지">
-          {formItems}
-          {notices.length !== MAX_LENGTH && (
-            <FlexRow>
-              <Col>
-                <Button type="primary" icon="plus" onClick={handleAddNotice} />
-              </Col>
-              <Col span={16}>
-                <Form.Item>
-                  {getFieldDecorator(`eventNotices[${notices.length > 0 ? notices.length : 0}].contents`, {
-                    initialValue: '',
-                    trigger: undefined,
-                  })(
-                    <Input
-                      name={`eventNotices[${notices.length > 0 ? notices.length : 0}]`}
-                      data-index={notices.length > 0 ? notices.length : 0}
-                      maxLength={30}
-                      placeholder="공지 내용"
-                      onChange={handleChangeNotice}
-                    />,
-                  )}
-                </Form.Item>
-              </Col>
-              <Col>
-                <span>
-                  {calcStringByte(getFieldValue(`eventNotices[${notices.length > 0 ? notices.length : 0}].contents`))}
-                  /30
-                </span>
-              </Col>
-            </FlexRow>
-          )}
-        </Descriptions.Item>
+        <Descriptions.Item label="긴급공지">{formItems}</Descriptions.Item>
       </Descriptions>
       <Row type="flex" justify="center" gutter={15} style={{ marginTop: 30 }}>
         <Col>
@@ -170,7 +165,7 @@ function EventNotice(props: Props) {
           </Button>
         </Col>
         <Col>
-          <Button>취소</Button>
+          <Button onClick={() => resetFields()}>취소</Button>
         </Col>
       </Row>
     </Form>

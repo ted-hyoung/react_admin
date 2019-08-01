@@ -137,7 +137,7 @@ const ShippingStatusSelect = (props: ShippingStatusSelet) => {
 };
 
 const Shipping = () => {
-  const shipping = useSelector((state: StoreState) => state.shipping.shipping);
+  const { shipping, shippingExcel } = useSelector((state: StoreState) => state.shipping);
   const { size: pageSize } = shipping;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchShipping>();
   const dispatch = useDispatch();
@@ -185,8 +185,8 @@ const Shipping = () => {
       ],
     ];
 
-    if (shipping.content.length > 0) {
-      shipping.content.forEach(item => {
+    if (shippingExcel.length > 0) {
+      shippingExcel.forEach(item => {
         data.push([
           moment(item.order.payment.paymentDate).format(dateTimeFormat),
           item.order.orderNo.toString(),
