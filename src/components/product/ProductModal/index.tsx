@@ -337,7 +337,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map(item => {
+            newOptions.forEach(item => {
               createProduct.options.push({
                 optionName: item.optionName,
                 salePrice: Number(item.salePrice),
@@ -377,7 +377,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map(item => {
+            newOptions.forEach(item => {
               updateProduct.options.push({
                 optionId: item.optionId === 0 ? null : item.optionId,
                 optionName: item.optionName,
@@ -441,7 +441,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
       }
       setFileObjectList(product.images);
     }
-  }, [product]);
+  }, [product, setFieldsValue, setFileObjectList]);
 
   return (
     <>
@@ -497,7 +497,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             </Row>
             <Row>
               <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 판매가</Text>
+                <Text type="danger">* 정상가</Text>
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
@@ -506,7 +506,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '판매가를 입력해주세요.',
+                        message: '정상가를 입력해주세요.',
                         validator: (rule, value, callback) => {
                           if (value === 0) {
                             callback(rule.message);
@@ -531,7 +531,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 원
               </Col>
               <Col span={3} className="product-modal-col-3">
-                <Text>* 정상가</Text>
+                <Text type="danger">* 판매가</Text>
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
@@ -540,7 +540,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '정상가를 입력해주세요.',
+                        message: '판매가를 입력해주세요.',
                         validator: (rule, value, callback) => {
                           if (value === 0) {
                             callback(rule.message);
@@ -550,7 +550,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                       },
                       {
                         required: true,
-                        message: '정상가는 판매가 보다 클수 없습니다.',
+                        message: '판매가는 정상가보다 클 수 없습니다.',
                         validator: (rule, value, callback) => {
                           if (value > getFieldValue('normalSalesPrice')) {
                             callback(rule.message);

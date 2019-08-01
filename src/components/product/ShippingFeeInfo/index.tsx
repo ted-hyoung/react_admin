@@ -32,7 +32,7 @@ function ShippingFeeInfo(props: Props) {
       shippingFee: shippingFreeInfo.shippingFee,
       shippingFreeCondition: shippingFreeInfo.shippingFreeCondition,
     });
-  }, [shippingFreeInfo]);
+  }, [shippingFreeInfo, setFieldsValue]);
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();

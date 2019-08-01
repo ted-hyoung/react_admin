@@ -28,6 +28,12 @@ export const updateShippingAsync = createAsyncAction(
   Actions.UPDATE_SHIPPING_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const updateShippingStatusAsync = createAsyncAction(
+  Actions.UPDATE_SHIPPING_STATUS_REQUEST,
+  Actions.UPDATE_SHIPPING_STATUS_SUCCESS,
+  Actions.UPDATE_SHIPPING_STATUS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 export const getShippingExcelAsync = createAsyncAction(
   Actions.GET_SHIPPING_EXCEL_REQUEST,
   Actions.GET_SHIPPING_EXCEL_SUCCESS,
