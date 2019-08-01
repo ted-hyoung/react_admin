@@ -16,9 +16,7 @@ function Login(props: Props) {
     validateFieldsAndScroll((err, val) => {
       if (!err) {
         login(val).then(() => {
-          if (!isTokenExpired(getToken())) {
-            history.push('/home');
-          }
+          history.push('/home');
         });
       }
     });
