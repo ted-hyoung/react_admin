@@ -27,6 +27,12 @@ export const updateShippingAsync = createAsyncAction(
   Actions.UPDATE_SHIPPING_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const updateShippingStatusAsync = createAsyncAction(
+  Actions.UPDATE_SHIPPING_STATUS_REQUEST,
+  Actions.UPDATE_SHIPPING_STATUS_SUCCESS,
+  Actions.UPDATE_SHIPPING_STATUS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 const initialState: ShippingState = {
   shipping: {
     content: [],

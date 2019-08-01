@@ -9,11 +9,12 @@ import * as Api from 'lib/protocols';
 import { parseParams } from 'lib/utils';
 
 // modules
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 
 // store
 import * as Action from 'store/action/shippingAction';
 import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
+import { updateEventStatusAsync } from 'store/reducer/event';
 
 function* getShipping(action: RequestAsyncAction) {
   try {
@@ -51,7 +52,23 @@ function* updateShipping(action: RequestAsyncAction) {
   }
 }
 
+function* updateShippingStatus(action: RequestAsyncAction) {
+  try {
+    const { shippingId, shippingStatus } = action.payload;
+    const data = {
+      shippingStatus,
+    };
+
+    yield call(() => Api.put(`/shipping/${shippingId}/status`, data));
+    yield message.success('배송상태가 변경되었습니다.');
+  } catch (error) {
+    yield put(updateEventStatusAsync.failure(error));
+    yield message.success('배송상태 변경이 실패하였습니다.');
+  }
+}
+
 export default function* qnaSaga() {
   yield takeEvery(Action.GET_SHIPPING_REQUEST, getShipping);
   yield takeEvery(Action.UPDATE_SHIPPING_REQUEST, updateShipping);
+  yield takeEvery(Action.UPDATE_SHIPPING_STATUS_REQUEST, updateShippingStatus);
 }

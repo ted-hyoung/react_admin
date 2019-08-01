@@ -3,14 +3,14 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
-import { Table, Row, Col, Button, Input, Popconfirm } from 'antd';
+import { Table, Row, Col, Button, Input, Popconfirm, Select, Modal } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 import { utils, writeFile } from 'xlsx';
 
 // store
 import { StoreState } from 'store';
-import { getShippingAsync, updateShippingAsync } from 'store/reducer/shipping';
+import { getShippingAsync, updateShippingAsync, updateShippingStatusAsync } from 'store/reducer/shipping';
 
 // components
 import { ShippingSearchBar } from 'components';
@@ -18,10 +18,12 @@ import { ShippingSearchBar } from 'components';
 // uilts
 import { getNowYMD } from 'lib/utils';
 import { SearchShipping } from 'types/Shipping';
-import { ShippingStatus, PaymentMethod, ShippingCompany } from 'enums';
+import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 
 // defines
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+const { confirm } = Modal;
+const { Option } = Select;
 
 interface Shipping {
   shippingId: number;
@@ -42,6 +44,11 @@ interface Shipping {
 interface ShippingInvoiceFormProps {
   text: string;
   shippingId: number;
+}
+
+interface ShippingStatusSelet {
+  shippingId: number;
+  status: ShippingStatus;
 }
 
 const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
@@ -91,6 +98,41 @@ const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
         </Button>
       )}
     </>
+  );
+};
+
+const ShippingStatusSelect = (props: ShippingStatusSelet) => {
+  const { shippingId, status } = props;
+  const [shippingStatus, setShippingStatus] = useState<ShippingStatus>(status);
+  const dispatch = useDispatch();
+
+  const handlePaymentStatusChange = useCallback(value => {
+    showConfirm(value);
+  }, []);
+
+  const showConfirm = useCallback(
+    (status: ShippingStatus) => {
+      confirm({
+        title: `배송상태를 [${ShippingStatus[status]}]로 변경하시겠습니까?`,
+        okText: '변경',
+        cancelText: '취소',
+        onOk() {
+          setShippingStatus(status);
+          dispatch(updateShippingStatusAsync.request({ shippingId, shippingStatus: status }));
+        },
+      });
+    },
+    [dispatch],
+  );
+
+  return (
+    <Select value={shippingStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
+      {SHIPPING_STATUSES.map(option => (
+        <Option key={option.value} value={option.value}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
   );
 };
 
@@ -213,7 +255,14 @@ const Shipping = () => {
     { title: '실 결제금액', dataIndex: 'totalAmount', key: 'totalAmount' },
     { title: '결제수단', dataIndex: 'paymentMethod', key: 'paymentMethod' },
     { title: '메모', dataIndex: 'memo', key: 'memo' },
-    { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
+    {
+      title: '배송상태',
+      dataIndex: 'shippingStatus',
+      key: 'shippingStatus',
+      render: (text, recoder) => {
+        return <ShippingStatusSelect shippingId={recoder.shippingId} status={text} />;
+      },
+    },
   ];
 
   const dataSource: Array<Shipping> = shipping.content.map(shipping => {
@@ -234,7 +283,7 @@ const Shipping = () => {
       totalAmount: shipping.order.payment.totalAmount.toLocaleString(),
       paymentMethod: PaymentMethod[shipping.order.payment.paymentMethod],
       memo: shipping.order.memo,
-      shippingStatus: ShippingStatus[shipping.shippingStatus],
+      shippingStatus: shipping.shippingStatus,
     };
   });
 
