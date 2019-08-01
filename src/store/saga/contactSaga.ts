@@ -57,6 +57,7 @@ function* createContactComment(action: PayloadAction<string, CreateRequestPayloa
         }),
       );
     }
+    yield put(getContactsCountAsync.request({}));
   } catch (error) {
     yield put(createContactCommentAsync.failure(error));
   }
@@ -81,6 +82,7 @@ function* deleteContactComment(action: PayloadAction<string, DeleteRequestPayloa
     yield put(deleteContactCommentAsync.success({}));
     message.success('답변을 삭제했습니다');
     yield put(getContactAsync.request({ id }));
+    yield put(getContactsCountAsync.request({}));
   } catch (error) {
     yield put(deleteContactCommentAsync.failure(error));
   }
