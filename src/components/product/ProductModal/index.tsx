@@ -337,7 +337,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map(item => {
+            newOptions.forEach(item => {
               createProduct.options.push({
                 optionName: item.optionName,
                 salePrice: Number(item.salePrice),
@@ -377,7 +377,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
 
-            newOptions.map(item => {
+            newOptions.forEach(item => {
               updateProduct.options.push({
                 optionId: item.optionId === 0 ? null : item.optionId,
                 optionName: item.optionName,
@@ -441,7 +441,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
       }
       setFileObjectList(product.images);
     }
-  }, [product]);
+  }, [product, setFieldsValue, setFileObjectList]);
 
   return (
     <>

@@ -1,11 +1,10 @@
 // base
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-// modules
 
+// modules
 import { Button, message, Popconfirm, Table } from 'antd';
 import { ColumnProps, TableRowSelection } from 'antd/lib/table';
-import { useModal } from 'lib/hooks';
 
 // components
 import { ProductModal } from 'components';
@@ -336,7 +335,6 @@ function ProductTable(props: Props) {
   const [product, setProduct] = useState(initProduct);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [productModalVisible, setProductModalVisible] = useState(false);
-  const openModal = useModal();
   const dispatch = useDispatch();
 
   const rowSelection: TableRowSelection<ProductList> = {

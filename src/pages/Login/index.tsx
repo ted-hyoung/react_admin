@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Icon } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import './index.less';
