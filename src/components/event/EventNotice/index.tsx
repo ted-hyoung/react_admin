@@ -106,10 +106,16 @@ function EventNotice(props: Props) {
   const formItems = notices.map((eventNotice: ResponseEventNotice, index: number) => (
     <FlexRow key={index}>
       <Col style={{ width: 85, textAlign: 'right' }}>
-        {notices.length - 1 === index && (
-          <Button style={{ marginRight: 10 }} type="primary" icon="plus" onClick={handleAddNotice} />
+        {notices.length - 1 === index && <Button type="primary" icon="plus" onClick={handleAddNotice} />}
+        {notices.length !== 1 && (
+          <Button
+            style={{ marginLeft: 10 }}
+            data-index={index}
+            type="primary"
+            icon="minus"
+            onClick={handleRemoveNotice}
+          />
         )}
-        {notices.length !== 1 && <Button data-index={index} type="primary" icon="minus" onClick={handleRemoveNotice} />}
       </Col>
       <Col span={16}>
         <Form.Item>
