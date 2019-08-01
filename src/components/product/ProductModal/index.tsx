@@ -497,7 +497,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             </Row>
             <Row>
               <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 판매가</Text>
+                <Text type="danger">* 정상가</Text>
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
@@ -506,7 +506,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '판매가를 입력해주세요.',
+                        message: '정상가를 입력해주세요.',
                         validator: (rule, value, callback) => {
                           if (value === 0) {
                             callback(rule.message);
@@ -531,7 +531,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 원
               </Col>
               <Col span={3} className="product-modal-col-3">
-                <Text>* 정상가</Text>
+                <Text type="danger">* 판매가</Text>
               </Col>
               <Col span={8} className="product-modal-col-8">
                 <Form.Item>
@@ -540,7 +540,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     rules: [
                       {
                         required: true,
-                        message: '정상가를 입력해주세요.',
+                        message: '판매가를 입력해주세요.',
                         validator: (rule, value, callback) => {
                           if (value === 0) {
                             callback(rule.message);
@@ -550,7 +550,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                       },
                       {
                         required: true,
-                        message: '정상가는 판매가 보다 클수 없습니다.',
+                        message: '판매가는 정상가보다 클 수 없습니다.',
                         validator: (rule, value, callback) => {
                           if (value > getFieldValue('normalSalesPrice')) {
                             callback(rule.message);
