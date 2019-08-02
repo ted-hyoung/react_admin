@@ -105,7 +105,7 @@ interface ContactCommentRowProps extends ResponseContact {
 }
 
 function ContactCommentRow(props: ContactCommentRowProps) {
-  const { contactComment, contents, creator, contactId, onClickImage, images } = props;
+  const { contactComment, contents, creator, contactId, onClickImage, images, order } = props;
   const dispatch = useDispatch();
   const commentCreated = useMemo(() => contactComment && moment(contactComment.created).format('YYYY-MM-DD HH:mm:ss'), [
     contactComment,
@@ -138,8 +138,8 @@ function ContactCommentRow(props: ContactCommentRowProps) {
         avatar={<Avatar icon="question" />}
         author={
           <div>
-            <span style={{ marginRight: '3em' }}>아이디 : {creator.loginId}</span>
-            <span>주문번호 : 0000-0000-00-0</span>
+            <span style={{ marginRight: '3em' }}>주문자 연락처 : {creator.loginId}</span>
+            <span>주문번호 : {order.orderNo}</span>
           </div>
         }
         content={
