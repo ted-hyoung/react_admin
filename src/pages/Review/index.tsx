@@ -34,7 +34,7 @@ const reviewSearchConditions: SearchCondition[] = [
   { key: 'creatorPhone', text: '연락처' },
   { key: 'eventName', text: '공구명' },
   { key: 'productName', text: '제품명' },
-  { key: 'orderId', text: '주문번호' },
+  { key: 'orderNo', text: '주문번호' },
   { key: 'contents', text: '내용' },
 ];
 

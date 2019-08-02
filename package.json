@@ -58,6 +58,7 @@
     "@types/react-router-dom": "^4.3.4",
     "@types/react-youtube": "^7.6.2",
     "@types/runes": "^0.4.1",
+    "react-to-print": "^2.3.0",
     "tslint": "^5.17.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-react": "^4.0.0"

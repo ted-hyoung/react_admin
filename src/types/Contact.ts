@@ -1,6 +1,7 @@
 import { QnaStatus, CsrCategory } from 'enums';
 import { ResponseAccount } from './Account';
 import { FileObject } from './FileObject';
+import { ResponseOrderForReview } from './Order';
 
 export interface ResponseContactComment {
   contactCommentId: number;
@@ -25,6 +26,7 @@ export interface ResponseContact {
   created: string;
   contactComment?: ResponseContactComment;
   images: FileObject[];
+  order: ResponseOrderForReview;
 }
 
 export interface SearchContact {

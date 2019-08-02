@@ -8,6 +8,7 @@ import { ResponseOrderConsumer } from './Consumer';
 
 export interface ResponseOrder {
   orderId: number;
+  orderNo: string;
   shippingDestination: ResponseShippingDestination;
   orderItems: ResponseOrderItem[];
   consumer: ResponseOrderAccount;
