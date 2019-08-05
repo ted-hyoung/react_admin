@@ -40,6 +40,12 @@ export const getShippingExcelAsync = createAsyncAction(
   Actions.GET_SHIPPING_EXCEL_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const updateExcelInvoiceAsync = createAsyncAction(
+  Actions.UPDATE_EXCEL_INVOICE_REQUEST,
+  Actions.UPDATE_EXCEL_INVOICE_SUCCESS,
+  Actions.UPDATE_EXCEL_INVOICE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 const initialState: ShippingState = {
   shipping: {
     content: [],
@@ -74,6 +80,17 @@ const shipping = (state = initialState, action: ResponseAsyncAction) => {
         if (item) {
           item.invoice = invoice;
           item.shippingStatus = ShippingStatus[ShippingStatus.IN_PROGRESS];
+        }
+      });
+    }
+    case Actions.UPDATE_EXCEL_INVOICE_SUCCESS: {
+      return produce(state, draft => {
+        const { invoice, orderNo } = action.payload;
+        const item = draft.shipping.content.find(item => item.order.orderNo === orderNo);
+
+        if (item) {
+          item.invoice = invoice;
+          item.order.orderNo = orderNo;
         }
       });
     }

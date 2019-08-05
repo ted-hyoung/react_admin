@@ -18,6 +18,7 @@ import {
   updateShippingAsync,
   updateShippingStatusAsync,
   getShippingExcelAsync,
+  updateExcelInvoiceAsync,
 } from 'store/reducer/shipping';
 
 function* getShipping(action: RequestAsyncAction) {
@@ -87,7 +88,27 @@ function* updateShippingStatus(action: RequestAsyncAction) {
     yield message.success('배송상태가 변경되었습니다.');
   } catch (error) {
     yield put(updateShippingStatusAsync.failure(error));
-    yield message.success('배송상태 변경이 실패하였습니다.');
+    yield message.error('배송상태 변경이 실패하였습니다.');
+  }
+}
+
+function* updateExcelInvoice(action: RequestAsyncAction) {
+  try {
+    const { invoice, orderNo } = action.payload;
+
+    const data = {
+      invoice,
+      order: {
+        orderNo,
+      },
+    };
+
+    yield call(() => Api.put('/shipping/excel/invoice', data));
+    yield put(updateExcelInvoiceAsync.success(action.payload));
+    // yield message.success('운송장번호가 등록되었습니다.');
+  } catch (error) {
+    yield put(updateExcelInvoiceAsync.failure(error));
+    // yield message.error('운송장번호 등록이 실패하였습니다.');
   }
 }
 
@@ -96,4 +117,5 @@ export default function* qnaSaga() {
   yield takeEvery(Action.UPDATE_SHIPPING_REQUEST, updateShipping);
   yield takeEvery(Action.UPDATE_SHIPPING_STATUS_REQUEST, updateShippingStatus);
   yield takeEvery(Action.GET_SHIPPING_EXCEL_REQUEST, getShippingExcel);
+  yield takeEvery(Action.UPDATE_EXCEL_INVOICE_REQUEST, updateExcelInvoice);
 }
