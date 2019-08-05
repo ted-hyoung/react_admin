@@ -1,5 +1,5 @@
 // base
-import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeEvery } from 'redux-saga/effects';
 
 // types
 import { RequestAsyncAction } from 'types/AsyncAction';
@@ -105,10 +105,8 @@ function* updateExcelInvoice(action: RequestAsyncAction) {
 
     yield call(() => Api.put('/shipping/excel/invoice', data));
     yield put(updateExcelInvoiceAsync.success(action.payload));
-    // yield message.success('운송장번호가 등록되었습니다.');
   } catch (error) {
     yield put(updateExcelInvoiceAsync.failure(error));
-    // yield message.error('운송장번호 등록이 실패하였습니다.');
   }
 }
 

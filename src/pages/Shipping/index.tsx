@@ -410,7 +410,7 @@ const Shipping = () => {
               <p>검색결과 총 {shipping.totalElements}건</p>
             </Col>
             <Col>
-              <Button type="primary" icon="download" onClick={getShippingExcel}>
+              <Button type="primary" icon="download" onClick={getShippingExcel} style={{ marginRight: 5 }}>
                 엑셀 다운로드
               </Button>
 
