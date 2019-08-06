@@ -79,7 +79,9 @@ const shipping = (state = initialState, action: ResponseAsyncAction) => {
 
         if (item) {
           item.invoice = invoice;
-          item.shippingStatus = ShippingStatus[ShippingStatus.IN_PROGRESS];
+          item.shippingStatus = invoice
+            ? ShippingStatus[ShippingStatus.IN_PROGRESS]
+            : ShippingStatus[ShippingStatus.READY];
         }
       });
     }
@@ -91,6 +93,8 @@ const shipping = (state = initialState, action: ResponseAsyncAction) => {
         if (item) {
           item.invoice = invoice;
           item.order.orderNo = orderNo;
+          item.shippingStatus =
+            invoice !== undefined ? ShippingStatus[ShippingStatus.IN_PROGRESS] : ShippingStatus[ShippingStatus.READY];
         }
       });
     }

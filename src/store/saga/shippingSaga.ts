@@ -71,6 +71,7 @@ function* updateShipping(action: RequestAsyncAction) {
 
     yield call(() => Api.put(`/shipping/${shippingId}`, data));
     yield put(updateShippingAsync.success(action.payload));
+    yield message.success('운송장 번호가 수정되었습니다.');
   } catch (error) {
     yield put(updateShippingAsync.failure(error));
     Modal.error({ title: error });
@@ -97,7 +98,7 @@ function* updateExcelInvoice(action: RequestAsyncAction) {
     const { invoice, orderNo } = action.payload;
 
     const data = {
-      invoice,
+      invoice: invoice ? invoice : '',
       order: {
         orderNo,
       },

@@ -24,9 +24,12 @@ import { ShippingSearchBar } from 'components';
 import { getNowYMD } from 'lib/utils';
 import { SearchShipping } from 'types/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 // defines
+const EXTENSION_XLSX = 'xlsx';
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+const regInvoice = /^(\d{10}(\d{2})?)?$/; // 숫자만, 길이 10~12 check
 const { confirm } = Modal;
 const { Option } = Select;
 
@@ -71,12 +74,17 @@ const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
   }, []);
 
   const handleUpdateInvoice = useCallback(() => {
+    if (!regInvoice.test(invoice)) {
+      Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
+      return false;
+    }
+
     dispatch(updateShippingAsync.request({ shippingId, invoice }));
   }, [dispatch, shippingId, invoice]);
 
   useEffect(() => {
     setInvoice(text);
-
+    setOpen(false);
     if (text) {
       setOpen(true);
     }
@@ -88,7 +96,12 @@ const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
 
       {!open ? (
         <Popconfirm
-          title="운송장번호를 등록하시겠습니까?"
+          title={
+            <div>
+              운송장 번호를 등록하시겠습니까?
+              <br />* 입력 값 존재시 알림톡이 발송됩니다.
+            </div>
+          }
           onConfirm={handleUpdateInvoice}
           okText="확인"
           cancelText="취소"
@@ -110,6 +123,10 @@ const ShippingStatusSelect = (props: ShippingStatusSelet) => {
   const { shippingId, status } = props;
   const [shippingStatus, setShippingStatus] = useState<ShippingStatus>(status);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setShippingStatus(status);
+  }, [status]);
 
   const handlePaymentStatusChange = useCallback(value => {
     showConfirm(value);
@@ -147,6 +164,7 @@ const Shipping = () => {
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchShipping>();
   const [excelData, setExcelData] = useState<any>();
   const [excelUploaded, setExcelUploaded] = useState(false);
+  const [excelFileList, setExcelFileList] = useState<UploadFile[]>();
   const dispatch = useDispatch();
 
   const getShipping = useCallback(
@@ -171,33 +189,104 @@ const Shipping = () => {
     (currentPage: number) => {
       getShipping(currentPage - 1, pageSize, lastSearchCondition);
     },
-
     [getShipping, pageSize, lastSearchCondition],
   );
 
   const handleUpdateExcelInvoice = useCallback(() => {
-    let invoiceList: any = {};
+    const orderNoList: any = {};
+    const excelDataLength = excelData.length;
 
-    for (let i = 0; i < excelData.length; i++) {
-      const invoiceNo = excelData[i]['운송장번호'];
+    for (let i = 0; i < excelDataLength; i++) {
+      const orderNo = excelData[i]['주문번호'];
 
-      if (invoiceNo) {
-        if (invoiceList[invoiceNo]) {
-          invoiceList[invoiceNo].push(excelData[i]['주문번호']);
+      if (orderNo) {
+        if (orderNoList[orderNo]) {
+          orderNoList[orderNo].push(excelData[i]['운송장번호']);
         } else {
-          invoiceList[invoiceNo] = [excelData[i]['주문번호']];
+          orderNoList[orderNo] = [excelData[i]['운송장번호']];
         }
       }
     }
 
-    Object.keys(invoiceList).forEach(invoiceNo => {
-      const items = invoiceList[invoiceNo];
-      dispatch(updateExcelInvoiceAsync.request({ invoice: invoiceNo, orderNo: items[0] }));
+    Object.keys(orderNoList).forEach(item => {
+      const items = orderNoList[item];
+      dispatch(updateExcelInvoiceAsync.request({ invoice: items[0], orderNo: item }));
     });
 
     message.success('운송장번호가 등록되었습니다.');
     setExcelUploaded(false);
-  }, [dispatch, excelData]);
+    getShipping(0);
+  }, [dispatch, excelData, getShipping]);
+
+  const handleChangeExeclUpload = useCallback(info => {
+    const filename = info.file.name;
+    const extension = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
+
+    if (extension !== EXTENSION_XLSX) {
+      Modal.error({ title: '엑셀파일만 업로드가 가능합니다.' });
+      return false;
+    }
+
+    const f: any = info.fileList[0].originFileObj;
+    const reader = new FileReader();
+    const readAsBinaryString = Boolean(reader.readAsBinaryString);
+
+    reader.onload = (e: any) => {
+      const _data = [];
+
+      /* Parse data */
+      const bstr = e.target.result;
+      const wb = XLSX.read(bstr, { type: readAsBinaryString ? 'binary' : 'array' });
+
+      /* Get worksheet */
+      const title = wb.SheetNames[0];
+      const ws = wb.Sheets[title];
+
+      /* Convert array of arrays */
+      const data: any = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const dataLength = data.length;
+
+      for (let i = 1; i < dataLength; i++) {
+        const orderNo = data[i][1];
+        const invoice = data[i][3];
+
+        if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
+          Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
+          return false;
+        }
+
+        if (invoice && !regInvoice.test(invoice)) {
+          Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
+          return false;
+        }
+
+        _data.push({
+          key: i,
+          결제일: data[i][0],
+          주문번호: data[i][1],
+          주문자: data[i][2],
+          운송장번호: data[i][3],
+          배송비: data[i][4],
+          택배사: data[i][5],
+          '상품명 / 옵션 / 수량': data[i][6],
+          상품구매금액: data[i][7],
+          '실 결제금액': data[i][8],
+          결제수단: data[i][9],
+          메모: data[i][10],
+          배송상태: data[i][11],
+        });
+      }
+
+      /* Update state */
+      setExcelData(_data);
+      setExcelUploaded(true);
+    };
+    if (readAsBinaryString) {
+      reader.readAsBinaryString(f);
+    } else {
+      reader.readAsArrayBuffer(f);
+    }
+  }, []);
 
   const getShippingExcel = () => {
     const data = [
@@ -325,10 +414,26 @@ const Shipping = () => {
       <Modal
         width={1400}
         title="송장 업데이트"
-        okText="입력"
         visible={excelUploaded}
-        onOk={handleUpdateExcelInvoice}
-        onCancel={() => setExcelUploaded(false)}
+        footer={
+          <>
+            <Button onClick={() => setExcelUploaded(false)}>취소</Button>
+            <Popconfirm
+              placement="topRight"
+              title={
+                <div>
+                  운송장 번호를 등록하시겠습니까?
+                  <br />* 입력 값 존재시 알림톡이 발송됩니다.
+                </div>
+              }
+              onConfirm={handleUpdateExcelInvoice}
+              okText="확인"
+              cancelText="취소"
+            >
+              <Button type="primary">입력</Button>
+            </Popconfirm>
+          </>
+        }
       >
         <Table
           size="small"
@@ -418,68 +523,12 @@ const Shipping = () => {
                 name="invoiceFile"
                 action=""
                 listType="text"
-                customRequest={({ file, onSuccess }: any) => {
-                  setTimeout(() => {
-                    onSuccess('ok');
-                  }, 0);
+                showUploadList={false}
+                fileList={excelFileList}
+                beforeUpload={() => {
+                  return false;
                 }}
-                onChange={info => {
-                  const status = info.file.status;
-                  if (status === 'done') {
-                    const f: any = info.file.originFileObj;
-                    const reader = new FileReader();
-                    const rABS = !!reader.readAsBinaryString;
-
-                    reader.onload = (e: any) => {
-                      let _data = [];
-
-                      /* Parse data */
-                      const bstr = e.target.result;
-                      const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
-
-                      /* Get worksheet */
-                      for (let i = 0; i < wb.SheetNames.length; i++) {
-                        const title = wb.SheetNames[i];
-                        const ws = wb.Sheets[title];
-
-                        /* Convert array of arrays */
-                        const data: any = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
-                        for (let i = 1; i < data.length; i++) {
-                          if (data[i][3].length < 10 || data[i][3].length > 12) {
-                            Modal.error({ title: '운송장 번호는 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
-                            return false;
-                          }
-
-                          _data.push({
-                            key: i,
-                            결제일: data[i][0],
-                            주문번호: data[i][1],
-                            주문자: data[i][2],
-                            운송장번호: data[i][3],
-                            배송비: data[i][4],
-                            택배사: data[i][5],
-                            '상품명 / 옵션 / 수량': data[i][6],
-                            상품구매금액: data[i][7],
-                            '실 결제금액': data[i][8],
-                            결제수단: data[i][9],
-                            메모: data[i][10],
-                            배송상태: data[i][11],
-                          });
-                        }
-                      }
-
-                      /* Update state */
-                      setExcelData(_data);
-                      setExcelUploaded(true);
-                    };
-                    if (rABS) {
-                      reader.readAsBinaryString(f);
-                    } else {
-                      reader.readAsArrayBuffer(f);
-                    }
-                  }
-                }}
+                onChange={handleChangeExeclUpload}
               >
                 <Button type="primary" icon="upload" ghost>
                   송장번호 엑셀로 입력
