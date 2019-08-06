@@ -1,5 +1,5 @@
 // base
-import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeEvery } from 'redux-saga/effects';
 
 // types
 import { RequestAsyncAction } from 'types/AsyncAction';
@@ -18,6 +18,7 @@ import {
   updateShippingAsync,
   updateShippingStatusAsync,
   getShippingExcelAsync,
+  updateExcelInvoiceAsync,
 } from 'store/reducer/shipping';
 
 function* getShipping(action: RequestAsyncAction) {
@@ -70,6 +71,7 @@ function* updateShipping(action: RequestAsyncAction) {
 
     yield call(() => Api.put(`/shipping/${shippingId}`, data));
     yield put(updateShippingAsync.success(action.payload));
+    yield message.success('운송장 번호가 수정되었습니다.');
   } catch (error) {
     yield put(updateShippingAsync.failure(error));
     Modal.error({ title: error });
@@ -87,7 +89,25 @@ function* updateShippingStatus(action: RequestAsyncAction) {
     yield message.success('배송상태가 변경되었습니다.');
   } catch (error) {
     yield put(updateShippingStatusAsync.failure(error));
-    yield message.success('배송상태 변경이 실패하였습니다.');
+    yield message.error('배송상태 변경이 실패하였습니다.');
+  }
+}
+
+function* updateExcelInvoice(action: RequestAsyncAction) {
+  try {
+    const { invoice, orderNo } = action.payload;
+
+    const data = {
+      invoice: invoice ? invoice : '',
+      order: {
+        orderNo,
+      },
+    };
+
+    yield call(() => Api.put('/shipping/excel/invoice', data));
+    yield put(updateExcelInvoiceAsync.success(action.payload));
+  } catch (error) {
+    yield put(updateExcelInvoiceAsync.failure(error));
   }
 }
 
@@ -96,4 +116,5 @@ export default function* qnaSaga() {
   yield takeEvery(Action.UPDATE_SHIPPING_REQUEST, updateShipping);
   yield takeEvery(Action.UPDATE_SHIPPING_STATUS_REQUEST, updateShippingStatus);
   yield takeEvery(Action.GET_SHIPPING_EXCEL_REQUEST, getShippingExcel);
+  yield takeEvery(Action.UPDATE_EXCEL_INVOICE_REQUEST, updateExcelInvoice);
 }
