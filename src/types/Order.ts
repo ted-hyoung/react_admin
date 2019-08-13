@@ -42,3 +42,34 @@ export interface ResponseOrderForReview {
   created: string;
   orderItems: ResponseClientOrderItemForReview[];
 }
+
+export interface ResponseManagementOrdersStatisticsDailySales {
+  ordersTable: ResponseManagementOrdersDailySalesTable[];
+  ordersCharts: ResponseManagementOrdersDailySalesChart[];
+  ordersExcels: ResponseManagementOrdersDailySalesExcel[];
+}
+
+export interface ResponseManagementOrdersDailySalesTable {
+  totalSalesAmount: number;
+  totalSalesCount: number;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}
+
+export interface ResponseManagementOrdersDailySalesChart {
+  paymentDate: string;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}
+
+export interface ResponseManagementOrdersDailySalesExcel {
+  paymentDate: string;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}

@@ -49,16 +49,16 @@ const MENU_LIST = [
       },
     ],
   },
-  // {
-  //   key: 'statistics',
-  //   name: '통계 관리',
-  //   subMenus: [
-  //     {
-  //       key: 'sales',
-  //       name: '매출 통계',
-  //     },
-  //   ],
-  // },
+  {
+    key: 'statistics',
+    name: '통계 관리',
+    subMenus: [
+      {
+        key: 'sales',
+        name: '매출 통계',
+      },
+    ],
+  },
   {
     key: 'board',
     name: '게시판 관리',

@@ -5,6 +5,8 @@ import runes from 'runes';
 
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
+export const defaultDateTimeFormat = 'YYYY-MM-DD';
+
 export const startDateFormat = 'YYYY-MM-DDT00:00:00';
 
 export const endDateFormat = 'YYYY-MM-DDT23:59:59';
