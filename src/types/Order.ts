@@ -73,3 +73,18 @@ export interface ResponseManagementOrdersDailySalesExcel {
   totalOrderCancelAmount: number;
   totalOrderCancelCount: number;
 }
+
+export interface DataSets {
+  backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  hoverBackgroundColor?: string;
+  hoverBorderColor?: string;
+  type?: string;
+  data?: any[];
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: DataSets[];
+}
