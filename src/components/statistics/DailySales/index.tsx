@@ -272,6 +272,7 @@ const DailySales = () => {
         },
         {
           title: '포인트 결제',
+          key: 'totalOrderPointAmount',
           align: 'center',
           render: (text: string, record: ResponseManagementOrdersExcels, index: number) => {
             return <div key={index}>-</div>;
@@ -279,6 +280,7 @@ const DailySales = () => {
         },
         {
           title: '총 매출',
+          key: 'totalOrderAmount',
           align: 'center',
           render: (text: string, record: ResponseManagementOrdersExcels, index: number) => {
             return (
@@ -322,6 +324,7 @@ const DailySales = () => {
     },
     {
       title: '순매출액',
+      key: 'totalOrderSalesAmount',
       align: 'center',
       render: (text: string, record: ResponseManagementOrdersExcels, index: number) => {
         return (
@@ -429,7 +432,7 @@ const DailySales = () => {
           columns={excelColumns}
           dataSource={statistics.dailySales.ordersExcels}
           bordered
-          rowKey={(recode, index) => index.toString()}
+          rowKey={record => record.paymentDate}
           pagination={false}
           size="middle"
         />
