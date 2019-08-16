@@ -10,3 +10,8 @@ export interface ResponseAccount {
 export interface ResponseOrderAccount {
   username: string;
 }
+
+export interface ResponseTokens {
+  access_token: string;
+  refresh_token: string;
+}

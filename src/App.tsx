@@ -1,5 +1,5 @@
 // base
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import routes, { PrivateRoute } from './routes';
 
@@ -13,7 +13,8 @@ import { Menu, Header } from 'components';
 import { Login } from 'pages';
 
 // lib
-import { isLoggedIn } from 'lib/utils';
+import { isTokenExpired, getToken, getRefreshToken } from 'lib/utils';
+import { requestRefreshToken } from 'lib/protocols';
 
 // defines
 const { Content, Sider } = Layout;
@@ -23,9 +24,24 @@ const NotFound = () => {
 };
 
 function App() {
-  if (!isLoggedIn()) {
+  const accessToken = getToken();
+  const tokenExpired = isTokenExpired(accessToken);
+
+  useEffect(() => {
+    // componentDidMount
+    if (accessToken && tokenExpired) {
+      requestRefreshToken(accessToken, getRefreshToken()).then(res => {
+        window.location.reload();
+      });
+    }
+  }, []);
+
+  if (!accessToken) {
     return <Login />;
+  } else if (accessToken && tokenExpired) {
+    return <NotFound />;
   }
+
   return (
     <div id="app">
       <Layout style={{ minHeight: '100vh' }}>

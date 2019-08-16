@@ -1,6 +1,6 @@
 // base
 import axios, { AxiosPromise, AxiosResponse } from 'axios';
-import { getToken, getRefreshToken, logout, setToken } from './utils';
+import { getToken, getRefreshToken, logout, setToken, isTokenExpired } from './utils';
 import { LoginAccount } from 'types';
 import { message } from 'antd';
 
@@ -29,53 +29,30 @@ const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
 
 const getFileHost = () => process.env.REACT_APP_FILE_API_URL;
 
-const getAuthHeader = () => ({
-  Accept: 'application/json',
-  Authorization: 'Bearer ' + getToken(),
-});
-
 // config
 const host = getHost();
 const fileHost = getFileHost();
 const axiosInstance = axios.create();
 
-axiosInstance.interceptors.request.use(
-  config => {
-    config.headers = getAuthHeader();
-    return config;
-  },
-  err => {
-    return Promise.reject(err);
-  },
-);
+axiosInstance.interceptors.request.use(async res => {
+  let token = getToken();
+  if (isTokenExpired(token)) {
+    const refreshTokenRes = await requestRefreshToken(token, getRefreshToken());
+    token = refreshTokenRes.data.access_token;
+  }
+  res.headers = {
+    Accept: 'application/json',
+    Authorization: 'Bearer ' + token,
+  };
+  return res;
+});
 
 axiosInstance.interceptors.response.use(
   res => {
     return res;
   },
   err => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(host + '/accounts/authorize', {
-          params: {
-            grant_type: 'refresh_token',
-            access_token: getToken(),
-            refresh_token: getRefreshToken(),
-          },
-        })
-        .then(res => {
-          err.config.__isRetryRequest = true;
-          err.config.headers.Authorization = 'Bearer ' + res.data.access_token;
-          resolve(
-            axios(err.config).catch(err2 => {
-              throw extractErrorMsg(err2);
-            }),
-          );
-        })
-        .catch(refreshTokenErr => {
-          logout();
-        });
-    });
+    throw extractErrorMsg(err);
   },
 );
 
@@ -143,5 +120,24 @@ export function login(account: LoginAccount) {
     })
     .catch(error => {
       message.error('로그인에 실패했습니다. 다시 시도해주세요');
+    });
+}
+
+export function requestRefreshToken(token: string, refreshToken: string) {
+  return axios
+    .get(host + '/accounts/authorize', {
+      params: {
+        grant_type: 'refresh_token',
+        access_token: token,
+        refresh_token: refreshToken,
+      },
+    })
+    .then(res => {
+      setToken(res.data.access_token, res.data.refresh_token);
+      return res;
+    })
+    .catch(err => {
+      logout();
+      return err;
     });
 }
