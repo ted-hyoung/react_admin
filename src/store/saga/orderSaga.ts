@@ -35,7 +35,8 @@ function* getOrders(action: RequestAsyncAction) {
       }),
     );
     yield put(getOrdersAsync.success(res));
-    yield put(getOrdersExcelAsync.request({ searchCondition }));
+    // todo : 엑셀 다운로드 개선 필요하므로 잠시 주석 (이종현))
+    // yield put(getOrdersExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getOrdersAsync.failure(error));
   }

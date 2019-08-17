@@ -45,8 +45,8 @@ export interface ResponseOrderForReview {
 
 export interface ResponseManagementOrdersStatisticsDailySales {
   ordersTable: ResponseManagementOrdersDailySalesTable[];
+  orders: ResponseManagementOrdersDailySalesExcel[];
   ordersCharts: ResponseManagementOrdersDailySalesChart[];
-  ordersExcels: ResponseManagementOrdersDailySalesExcel[];
 }
 
 export interface ResponseManagementOrdersDailySalesTable {

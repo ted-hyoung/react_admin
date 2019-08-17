@@ -80,7 +80,7 @@ const initialState: OrderState = {
         },
       ],
       ordersCharts: [],
-      ordersExcels: [],
+      orders: [],
     },
     dailySalesStatus: false,
   },
@@ -111,7 +111,7 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
         });
         draft.statistics.dailySales.ordersTable = ordersTable;
         draft.statistics.dailySales.ordersCharts = action.payload.data.ordersCharts;
-        draft.statistics.dailySales.ordersExcels = action.payload.data.ordersExcels;
+        draft.statistics.dailySales.orders = action.payload.data.orders;
         draft.statistics.dailySalesStatus = true;
       });
     }

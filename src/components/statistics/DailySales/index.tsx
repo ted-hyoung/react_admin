@@ -116,7 +116,7 @@ const DailySales = () => {
       [null, '주문 수', '실 결제액', '포인트 결제', '총 매출', '주문 취소수', '주문 취소액', null],
     ];
 
-    statistics.dailySales.ordersExcels.map((item: ResponseManagementOrdersExcels) => {
+    statistics.dailySales.orders.map((item: ResponseManagementOrdersExcels) => {
       return anaToSheet.push([
         item.paymentDate,
         item.totalOrderCompleteCount === 0 ? '-' : item.totalOrderCompleteCount.toLocaleString() + '건',
@@ -339,7 +339,7 @@ const DailySales = () => {
   ];
 
   return (
-    <div className="daily-sales" style={{ width: '180vh' }}>
+    <div className="daily-sales" style={{ width: '300vh' }}>
       <DailySalesSearchBar
         onSearch={value => getDailySales(value)}
         onReset={() => getDailySales(defaultSearchCondition)}
@@ -430,7 +430,7 @@ const DailySales = () => {
       <div style={{ width: 1100, marginTop: 20, marginBottom: 20 }}>
         <Table
           columns={excelColumns}
-          dataSource={statistics.dailySales.ordersExcels}
+          dataSource={statistics.dailySales.orders}
           bordered
           rowKey={record => record.paymentDate}
           pagination={false}
