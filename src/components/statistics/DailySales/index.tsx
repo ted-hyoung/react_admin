@@ -368,15 +368,9 @@ const DailySales = () => {
             scales: {
               yAxes: [
                 {
-                  ticks: {
-                    min: 0,
-                  },
-                },
-              ],
-              xAxes: [
-                {
                   barPercentage: 1.0,
                   ticks: {
+                    min: 0,
                     fontSize: 10,
                     fontStyle: 'bold',
                     paddingTop: 10,
