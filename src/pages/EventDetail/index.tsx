@@ -1,9 +1,9 @@
 // base
-import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
-import { getEventByIdAsync, clearEvent, updateEventStatusAsync, deleteEventAsync } from 'store/reducer/event';
+import { getEventByIdAsync, updateEventStatusAsync, deleteEventAsync } from 'store/reducer/event';
 
 // modules
 import { Tabs, Button, message, Row, Col, Popconfirm } from 'antd';

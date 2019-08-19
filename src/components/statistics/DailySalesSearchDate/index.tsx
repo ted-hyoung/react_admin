@@ -41,7 +41,7 @@ export function getValuePropsForSearchDate(value: any) {
   return value;
 }
 
-const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
+const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
   const { value, onChange } = props;
 
   const handleChange = useCallback(
@@ -103,7 +103,7 @@ const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProp
     [handleChange],
   );
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', left: 250 }}>
       <DatePicker.RangePicker allowClear={false} value={value} onChange={handleChange} style={{ marginRight: 15 }} />
       {Object.keys(DateRange).map((key: any) => (
         <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
@@ -114,4 +114,4 @@ const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProp
   );
 });
 
-export default ShippingSearchDate;
+export default DailySalesSearchDate;

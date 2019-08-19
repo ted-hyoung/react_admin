@@ -9,13 +9,8 @@ import moment, { Moment } from 'moment';
 // utils
 import { defaultDateFormat } from 'lib/utils';
 
-// defines
-enum DateRange {
-  RECENT_3DAYS = '최근 3일',
-  RECENT_WEEK = '최근 7일',
-  RECENT_MONTH = '최근 1개월',
-  RECENT_3MONTHS = '최근 3개월',
-}
+// enums
+import { DateRange } from 'enums';
 
 export function validateDate(val: any, key: string) {
   if (val[key].length > 0) {

@@ -4,6 +4,11 @@ export { default as PrivateRoute } from './PrivateRoute';
 
 export default [
   {
+    path: '/sales',
+    component: lazy(() => import('../pages/Statistics')),
+    secret: true,
+  },
+  {
     path: '/shipping',
     component: lazy(() => import('../pages/Shipping')),
     secret: true,
