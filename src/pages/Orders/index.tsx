@@ -1,5 +1,5 @@
 // base
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactToPrint from 'react-to-print';
 
@@ -45,16 +45,18 @@ interface Orders {
   paymentStatus: PaymentStatus;
   shippingStatus: ShippingStatus;
   shippingCompany: ShippingCompany;
+  transactionId: string;
 }
 
 interface OrdersPaymentSelect {
   niceSubmitRef: React.RefObject<HTMLFormElement>;
-  responseOrder: ResponseOrder;
+  record: Orders,
+  setSelectedOrder: Dispatch<SetStateAction<Orders | undefined>>;
   status: PaymentStatus;
 }
 
-const OrdersPaymentSelet = (props: OrdersPaymentSelect) => {
-  const { niceSubmitRef, responseOrder, status } = props;
+const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
+  const { niceSubmitRef, record, setSelectedOrder, status } = props;
 
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(status);
   const dispatch = useDispatch();
@@ -68,7 +70,7 @@ const OrdersPaymentSelet = (props: OrdersPaymentSelect) => {
     if (niceCancelPayment && niceSubmitRef.current) {
       niceSubmitRef.current.submit();
     }
-  });
+  }, [niceCancelPayment]);
 
   const showConfirm = useCallback(
     (status: PaymentStatus) => {
@@ -81,6 +83,7 @@ const OrdersPaymentSelet = (props: OrdersPaymentSelect) => {
             message.error('현재 결상태 값이 결제 완료일 경우에만 변경이 가능합니다.');
           } else {
             setNiceCancelPayment(true);
+            setSelectedOrder(record);
           }
         },
       });
@@ -97,18 +100,6 @@ const OrdersPaymentSelet = (props: OrdersPaymentSelect) => {
           </Option>
         ))}
       </Select>
-      <form
-        id="form"
-        action={payCancelHost}
-        target="_self"
-        method="POST"
-        style={{ width: 0, height: 0, visibility: 'hidden' }}
-        ref={niceSubmitRef}
-      >
-        <input type="hidden" name="cancelAmt" value={responseOrder.payment.totalAmount.toLocaleString()} />
-        <input type="hidden" name="moid" value={responseOrder.orderNo} />
-        <input type="hidden" name="tid" value={responseOrder.payment.nicePayment.transactionId} />
-      </form>
     </>
   );
 };
@@ -118,6 +109,7 @@ const Orders = () => {
   const { size: pageSize, totalElements } = orders;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
+  const [selectedOrder, setSelectedOrder] = useState<Orders>();
   const printRef = useRef<any>();
   const niceSubmitRef = useRef<HTMLFormElement>(null);
 
@@ -226,8 +218,8 @@ const Orders = () => {
       title: '결제상태',
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
-      render: (text, record, index) => {
-        return <OrdersPaymentSelet niceSubmitRef={niceSubmitRef} responseOrder={orders.content[index]} status={text} />;
+      render: (text, record:Orders) => {
+        return <OrdersPaymentSelect niceSubmitRef={niceSubmitRef} record={record} setSelectedOrder={setSelectedOrder} status={text} />;
       },
     },
     { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
@@ -253,6 +245,7 @@ const Orders = () => {
       paymentStatus: order.payment.paymentStatus,
       shippingStatus: ShippingStatus[order.shipping.shippingStatus],
       shippingCompany: ShippingCompany[order.shipping.shippingCompany],
+      transactionId: order.payment.nicePayment.transactionId,
     };
   });
 
@@ -294,6 +287,21 @@ const Orders = () => {
           onChange: handlePaginationChange,
         }}
       />
+      {selectedOrder && (
+          <form
+          id={'form'}
+          action={payCancelHost}
+          target="_self"
+          method="POST"
+          style={{ width: 0, height: 0, visibility: 'hidden' }}
+          ref={niceSubmitRef}
+          >
+            <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
+            <input type="hidden" name="moid" value={selectedOrder.orderNo} />
+            <input type="hidden" name="tid" value={ selectedOrder.transactionId} />
+          </form>
+      )}
+
     </div>
   );
 };
