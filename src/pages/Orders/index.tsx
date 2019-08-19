@@ -47,13 +47,13 @@ interface Orders {
   shippingCompany: ShippingCompany;
 }
 
-interface OrdersPaymentSelet {
+interface OrdersPaymentSelect {
   niceSubmitRef: React.RefObject<HTMLFormElement>;
   responseOrder: ResponseOrder;
   status: PaymentStatus;
 }
 
-const OrdersPaymentSelet = (props: OrdersPaymentSelet) => {
+const OrdersPaymentSelet = (props: OrdersPaymentSelect) => {
   const { niceSubmitRef, responseOrder, status } = props;
 
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(status);
@@ -227,12 +227,6 @@ const Orders = () => {
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
       render: (text, record, index) => {
-        // setSelectedOrder({
-        //   ...setSelectedOrder,
-        //   transactionId: orders.content[index].payment.nicePayment.transactionId,
-        //   totalAmount: orders.content[index].payment.totalAmount,
-        //   orderNo: orders.content[index].orderNo,
-        // });
         return <OrdersPaymentSelet niceSubmitRef={niceSubmitRef} responseOrder={orders.content[index]} status={text} />;
       },
     },
