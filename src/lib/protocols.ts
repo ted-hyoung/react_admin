@@ -25,6 +25,10 @@ const extractErrorMsg = (error: any) => {
   }
 };
 
+export const getPaymentCancelHost = () => {
+  return process.env.REACT_APP_PC_PAY_CANCEL_API_URL;
+};
+
 const getHost = () => process.env.REACT_APP_REST_API_URL + getAPIVersion();
 const getFileHost = () => process.env.REACT_APP_FILE_API_URL + '/buckets/' + process.env.REACT_APP_S3_BUCKET + '/';
 const getFileUrl = () => process.env.REACT_APP_FILE_URL + '';
@@ -33,6 +37,7 @@ const getFileUrl = () => process.env.REACT_APP_FILE_URL + '';
 export const host = getHost();
 export const fileHost = getFileHost();
 export const fileUrl = getFileUrl();
+export const payCancelHost = getPaymentCancelHost();
 
 const axiosInstance = axios.create();
 
