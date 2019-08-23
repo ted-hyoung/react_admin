@@ -37,8 +37,7 @@ function* getShipping(action: RequestAsyncAction) {
     );
 
     yield put(getShippingAsync.success(res.data));
-    // todo : 엑셀 다운로드 개선 필요하므로 잠시 주석 (이종현))
-    // yield put(getShippingExcelAsync.request({ searchCondition }));
+    yield put(getShippingExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getShippingAsync.failure(error));
   }
