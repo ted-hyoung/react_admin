@@ -144,6 +144,10 @@ const DailySales = () => {
     XLSX.writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
   };
 
+  const getDatasetKeyProvider = () => {
+    return 'datasetKey';
+  };
+
   const totalAmountColumns: Array<ColumnProps<ResponseManagementOrdersStatistics>> = [
     {
       title: () => {
@@ -356,9 +360,9 @@ const DailySales = () => {
       </div>
       <div style={{ overflowX: 'auto', marginTop: 170 }}>
         <Bar
+          datasetKeyProvider={getDatasetKeyProvider}
           data={charData}
           height={500}
-          redraw={true}
           options={{
             maintainAspectRatio: false,
             responsive: true,
