@@ -2,9 +2,9 @@
 import React, { useCallback } from 'react';
 
 // modules
-import { DatePicker, Button } from 'antd';
+import { DatePicker, Button, message } from 'antd';
 import { DatePickerDecorator, RangePickerProps, RangePickerValue } from 'antd/lib/date-picker/interface';
-import moment, { Moment } from 'moment';
+import moment, { Moment, duration } from 'moment';
 
 // utils
 import { defaultDateFormat } from 'lib/utils';
@@ -63,6 +63,10 @@ const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerPr
               }
             }
           });
+        }
+
+        if (Number(duration(newDates[1]!.diff(newDates[0])).asDays()) >= 93) {
+          return message.error('검색기간은 최대 89~92일(3개월) 입니다.');
         }
         onChange(newDates, newDateStrings);
       }
