@@ -178,7 +178,7 @@ function EventForm(props: Props) {
               </Col>
               <Col span={18}>
                 <Form.Item>
-                  {getFieldDecorator('name', {
+                  {/* {getFieldDecorator('name', {
                     rules: [
                       {
                         required: true,
@@ -192,7 +192,13 @@ function EventForm(props: Props) {
                       autosize={{ minRows: 3, maxRows: 3 }}
                       style={{ resize: 'none' }}
                     />,
-                  )}
+                  )} */}
+                  <TextArea
+                    spellCheck={false}
+                    maxLength={100}
+                    autosize={{ minRows: 3, maxRows: 3 }}
+                    style={{ resize: 'none' }}
+                  />
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
