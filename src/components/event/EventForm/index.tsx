@@ -178,7 +178,7 @@ function EventForm(props: Props) {
               </Col>
               <Col span={18}>
                 <Form.Item>
-                  {getFieldDecorator('name', {
+                  {/* {getFieldDecorator('name', {
                     rules: [
                       {
                         required: true,
@@ -192,7 +192,13 @@ function EventForm(props: Props) {
                       autosize={{ minRows: 3, maxRows: 3 }}
                       style={{ resize: 'none' }}
                     />,
-                  )}
+                  )} */}
+                  <TextArea
+                    spellCheck={false}
+                    maxLength={100}
+                    autosize={{ minRows: 3, maxRows: 3 }}
+                    style={{ resize: 'none' }}
+                  />
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
@@ -263,8 +269,10 @@ function EventForm(props: Props) {
                       },
                       {
                         validator: (rule, value: Moment, callback) => {
-                          if (value.isBefore(moment())) {
-                            return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
+                          if (event.eventStatus === EventStatus[EventStatus.READY]) {
+                            if (value.isBefore(moment())) {
+                              return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
+                            }
                           }
 
                           if (value.isAfter(getFieldValue('salesEnded'))) {
@@ -388,7 +396,8 @@ function EventForm(props: Props) {
                         <ImageUpload
                           fileObjectList={fileObjectList}
                           setFileObjectList={setFileObjectList}
-                          disabled={event.eventStatus !== EventStatus[EventStatus.READY]}
+                          disabled={false}
+                          // disabled={event.eventStatus !== EventStatus[EventStatus.READY]}
                         />,
                       )}
                     </Form.Item>
