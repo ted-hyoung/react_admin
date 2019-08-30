@@ -50,7 +50,7 @@ interface Orders {
 
 interface OrdersPaymentSelect {
   niceSubmitRef: React.RefObject<HTMLFormElement>;
-  record: Orders,
+  record: Orders;
   setSelectedOrder: Dispatch<SetStateAction<Orders | undefined>>;
   status: PaymentStatus;
 }
@@ -79,8 +79,11 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
         okText: '변경',
         cancelText: '취소',
         onOk() {
-          if (PaymentStatus[PaymentStatus.COMPLETE] !== paymentStatus) {
-            message.error('현재 결상태 값이 결제 완료일 경우에만 변경이 가능합니다.');
+          if (
+            PaymentStatus[PaymentStatus.COMPLETE] !== paymentStatus &&
+            PaymentStatus[PaymentStatus.REFUND_REQUEST] !== paymentStatus
+          ) {
+            message.error('현재 결제상태 값이 결제 완료 또는 환불 요청일 경우에만 변경이 가능합니다.');
           } else {
             setNiceCancelPayment(true);
             setSelectedOrder(record);
@@ -218,8 +221,15 @@ const Orders = () => {
       title: '결제상태',
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
-      render: (text, record:Orders) => {
-        return <OrdersPaymentSelect niceSubmitRef={niceSubmitRef} record={record} setSelectedOrder={setSelectedOrder} status={text} />;
+      render: (text, record: Orders) => {
+        return (
+          <OrdersPaymentSelect
+            niceSubmitRef={niceSubmitRef}
+            record={record}
+            setSelectedOrder={setSelectedOrder}
+            status={text}
+          />
+        );
       },
     },
     { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
@@ -288,20 +298,19 @@ const Orders = () => {
         }}
       />
       {selectedOrder && (
-          <form
+        <form
           id={'form'}
           action={payCancelHost}
           target="_self"
           method="POST"
           style={{ width: 0, height: 0, visibility: 'hidden' }}
           ref={niceSubmitRef}
-          >
-            <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
-            <input type="hidden" name="moid" value={selectedOrder.orderNo} />
-            <input type="hidden" name="tid" value={ selectedOrder.transactionId} />
-          </form>
+        >
+          <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
+          <input type="hidden" name="moid" value={selectedOrder.orderNo} />
+          <input type="hidden" name="tid" value={selectedOrder.transactionId} />
+        </form>
       )}
-
     </div>
   );
 };
