@@ -45,13 +45,17 @@ function EventTemplate(props: RouteComponentProps<Match>) {
 
   const { name, salesStarted, salesEnded, images } = event;
 
+  if (event.eventId === 0) {
+    return <></>;
+  }
+
   return (
     <div className="event-template">
       <div className="event-template-header">
         <TemplateHeader />
       </div>
       <div className="event-template-content">
-        <TemplateSeller />
+        <TemplateSeller event={event} />
         <TemplateEventBanner
           name={name}
           salesStarted={salesStarted}
