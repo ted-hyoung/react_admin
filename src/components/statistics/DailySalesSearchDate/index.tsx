@@ -2,9 +2,9 @@
 import React, { useCallback } from 'react';
 
 // modules
-import { DatePicker, Button } from 'antd';
+import { DatePicker, Button, message } from 'antd';
 import { DatePickerDecorator, RangePickerProps, RangePickerValue } from 'antd/lib/date-picker/interface';
-import moment, { Moment } from 'moment';
+import moment, { Moment, duration } from 'moment';
 
 // utils
 import { defaultDateFormat } from 'lib/utils';
@@ -41,7 +41,7 @@ export function getValuePropsForSearchDate(value: any) {
   return value;
 }
 
-const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
+const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
   const { value, onChange } = props;
 
   const handleChange = useCallback(
@@ -63,6 +63,10 @@ const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProp
               }
             }
           });
+        }
+
+        if (Number(duration(newDates[1]!.diff(newDates[0])).asDays()) >= 93) {
+          return message.error('검색기간은 최대 89~92일(3개월) 입니다.');
         }
         onChange(newDates, newDateStrings);
       }
@@ -103,7 +107,7 @@ const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProp
     [handleChange],
   );
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', left: 250 }}>
       <DatePicker.RangePicker allowClear={false} value={value} onChange={handleChange} style={{ marginRight: 15 }} />
       {Object.keys(DateRange).map((key: any) => (
         <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
@@ -114,4 +118,4 @@ const ShippingSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProp
   );
 });
 
-export default ShippingSearchDate;
+export default DailySalesSearchDate;

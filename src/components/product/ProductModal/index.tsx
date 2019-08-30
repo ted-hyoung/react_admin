@@ -222,7 +222,6 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                       className="product-modal-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
                     />,
                   )}
                 </Form.Item>
@@ -371,7 +370,10 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           };
           if (enableOption === 0) {
             // 옵션 사용
-            const newOptions: UpdateOption[] = options.slice(0, options.length === 0 ? 0 : options.length - 1);
+            const newOptions: UpdateOption[] =
+              eventStatus === EventStatus[EventStatus.READY]
+                ? options.slice(0, options.length === 0 ? 0 : options.length - 1)
+                : options;
 
             if (newOptions.length === 0 && enableOption === 0) {
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
@@ -652,12 +654,6 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         {
                           required: true,
                           message: '총 재고를 입력해주세요.',
-                          validator: (rule, value, callback) => {
-                            if (value === 0) {
-                              callback(rule.message);
-                            }
-                            callback();
-                          },
                         },
                       ],
                     })(
@@ -667,7 +663,6 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         className="product-modal-input"
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        disabled={eventStatus !== EventStatus[EventStatus.READY]}
                       />,
                     )}
                   </Form.Item>
@@ -700,22 +695,14 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
               </Row>
             )}
             <Row>
-              {eventStatus === EventStatus[EventStatus.READY] ? (
-                <div className="product-modal-button">
-                  <Button type="primary" size="large" htmlType="submit">
-                    {product.productId !== 0 ? '수정' : '등록'}
-                  </Button>
-                  <Button type="danger" size="large" onClick={handleProductModalClose}>
-                    취소
-                  </Button>
-                </div>
-              ) : (
-                <div className="product-modal-button">
-                  <Button type="danger" size="large" onClick={handleProductModalClose}>
-                    닫기
-                  </Button>
-                </div>
-              )}
+              <div className="product-modal-button">
+                <Button type="primary" size="large" htmlType="submit">
+                  {product.productId !== 0 ? '수정' : '등록'}
+                </Button>
+                <Button type="danger" size="large" onClick={handleProductModalClose}>
+                  취소
+                </Button>
+              </div>
             </Row>
           </Form>
         </AntModal>

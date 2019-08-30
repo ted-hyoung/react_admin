@@ -6,7 +6,12 @@ import * as Api from 'lib/protocols';
 import * as Action from 'store/action/orderAction';
 
 // store
-import { getOrdersAsync, updateOrdersPaymentStatusAsync, getOrdersExcelAsyc } from 'store/reducer/order';
+import {
+  getOrdersAsync,
+  updateOrdersPaymentStatusAsync,
+  getOrdersExcelAsync,
+  getStatisticsDailySalesAsync,
+} from 'store/reducer/order';
 
 // lib
 import { parseParams } from 'lib/utils';
@@ -30,7 +35,7 @@ function* getOrders(action: RequestAsyncAction) {
       }),
     );
     yield put(getOrdersAsync.success(res));
-    yield put(getOrdersExcelAsyc.request({ searchCondition }));
+    yield put(getOrdersExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getOrdersAsync.failure(error));
   }
@@ -64,9 +69,28 @@ function* getOrdersExcel(action: RequestAsyncAction) {
         paramsSerializer: (params: any) => parseParams(params),
       }),
     );
-    yield put(getOrdersExcelAsyc.success(res));
+    yield put(getOrdersExcelAsync.success(res));
   } catch (error) {
-    yield put(getOrdersExcelAsyc.failure(error));
+    yield put(getOrdersExcelAsync.failure(error));
+  }
+}
+
+function* getStatisticsDailySales(action: RequestAsyncAction) {
+  try {
+    const { searchCondition } = action.payload;
+
+    const res = yield call(() =>
+      Api.get('/management/orders/statistics', {
+        params: {
+          ...searchCondition,
+        },
+        paramsSerializer: (params: any) => parseParams(params),
+      }),
+    );
+    yield put(getStatisticsDailySalesAsync.success(res));
+  } catch (error) {
+    yield put(getStatisticsDailySalesAsync.failure(error));
+    yield message.error(error);
   }
 }
 
@@ -74,4 +98,5 @@ export default function* qnaSaga() {
   yield takeEvery(Action.GET_ORDERS_REQUEST, getOrders);
   yield takeEvery(Action.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST, updateOrdersPaymentStatus);
   yield takeEvery(Action.GET_ORDERS_EXCEL_REQUEST, getOrdersExcel);
+  yield takeEvery(Action.GET_ORDERS_STATISTICS_DAILY_SALES_REQUEST, getStatisticsDailySales);
 }

@@ -82,7 +82,7 @@ const Qna = () => {
       key: 'event',
       width: '10%',
       render: (text, record) => {
-        return record.event.name;
+        return record.event && record.event.name;
       },
     },
     { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '30%' },

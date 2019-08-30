@@ -42,3 +42,49 @@ export interface ResponseOrderForReview {
   created: string;
   orderItems: ResponseClientOrderItemForReview[];
 }
+
+export interface ResponseManagementOrdersStatisticsDailySales {
+  ordersTable: ResponseManagementOrdersDailySalesTable[];
+  orders: ResponseManagementOrdersDailySalesExcel[];
+  ordersCharts: ResponseManagementOrdersDailySalesChart[];
+}
+
+export interface ResponseManagementOrdersDailySalesTable {
+  totalSalesAmount: number;
+  totalSalesCount: number;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}
+
+export interface ResponseManagementOrdersDailySalesChart {
+  paymentDate: string;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}
+
+export interface ResponseManagementOrdersDailySalesExcel {
+  paymentDate: string;
+  totalOrderCompleteAmount: number;
+  totalOrderCompleteCount: number;
+  totalOrderCancelAmount: number;
+  totalOrderCancelCount: number;
+}
+
+export interface DataSets {
+  backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  hoverBackgroundColor?: string;
+  hoverBorderColor?: string;
+  type?: string;
+  data?: any[];
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: DataSets[];
+}

@@ -1,24 +1,27 @@
 // base
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import { getOrdersAsync, updateOrdersPaymentStatusAsync } from 'store/reducer/order';
+import { getOrdersAsync } from 'store/reducer/order';
 
 // modules
-import { Table, Button, Row, Col, Select, Modal } from 'antd';
+import { Table, Button, Row, Col, Select, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import { utils, writeFile } from 'xlsx';
 import moment from 'moment';
+
+// lib
+import { payCancelHost } from 'lib/protocols';
 
 // components
 import { OrderSearchBar } from 'components';
 
 // utils
 import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat } from 'lib/utils';
-import { SearchOrder } from 'types/Order';
+import { SearchOrder, ResponseOrder } from 'types/Order';
 import { ShippingStatus, ShippingCompany, PaymentStatus, PAYMENT_STATUSES } from 'enums';
 
 // defines
@@ -37,27 +40,37 @@ interface Orders {
   username: string;
   quantity: JSX.Element[];
   orderItems: JSX.Element[];
-  totalAmount: number;
+  totalAmount: string;
   paymentId: number;
   paymentStatus: PaymentStatus;
   shippingStatus: ShippingStatus;
   shippingCompany: ShippingCompany;
+  transactionId: string;
 }
 
-interface OrdersPaymentSelet {
-  paymentId: number;
+interface OrdersPaymentSelect {
+  niceSubmitRef: React.RefObject<HTMLFormElement>;
+  record: Orders;
+  setSelectedOrder: Dispatch<SetStateAction<Orders | undefined>>;
   status: PaymentStatus;
 }
 
-const OrdersPaymentSelet = (props: OrdersPaymentSelet) => {
-  const { paymentId, status } = props;
+const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
+  const { niceSubmitRef, record, setSelectedOrder, status } = props;
 
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(status);
   const dispatch = useDispatch();
+  const [niceCancelPayment, setNiceCancelPayment] = useState(false);
 
   const handlePaymentStatusChange = useCallback(value => {
     showConfirm(value);
   }, []);
+
+  useEffect(() => {
+    if (niceCancelPayment && niceSubmitRef.current) {
+      niceSubmitRef.current.submit();
+    }
+  }, [niceCancelPayment]);
 
   const showConfirm = useCallback(
     (status: PaymentStatus) => {
@@ -66,8 +79,15 @@ const OrdersPaymentSelet = (props: OrdersPaymentSelet) => {
         okText: '변경',
         cancelText: '취소',
         onOk() {
-          setPaymentStatus(status);
-          dispatch(updateOrdersPaymentStatusAsync.request({ paymentId, paymentStatus: status }));
+          if (
+            PaymentStatus[PaymentStatus.COMPLETE] !== paymentStatus &&
+            PaymentStatus[PaymentStatus.REFUND_REQUEST] !== paymentStatus
+          ) {
+            message.error('현재 결제상태 값이 결제 완료 또는 환불 요청일 경우에만 변경이 가능합니다.');
+          } else {
+            setNiceCancelPayment(true);
+            setSelectedOrder(record);
+          }
         },
       });
     },
@@ -75,13 +95,15 @@ const OrdersPaymentSelet = (props: OrdersPaymentSelet) => {
   );
 
   return (
-    <Select value={paymentStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
-      {PAYMENT_STATUSES.map(option => (
-        <Option key={option.value} value={option.value}>
-          {option.label}
-        </Option>
-      ))}
-    </Select>
+    <>
+      <Select value={paymentStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
+        {PAYMENT_STATUSES.map(option => (
+          <Option key={option.value} value={option.value}>
+            {option.label}
+          </Option>
+        ))}
+      </Select>
+    </>
   );
 };
 
@@ -90,7 +112,9 @@ const Orders = () => {
   const { size: pageSize, totalElements } = orders;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
+  const [selectedOrder, setSelectedOrder] = useState<Orders>();
   const printRef = useRef<any>();
+  const niceSubmitRef = useRef<HTMLFormElement>(null);
 
   const getOrders = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchOrder) => {
@@ -143,7 +167,7 @@ const Orders = () => {
           item.orderNo,
           item.event.brand.brandName,
           item.consumer.username,
-          item.orderItems[0].quantity.toString(),
+          item.orderItems[0].quantity.toLocaleString(),
           item.orderItems[0].product.productName +
             ' / ' +
             `${
@@ -151,7 +175,7 @@ const Orders = () => {
                 ? `${item.orderItems[0].option.optionName ? item.orderItems[0].option.optionName : '옵션없음'}`
                 : '옵션없음'
             }`,
-          item.payment.totalAmount.toString(),
+          item.payment.totalAmount.toLocaleString(),
           PaymentStatus[item.payment.paymentStatus],
           ShippingStatus[item.shipping.shippingStatus],
           ShippingCompany[item.shipping.shippingCompany],
@@ -165,7 +189,7 @@ const Orders = () => {
               '',
               '',
               '',
-              item.orderItems[i].quantity.toString(),
+              item.orderItems[i].quantity.toLocaleString(),
               item.orderItems[i].product.productName + ' / ' + item.orderItems[i].option.optionName,
             ]);
           }
@@ -197,8 +221,15 @@ const Orders = () => {
       title: '결제상태',
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
-      render: (text, record) => {
-        return <OrdersPaymentSelet paymentId={record.paymentId} status={text} />;
+      render: (text, record: Orders) => {
+        return (
+          <OrdersPaymentSelect
+            niceSubmitRef={niceSubmitRef}
+            record={record}
+            setSelectedOrder={setSelectedOrder}
+            status={text}
+          />
+        );
       },
     },
     { title: '배송상태', dataIndex: 'shippingStatus', key: 'shippingStatus' },
@@ -212,18 +243,19 @@ const Orders = () => {
       orderNo: order.orderNo,
       brandName: order.event.brand.brandName,
       username: order.consumer.username,
-      quantity: order.orderItems.map(item => <div key={item.orderItemId}>{item.quantity}</div>),
+      quantity: order.orderItems.map(item => <div key={item.orderItemId}>{item.quantity.toLocaleString()}</div>),
       orderItems: order.orderItems.map(item => (
         <div key={item.orderItemId}>
           {item.product.productName}
           {item.option ? ` / ${item.option.optionName ? item.option.optionName : '옵션없음'}` : ' / 옵션없음'}
         </div>
       )),
-      totalAmount: order.payment.totalAmount,
+      totalAmount: order.payment.totalAmount.toLocaleString(),
       paymentId: order.payment.paymentId,
       paymentStatus: order.payment.paymentStatus,
       shippingStatus: ShippingStatus[order.shipping.shippingStatus],
       shippingCompany: ShippingCompany[order.shipping.shippingCompany],
+      transactionId: order.payment.nicePayment.transactionId,
     };
   });
 
@@ -265,6 +297,20 @@ const Orders = () => {
           onChange: handlePaginationChange,
         }}
       />
+      {selectedOrder && (
+        <form
+          id={'form'}
+          action={payCancelHost}
+          target="_self"
+          method="POST"
+          style={{ width: 0, height: 0, visibility: 'hidden' }}
+          ref={niceSubmitRef}
+        >
+          <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
+          <input type="hidden" name="moid" value={selectedOrder.orderNo} />
+          <input type="hidden" name="tid" value={selectedOrder.transactionId} />
+        </form>
+      )}
     </div>
   );
 };

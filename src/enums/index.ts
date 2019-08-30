@@ -8,3 +8,4 @@ export * from './ShippingStatus';
 export * from './PaymentStatus';
 export * from './PaymentMethod';
 export * from './ShippingCompany';
+export * from './DateRange';

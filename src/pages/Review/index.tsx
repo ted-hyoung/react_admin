@@ -129,7 +129,7 @@ function Review() {
         items: [
           {
             label: '공구명',
-            value: review.event.name,
+            value: review.event && review.event.name,
           },
           {
             label: '주문번호',
