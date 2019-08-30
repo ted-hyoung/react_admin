@@ -654,12 +654,6 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         {
                           required: true,
                           message: '총 재고를 입력해주세요.',
-                          validator: (rule, value, callback) => {
-                            if (value === 0) {
-                              callback(rule.message);
-                            }
-                            callback();
-                          },
                         },
                       ],
                     })(
