@@ -26,7 +26,20 @@ export interface ResponseEvent extends ResponseEventForList {
   images: FileObject[];
   celebReview: ResponseCelebReview;
   products: ResponseProduct[];
+  likeCnt: number;
   eventNotices: ResponseEventNotice[];
+  creator: ResponseEventCreator;
+}
+
+export interface ResponseEventCreator {
+  avatar: FileObject;
+  username: string;
+  sns: ResponseEventCreatorSns;
+}
+
+export interface ResponseEventCreatorSns {
+  instagramFollowers: string;
+  youtubeSubscriberCount: string;
 }
 
 export interface ResponseEventForList {

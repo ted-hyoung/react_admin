@@ -127,6 +127,23 @@ const initialState: EventState = {
     },
     products: [],
     eventNotices: [],
+    likeCnt: 0,
+    creator: {
+      avatar: {
+        bucketName: '',
+        fileKey: '',
+        fileMetadata: {
+          contentLength: 0,
+          contentType: '',
+        },
+        fileName: '',
+      },
+      username: '',
+      sns: {
+        instagramFollowers: '',
+        youtubeSubscriberCount: '',
+      },
+    },
   },
 };
 

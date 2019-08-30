@@ -53,13 +53,13 @@ function TemplateEventBanner(props: Props) {
         </Carousel>
       </div>
       <div className="event-banner-contents">
-        <Paragraph className="event-banner-name">{name}</Paragraph>
+        {/* <Paragraph className="event-banner-name">{name}</Paragraph>
         <Paragraph className="event-banner-term">{`${startDate} - ${endDate}`}</Paragraph>
         <Paragraph className="event-banner-like">
           <HeartOnIcon />
           <strong>좋아요</strong>
           {like}
-        </Paragraph>
+        </Paragraph> */}
       </div>
       {href && (
         <a className="event-banner-link" href={href} target="_blank" rel="noopener noreferrer">

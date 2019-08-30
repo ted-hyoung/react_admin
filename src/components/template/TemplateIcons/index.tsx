@@ -59,6 +59,10 @@ export function HeartOnIcon() {
   return <img src={iconHeartOn} alt="Heart" />;
 }
 
+export function HeartTopIcon() {
+  return <img src={iconHeartOn} alt="Heart" style={{ width: 16, height: 16 }} />;
+}
+
 export function PlayIcon() {
   return <img src={iconPlay} alt="Play" />;
 }
