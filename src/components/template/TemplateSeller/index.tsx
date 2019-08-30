@@ -25,7 +25,6 @@ interface Props {
 
 function TemplateSeller(props: Props) {
   const { event, size = 80 } = props;
-  console.log(event);
   const { creator } = event;
 
   return (
