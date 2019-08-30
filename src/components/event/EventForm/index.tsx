@@ -178,27 +178,14 @@ function EventForm(props: Props) {
               </Col>
               <Col span={18}>
                 <Form.Item>
-                  {/* {getFieldDecorator('name', {
-                    rules: [
-                      {
-                        required: true,
-                        message: '공구명을 입력해주세요.',
-                      },
-                    ],
-                  })(
+                  {getFieldDecorator('name')(
                     <TextArea
                       spellCheck={false}
                       maxLength={100}
                       autosize={{ minRows: 3, maxRows: 3 }}
                       style={{ resize: 'none' }}
                     />,
-                  )} */}
-                  <TextArea
-                    spellCheck={false}
-                    maxLength={100}
-                    autosize={{ minRows: 3, maxRows: 3 }}
-                    style={{ resize: 'none' }}
-                  />
+                  )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>

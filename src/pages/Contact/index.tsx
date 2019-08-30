@@ -43,7 +43,7 @@ const contactColumns: Array<ColumnProps<ResponseContact>> = [
     title: '공구명',
     dataIndex: 'event',
     key: 'event',
-    render: event => event.name,
+    render: event => event && event.name,
   },
   {
     title: '문의 내용',
