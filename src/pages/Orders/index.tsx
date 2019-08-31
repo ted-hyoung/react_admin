@@ -79,14 +79,27 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
         okText: '변경',
         cancelText: '취소',
         onOk() {
-          if (
-            PaymentStatus[PaymentStatus.COMPLETE] !== paymentStatus &&
-            PaymentStatus[PaymentStatus.REFUND_REQUEST] !== paymentStatus
-          ) {
-            message.error('현재 결제상태 값이 결제 완료 또는 환불 요청일 경우에만 변경이 가능합니다.');
-          } else {
-            setNiceCancelPayment(true);
-            setSelectedOrder(record);
+          // 결제 대기로 할때
+          if (PaymentStatus[PaymentStatus.READY] === status) {
+            message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
+          } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
+            message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
+          } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
+            if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
+              setNiceCancelPayment(true);
+              setSelectedOrder(record);
+            } else {
+              message.error('결제완료인 경우에만 결제취소가 가능합니다.');
+            }
+          } else if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === status) {
+            message.error('관리자 홈페이지에서는 환불요청으로 변경하실 수 없습니다.');
+          } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
+            if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === paymentStatus) {
+              setNiceCancelPayment(true);
+              setSelectedOrder(record);
+            } else {
+              message.error('환불요청인 경우에만 환불완료가 가능합니다.');
+            }
           }
         },
       });
