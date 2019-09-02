@@ -160,6 +160,7 @@ const Orders = () => {
       [
         'NO',
         '결제일',
+        '공구명',
         '주문번호',
         '브랜드명',
         '주문자',
@@ -177,6 +178,7 @@ const Orders = () => {
         data.push([
           item.orderId.toString(),
           moment(item.payment.paymentDate).format(dateTimeFormat),
+          item.event.name,
           item.orderNo,
           item.event.brand.brandName,
           item.consumer.username,
@@ -197,13 +199,20 @@ const Orders = () => {
         if (item.orderItems.length > 0) {
           for (let i = 1; i < item.orderItems.length; i++) {
             data.push([
+              item.orderId.toString(),
               '',
               '',
               '',
               '',
               '',
               item.orderItems[i].quantity.toLocaleString(),
-              item.orderItems[i].product.productName + ' / ' + item.orderItems[i].option.optionName,
+              item.orderItems[i].product.productName +
+                ' / ' +
+                `${
+                  item.orderItems[i].option
+                    ? `${item.orderItems[i].option.optionName ? item.orderItems[i].option.optionName : '옵션없음'}`
+                    : '옵션없음'
+                }`,
             ]);
           }
         }
