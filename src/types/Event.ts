@@ -55,6 +55,7 @@ export interface ResponseEventForList {
 
 export interface ResponseEventForOrders {
   brand: ResponseBrand;
+  name: string;
 }
 export interface ResponseEventForReview {
   eventId: number;
