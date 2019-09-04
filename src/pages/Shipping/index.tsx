@@ -291,30 +291,37 @@ const Shipping = () => {
   const getShippingExcel = () => {
     const data = [
       [
+        'NO',
+        '공구명',
+        '브랜드',
         '결제일',
         '주문번호',
-        '주문자',
-        '운송장번호',
-        '배송비',
-        '택배사',
+        '주문인',
+        '주문인 연락처',
         '상품명 / 옵션 / 수량',
-        '상품구매금액',
-        '실 결제금액',
-        '결제수단',
+        '총 상품구매금액',
+        '배송비',
+        '총 결제금액',
+        '받는분',
+        '받는분 연락처',
+        '우편번호',
+        '배송지',
         '메모',
-        '배송상태',
+        '택배사',
+        '운송장번호',
       ],
     ];
 
     if (shippingExcel.length > 0) {
-      shippingExcel.forEach(item => {
+      shippingExcel.forEach((item, index) => {
         data.push([
+          String(index + 1),
+          item.order.event.name,
+          item.order.event.brand.brandName,
           moment(item.order.payment.paymentDate).format(dateTimeFormat),
-          item.order.orderNo.toString(),
+          item.order.orderNo,
           item.order.consumer.username,
-          item.invoice ? item.invoice.toString() : '',
-          item.shippingFee.toLocaleString(),
-          ShippingCompany[item.shippingCompany],
+          item.order.consumer.phone,
           item.order.orderItems[0].product.productName +
             ' / ' +
             `${
@@ -327,11 +334,18 @@ const Shipping = () => {
             ' / ' +
             item.order.orderItems[0].quantity.toString() +
             `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
-          (item.order.payment.totalAmount - item.shippingFee).toLocaleString(),
-          item.order.payment.totalAmount.toLocaleString(),
-          PaymentMethod[item.order.payment.paymentMethod],
+          (item.order.payment.totalAmount - item.shippingFee).toString(),
+          item.shippingFee.toString(),
+          item.order.payment.totalAmount.toString(),
+          item.order.shippingDestination.recipient,
+          item.order.shippingDestination.recipientPhone,
+          item.order.shippingDestination.recipientZipCode,
+          item.order.shippingDestination.recipientAddress.concat(
+            ' ' + item.order.shippingDestination.recipientAddressDetail,
+          ),
           item.order.memo,
-          ShippingStatus[item.shippingStatus],
+          ShippingCompany[item.shippingCompany],
+          item.invoice ? item.invoice.toString() : '',
         ]);
 
         // 임시 소스

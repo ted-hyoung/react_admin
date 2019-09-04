@@ -54,6 +54,11 @@ export interface ResponseEventForQna {
   name: string; // 공구명
 }
 
+export interface ResponseEventForShipping {
+  name: string;
+  brand: ResponseBrand;
+}
+
 export interface UpdateEvent {
   name: string;
   choiceReview: string;
