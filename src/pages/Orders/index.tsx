@@ -5,7 +5,7 @@ import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import { getOrdersAsync } from 'store/reducer/order';
+import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel } from 'store/reducer/order';
 
 // modules
 import { Table, Button, Row, Col, Select, Modal, message } from 'antd';
@@ -147,6 +147,13 @@ const Orders = () => {
     getOrders(0, pageSize, defaultSearchCondition);
   }, [getOrders, pageSize]);
 
+  useEffect(() => {
+    if (ordersExcel.length !== 0) {
+      createOrdersExcel();
+      dispatch(clearOrderExcel);
+    }
+  }, [ordersExcel]);
+
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
       getOrders(currentPage - 1, pageSize, lastSearchCondition);
@@ -155,7 +162,11 @@ const Orders = () => {
     [getOrders, pageSize, lastSearchCondition],
   );
 
-  const getOrdersExcel = () => {
+  const getOrdersExcel = useCallback(() => {
+    dispatch(getOrdersExcelAsync.request({ lastSearchCondition }));
+  }, [dispatch, lastSearchCondition]);
+
+  const createOrdersExcel = () => {
     const data = [
       [
         'NO',
@@ -297,7 +308,7 @@ const Orders = () => {
             </Col>
             <Col>
               <Button type="primary" icon="download" onClick={getOrdersExcel}>
-                엑셀 다운로드
+                셀 다운로드
               </Button>
               <ReactToPrint
                 trigger={() => (

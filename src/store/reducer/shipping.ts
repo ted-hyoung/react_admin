@@ -3,7 +3,7 @@ import produce from 'immer';
 
 // actions
 import * as Actions from 'store/action/shippingAction';
-import { createAsyncAction } from 'typesafe-actions';
+import { createAsyncAction, action } from 'typesafe-actions';
 
 // types
 import { ResponseAsyncAction, PageWrapper, RequestAsyncAction, ErrorAsyncAction } from 'types';
@@ -59,6 +59,8 @@ const initialState: ShippingState = {
   shippingExcel: [],
 };
 
+export const clearShippingExcel = action(Actions.CLEAR_SHIPPING_EXCEL);
+
 const shipping = (state = initialState, action: ResponseAsyncAction) => {
   switch (action.type) {
     case Actions.GET_SHIPPING_SUCCESS: {
@@ -96,6 +98,11 @@ const shipping = (state = initialState, action: ResponseAsyncAction) => {
           item.shippingStatus =
             invoice !== undefined ? ShippingStatus[ShippingStatus.IN_PROGRESS] : ShippingStatus[ShippingStatus.READY];
         }
+      });
+    }
+    case Actions.CLEAR_SHIPPING_EXCEL: {
+      return produce(state, draft => {
+        draft.shippingExcel = [];
       });
     }
     default:

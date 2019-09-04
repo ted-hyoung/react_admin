@@ -37,7 +37,6 @@ function* getShipping(action: RequestAsyncAction) {
     );
 
     yield put(getShippingAsync.success(res.data));
-    yield put(getShippingExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getShippingAsync.failure(error));
   }
@@ -45,16 +44,18 @@ function* getShipping(action: RequestAsyncAction) {
 
 function* getShippingExcel(action: RequestAsyncAction) {
   try {
-    const { searchCondition } = action.payload;
+    const { lastSearchCondition } = action.payload;
 
     const res = yield call(() =>
       Api.get('/shipping/excel', {
         params: {
-          ...searchCondition,
+          ...lastSearchCondition,
         },
         paramsSerializer: (params: any) => parseParams(params),
       }),
     );
+
+    res.data.length === 0 && message.error('엑셀 다운로드 할 배송 관리 데이터가 없습니다.');
 
     yield put(getShippingExcelAsync.success(res.data));
   } catch (error) {

@@ -35,7 +35,6 @@ function* getOrders(action: RequestAsyncAction) {
       }),
     );
     yield put(getOrdersAsync.success(res));
-    yield put(getOrdersExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getOrdersAsync.failure(error));
   }
@@ -59,16 +58,19 @@ function* updateOrdersPaymentStatus(action: RequestAsyncAction) {
 
 function* getOrdersExcel(action: RequestAsyncAction) {
   try {
-    const { searchCondition } = action.payload;
+    const { lastSearchCondition } = action.payload;
 
     const res = yield call(() =>
       Api.get('/orders/excel', {
         params: {
-          ...searchCondition,
+          ...lastSearchCondition,
         },
         paramsSerializer: (params: any) => parseParams(params),
       }),
     );
+
+    res.data.length === 0 && message.error('엑셀 다운로드 할 주문 관리 데이터가 없습니다.');
+
     yield put(getOrdersExcelAsync.success(res));
   } catch (error) {
     yield put(getOrdersExcelAsync.failure(error));

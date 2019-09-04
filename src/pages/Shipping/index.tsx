@@ -15,6 +15,8 @@ import {
   updateShippingAsync,
   updateShippingStatusAsync,
   updateExcelInvoiceAsync,
+  getShippingExcelAsync,
+  clearShippingExcel,
 } from 'store/reducer/shipping';
 
 // components
@@ -185,6 +187,13 @@ const Shipping = () => {
     getShipping(0);
   }, []);
 
+  useEffect(() => {
+    if (shippingExcel.length !== 0) {
+      createShippingExcel();
+      dispatch(clearShippingExcel);
+    }
+  }, [shippingExcel]);
+
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
       getShipping(currentPage - 1, pageSize, lastSearchCondition);
@@ -288,7 +297,11 @@ const Shipping = () => {
     }
   }, []);
 
-  const getShippingExcel = () => {
+  const getShippingExcel = useCallback(() => {
+    dispatch(getShippingExcelAsync.request({ lastSearchCondition }));
+  }, [dispatch, lastSearchCondition]);
+
+  const createShippingExcel = () => {
     const data = [
       [
         'NO',
@@ -299,9 +312,6 @@ const Shipping = () => {
         '주문인',
         '주문인 연락처',
         '상품명 / 옵션 / 수량',
-        '총 상품구매금액',
-        '배송비',
-        '총 결제금액',
         '받는분',
         '받는분 연락처',
         '우편번호',
@@ -311,9 +321,17 @@ const Shipping = () => {
         '운송장번호',
       ],
     ];
-
     if (shippingExcel.length > 0) {
       shippingExcel.forEach((item, index) => {
+        let orderItemName = '';
+        item.order.orderItems.map((orderItem, index) => {
+          if (index === 0) {
+            orderItemName += orderItem.product.productName;
+          } else {
+            orderItemName += '\n' + orderItem.product.productName;
+          }
+          orderItemName += ' / ' + orderItem.quantity + '개';
+        });
         data.push([
           String(index + 1),
           item.order.event.name,
@@ -322,21 +340,7 @@ const Shipping = () => {
           item.order.orderNo,
           item.order.consumer.username,
           item.order.consumer.phone,
-          item.order.orderItems[0].product.productName +
-            ' / ' +
-            `${
-              item.order.orderItems[0].option
-                ? `${
-                    item.order.orderItems[0].option.optionName ? item.order.orderItems[0].option.optionName : '옵션없음'
-                  }`
-                : '옵션없음'
-            }` +
-            ' / ' +
-            item.order.orderItems[0].quantity.toString() +
-            `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
-          (item.order.payment.totalAmount - item.shippingFee).toString(),
-          item.shippingFee.toString(),
-          item.order.payment.totalAmount.toString(),
+          orderItemName,
           item.order.shippingDestination.recipient,
           item.order.shippingDestination.recipientPhone,
           item.order.shippingDestination.recipientZipCode,
@@ -347,27 +351,28 @@ const Shipping = () => {
           ShippingCompany[item.shippingCompany],
           item.invoice ? item.invoice.toString() : '',
         ]);
-
-        // 임시 소스
-        // if (item.order.orderItems.length > 0) {
-        //   const orderItemsAdd = [];
-        //   for (let i = 1; i < item.order.orderItems.length; i++) {
-        //     orderItemsAdd[i] =
-        //       item.order.orderItems[i].product.productName +
-        //       ' / ' +
-        //       item.order.orderItems[i].option.optionName +
-        //       ' / ' +
-        //       item.order.orderItems[i].quantity;
-        //   }
-
-        //   orderItemsAdd.forEach(orderItem => {
-        //     data.push(['', '', '', '', '', '', orderItem]);
-        //   });
-        // }
       });
 
       const ws = XLSX.utils.aoa_to_sheet(data);
       const wb = XLSX.utils.book_new();
+      if (!ws['!merges']) ws['!merges'] = [];
+      ws['!cols'] = [
+        { wch: 5 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 50 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 50 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
       XLSX.utils.book_append_sheet(wb, ws, 'shipping');
       XLSX.writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
     }
