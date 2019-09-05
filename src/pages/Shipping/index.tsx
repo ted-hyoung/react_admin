@@ -24,7 +24,7 @@ import { ShippingSearchBar } from 'components';
 
 // uilts
 import { getNowYMD } from 'lib/utils';
-import { SearchShipping } from 'types/Shipping';
+import { SearchShipping, UpdateShippingExcelInvoice } from 'types/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 import { UploadFile } from 'antd/lib/upload/interface';
 
@@ -202,27 +202,25 @@ const Shipping = () => {
   );
 
   const handleUpdateExcelInvoice = useCallback(() => {
-    const orderNoList: any = {};
+    const data: UpdateShippingExcelInvoice[] = [];
     const excelDataLength = excelData.length;
 
     for (let i = 0; i < excelDataLength; i++) {
       const orderNo = excelData[i]['주문번호'];
+      const shipping = ShippingCompany[excelData[i]['택배사']];
+      const invoice = excelData[i]['운송장번호'];
 
-      if (orderNo) {
-        if (orderNoList[orderNo]) {
-          orderNoList[orderNo].push(excelData[i]['운송장번호']);
-        } else {
-          orderNoList[orderNo] = [excelData[i]['운송장번호']];
-        }
-      }
+      data.push({
+        invoice,
+        shippingCompany: shipping as ShippingCompany,
+        order: {
+          orderNo: orderNo,
+        },
+      });
     }
 
-    Object.keys(orderNoList).forEach(item => {
-      const items = orderNoList[item];
-      dispatch(updateExcelInvoiceAsync.request({ invoice: items[0], orderNo: item }));
-    });
+    dispatch(updateExcelInvoiceAsync.request({ data }));
 
-    message.success('운송장번호가 등록되었습니다.');
     setExcelUploaded(false);
     getShipping(0);
   }, [dispatch, excelData, getShipping]);
@@ -261,7 +259,10 @@ const Shipping = () => {
         const invoice = data[i][14];
 
         if (shippingCompany && !ShippingCompany[shippingCompany]) {
-          Modal.error({ title: `주문 번호 : ${orderNo} 배송사를 다시 확인해주세요. ` });
+          Modal.error({
+            title: '배송사 입력 시 오타/띄어쓰기 등을 주의해주시기 바랍니다.',
+            content: '배송사는 CJ대한통운, 한진, 우체국, 롯데, 로젠으로 입력해주세요.',
+          });
           return false;
         }
 
@@ -270,8 +271,16 @@ const Shipping = () => {
           return false;
         }
 
+        if (!invoice) {
+          Modal.error({ title: '누락 된 운송장 번호가 있습니다.' });
+          return false;
+        }
+
         if (invoice && !regInvoice.test(invoice)) {
-          Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
+          Modal.error({
+            title: '송장번호 자릿수/숫자를 확인해주세요.',
+            content: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.',
+          });
           return false;
         }
         _data.push({
