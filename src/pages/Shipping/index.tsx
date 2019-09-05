@@ -256,8 +256,8 @@ const Shipping = () => {
       const dataLength = data.length;
 
       for (let i = 1; i < dataLength; i++) {
-        const orderNo = data[i][1];
-        const invoice = data[i][3];
+        const orderNo = data[i][3];
+        const invoice = data[i][14];
 
         if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
           Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
@@ -268,21 +268,22 @@ const Shipping = () => {
           Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
           return false;
         }
-
         _data.push({
-          key: i,
-          결제일: data[i][0],
-          주문번호: data[i][1],
-          주문자: data[i][2],
-          운송장번호: data[i][3],
-          배송비: data[i][4],
-          택배사: data[i][5],
-          '상품명 / 옵션 / 수량': data[i][6],
-          상품구매금액: data[i][7],
-          '실 결제금액': data[i][8],
-          결제수단: data[i][9],
-          메모: data[i][10],
-          배송상태: data[i][11],
+          No: data[i][0],
+          공구명: data[i][1],
+          브랜드: data[i][2],
+          결제일: data[i][3],
+          주문번호: data[i][4],
+          주문인: data[i][5],
+          '주문인 연락처': data[i][6],
+          '상품명 / 옵션 / 수량': data[i][7],
+          받는분: data[i][8],
+          '받는분 연락처': data[i][9],
+          우편번호: data[i][10],
+          배송지: data[i][11],
+          메모: data[i][12],
+          택배사: data[i][13],
+          운송장번호: data[i][14],
         });
       }
 
@@ -458,6 +459,21 @@ const Shipping = () => {
           size="small"
           columns={[
             {
+              title: 'No',
+              dataIndex: 'No',
+              key: 'No',
+            },
+            {
+              title: '공구명',
+              dataIndex: '공구명',
+              key: '공구명',
+            },
+            {
+              title: '브랜드',
+              dataIndex: '브랜드',
+              key: '브랜드',
+            },
+            {
               title: '결제일',
               dataIndex: '결제일',
               key: '결제일',
@@ -468,25 +484,14 @@ const Shipping = () => {
               key: '주문번호',
             },
             {
-              title: '주문자',
-              dataIndex: '주문자',
-              key: '주문자',
+              title: '주문인',
+              dataIndex: '주문인',
+              key: '주문인',
             },
             {
-              title: '운송장번호',
-              dataIndex: '운송장번호',
-              key: '운송장번호',
-              width: '250px',
-            },
-            {
-              title: '배송비',
-              dataIndex: '배송비',
-              key: '배송비',
-            },
-            {
-              title: '택배사',
-              dataIndex: '택배사',
-              key: '택배사',
+              title: '주문인 연락처',
+              dataIndex: '주문인 연락처',
+              key: '주문인 연락처',
             },
             {
               title: '상품명 / 옵션 / 수량',
@@ -495,19 +500,24 @@ const Shipping = () => {
               width: '250px',
             },
             {
-              title: '상품구매금액',
-              dataIndex: '상품구매금액',
-              key: '상품구매금액',
+              title: '받는분',
+              dataIndex: '받는분',
+              key: '받는분',
             },
             {
-              title: '실 결제금액',
-              dataIndex: '실 결제금액',
-              key: '실 결제금액',
+              title: '받는분 연락처',
+              dataIndex: '받는분 연락처',
+              key: '받는분 연락처',
             },
             {
-              title: '결제수단',
-              dataIndex: '결제수단',
-              key: '결제수단',
+              title: '우편번호',
+              dataIndex: '우편번호',
+              key: '우편번호',
+            },
+            {
+              title: '배송지',
+              dataIndex: '배송지',
+              key: '배송지',
             },
             {
               title: '메모',
@@ -515,9 +525,15 @@ const Shipping = () => {
               key: '메모',
             },
             {
-              title: '배송상태',
-              dataIndex: '배송상태',
-              key: '배송상태',
+              title: '택배사',
+              dataIndex: '택배사',
+              key: '택배사',
+            },
+            {
+              title: '운송장번호',
+              dataIndex: '운송장번호',
+              key: '운송장번호',
+              width: '250px',
             },
           ]}
           dataSource={excelData}
