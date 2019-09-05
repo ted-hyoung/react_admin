@@ -257,7 +257,13 @@ const Shipping = () => {
 
       for (let i = 1; i < dataLength; i++) {
         const orderNo = data[i][3];
+        const shippingCompany = data[i][13];
         const invoice = data[i][14];
+
+        if (shippingCompany && !ShippingCompany[shippingCompany]) {
+          Modal.error({ title: `주문 번호 : ${orderNo} 배송사를 다시 확인해주세요. ` });
+          return false;
+        }
 
         if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
           Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
@@ -542,6 +548,7 @@ const Shipping = () => {
               width: '250px',
             },
           ]}
+          rowKey={(recode, index) => index.toString()}
           dataSource={excelData}
         />
       </Modal>
