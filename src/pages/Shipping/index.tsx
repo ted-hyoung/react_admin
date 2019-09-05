@@ -429,12 +429,18 @@ const Shipping = () => {
     };
   });
 
+  const handleProductModalClose = () => {
+    setExcelUploaded(false);
+  };
+
   return (
     <div className="shipping">
       <Modal
         width={1400}
         title="송장 업데이트"
         visible={excelUploaded}
+        destroyOnClose
+        onCancel={handleProductModalClose}
         footer={
           <>
             <Button onClick={() => setExcelUploaded(false)}>취소</Button>
@@ -497,7 +503,7 @@ const Shipping = () => {
               title: '상품명 / 옵션 / 수량',
               dataIndex: '상품명 / 옵션 / 수량',
               key: '상품명 / 옵션 / 수량',
-              width: '250px',
+              width: '400px',
             },
             {
               title: '받는분',
