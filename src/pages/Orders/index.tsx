@@ -308,7 +308,7 @@ const Orders = () => {
             </Col>
             <Col>
               <Button type="primary" icon="download" onClick={getOrdersExcel}>
-                셀 다운로드
+                엑셀 다운로드
               </Button>
               <ReactToPrint
                 trigger={() => (
