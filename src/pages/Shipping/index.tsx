@@ -283,6 +283,8 @@ const Shipping = () => {
           });
           return false;
         }
+
+        // todo : cell warp text 관련 부분 추후 작업 필요 (이종현)
         _data.push({
           No: data[i][0],
           공구명: data[i][1],

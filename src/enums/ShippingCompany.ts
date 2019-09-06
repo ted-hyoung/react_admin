@@ -3,13 +3,13 @@ export enum ShippingCompany {
   CJ = 'CJ대한통운',
   POST_OFFICE = '우체국',
   LOTTE = '롯데',
-  ILOGEN = '로젠',
+  LOGEN = '로젠',
 
   '한진' = 'HAN_JIN',
   'CJ대한통운' = 'CJ',
   '우체국' = 'POST_OFFICE',
   '롯데' = 'LOTTE',
-  '로젠' = 'ILOGEN',
+  '로젠' = 'LOGEN',
 }
 
 export const ShippingCompanies = [
@@ -31,6 +31,6 @@ export const ShippingCompanies = [
   },
   {
     name: '로젠',
-    value: 'ILOGEN',
+    value: 'LOGEN',
   },
 ];
