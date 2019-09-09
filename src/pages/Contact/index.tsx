@@ -164,6 +164,7 @@ function Contact() {
       <Divider />
       <div style={{ float: 'left', marginTop: 10 }}>답변대기 : {counts.wait}건</div>
       <PaginationTable
+        scroll={{ x: 720 }}
         onChangePageSize={handleChangePageSize}
         rowKey={contact => contact.contactId.toString()}
         dataSource={content}

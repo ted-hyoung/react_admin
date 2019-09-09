@@ -420,7 +420,7 @@ const DailySales = () => {
           }}
         />
       </div>
-      <div style={{ width: 1100, marginTop: 20, textAlign: 'right' }}>
+      <div style={{ width: 1100, marginTop: 20, textAlign: 'left' }}>
         <Button type="primary" icon="download" onClick={handleExcelDownLoad}>
           엑셀 다운로드
         </Button>
