@@ -129,6 +129,7 @@ const initialState: EventState = {
     eventNotices: [],
     likeCnt: 0,
     creator: {
+      loginId: '',
       avatar: {
         bucketName: '',
         fileKey: '',
