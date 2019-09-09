@@ -1,4 +1,4 @@
-import { EventStatus } from 'enums';
+import { EventStatus, ShippingCompany } from 'enums';
 import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
 import { ResponseCelebReview } from './CelebReview';
 import { ResponseProduct } from './Product';
@@ -14,6 +14,7 @@ export interface CreateEvent {
   targetAmount: number;
   detail?: string;
   videoUrl?: string;
+  shippingCompany: ShippingCompany;
   images?: CreateFileObject[];
 }
 
@@ -22,6 +23,7 @@ export interface ResponseEvent extends ResponseEventForList {
   choiceReview: string;
   detail: string;
   videoUrl: string;
+  shippingCompany: string;
   shippingFeeInfo: ResponseShippingFeeInfo;
   images: FileObject[];
   celebReview: ResponseCelebReview;
@@ -82,6 +84,7 @@ export interface UpdateEvent {
   targetAmount: number;
   detail?: string;
   videoUrl?: string;
+  shippingCompany: string;
   images?: UpdateFileObject[];
 }
 

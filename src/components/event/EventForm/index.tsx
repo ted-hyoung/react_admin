@@ -20,6 +20,7 @@ import {
   Typography,
   InputNumber,
   message,
+  Select,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
@@ -32,12 +33,13 @@ import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components'
 import { calcStringByte } from 'lib/utils';
 
 import './index.less';
-import { EventStatus } from 'enums';
+import { EventStatus, ShippingCompanies } from 'enums';
 
 // defines
 const { TextArea } = Input;
 const { Paragraph, Text } = Typography;
 const TIME_FORMAT = 'HH:mm A';
+const { Option } = Select;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -68,7 +70,7 @@ function EventForm(props: Props) {
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
-        const { name, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl } = values;
+        const { name, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl, shippingCompany } = values;
 
         if (fileObjectList.length < 3) {
           message.error('이미지는 최소 3개 이상 등록해주세요.');
@@ -92,6 +94,7 @@ function EventForm(props: Props) {
             targetAmount,
             videoUrl,
             detail,
+            shippingCompany,
             images: fileObjectList,
           };
 
@@ -112,6 +115,7 @@ function EventForm(props: Props) {
             targetAmount,
             videoUrl,
             detail,
+            shippingCompany,
             images: fileObjectList,
           };
 
@@ -148,6 +152,12 @@ function EventForm(props: Props) {
     setVideoUrl('');
   };
 
+  const onChangePhoneNumber = (value: string) => {
+    setFieldsValue({
+      shippingCompany: value,
+    });
+  };
+
   useEffect(() => {
     if (event.eventId) {
       setFieldsValue({
@@ -158,6 +168,7 @@ function EventForm(props: Props) {
         salesEnded: moment(event.salesEnded),
         targetAmount: event.targetAmount,
         videoUrl: event.videoUrl,
+        shippingCompeny: event.shippingCompany,
       });
       setVideoUrl(event.videoUrl);
       setFileObjectList(event.images);
@@ -235,6 +246,33 @@ function EventForm(props: Props) {
               </Col>
               <Col>
                 <Button type="primary" shape="circle" icon="search" onClick={() => setVisible(true)} />
+              </Col>
+            </FlexRow>
+          </Descriptions.Item>
+          <Descriptions.Item label="*배송사" span={24}>
+            <FlexRow>
+              <Col>
+                <Form.Item>
+                  {getFieldDecorator('shippingCompany', {
+                    initialValue: event.shippingCompany,
+                    rules: [
+                      {
+                        required: true,
+                        message: '배송사를 선택해주세요.',
+                      },
+                    ],
+                  })(
+                    <Select style={{ width: 170, height: '100%' }} onChange={onChangePhoneNumber}>
+                      {ShippingCompanies.map(item => {
+                        return (
+                          <Option key={item.name} value={item.value}>
+                            {item.name}
+                          </Option>
+                        );
+                      })}
+                    </Select>,
+                  )}
+                </Form.Item>
               </Col>
             </FlexRow>
           </Descriptions.Item>
