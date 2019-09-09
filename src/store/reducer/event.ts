@@ -115,6 +115,7 @@ const initialState: EventState = {
     detail: '',
     targetAmount: 0,
     videoUrl: '',
+    shippingCompany: '',
     shippingFeeInfo: {
       shippingFee: 0,
       shippingFreeCondition: 0,

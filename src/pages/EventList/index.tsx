@@ -138,7 +138,7 @@ function EventList(props: RouteComponentProps) {
     return {
       total: events.totalElements,
       pageSize: events.size,
-      onShowSizeChange: handlePaginationChange,
+      onChange: handlePaginationChange,
     };
   }, [events]);
 
