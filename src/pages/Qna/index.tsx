@@ -80,12 +80,12 @@ const Qna = () => {
       title: '공구명',
       dataIndex: 'event',
       key: 'event',
-      width: '10%',
+      width: '20%',
       render: (text, record) => {
         return record.event && record.event.name;
       },
     },
-    { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '30%' },
+    { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '20%' },
     {
       title: '접수일',
       dataIndex: 'created',
@@ -130,12 +130,13 @@ const Qna = () => {
     <div className="qna">
       <QnaSearch onOk={getQna} />
 
-      <div className="qna-status-wait" style={{ textAlign: 'right', marginBottom: 10 }}>
+      <div className="qna-status-wait" style={{ textAlign: 'right', marginTop: 10, marginBottom: 10 }}>
         <strong>답변대기</strong> {waitStatusCount}
       </div>
 
       <div className="qna-table">
         <Table
+          scroll={{ x: 720 }}
           rowKey={record => record.qnaId.toString()}
           dataSource={dataSource}
           columns={columns}

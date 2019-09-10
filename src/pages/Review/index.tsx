@@ -316,6 +316,7 @@ function Review() {
       />
       <Divider />
       <PaginationTable
+        scroll={{ x: 720 }}
         onChangeExpose={handleUpdateReviewsExpose}
         onChangePageSize={handlePageSizeChange}
         rowKey={review => review.reviewId.toString()}
