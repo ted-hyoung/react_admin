@@ -34,6 +34,7 @@ export interface ResponseEvent extends ResponseEventForList {
 }
 
 export interface ResponseEventCreator {
+  loginId: string;
   avatar: FileObject;
   username: string;
   sns: ResponseEventCreatorSns;
@@ -53,6 +54,7 @@ export interface ResponseEventForList {
   salesStarted: string;
   salesEnded: string;
   created: string;
+  creator: ResponseEventCreator;
 }
 
 export interface ResponseEventForOrders {
