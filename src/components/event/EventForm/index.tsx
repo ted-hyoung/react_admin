@@ -120,9 +120,8 @@ function EventForm(props: Props) {
           };
 
           dispatch(createEventAsync.request({ data }));
+          resetFields();
         }
-
-        resetFields();
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }

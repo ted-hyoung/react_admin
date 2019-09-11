@@ -80,6 +80,7 @@ function* updateEventById(action: PayloadAction<string, UpdateRequestPayload<Upd
     yield message.success('공구가 수정되었습니다.');
   } catch (error) {
     yield put(updateEventByIdAsync.failure(error));
+    yield message.error(error);
   }
 }
 
