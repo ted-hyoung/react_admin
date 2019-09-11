@@ -311,9 +311,11 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           discountSalesPrice,
           disabledOptionStock,
           disabledOptionSafeStock,
+          disabledOptionTotalStock,
           enableOption,
           freebie,
           options,
+          updateDisabledOptionStock,
         } = values;
         if (product.productId === 0) {
           const createProduct: CreateProduct = {
@@ -363,6 +365,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             disabledOptionStock: 0,
             disabledOptionTotalStock: 0,
             disabledOptionSafeStock: 0,
+            updateDisabledOptionStock: 0,
             enableOption: true,
             options: [],
             freebie,
@@ -392,8 +395,9 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           } else if (enableOption === 1) {
             // 옵션 미사용
             updateProduct.disabledOptionStock = Number(disabledOptionStock);
-            updateProduct.disabledOptionTotalStock = Number(disabledOptionStock);
+            updateProduct.disabledOptionTotalStock = Number(disabledOptionTotalStock);
             updateProduct.disabledOptionSafeStock = Number(disabledOptionSafeStock);
+            updateProduct.updateDisabledOptionStock = Number(updateDisabledOptionStock);
             updateProduct.enableOption = false;
           }
 
@@ -434,6 +438,8 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           productName: product.productName,
           normalSalesPrice: product.normalSalesPrice,
           discountSalesPrice: product.discountSalesPrice,
+          disabledOptionTotalStock: product.disabledOptionTotalStock,
+          updateDisabledOptionStock: 0,
           freebie: product.freebie,
           enableOption: product.enableOption ? 0 : 1,
           options: [],
@@ -641,10 +647,10 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 </Col>
               </Row>
             )}
-            {!product.enableOption && (
+            {!product.enableOption && product.productId == 0 && (
               <Row>
                 <Col span={3} className="product-modal-col-3">
-                  <Text type="danger">* 총 재고</Text>
+                  <Text type="danger">* 판매 재고</Text>
                 </Col>
                 <Col span={8} className="product-modal-col-8">
                   <Form.Item>
@@ -653,7 +659,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                       rules: [
                         {
                           required: true,
-                          message: '총 재고를 입력해주세요.',
+                          message: '판매 재고를 입력해주세요.',
                         },
                       ],
                     })(
@@ -694,6 +700,103 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 </Col>
               </Row>
             )}
+            {!product.enableOption && product.productId !== 0 && (
+              <>
+                <Row>
+                  <Col span={3} className="product-modal-col-3">
+                    <Text>남은 재고 / 총 재고</Text>
+                  </Col>
+                  <Col span={3}>
+                    <Form.Item>
+                      {getFieldDecorator('disabledOptionStock', {
+                        initialValue: 0,
+                      })(
+                        <InputNumber
+                          min={0}
+                          style={{ width: '100%' }}
+                          className="product-modal-input"
+                          disabled={true}
+                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                        />,
+                      )}
+                    </Form.Item>
+                  </Col>
+                  <Col span={3}>
+                    <Form.Item>
+                      {getFieldDecorator('disabledOptionTotalStock', {
+                        initialValue: 0,
+                      })(
+                        <InputNumber
+                          min={0}
+                          style={{ width: '100%', marginLeft: 10 }}
+                          className="product-modal-input"
+                          disabled={true}
+                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                        />,
+                      )}
+                    </Form.Item>
+                  </Col>
+                  <Col span={3} className="product-modal-col-3">
+                    <Text>안전 재고</Text>
+                  </Col>
+                  <Col span={8} className="product-modal-col-8">
+                    <Form.Item>
+                      {getFieldDecorator('disabledOptionSafeStock', {
+                        initialValue: 0,
+                        rules: [
+                          {
+                            required: true,
+                            message: '안전 재고를 입력해주세요.',
+                          },
+                        ],
+                      })(
+                        <InputNumber
+                          min={0}
+                          style={{ width: '100%' }}
+                          className="product-modal-input"
+                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                        />,
+                      )}
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={3} className="product-modal-col-3">
+                    <Text type="danger">* 변경할 남은 재고</Text>
+                  </Col>
+                  <Col span={8} className="product-modal-col-8">
+                    <Form.Item>
+                      {getFieldDecorator('updateDisabledOptionStock', {
+                        initialValue: 0,
+                        rules: [
+                          {
+                            required: true,
+                            message: '현재 남은 재고를 확인해주세요.',
+                            validator: (rule, value, callback) => {
+                              if (getFieldValue('disabledOptionStock') + value < 0) {
+                                callback(rule.message);
+                              }
+                              callback();
+                            },
+                          },
+                        ],
+                      })(
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          className="product-modal-input"
+                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                        />,
+                      )}
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </>
+            )}
+
             <Row>
               <div className="product-modal-button">
                 <Button type="primary" size="large" htmlType="submit">
