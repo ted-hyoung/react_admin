@@ -85,6 +85,9 @@ const Toolbar = (props: ToolbarProps) => {
         </select>
       </span>
       <span className="ql-formats">
+        <select className="ql-align" />
+      </span>
+      <span className="ql-formats">
         <select className="ql-color" />
         <select className="ql-background" />
       </span>
