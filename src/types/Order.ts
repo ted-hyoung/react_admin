@@ -90,3 +90,7 @@ export interface ChartData {
   labels: string[];
   datasets: DataSets[];
 }
+
+export interface UpdateOrderForShipping {
+  orderNo: string;
+}

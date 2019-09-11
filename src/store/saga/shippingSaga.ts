@@ -37,7 +37,6 @@ function* getShipping(action: RequestAsyncAction) {
     );
 
     yield put(getShippingAsync.success(res.data));
-    yield put(getShippingExcelAsync.request({ searchCondition }));
   } catch (error) {
     yield put(getShippingAsync.failure(error));
   }
@@ -45,16 +44,18 @@ function* getShipping(action: RequestAsyncAction) {
 
 function* getShippingExcel(action: RequestAsyncAction) {
   try {
-    const { searchCondition } = action.payload;
+    const { lastSearchCondition } = action.payload;
 
     const res = yield call(() =>
       Api.get('/shipping/excel', {
         params: {
-          ...searchCondition,
+          ...lastSearchCondition,
         },
         paramsSerializer: (params: any) => parseParams(params),
       }),
     );
+
+    res.data.length === 0 && message.error('엑셀 다운로드 할 배송 관리 데이터가 없습니다.');
 
     yield put(getShippingExcelAsync.success(res.data));
   } catch (error) {
@@ -72,6 +73,11 @@ function* updateShipping(action: RequestAsyncAction) {
     yield call(() => Api.put(`/shipping/${shippingId}`, data));
     yield put(updateShippingAsync.success(action.payload));
     yield message.success('운송장 번호가 수정되었습니다.');
+    yield put(
+      getShippingAsync.request({
+        page: 0,
+      }),
+    );
   } catch (error) {
     yield put(updateShippingAsync.failure(error));
     Modal.error({ title: error });
@@ -95,19 +101,14 @@ function* updateShippingStatus(action: RequestAsyncAction) {
 
 function* updateExcelInvoice(action: RequestAsyncAction) {
   try {
-    const { invoice, orderNo } = action.payload;
-
-    const data = {
-      invoice: invoice ? invoice : '',
-      order: {
-        orderNo,
-      },
-    };
+    const { data } = action.payload;
 
     yield call(() => Api.put('/shipping/excel/invoice', data));
     yield put(updateExcelInvoiceAsync.success(action.payload));
+    yield message.success('운송장 번호를 등록하였습니다.');
   } catch (error) {
     yield put(updateExcelInvoiceAsync.failure(error));
+    yield message.success('운송장 번호 등록을 실패하였습니다.');
   }
 }
 

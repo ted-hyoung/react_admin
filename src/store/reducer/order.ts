@@ -54,6 +54,7 @@ export const getStatisticsDailySalesAsync = createAsyncAction(
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const clearDailySalesStatus = action(Actions.CLEAR_DAILY_SALES_STATUS);
+export const clearOrderExcel = action(Actions.CLEAR_ORDER_EXCEL);
 
 // reducers
 const initialState: OrderState = {
@@ -118,6 +119,11 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
     case Actions.CLEAR_DAILY_SALES_STATUS: {
       return produce(state, draft => {
         draft.statistics.dailySalesStatus = false;
+      });
+    }
+    case Actions.CLEAR_ORDER_EXCEL: {
+      return produce(state, draft => {
+        draft.ordersExcel = [];
       });
     }
     default: {

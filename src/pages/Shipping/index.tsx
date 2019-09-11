@@ -15,6 +15,8 @@ import {
   updateShippingAsync,
   updateShippingStatusAsync,
   updateExcelInvoiceAsync,
+  getShippingExcelAsync,
+  clearShippingExcel,
 } from 'store/reducer/shipping';
 
 // components
@@ -22,7 +24,7 @@ import { ShippingSearchBar } from 'components';
 
 // uilts
 import { getNowYMD } from 'lib/utils';
-import { SearchShipping } from 'types/Shipping';
+import { SearchShipping, UpdateShippingExcelInvoice } from 'types/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 import { UploadFile } from 'antd/lib/upload/interface';
 
@@ -185,6 +187,13 @@ const Shipping = () => {
     getShipping(0);
   }, []);
 
+  useEffect(() => {
+    if (shippingExcel.length !== 0) {
+      createShippingExcel();
+      dispatch(clearShippingExcel);
+    }
+  }, [shippingExcel]);
+
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
       getShipping(currentPage - 1, pageSize, lastSearchCondition);
@@ -193,27 +202,25 @@ const Shipping = () => {
   );
 
   const handleUpdateExcelInvoice = useCallback(() => {
-    const orderNoList: any = {};
+    const data: UpdateShippingExcelInvoice[] = [];
     const excelDataLength = excelData.length;
 
     for (let i = 0; i < excelDataLength; i++) {
       const orderNo = excelData[i]['주문번호'];
+      const shipping = ShippingCompany[excelData[i]['택배사']];
+      const invoice = excelData[i]['운송장번호'];
 
-      if (orderNo) {
-        if (orderNoList[orderNo]) {
-          orderNoList[orderNo].push(excelData[i]['운송장번호']);
-        } else {
-          orderNoList[orderNo] = [excelData[i]['운송장번호']];
-        }
-      }
+      data.push({
+        invoice,
+        shippingCompany: shipping as ShippingCompany,
+        order: {
+          orderNo: orderNo,
+        },
+      });
     }
 
-    Object.keys(orderNoList).forEach(item => {
-      const items = orderNoList[item];
-      dispatch(updateExcelInvoiceAsync.request({ invoice: items[0], orderNo: item }));
-    });
+    dispatch(updateExcelInvoiceAsync.request({ data }));
 
-    message.success('운송장번호가 등록되었습니다.');
     setExcelUploaded(false);
     getShipping(0);
   }, [dispatch, excelData, getShipping]);
@@ -247,33 +254,53 @@ const Shipping = () => {
       const dataLength = data.length;
 
       for (let i = 1; i < dataLength; i++) {
-        const orderNo = data[i][1];
-        const invoice = data[i][3];
+        const orderNo = data[i][3];
+        const shippingCompany = data[i][13];
+        const invoice = data[i][14];
+
+        if (shippingCompany && !ShippingCompany[shippingCompany]) {
+          Modal.error({
+            title: '배송사 입력 시 오타/띄어쓰기 등을 주의해주시기 바랍니다.',
+            content: '배송사는 CJ대한통운, 한진, 우체국, 롯데, 로젠으로 입력해주세요.',
+          });
+          return false;
+        }
 
         if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
           Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
           return false;
         }
 
-        if (invoice && !regInvoice.test(invoice)) {
-          Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
+        if (!invoice) {
+          Modal.error({ title: '누락 된 운송장 번호가 있습니다.' });
           return false;
         }
 
+        if (invoice && !regInvoice.test(invoice)) {
+          Modal.error({
+            title: '송장번호 자릿수/숫자를 확인해주세요.',
+            content: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.',
+          });
+          return false;
+        }
+
+        // todo : cell warp text 관련 부분 추후 작업 필요 (이종현)
         _data.push({
-          key: i,
-          결제일: data[i][0],
-          주문번호: data[i][1],
-          주문자: data[i][2],
-          운송장번호: data[i][3],
-          배송비: data[i][4],
-          택배사: data[i][5],
-          '상품명 / 옵션 / 수량': data[i][6],
-          상품구매금액: data[i][7],
-          '실 결제금액': data[i][8],
-          결제수단: data[i][9],
-          메모: data[i][10],
-          배송상태: data[i][11],
+          No: data[i][0],
+          공구명: data[i][1],
+          브랜드: data[i][2],
+          결제일: data[i][3],
+          주문번호: data[i][4],
+          주문인: data[i][5],
+          '주문인 연락처': data[i][6],
+          '상품명 / 옵션 / 수량': data[i][7],
+          받는분: data[i][8],
+          '받는분 연락처': data[i][9],
+          우편번호: data[i][10],
+          배송지: data[i][11],
+          메모: data[i][12],
+          택배사: data[i][13],
+          운송장번호: data[i][14],
         });
       }
 
@@ -288,7 +315,11 @@ const Shipping = () => {
     }
   }, []);
 
-  const getShippingExcel = () => {
+  const getShippingExcel = useCallback(() => {
+    dispatch(getShippingExcelAsync.request({ lastSearchCondition }));
+  }, [dispatch, lastSearchCondition]);
+
+  const createShippingExcel = () => {
     const data = [
       [
         'NO',
@@ -299,9 +330,6 @@ const Shipping = () => {
         '주문인',
         '주문인 연락처',
         '상품명 / 옵션 / 수량',
-        '총 상품구매금액',
-        '배송비',
-        '총 결제금액',
         '받는분',
         '받는분 연락처',
         '우편번호',
@@ -311,9 +339,17 @@ const Shipping = () => {
         '운송장번호',
       ],
     ];
-
     if (shippingExcel.length > 0) {
       shippingExcel.forEach((item, index) => {
+        let orderItemName = '';
+        item.order.orderItems.map((orderItem, index) => {
+          if (index === 0) {
+            orderItemName += orderItem.product.productName;
+          } else {
+            orderItemName += '\n' + orderItem.product.productName;
+          }
+          orderItemName += ' / ' + orderItem.quantity + '개';
+        });
         data.push([
           String(index + 1),
           item.order.event.name,
@@ -322,21 +358,7 @@ const Shipping = () => {
           item.order.orderNo,
           item.order.consumer.username,
           item.order.consumer.phone,
-          item.order.orderItems[0].product.productName +
-            ' / ' +
-            `${
-              item.order.orderItems[0].option
-                ? `${
-                    item.order.orderItems[0].option.optionName ? item.order.orderItems[0].option.optionName : '옵션없음'
-                  }`
-                : '옵션없음'
-            }` +
-            ' / ' +
-            item.order.orderItems[0].quantity.toString() +
-            `${item.order.orderItems.length > 1 ? ` 외 ${item.order.orderItems.length - 1}건` : ''}`,
-          (item.order.payment.totalAmount - item.shippingFee).toString(),
-          item.shippingFee.toString(),
-          item.order.payment.totalAmount.toString(),
+          orderItemName,
           item.order.shippingDestination.recipient,
           item.order.shippingDestination.recipientPhone,
           item.order.shippingDestination.recipientZipCode,
@@ -347,27 +369,28 @@ const Shipping = () => {
           ShippingCompany[item.shippingCompany],
           item.invoice ? item.invoice.toString() : '',
         ]);
-
-        // 임시 소스
-        // if (item.order.orderItems.length > 0) {
-        //   const orderItemsAdd = [];
-        //   for (let i = 1; i < item.order.orderItems.length; i++) {
-        //     orderItemsAdd[i] =
-        //       item.order.orderItems[i].product.productName +
-        //       ' / ' +
-        //       item.order.orderItems[i].option.optionName +
-        //       ' / ' +
-        //       item.order.orderItems[i].quantity;
-        //   }
-
-        //   orderItemsAdd.forEach(orderItem => {
-        //     data.push(['', '', '', '', '', '', orderItem]);
-        //   });
-        // }
       });
 
       const ws = XLSX.utils.aoa_to_sheet(data);
       const wb = XLSX.utils.book_new();
+      if (!ws['!merges']) ws['!merges'] = [];
+      ws['!cols'] = [
+        { wch: 5 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 50 },
+        { wch: 10 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 50 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: 20 },
+      ];
       XLSX.utils.book_append_sheet(wb, ws, 'shipping');
       XLSX.writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
     }
@@ -423,12 +446,18 @@ const Shipping = () => {
     };
   });
 
+  const handleProductModalClose = () => {
+    setExcelUploaded(false);
+  };
+
   return (
     <div className="shipping">
       <Modal
         width={1400}
         title="송장 업데이트"
         visible={excelUploaded}
+        destroyOnClose
+        onCancel={handleProductModalClose}
         footer={
           <>
             <Button onClick={() => setExcelUploaded(false)}>취소</Button>
@@ -453,6 +482,21 @@ const Shipping = () => {
           size="small"
           columns={[
             {
+              title: 'No',
+              dataIndex: 'No',
+              key: 'No',
+            },
+            {
+              title: '공구명',
+              dataIndex: '공구명',
+              key: '공구명',
+            },
+            {
+              title: '브랜드',
+              dataIndex: '브랜드',
+              key: '브랜드',
+            },
+            {
               title: '결제일',
               dataIndex: '결제일',
               key: '결제일',
@@ -463,46 +507,40 @@ const Shipping = () => {
               key: '주문번호',
             },
             {
-              title: '주문자',
-              dataIndex: '주문자',
-              key: '주문자',
+              title: '주문인',
+              dataIndex: '주문인',
+              key: '주문인',
             },
             {
-              title: '운송장번호',
-              dataIndex: '운송장번호',
-              key: '운송장번호',
-              width: '250px',
-            },
-            {
-              title: '배송비',
-              dataIndex: '배송비',
-              key: '배송비',
-            },
-            {
-              title: '택배사',
-              dataIndex: '택배사',
-              key: '택배사',
+              title: '주문인 연락처',
+              dataIndex: '주문인 연락처',
+              key: '주문인 연락처',
             },
             {
               title: '상품명 / 옵션 / 수량',
               dataIndex: '상품명 / 옵션 / 수량',
               key: '상품명 / 옵션 / 수량',
-              width: '250px',
+              width: '400px',
             },
             {
-              title: '상품구매금액',
-              dataIndex: '상품구매금액',
-              key: '상품구매금액',
+              title: '받는분',
+              dataIndex: '받는분',
+              key: '받는분',
             },
             {
-              title: '실 결제금액',
-              dataIndex: '실 결제금액',
-              key: '실 결제금액',
+              title: '받는분 연락처',
+              dataIndex: '받는분 연락처',
+              key: '받는분 연락처',
             },
             {
-              title: '결제수단',
-              dataIndex: '결제수단',
-              key: '결제수단',
+              title: '우편번호',
+              dataIndex: '우편번호',
+              key: '우편번호',
+            },
+            {
+              title: '배송지',
+              dataIndex: '배송지',
+              key: '배송지',
             },
             {
               title: '메모',
@@ -510,11 +548,18 @@ const Shipping = () => {
               key: '메모',
             },
             {
-              title: '배송상태',
-              dataIndex: '배송상태',
-              key: '배송상태',
+              title: '택배사',
+              dataIndex: '택배사',
+              key: '택배사',
+            },
+            {
+              title: '운송장번호',
+              dataIndex: '운송장번호',
+              key: '운송장번호',
+              width: '250px',
             },
           ]}
+          rowKey={(recode, index) => index.toString()}
           dataSource={excelData}
         />
       </Modal>

@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 
 // modules
-import { DatePicker, Button, message } from 'antd';
+import { DatePicker, Button, message, Row, Col } from 'antd';
 import { DatePickerDecorator, RangePickerProps, RangePickerValue } from 'antd/lib/date-picker/interface';
 import moment, { Moment, duration } from 'moment';
 
@@ -107,14 +107,18 @@ const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerPr
     [handleChange],
   );
   return (
-    <div style={{ display: 'flex', alignItems: 'center', left: 250 }}>
-      <DatePicker.RangePicker allowClear={false} value={value} onChange={handleChange} style={{ marginRight: 15 }} />
-      {Object.keys(DateRange).map((key: any) => (
-        <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
-          {DateRange[key]}
-        </Button>
-      ))}
-    </div>
+    <Row>
+      <Col>
+        <DatePicker.RangePicker allowClear={false} value={value} onChange={handleChange} style={{ marginRight: 15 }} />
+      </Col>
+      <Col>
+        {Object.keys(DateRange).map((key: any) => (
+          <Button key={key} onClick={() => setDate(DateRange[key])} style={{ marginRight: 5 }}>
+            {DateRange[key]}
+          </Button>
+        ))}
+      </Col>
+    </Row>
   );
 });
 

@@ -115,6 +115,7 @@ const initialState: EventState = {
     detail: '',
     targetAmount: 0,
     videoUrl: '',
+    shippingCompany: '',
     shippingFeeInfo: {
       shippingFee: 0,
       shippingFreeCondition: 0,
@@ -129,6 +130,7 @@ const initialState: EventState = {
     eventNotices: [],
     likeCnt: 0,
     creator: {
+      loginId: '',
       avatar: {
         bucketName: '',
         fileKey: '',

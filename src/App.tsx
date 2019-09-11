@@ -32,12 +32,12 @@ function App() {
                   path={path}
                   component={() => (
                     <Layout style={{ minHeight: '100vh' }}>
-                      <Sider>
+                      <Sider breakpoint="lg" collapsedWidth="0">
                         <Menu />
                       </Sider>
                       <Layout style={{ backgroundColor: '#ffffff' }}>
                         <Header />
-                        <Content id="content" style={{ padding: 50 }}>
+                        <Content id="content" style={{ padding: '50px 20px' }}>
                           <Component />
                         </Content>
                       </Layout>

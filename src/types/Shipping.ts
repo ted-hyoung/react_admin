@@ -1,5 +1,5 @@
 import { ShippingStatus, ShippingCompany } from 'enums';
-import { ResponseOrderForShipping } from './Order';
+import { ResponseOrderForShipping, UpdateOrderForShipping } from './Order';
 
 export interface ResponseShipping {
   shippingId: number;
@@ -31,4 +31,10 @@ export interface SearchShipping {
   recipient?: string;
   recipientPhone?: string;
   shippingStatuses?: ShippingStatus[];
+}
+
+export interface UpdateShippingExcelInvoice {
+  invoice: string;
+  shippingCompany: ShippingCompany;
+  order: UpdateOrderForShipping;
 }

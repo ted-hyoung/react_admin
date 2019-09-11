@@ -48,6 +48,11 @@ const colums: ColumnProps<EventList>[] = [
     sorter: (a, b) => sortedString(a.name, b.name),
   },
   {
+    title: '공구 링크',
+    dataIndex: 'eventLink',
+    key: 'eventLink',
+  },
+  {
     title: '회차',
     dataIndex: 'turn',
     key: 'turn',
@@ -133,7 +138,7 @@ function EventList(props: RouteComponentProps) {
     return {
       total: events.totalElements,
       pageSize: events.size,
-      onShowSizeChange: handlePaginationChange,
+      onChange: handlePaginationChange,
     };
   }, [events]);
 
@@ -149,6 +154,7 @@ function EventList(props: RouteComponentProps) {
       id: event.eventId,
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
+      eventLink: process.env.REACT_APP_CLIENT_URL + '/events/influence/' + event.creator.loginId + '/' + event.eventId,
       turn: event.turn,
       brand: event.brand.brandName,
       created: moment(event.created).format('YYYY-MM-DD'),
