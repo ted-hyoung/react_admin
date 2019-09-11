@@ -56,6 +56,7 @@ export interface UpdateProduct {
   enableOption: boolean | number;
   options: UpdateOption[];
   images: UpdateFileObject[];
+  updateDisabledOptionStock: number;
 }
 
 export interface UpdateOption {
