@@ -162,3 +162,19 @@ export const parseParams = (params: any) => {
 
   return options ? options.slice(0, -1) : options;
 };
+
+export function decodeToken(token: string) {
+  return decode<Token>(token);
+}
+
+export function getAdminProfile() {
+  if (getToken()) {
+    const decode = decodeToken(getToken());
+
+    if (decode.USER_ROLE === 'ROLE_ADMIN') {
+      return true;
+    }
+  } else {
+    return undefined;
+  }
+}
