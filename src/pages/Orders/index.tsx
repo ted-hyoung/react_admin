@@ -23,6 +23,7 @@ import { OrderSearchBar } from 'components';
 import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat } from 'lib/utils';
 import { SearchOrder, ResponseOrder } from 'types/Order';
 import { ShippingStatus, ShippingCompany, PaymentStatus, PAYMENT_STATUSES } from 'enums';
+import { ResponseOrderItem } from 'types/OrderItem';
 
 // defines
 const { Option } = Select;
@@ -38,8 +39,8 @@ interface Orders {
   orderNo: string;
   brandName: string;
   username: string;
-  quantity: JSX.Element[];
-  orderItems: JSX.Element[];
+  quantity: ResponseOrderItem[];
+  orderItems: ResponseOrderItem[];
   totalAmount: string;
   paymentId: number;
   paymentStatus: PaymentStatus;
@@ -48,10 +49,19 @@ interface Orders {
   transactionId: string;
 }
 
+interface SelectedOrder {
+  totalAmount: string;
+  orderNo: string;
+  transactionId: string;
+  brandName: string;
+  quantity: string;
+  productName: string;
+}
+
 interface OrdersPaymentSelect {
   niceSubmitRef: React.RefObject<HTMLFormElement>;
   record: Orders;
-  setSelectedOrder: Dispatch<SetStateAction<Orders | undefined>>;
+  setSelectedOrder: Dispatch<SetStateAction<SelectedOrder | undefined>>;
   status: PaymentStatus;
 }
 
@@ -80,6 +90,32 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
         cancelText: '취소',
         onOk() {
           // 결제 대기로 할때
+          let quantity: number = 0;
+          let productName: string = '';
+
+          record.orderItems.forEach((item, index) => {
+            quantity += item.quantity;
+            productName += item.product.productName;
+            if (item.option) {
+              productName += item.option.optionName ? '/' + item.option.optionName : '/옵션없음';
+            } else {
+              productName += '/옵션없음';
+            }
+
+            if (record.orderItems.length - 1 > index) {
+              productName += ', ';
+            }
+          });
+
+          setSelectedOrder({
+            totalAmount: record.totalAmount,
+            orderNo: record.orderNo,
+            transactionId: record.transactionId,
+            brandName: record.brandName,
+            quantity: quantity.toString(),
+            productName: productName,
+          });
+
           if (PaymentStatus[PaymentStatus.READY] === status) {
             message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
           } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
@@ -87,7 +123,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
           } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
             if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
               setNiceCancelPayment(true);
-              setSelectedOrder(record);
             } else {
               message.error('결제완료인 경우에만 결제취소가 가능합니다.');
             }
@@ -96,7 +131,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
           } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
             if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === paymentStatus) {
               setNiceCancelPayment(true);
-              setSelectedOrder(record);
             } else {
               message.error('환불요청인 경우에만 환불완료가 가능합니다.');
             }
@@ -125,7 +159,7 @@ const Orders = () => {
   const { size: pageSize, totalElements } = orders;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
-  const [selectedOrder, setSelectedOrder] = useState<Orders>();
+  const [selectedOrder, setSelectedOrder] = useState<SelectedOrder>();
   const printRef = useRef<any>();
   const niceSubmitRef = useRef<HTMLFormElement>(null);
 
@@ -247,8 +281,45 @@ const Orders = () => {
     { title: '주문번호', dataIndex: 'orderNo', key: 'orderNo' },
     { title: '브랜드명', dataIndex: 'brandName', key: 'brandName' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
-    { title: '수량', dataIndex: 'quantity', key: 'quantity' },
-    { title: '상품명 / 옵션', dataIndex: 'orderItems', key: 'orderItems' },
+    {
+      title: '수량',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (text, record) => {
+        const orderItemQuantity: JSX.Element[] = [];
+        record.orderItems.forEach((item, index) => {
+          orderItemQuantity.push(
+            <div key={index}>
+              <span>{item.quantity}</span>
+            </div>,
+          );
+        });
+        return {
+          children: orderItemQuantity,
+        };
+      },
+    },
+    {
+      title: '상품명 / 옵션',
+      dataIndex: 'orderItems',
+      key: 'orderItems',
+      render: (text, record) => {
+        const orderItemProdutName: JSX.Element[] = [];
+        record.orderItems.forEach((item, index) => {
+          orderItemProdutName.push(
+            <div key={index}>
+              <span>
+                {item.product.productName}
+                {item.option ? ` / ${item.option.optionName ? item.option.optionName : '옵션없음'}` : ' / 옵션없음'}
+              </span>
+            </div>,
+          );
+        });
+        return {
+          children: orderItemProdutName,
+        };
+      },
+    },
     { title: '실 결제금액', dataIndex: 'totalAmount', key: 'totalAmount' },
     {
       title: '결제상태',
@@ -276,13 +347,8 @@ const Orders = () => {
       orderNo: order.orderNo,
       brandName: order.event.brand.brandName,
       username: order.consumer.username,
-      quantity: order.orderItems.map(item => <div key={item.orderItemId}>{item.quantity.toLocaleString()}</div>),
-      orderItems: order.orderItems.map(item => (
-        <div key={item.orderItemId}>
-          {item.product.productName}
-          {item.option ? ` / ${item.option.optionName ? item.option.optionName : '옵션없음'}` : ' / 옵션없음'}
-        </div>
-      )),
+      quantity: order.orderItems,
+      orderItems: order.orderItems,
       totalAmount: order.payment.totalAmount.toLocaleString(),
       paymentId: order.payment.paymentId,
       paymentStatus: order.payment.paymentStatus,
@@ -342,6 +408,9 @@ const Orders = () => {
           <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
           <input type="hidden" name="moid" value={selectedOrder.orderNo} />
           <input type="hidden" name="tid" value={selectedOrder.transactionId} />
+          <input type="hidden" name="quantity" value={selectedOrder.quantity} />
+          <input type="hidden" name="brandName" value={selectedOrder.brandName} />
+          <input type="hidden" name="productName" value={selectedOrder.productName} />
         </form>
       )}
     </div>
