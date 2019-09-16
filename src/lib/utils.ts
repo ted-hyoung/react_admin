@@ -206,3 +206,19 @@ export function createExcel(data: (string[])[], options?: CreateExcelOptions) {
     FileSaver.saveAs(blob, `fromc_${getNowYMD()}${EXCEL_EXTENSION}`);
   });
 }
+
+export function decodeToken(token: string) {
+  return decode<Token>(token);
+}
+
+export function getAdminProfile() {
+  if (getToken()) {
+    const decode = decodeToken(getToken());
+
+    if (decode.USER_ROLE === 'ROLE_ADMIN') {
+      return true;
+    }
+  } else {
+    return undefined;
+  }
+}

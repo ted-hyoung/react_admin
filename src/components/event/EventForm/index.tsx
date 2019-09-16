@@ -30,7 +30,7 @@ import YouTube from 'react-youtube';
 import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components';
 
 // libs
-import { calcStringByte } from 'lib/utils';
+import { calcStringByte, getAdminProfile } from 'lib/utils';
 
 import './index.less';
 import { EventStatus, ShippingCompanies } from 'enums';
@@ -67,6 +67,12 @@ function EventForm(props: Props) {
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
+
+    if (getAdminProfile()) {
+      message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
+
+      return false;
+    }
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
@@ -120,9 +126,8 @@ function EventForm(props: Props) {
           };
 
           dispatch(createEventAsync.request({ data }));
+          resetFields();
         }
-
-        resetFields();
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
