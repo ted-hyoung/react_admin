@@ -7,7 +7,6 @@ import { Button, Table, Tooltip, Icon } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 import { Bar } from 'react-chartjs-2';
-import * as XLSX from 'xlsx';
 
 // store
 import { StoreState } from 'store';
@@ -17,7 +16,7 @@ import { getStatisticsDailySalesAsync, clearDailySalesStatus } from 'store/reduc
 import { DailySalesSearchBar } from 'components';
 
 // utils
-import { defaultDateTimeFormat, getNowYMD } from 'lib/utils';
+import { defaultDateTimeFormat, getNowYMD, createExcel } from 'lib/utils';
 
 // types
 import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'types';
@@ -111,12 +110,12 @@ const DailySales = () => {
   }, [statistics.dailySalesStatus]);
 
   const handleExcelDownLoad = () => {
-    const anaToSheet: any[] = [
-      ['날짜', '결제 완료 주문', null, null, null, '환불 주문', null, '순매출액'],
-      [null, '주문 수', '실 결제액', '포인트 결제', '총 매출', '주문 취소수', '주문 취소액', null],
+    const anaToSheet: (string[])[] = [
+      ['날짜', '결제 완료 주문', '', '', '', '환불 주문', '', '순매출액'],
+      ['', '주문 수', '실 결제액', '포인트 결제', '총 매출', '주문 취소수', '주문 취소액', ''],
     ];
 
-    statistics.dailySales.orders.map((item: ResponseManagementOrdersExcels) => {
+    statistics.dailySales.orders.forEach((item: ResponseManagementOrdersExcels) => {
       return anaToSheet.push([
         item.paymentDate,
         item.totalOrderCompleteCount === 0 ? '-' : item.totalOrderCompleteCount.toLocaleString() + '건',
@@ -131,17 +130,9 @@ const DailySales = () => {
       ]);
     });
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(anaToSheet);
-    if (!ws['!merges']) ws['!merges'] = [];
-    ws['!cols'] = [{ wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
-    ws['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 1, c: 0 } });
-    ws['!merges'].push({ s: { r: 0, c: 1 }, e: { r: 0, c: 4 } });
-    ws['!merges'].push({ s: { r: 0, c: 5 }, e: { r: 0, c: 6 } });
-    ws['!merges'].push({ s: { r: 0, c: 7 }, e: { r: 1, c: 7 } });
-
-    XLSX.utils.book_append_sheet(wb, ws, 'satatistics_daily_sales');
-    XLSX.writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
+    createExcel(anaToSheet, {
+      mergeCells: ['A1:A2', 'B1:E1', 'F1:G1'],
+    });
   };
 
   const getDatasetKeyProvider = () => {

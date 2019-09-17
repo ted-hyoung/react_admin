@@ -2,6 +2,8 @@ import Cookies from 'universal-cookie';
 import decode from 'jwt-decode';
 import { fileUrl } from './protocols';
 import runes from 'runes';
+import * as ExcelJS from 'exceljs';
+import FileSaver from 'file-saver';
 
 export const defaultDateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -20,6 +22,9 @@ export const calcStringByte = (str: string) => {
     return 0;
   }
 };
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 interface EnumType {
   [i: number]: string;
@@ -162,6 +167,45 @@ export const parseParams = (params: any) => {
 
   return options ? options.slice(0, -1) : options;
 };
+
+export interface CreateExcelOptions {
+  widths?: number[];
+  mergeCells?: string[];
+}
+
+export function createExcel(data: (string[])[], options?: CreateExcelOptions) {
+  const { widths = [], mergeCells = [] } = options || { widths: undefined, mergeCells: undefined };
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
+  worksheet.columns = data[0].map((d, i) => {
+    return {
+      header: d,
+      key: String(i),
+      width: widths[i] || 20,
+      style: {
+        alignment: {
+          wrapText: true,
+        },
+      },
+    };
+  });
+
+  worksheet.addRows(data.slice(1));
+
+  if (mergeCells.length > 0) {
+    mergeCells.forEach(mergeCell => {
+      worksheet.mergeCells(mergeCell);
+    });
+  }
+
+  workbook.xlsx.writeBuffer().then(data => {
+    const blob = new Blob([data], { type: EXCEL_TYPE });
+
+    FileSaver.saveAs(blob, `fromc_${getNowYMD()}${EXCEL_EXTENSION}`);
+  });
+}
 
 export function decodeToken(token: string) {
   return decode<Token>(token);
