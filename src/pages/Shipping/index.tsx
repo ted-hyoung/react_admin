@@ -31,7 +31,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 // defines
 const EXTENSION_XLSX = 'xlsx';
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-const regInvoice = /^(\d{10}(\d{2})?)?$/; // 숫자만, 길이 10~12 check
+const regInvoice = /^(\d{10}(\d{5})?)?$/; // 숫자만, 길이 10~15 check
 const { confirm } = Modal;
 const { Option } = Select;
 
@@ -77,7 +77,7 @@ const ShippingInvoiceForm = (props: ShippingInvoiceFormProps) => {
 
   const handleUpdateInvoice = useCallback(() => {
     if (!regInvoice.test(invoice)) {
-      Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.' });
+      Modal.error({ title: '운송장 번호는 숫자로 최소 10자리 ~ 최대 15자리까지 등록가능합니다.' });
       return false;
     }
 
@@ -266,6 +266,8 @@ const Shipping = () => {
           return false;
         }
 
+        console.log(invoice);
+
         if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
           Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
           return false;
@@ -279,12 +281,11 @@ const Shipping = () => {
         if (invoice && !regInvoice.test(invoice)) {
           Modal.error({
             title: '송장번호 자릿수/숫자를 확인해주세요.',
-            content: '운송장 번호는 숫자로 최소 10자리 ~ 최대 12자리까지 등록가능합니다.',
+            content: '운송장 번호는 숫자로 최소 10자리 ~ 최대 15자리까지 등록가능합니다.',
           });
           return false;
         }
 
-        // todo : cell warp text 관련 부분 추후 작업 필요 (이종현)
         _data.push({
           No: data[i][0],
           공구명: data[i][1],
@@ -367,7 +368,7 @@ const Shipping = () => {
           ),
           item.order.memo,
           ShippingCompany[item.shippingCompany],
-          item.invoice ? item.invoice.toString() : '',
+          item.invoice ? item.invoice : '',
         ]);
       });
 
