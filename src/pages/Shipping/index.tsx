@@ -275,7 +275,7 @@ const Shipping = () => {
           Modal.error({ title: '누락 된 운송장 번호가 있습니다.' });
           return false;
         }
-        console.log(invoice);
+
         if (invoice && !regInvoice.test(invoice)) {
           Modal.error({
             title: '송장번호 자릿수/숫자를 확인해주세요.',
