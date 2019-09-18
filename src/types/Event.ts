@@ -91,10 +91,11 @@ export interface UpdateEvent {
 }
 
 export interface SearchEvent {
-  name: string;
-  brandName: string;
+  name?: string;
+  brandName?: string;
   salesStarted: string;
   salesEnded: string;
+  eventStatuses: EventStatus[];
 }
 
 export interface UpdateEventStatus {
