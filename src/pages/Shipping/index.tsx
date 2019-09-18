@@ -266,8 +266,6 @@ const Shipping = () => {
           return false;
         }
 
-        console.log(invoice);
-
         if (!moment(orderNo, 'YYYYMMDDhhmmssSS').isValid()) {
           Modal.error({ title: '주문번호가 형식에 맞지 않습니다.' });
           return false;
