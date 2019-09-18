@@ -31,7 +31,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 // defines
 const EXTENSION_XLSX = 'xlsx';
 const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-const regInvoice = /^(\d{10}(\d{5})?)?$/; // 숫자만, 길이 10~15 check
+const regInvoice = /^(\d{10}(\d{1,5})?)?$/; // 숫자만, 길이 10~15 check
 const { confirm } = Modal;
 const { Option } = Select;
 
@@ -275,7 +275,7 @@ const Shipping = () => {
           Modal.error({ title: '누락 된 운송장 번호가 있습니다.' });
           return false;
         }
-
+        console.log(invoice);
         if (invoice && !regInvoice.test(invoice)) {
           Modal.error({
             title: '송장번호 자릿수/숫자를 확인해주세요.',
