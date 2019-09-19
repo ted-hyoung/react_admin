@@ -1,10 +1,14 @@
 // base
 import React, { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 // modules
 import Form, { FormComponentProps } from 'antd/lib/form';
-import { Button, Checkbox, Row, Col, Input, Icon, Modal as AntModal, DatePicker, Table } from 'antd';
+import { Button, Checkbox, Row, Col, Input, Icon, Select } from 'antd';
 import moment from 'moment';
+
+// store
+import { clearEvents } from 'store/reducer/event';
 
 // components
 import OrderSearchDate, {
@@ -15,6 +19,9 @@ import OrderSearchDate, {
 
 import { OrderSearchEventModal } from 'components';
 
+// types
+import { ResponseProduct } from 'types';
+
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
 
@@ -24,11 +31,15 @@ import { PAYMENT_STATUSES, SHIPPING_STATUSES, DEFAULT_PAYMENT_STATUSES, DEFAULT_
 // assets
 import './index.less';
 
+// define
+const { Option } = Select;
+
 export interface EventList {
   key: number;
   sales: string;
   name: string;
   eventStatus: string;
+  products: ResponseProduct[];
 }
 
 interface Props extends FormComponentProps {
@@ -44,7 +55,10 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
   const [shippingCheckAll, setShippingCheckAll] = useState<boolean>(true);
   const [eventSearchModal, setEventSearchModal] = useState<boolean>(false);
 
-  const [eventsData, setEventsData] = useState<EventList[]>();
+  const [eventsData, setEventsData] = useState<EventList[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<EventList[]>([]);
+
+  const dispatch = useDispatch();
 
   const handleChangePaymentStatuses = useCallback(values => {
     setPaymentCheckAll(values.length === PAYMENT_STATUSES.length);
@@ -107,6 +121,8 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
 
   const handleEventSearchModal = (visable: boolean) => {
     setEventSearchModal(visable);
+    setEventsData([]);
+    dispatch(clearEvents);
   };
 
   return (
@@ -166,7 +182,6 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
           </Button>
           <Icon type="search" style={{ fontSize: 20, marginTop: 7, marginLeft: 5 }} />
         </Col>
-        <Col span={2}></Col>
       </Row>
       <Col span={2} style={{ paddingTop: 5, width: '10%' }}>
         <span style={{ fontSize: 18, textAlign: 'center' }}>검색 기간</span>
@@ -221,8 +236,9 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
       <OrderSearchEventModal
         eventSearchModal={eventSearchModal}
         handleEventSearchModal={handleEventSearchModal}
-        // eventsData={eventsData}
-        // setEventsData={setEventsData}
+        eventsData={eventsData}
+        setEventsData={setEventsData}
+        setSelectedEvents={setSelectedEvents}
       />
     </Form>
   );

@@ -55,6 +55,7 @@ export interface ResponseEventForList {
   salesEnded: string;
   created: string;
   creator: ResponseEventCreator;
+  products: ResponseProduct[];
 }
 
 export interface ResponseEventForOrders {

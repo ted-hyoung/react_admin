@@ -88,6 +88,7 @@ export const deleteEventAsync = createAsyncAction(
 )<RequestAsyncAction, void, ErrorAsyncAction>();
 
 export const clearEvent = action(Actions.CLEAR_EVENT);
+export const clearEvents = action(Actions.CLEAR_EVENTS);
 
 const initialState: EventState = {
   events: {
@@ -177,6 +178,11 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.CLEAR_EVENT: {
       return produce(state, draft => {
         draft.event = initialState.event;
+      });
+    }
+    case Actions.CLEAR_EVENTS: {
+      return produce(state, draft => {
+        draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
       });
     }
     default: {

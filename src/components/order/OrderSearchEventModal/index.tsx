@@ -17,14 +17,22 @@ import { EVENT_STATUS, DEFAULT_EVENT_STATUSES, EventStatus } from 'enums';
 import { SearchEvent } from 'types';
 import { EventList } from '../OrderSearchBar';
 
-interface OrderSerachEventForm extends FormComponentProps {}
+interface OrderSerachEventForm extends FormComponentProps {
+  eventsData: EventList[];
+  setEventsData: Dispatch<SetStateAction<EventList[]>>;
+  setSelectedEvents: Dispatch<SetStateAction<EventList[]>>;
+  handleEventSearchModal: (visible: boolean) => void;
+}
 
 const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSerachEventForm) => {
-  const { form } = props;
+  const { form, eventsData, setEventsData, setSelectedEvents, handleEventSearchModal } = props;
   const { getFieldDecorator, setFieldsValue, validateFieldsAndScroll, resetFields } = form;
   const { events } = useSelector((state: StoreState) => state.event);
+  const { size: pageSize } = events;
   const [eventChaeckALl, setEventCheckAll] = useState<boolean>(true);
-  const [eventsData, setEventsData] = useState<EventList[]>();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchEvent>();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,12 +44,22 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
           sales: `${moment(item.salesStarted).format('YYYY-MM-DD')} ~ ${moment(item.salesEnded).format('YYYY-MM-DD')}`,
           name: item.name,
           eventStatus: EventStatus[item.eventStatus],
+          products: item.products,
         });
       });
       setEventsData(data);
-      console.log(data);
+    } else {
+      setEventsData([]);
     }
   }, [events]);
+
+  const getEvents = useCallback(
+    (page: number, size: number, searchCondition?: SearchEvent) => {
+      dispatch(getEventsAsync.request({ page, size, searchCondition }));
+      setLastSearchCondition(searchCondition);
+    },
+    [dispatch, pageSize, setLastSearchCondition],
+  );
 
   const handleChangeEventStatuses = useCallback(values => {
     setEventCheckAll(values.length === EVENT_STATUS.length);
@@ -49,7 +67,7 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
 
   const handleChangeEventStatusesAll = useCallback(e => {
     setFieldsValue({
-      eventStatus: e.target.checked ? DEFAULT_EVENT_STATUSES : [],
+      eventStatues: e.target.checked ? DEFAULT_EVENT_STATUSES : [],
     });
     setEventCheckAll(e.target.checked);
   }, []);
@@ -62,11 +80,8 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
         const { name, salesStarted, salesEnded, eventStatuses } = values;
 
         if (salesStarted.isAfter(salesEnded)) {
-          message.error('공구 시작일은 종료일보다 이전이여야 합니다.');
+          return message.error('공구 시작일은 종료일보다 이전이여야 합니다.');
         }
-
-        const page = 0;
-        const size = 10;
 
         const searchCondition: SearchEvent = {
           name,
@@ -75,11 +90,13 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
           eventStatuses,
         };
 
-        if (name === undefined && name === '') {
+        if (name === '') {
           delete searchCondition['name'];
         }
 
-        dispatch(getEventsAsync.request({ page, size, searchCondition }));
+        setSelectedRowKeys([]);
+        setLastSearchCondition(searchCondition);
+        getEvents(0, pageSize, searchCondition);
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
@@ -90,6 +107,30 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
     resetFields();
     setEventCheckAll(true);
     setEventsData([]);
+  };
+
+  const rowSelection: TableRowSelection<EventList> = {
+    selectedRowKeys,
+    onChange: useCallback(selectedRowKeys => {
+      setSelectedRowKeys(selectedRowKeys);
+    }, []),
+  };
+
+  const handlePaginationChange = useCallback(
+    (currentPage: number) => {
+      setSelectedRowKeys([]);
+      getEvents(currentPage - 1, pageSize, lastSearchCondition);
+    },
+    [getEvents, pageSize, lastSearchCondition],
+  );
+
+  const handleSelectedEvent = () => {
+    const selectedEvents: EventList[] = [];
+    selectedRowKeys.forEach(item => {
+      selectedEvents.push(eventsData[(item as any) - 1]);
+    });
+    setSelectedEvents(selectedEvents);
+    handleEventSearchModal(false);
   };
 
   const columns: Array<ColumnProps<EventList>> = [
@@ -127,7 +168,11 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
             <span>공구명</span>
           </Col>
           <Col span={15}>
-            <Form.Item>{getFieldDecorator('name')(<Input width={100} />)}</Form.Item>
+            <Form.Item>
+              {getFieldDecorator('name', {
+                initialValue: '',
+              })(<Input width={100} />)}
+            </Form.Item>
           </Col>
         </Row>
         <Row style={{ paddingBottom: 15 }}>
@@ -189,13 +234,24 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
           </Button>
         </Row>
         <Row style={{ paddingBottom: 15 }}>
-          <Col span={10}>검색결과 총 {events.content.length}건</Col>
+          <Col span={10}>검색결과 총 {events.totalElements}건</Col>
         </Row>
         <Row style={{ paddingBottom: 15 }}>
-          <Table columns={columns} dataSource={eventsData} />
+          <Table
+            columns={columns}
+            rowSelection={rowSelection}
+            dataSource={eventsData}
+            pagination={{
+              defaultCurrent: events.page !== 0 ? events.page + 1 : 0,
+              current: events.page !== 0 ? events.page + 1 : 0,
+              total: events.totalElements,
+              pageSize: events.size,
+              onChange: handlePaginationChange,
+            }}
+          />
         </Row>
         <Row style={{ paddingBottom: 15, textAlign: 'center' }}>
-          <Button type="primary" style={{ width: 150 }}>
+          <Button type="primary" style={{ width: 150 }} onClick={handleSelectedEvent}>
             확인
           </Button>
         </Row>
@@ -207,12 +263,13 @@ const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSe
 interface Props {
   eventSearchModal: boolean;
   handleEventSearchModal: (visible: boolean) => void;
-  // eventsData: EventList[];
-  // setEventsData: Dispatch<SetStateAction<EventList[]>
+  eventsData: EventList[];
+  setEventsData: Dispatch<SetStateAction<EventList[]>>;
+  setSelectedEvents: Dispatch<SetStateAction<EventList[]>>;
 }
 
 const OrderSearchEvent = (props: Props) => {
-  const { eventSearchModal, handleEventSearchModal } = props;
+  const { eventSearchModal, handleEventSearchModal, eventsData, setEventsData, setSelectedEvents } = props;
   return (
     <>
       <AntModal
@@ -223,7 +280,12 @@ const OrderSearchEvent = (props: Props) => {
         footer={false}
         destroyOnClose
       >
-        <OrderSerachEventForm />
+        <OrderSerachEventForm
+          eventsData={eventsData}
+          setEventsData={setEventsData}
+          setSelectedEvents={setSelectedEvents}
+          handleEventSearchModal={handleEventSearchModal}
+        />
       </AntModal>
     </>
   );
