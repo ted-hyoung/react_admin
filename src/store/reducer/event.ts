@@ -87,8 +87,8 @@ export const deleteEventAsync = createAsyncAction(
   Actions.DELETE_EVENT_FAILURE,
 )<RequestAsyncAction, void, ErrorAsyncAction>();
 
-export const clearEvent = action(Actions.CLEAR_EVENT);
-export const clearEvents = action(Actions.CLEAR_EVENTS);
+export const clearEvent = () => action(Actions.CLEAR_EVENT);
+export const clearEvents = () => action(Actions.CLEAR_EVENTS);
 
 const initialState: EventState = {
   events: {

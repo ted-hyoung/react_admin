@@ -1,7 +1,7 @@
 import { EventStatus, ShippingCompany } from 'enums';
 import { UpdateFileObject, CreateFileObject, FileObject } from './FileObject';
 import { ResponseCelebReview } from './CelebReview';
-import { ResponseProduct } from './Product';
+import { ResponseProduct, SearchProductForOrder } from './Product';
 import { ResponseEventNotice } from './EventNotice';
 import { ResponseBrandForEvent, ResponseBrand, BrandInfo } from './Brand';
 
@@ -97,6 +97,11 @@ export interface SearchEvent {
   salesStarted: string;
   salesEnded: string;
   eventStatuses: EventStatus[];
+}
+
+export interface SearchEventForOrder {
+  name: string;
+  product: SearchProductForOrder;
 }
 
 export interface UpdateEventStatus {

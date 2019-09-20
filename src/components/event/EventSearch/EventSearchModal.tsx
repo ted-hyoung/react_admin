@@ -15,16 +15,16 @@ import { getEventsAsync } from 'store/reducer/event';
 // enums
 import { EVENT_STATUS, DEFAULT_EVENT_STATUSES, EventStatus } from 'enums';
 import { SearchEvent } from 'types';
-import { EventList } from '../OrderSearchBar';
+import { EventList } from 'components/order/OrderSearchBar';
 
-interface OrderSerachEventForm extends FormComponentProps {
+interface EventSearchForm extends FormComponentProps {
   eventsData: EventList[];
   setEventsData: Dispatch<SetStateAction<EventList[]>>;
   setSelectedEvents: Dispatch<SetStateAction<EventList[]>>;
   handleEventSearchModal: (visible: boolean) => void;
 }
 
-const OrderSerachEventForm = Form.create<OrderSerachEventForm>()((props: OrderSerachEventForm) => {
+const EventSearchForm = Form.create<EventSearchForm>()((props: EventSearchForm) => {
   const { form, eventsData, setEventsData, setSelectedEvents, handleEventSearchModal } = props;
   const { getFieldDecorator, setFieldsValue, validateFieldsAndScroll, resetFields } = form;
   const { events } = useSelector((state: StoreState) => state.event);
@@ -268,7 +268,7 @@ interface Props {
   setSelectedEvents: Dispatch<SetStateAction<EventList[]>>;
 }
 
-const OrderSearchEvent = (props: Props) => {
+const EventSearchModal = (props: Props) => {
   const { eventSearchModal, handleEventSearchModal, eventsData, setEventsData, setSelectedEvents } = props;
   return (
     <>
@@ -280,7 +280,7 @@ const OrderSearchEvent = (props: Props) => {
         footer={false}
         destroyOnClose
       >
-        <OrderSerachEventForm
+        <EventSearchForm
           eventsData={eventsData}
           setEventsData={setEventsData}
           setSelectedEvents={setSelectedEvents}
@@ -291,4 +291,4 @@ const OrderSearchEvent = (props: Props) => {
   );
 };
 
-export default OrderSearchEvent;
+export default EventSearchModal;
