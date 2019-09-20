@@ -17,7 +17,7 @@ enum DateRange {
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss';
 
 export function validateDate(val: any, key: string) {
-  if (val[key].length > 0) {
+  if (val[key][0] !== '') {
     val.startDate = val[key][0];
     val.endDate = val[key][1];
   }

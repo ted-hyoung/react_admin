@@ -13,6 +13,9 @@ import {
   getStatisticsDailySalesAsync,
 } from 'store/reducer/order';
 
+// modules
+import qs from 'qs';
+
 // lib
 import { parseParams } from 'lib/utils';
 
@@ -31,7 +34,7 @@ function* getOrders(action: RequestAsyncAction) {
           size,
           ...searchCondition,
         },
-        paramsSerializer: (params: any) => parseParams(params),
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
     );
     yield put(getOrdersAsync.success(res));

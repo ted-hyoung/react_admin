@@ -28,6 +28,7 @@ const MENU_LIST = [
   {
     key: 'product',
     name: '상품 관리',
+    icon: 'shop',
     subMenus: [
       {
         key: 'events',
@@ -38,6 +39,7 @@ const MENU_LIST = [
   {
     key: 'order',
     name: '주문 관리',
+    icon: 'snippets',
     subMenus: [
       {
         key: 'orders',
@@ -52,6 +54,7 @@ const MENU_LIST = [
   {
     key: 'statistics',
     name: '통계 관리',
+    icon: 'bar-chart',
     subMenus: [
       {
         key: 'sales',
@@ -62,6 +65,7 @@ const MENU_LIST = [
   {
     key: 'board',
     name: '게시판 관리',
+    icon: 'read',
     subMenus: [
       {
         key: 'review',
@@ -122,7 +126,7 @@ function Menu(props: RouteComponentProps) {
           key={menu.key}
           title={
             <span>
-              <Icon type="appstore" />
+              <Icon type={menu.icon} />
               <span>{menu.name}</span>
             </span>
           }

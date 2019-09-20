@@ -10,7 +10,6 @@ import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel } from 'store/redu
 // modules
 import { Table, Button, Row, Col, Select, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
-import { utils, writeFile } from 'xlsx';
 import moment from 'moment';
 
 // lib
@@ -20,7 +19,7 @@ import { payCancelHost } from 'lib/protocols';
 import { OrderSearchBar } from 'components';
 
 // utils
-import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat } from 'lib/utils';
+import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
 import { SearchOrder, ResponseOrder } from 'types/Order';
 import { ShippingStatus, ShippingCompany, PaymentStatus, PAYMENT_STATUSES } from 'enums';
 import { ResponseOrderItem } from 'types/OrderItem';
@@ -263,10 +262,7 @@ const Orders = () => {
         }
       });
 
-      const ws = utils.aoa_to_sheet(data);
-      const wb = utils.book_new();
-      utils.book_append_sheet(wb, ws, 'orders');
-      writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
+      createExcel(data);
     }
   };
 

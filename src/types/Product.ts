@@ -1,4 +1,5 @@
 import { CreateFileObject, FileObject, UpdateFileObject } from './FileObject';
+import { SearchOptionForOrder } from './Option';
 
 export interface ResponseProduct {
   productId: number;
@@ -77,4 +78,9 @@ export interface ResponseOrderItemProductForReview {
   images: FileObject[];
   productId: number;
   productName: string;
+}
+
+export interface SearchProductForOrder {
+  productId: number;
+  option: SearchOptionForOrder;
 }

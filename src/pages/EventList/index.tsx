@@ -173,7 +173,7 @@ function EventList(props: RouteComponentProps) {
         onRow={handleRowEvent}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
-        <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent)}>
+        <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent())}>
           신규 등록
         </Button>
       </Link>

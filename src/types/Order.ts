@@ -3,7 +3,7 @@ import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForR
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping } from './Payment';
 import { PaymentStatus, ShippingStatus } from 'enums';
-import { ResponseEventForOrders, ResponseEventForShipping } from './Event';
+import { ResponseEventForOrders, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
 
 export interface ResponseOrder {
@@ -30,10 +30,13 @@ export interface ResponseOrderForShipping {
 export interface SearchOrder {
   startDate?: string;
   endDate?: string;
-  orderId?: number;
+  orderNo?: number;
   username?: string;
   recipient?: string;
   recipientPhone?: string;
+  phone?: string;
+  invoice?: string;
+  events?: SearchEventForOrder[];
   paymentStatuses?: PaymentStatus[];
   shippingStatuses?: ShippingStatus[];
 }

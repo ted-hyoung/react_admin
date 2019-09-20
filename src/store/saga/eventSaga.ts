@@ -14,6 +14,9 @@ import {
   deleteEventAsync,
 } from 'store/reducer/event';
 
+// lib
+import { parseParams } from 'lib/utils';
+
 // modules
 import { PayloadAction } from 'typesafe-actions';
 import { message } from 'antd';
@@ -51,7 +54,12 @@ function* getEvents(action: PayloadAction<string, GetListRequestPayload<SearchEv
   const { page, size, searchCondition } = action.payload;
 
   try {
-    const res = yield call(() => Api.get('/events', { params: { page, size, ...searchCondition } }));
+    const res = yield call(() =>
+      Api.get('/events', {
+        params: { page, size, ...searchCondition },
+        paramsSerializer: (params: any) => parseParams(params),
+      }),
+    );
     yield put(getEventsAsync.success(res.data));
   } catch (error) {
     yield put(getEventsAsync.failure(error));

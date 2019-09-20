@@ -765,9 +765,9 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 </Row>
                 <Row>
                   <Col span={3} className="product-modal-col-3">
-                    <Text type="danger">* 변경할 남은 재고</Text>
+                    <Text type="danger">* 재고 수량 수정</Text>
                   </Col>
-                  <Col span={8} className="product-modal-col-8">
+                  <Col span={8} className="product-modal-col-8" style={{ height: 40 }}>
                     <Form.Item>
                       {getFieldDecorator('updateDisabledOptionStock', {
                         initialValue: 0,
@@ -792,6 +792,12 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                         />,
                       )}
                     </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={3} className="product-modal-col-3" />
+                  <Col span={10}>
+                    <Text type="danger">※ 총 재고에서 입력한 수량 만큼 추가/감소 처리 됩니다.</Text>
                   </Col>
                 </Row>
               </>

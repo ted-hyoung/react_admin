@@ -6,7 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Table, Row, Col, Button, Input, Popconfirm, Select, Modal, Upload, message } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
-import * as XLSX from 'xlsx';
+
+import * as ExcelJS from 'exceljs';
 
 // store
 import { StoreState } from 'store';
@@ -23,7 +24,7 @@ import {
 import { ShippingSearchBar } from 'components';
 
 // uilts
-import { getNowYMD } from 'lib/utils';
+import { createExcel } from 'lib/utils';
 import { SearchShipping, UpdateShippingExcelInvoice } from 'types/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -236,27 +237,32 @@ const Shipping = () => {
 
     const f: any = info.fileList[0].originFileObj;
     const reader = new FileReader();
-    const readAsBinaryString = Boolean(reader.readAsBinaryString);
+    // const readAsBinaryString = Boolean(reader.readAsBinaryString);
 
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       const _data = [];
 
       /* Parse data */
-      const bstr = e.target.result;
-      const wb = XLSX.read(bstr, { type: readAsBinaryString ? 'binary' : 'array' });
+      const arrayBuffer = e.target.result;
+      const workbook = new ExcelJS.Workbook();
 
-      /* Get worksheet */
-      const title = wb.SheetNames[0];
-      const ws = wb.Sheets[title];
+      const wb = await workbook.xlsx.load(arrayBuffer);
+      const ws = wb.getWorksheet(1);
 
-      /* Convert array of arrays */
-      const data: any = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const dataLength = data.length;
+      const title = ws.name;
 
-      for (let i = 1; i < dataLength; i++) {
-        const orderNo = data[i][3];
-        const shippingCompany = data[i][13];
-        const invoice = data[i][14];
+      const data: (string[])[] = [];
+
+      ws.eachRow(row => {
+        const { values } = row;
+
+        data.push(values as string[]);
+      });
+
+      for (let i = 1; i < data.length; i++) {
+        const orderNo = data[i][4];
+        const shippingCompany = data[i][14] as ShippingCompany;
+        const invoice = data[i][15];
 
         if (shippingCompany && !ShippingCompany[shippingCompany]) {
           Modal.error({
@@ -285,21 +291,21 @@ const Shipping = () => {
         }
 
         _data.push({
-          No: data[i][0],
-          공구명: data[i][1],
-          브랜드: data[i][2],
-          결제일: data[i][3],
-          주문번호: data[i][4],
-          주문인: data[i][5],
-          '주문인 연락처': data[i][6],
-          '상품명 / 옵션 / 수량': data[i][7],
-          받는분: data[i][8],
-          '받는분 연락처': data[i][9],
-          우편번호: data[i][10],
-          배송지: data[i][11],
-          메모: data[i][12],
-          택배사: data[i][13],
-          운송장번호: data[i][14],
+          No: data[i][1],
+          공구명: data[i][2],
+          브랜드: data[i][3],
+          결제일: data[i][4],
+          주문번호: data[i][5],
+          주문인: data[i][6],
+          '주문인 연락처': data[i][7],
+          '상품명 / 옵션 / 수량': data[i][8],
+          받는분: data[i][9],
+          '받는분 연락처': data[i][10],
+          우편번호: data[i][11],
+          배송지: data[i][12],
+          메모: data[i][13],
+          택배사: data[i][14],
+          운송장번호: data[i][15],
         });
       }
 
@@ -307,11 +313,8 @@ const Shipping = () => {
       setExcelData(_data);
       setExcelUploaded(true);
     };
-    if (readAsBinaryString) {
-      reader.readAsBinaryString(f);
-    } else {
-      reader.readAsArrayBuffer(f);
-    }
+
+    reader.readAsArrayBuffer(f);
   }, []);
 
   const getShippingExcel = useCallback(() => {
@@ -319,7 +322,7 @@ const Shipping = () => {
   }, [dispatch, lastSearchCondition]);
 
   const createShippingExcel = () => {
-    const data = [
+    const aoa = [
       [
         'NO',
         '공구명',
@@ -341,7 +344,8 @@ const Shipping = () => {
     if (shippingExcel.length > 0) {
       shippingExcel.forEach((item, index) => {
         let orderItemName = '';
-        item.order.orderItems.map((orderItem, index) => {
+
+        item.order.orderItems.forEach((orderItem, index) => {
           if (index === 0) {
             orderItemName += orderItem.product.productName;
           } else {
@@ -349,7 +353,8 @@ const Shipping = () => {
           }
           orderItemName += ' / ' + orderItem.quantity + '개';
         });
-        data.push([
+
+        aoa.push([
           String(index + 1),
           item.order.event.name,
           item.order.event.brand.brandName,
@@ -370,28 +375,9 @@ const Shipping = () => {
         ]);
       });
 
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      if (!ws['!merges']) ws['!merges'] = [];
-      ws['!cols'] = [
-        { wch: 5 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 10 },
-        { wch: 20 },
-        { wch: 50 },
-        { wch: 10 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 50 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: 20 },
-      ];
-      XLSX.utils.book_append_sheet(wb, ws, 'shipping');
-      XLSX.writeFile(wb, 'fromc_' + getNowYMD() + '.xlsx');
+      createExcel(aoa, {
+        widths: [5, 20, 20, 20, 20, 10, 20, 50, 10, 20, 20, 50, 20, 20, 20],
+      });
     }
   };
 
