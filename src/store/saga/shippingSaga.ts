@@ -10,6 +10,7 @@ import { parseParams } from 'lib/utils';
 
 // modules
 import { Modal, message } from 'antd';
+import qs from 'qs';
 
 // store
 import * as Action from 'store/action/shippingAction';
@@ -32,7 +33,7 @@ function* getShipping(action: RequestAsyncAction) {
           size,
           ...searchCondition,
         },
-        paramsSerializer: (params: any) => parseParams(params),
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
     );
 

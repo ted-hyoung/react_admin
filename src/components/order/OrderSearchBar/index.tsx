@@ -86,8 +86,8 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
     (e: React.FormEvent<HTMLElement>) => {
       e.preventDefault();
 
-      validateFields((error, values) => {
-        if (!error) {
+      validateFields((errors, values) => {
+        if (!errors) {
           Object.keys(values).forEach(key => {
             if (values[key] === undefined) {
               delete values[key];
@@ -111,11 +111,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
             }
           });
 
-          const searchOrder = {
-            ...values,
-          };
-
-          onSearch(searchOrder);
+          onSearch(values);
         }
       });
     },
