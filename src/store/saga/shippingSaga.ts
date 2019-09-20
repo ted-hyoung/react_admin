@@ -52,7 +52,7 @@ function* getShippingExcel(action: RequestAsyncAction) {
         params: {
           ...lastSearchCondition,
         },
-        paramsSerializer: (params: any) => parseParams(params),
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
     );
 

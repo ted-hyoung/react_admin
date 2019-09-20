@@ -24,7 +24,7 @@ import {
 import { ShippingSearchBar } from 'components';
 
 // uilts
-import { createExcel } from 'lib/utils';
+import { createExcel, startDateFormat, endDateFormat } from 'lib/utils';
 import { SearchShipping, UpdateShippingExcelInvoice } from 'types/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -35,6 +35,10 @@ const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 const regInvoice = /^(\d{10}(\d{1,5})?)?$/; // 숫자만, 길이 10~15 check
 const { confirm } = Modal;
 const { Option } = Select;
+const defaultSearchCondition = {
+  startDate: moment(new Date()).format(startDateFormat),
+  endDate: moment(new Date()).format(endDateFormat),
+};
 
 interface Shipping {
   shippingId: number;
@@ -185,7 +189,7 @@ const Shipping = () => {
   );
 
   useEffect(() => {
-    getShipping(0);
+    getShipping(0, pageSize, defaultSearchCondition);
   }, []);
 
   useEffect(() => {
