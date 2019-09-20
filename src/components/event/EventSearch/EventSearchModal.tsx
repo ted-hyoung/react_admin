@@ -85,13 +85,13 @@ const EventSearchForm = Form.create<EventSearchForm>()((props: EventSearchForm) 
 
         const searchCondition: SearchEvent = {
           name,
-          salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
-          salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
+          salesStarted: moment(salesStarted).format('YYYY-MM-DDT00:00:00'),
+          salesEnded: moment(salesEnded).format('YYYY-MM-DDT23:59:59'),
           eventStatuses,
         };
 
         if (name === '') {
-          delete searchCondition['name'];
+          delete searchCondition.name;
         }
 
         setSelectedRowKeys([]);
