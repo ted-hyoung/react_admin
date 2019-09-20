@@ -45,3 +45,6 @@ export const DELETE_EVENT_FAILURE = 'event/DELETE_EVENT_FAILURE';
 
 // event 초기화
 export const CLEAR_EVENT = 'event/CLEAR_EVENT';
+
+// events 초기화
+export const CLEAR_EVENTS = 'event/CLEAR_EVENTS';
