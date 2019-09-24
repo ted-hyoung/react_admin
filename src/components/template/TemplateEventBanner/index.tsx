@@ -6,7 +6,7 @@ import { Typography, Carousel } from 'antd';
 import moment from 'moment';
 
 // components
-import { HeartOnIcon, PlayIcon } from 'components/template/TemplateIcons';
+import { PlayIcon } from 'components/template/TemplateIcons';
 
 // types
 import { FileObject } from 'types';

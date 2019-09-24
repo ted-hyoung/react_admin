@@ -647,7 +647,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 </Col>
               </Row>
             )}
-            {!product.enableOption && product.productId == 0 && (
+            {!product.enableOption && product.productId === 0 && (
               <Row>
                 <Col span={3} className="product-modal-col-3">
                   <Text type="danger">* 판매 재고</Text>

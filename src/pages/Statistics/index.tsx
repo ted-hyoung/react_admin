@@ -6,6 +6,8 @@ import { Tabs } from 'antd';
 
 // components
 import { DailySales } from 'components';
+import { ProductSales } from 'components';
+import { BrandSales } from 'components';
 
 // less
 import './index.less';
@@ -18,10 +20,10 @@ function Statistics() {
           <DailySales />
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 매출" key="PRODUCT_SALES">
-          제품 매출 컴포넌트
+          <ProductSales />
         </Tabs.TabPane>
         <Tabs.TabPane tab="브랜드 매출" key="BRAND_SALES">
-          브랜드 매출 컴포넌트
+          <BrandSales />
         </Tabs.TabPane>
       </Tabs>
     </div>

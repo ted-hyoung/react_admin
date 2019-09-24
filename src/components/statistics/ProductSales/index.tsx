@@ -16,7 +16,7 @@ import { getStatisticsDailySalesAsync, clearDailySalesStatus } from 'store/reduc
 import { DailySalesSearchBar } from 'components';
 
 // utils
-import { defaultDateTimeFormat, createExcel } from 'lib/utils';
+import { defaultDateTimeFormat, getNowYMD, createExcel } from 'lib/utils';
 
 // types
 import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'types';

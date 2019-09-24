@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
-import { Table, Row, Col, Button, Input, Popconfirm, Select, Modal, Upload, message } from 'antd';
+import { Table, Row, Col, Button, Input, Popconfirm, Select, Modal, Upload } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
@@ -171,7 +171,7 @@ const Shipping = () => {
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchShipping>();
   const [excelData, setExcelData] = useState<any>();
   const [excelUploaded, setExcelUploaded] = useState(false);
-  const [excelFileList, setExcelFileList] = useState<UploadFile[]>();
+  const [excelFileList] = useState<UploadFile[]>();
   const dispatch = useDispatch();
 
   const getShipping = useCallback(
@@ -253,7 +253,7 @@ const Shipping = () => {
       const wb = await workbook.xlsx.load(arrayBuffer);
       const ws = wb.getWorksheet(1);
 
-      const title = ws.name;
+      // const title = ws.name;
 
       const data: (string[])[] = [];
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { CreateContactComment, UpdateContactComment, ResponseContact } from 'types';
 import Form, { FormComponentProps } from 'antd/lib/form';
-import { Avatar, Comment, Button, Input, Modal, Popconfirm } from 'antd';
+import { Avatar, Comment, Button, Input, Popconfirm } from 'antd';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { deleteContactCommentAsync, updateContactCommentAsync, createContactCommentAsync } from 'store/reducer/contact';
