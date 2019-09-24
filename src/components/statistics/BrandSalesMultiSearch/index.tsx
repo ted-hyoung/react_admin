@@ -2,6 +2,7 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect } from 'react';
 
 // modules
+import Form, { FormComponentProps } from 'antd/lib/form';
 import { Select } from 'antd';
 
 // components
@@ -15,12 +16,13 @@ import { StoreState } from '../../../store';
 // less
 import './index.less';
 
-interface Props {
+
+interface Props extends FormComponentProps {
   setSelectedBrand : Dispatch<SetStateAction<number[]>>;
 }
 
-function BrandSalesMultiSearch(props: Props) {
-// const BrandSalesMultiSearch = Form.create<Props>()((props: Props) => {
+// function BrandSalesMultiSearch(props: Props) {
+const BrandSalesMultiSearch = Form.create<Props>()((props: Props) => {
   const { setSelectedBrand } = props;
   const { Option } = Select;
   // const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
@@ -39,12 +41,12 @@ function BrandSalesMultiSearch(props: Props) {
   const handleChange = (value: any) => {
     setSelectedBrand(value);
   };
-  console.log('brand',brand);
+
   return (
     <>
       <Select
         mode="multiple"
-        style={{ width: '300px' }}
+        style={{ width: '330px' }}
         placeholder="Please select brand."
         defaultValue={[]}
         onChange={handleChange}
@@ -55,6 +57,6 @@ function BrandSalesMultiSearch(props: Props) {
       </Select>
     </>
   );
-};
+});
 
 export default BrandSalesMultiSearch;

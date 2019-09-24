@@ -31,10 +31,10 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const handleSearch = useCallback(() => {
     validateFields((err, val) => {
       if (!err) {
-        Object.keys(val).forEach(key => {
+        Object.keys(val).map(key => {
           if (val[key] === undefined) {
             delete val[key];
-            return;
+            return false;
           }
           if (key === 'date') {
             validateDate(val, 'date');
@@ -45,17 +45,17 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
         val.endDate = moment(val.endDate).format(defaultDateTimeFormat);
 
         console.log('selectedDate', val);
-        console.log('selectedBrand');
+        console.log('selectedBrand',selectedBrand);
         onSearch({startDate: "2019-09-24", endDate: "2019-09-24"});
        // onSearch(val);
       }
     });
-  }, [onSearch, selectedBrand]);
+  }, [onSearch, selectedBrand, validateFields]);
 
   const handleReset = useCallback(() => {
     resetFields();
     onReset();
-  }, [onReset]);
+  }, [onReset,resetFields]);
 
   return (
     <>
@@ -67,7 +67,16 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
             getValueProps: getValuePropsForSearchDate,
           })(<BrandSalesSearchDate/>)}
         </Form.Item>
-        <BrandSalesMultiSearch setSelectedBrand={setSelectedBrand}/>
+        <Form.Item>
+          {getFieldDecorator('brand', {
+            rules: [
+              {
+                required :false,
+                message: '브랜드를 선택해 주세요',
+              }
+            ]
+          })(<BrandSalesMultiSearch setSelectedBrand={setSelectedBrand}/>)}
+        </Form.Item>
         <Form.Item>
           <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
             검색

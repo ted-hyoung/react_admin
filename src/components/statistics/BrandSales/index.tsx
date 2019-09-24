@@ -23,6 +23,7 @@ import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'ty
 
 // less
 import './index.less';
+import { getStatisticsBrancSalesAsync } from 'store/reducer/brand';
 
 const defaultSearchCondition = {
   startDate: moment(new Date()).format(defaultDateTimeFormat),
@@ -62,16 +63,13 @@ const DailySales = () => {
     datasets: [],
   });
 
-
-
-
   // TODO API 호출영역
    const dispatch = useDispatch();
 
-  const getDailySales = useCallback(
+  const getBrandSales = useCallback(
     (searchCondition?: any) => {
       dispatch(
-        getStatisticsDailySalesAsync.request({
+        getStatisticsBrancSalesAsync.request({
           searchCondition,
         }),
       );
@@ -80,8 +78,8 @@ const DailySales = () => {
   );
 
   useEffect(() => {
-    getDailySales(defaultSearchCondition);
-  }, [getDailySales]);
+    getBrandSales(defaultSearchCondition);
+  }, [getBrandSales]);
   //
   // const { statistics } = useSelector((storeState: StoreState) => storeState.order);
   const brandData = useMemo(() => {
@@ -100,7 +98,7 @@ const DailySales = () => {
         totalOrderCancelCountAvg : 1000
       },
       {
-        brandName : "B브랜드",
+        brandName : "보라지유",
         totalSalesAmount : 11000,
         totalOrderCompleteAmount : 10000,
         totalOrderCompleteCount : 5,
@@ -113,7 +111,7 @@ const DailySales = () => {
         totalOrderCancelCountAvg : 1000
       },
       {
-        brandName : "C브랜드",
+        brandName : "화이트 세럼",
         totalSalesAmount : 30000,
         totalOrderCompleteAmount : 10000,
         totalOrderCompleteCount : 5,
@@ -125,457 +123,7 @@ const DailySales = () => {
         totalOrderCancelAmountAvg : 1000,
         totalOrderCancelCountAvg : 1000
       },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
-        totalSalesAmount : 22200,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandName : "비클",
-        totalSalesAmount : 20000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 1000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "B브랜드",
-        totalSalesAmount : 11000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 2000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },
-      {
-        brandName : "C브랜드",
-        totalSalesAmount : 30000,
-        totalOrderCompleteAmount : 10000,
-        totalOrderCompleteCount : 5,
-        totalOrderCancelAmount : 50000,
-        totalOrderCancelCount : 5,
-        totalSalesAmountAvg : 3000,
-        totalOrderCompleteAmountAvg : 1000,
-        totalOrderCompleteCountAvg : 1000,
-        totalOrderCancelAmountAvg : 1000,
-        totalOrderCancelCountAvg : 1000
-      },{
-        brandName : "D브랜드",                // 브랜드명
+        brandName : "코코넛워터",                // 브랜드명
         totalSalesAmount : 22200,           // 총 순매출액
         totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
         totalOrderCompleteCount : 5,        // 총 주문완료 건수
@@ -627,72 +175,81 @@ const DailySales = () => {
     <>
       <div className="brand-sales">
         <BrandSalesSearchBar
-          onSearch={value => getDailySales(value)}
-          onReset={() => getDailySales(defaultSearchCondition)}
+          onSearch={value => getBrandSales(value)}
+          onReset={() => getBrandSales(defaultSearchCondition)}
         />
       </div>
-      <div style={{ overflowX: 'auto', marginTop: 50 }}>
-        <Bar
-          datasetKeyProvider={getDatasetKeyProvider}
-          data={charData}
-          height={500}
-          options={{
-            maintainAspectRatio: false,
-            responsive: true,
-            legend: {
-              display: true,
-            },
-            scales: {
-              yAxes: [
-                {
-                  barPercentage: 1.0,
-                  ticks: {
-                    min: 0,
-                    fontSize: 10,
-                    fontStyle: 'bold',
-                    paddingTop: 10,
-                    paddingBottom: 10,
+      <div  style={{width : '100%' ,overflowX : 'auto', overflowY : 'hidden' }}>
+        {/*브랜드 8개 기본, 9개부터 +100px*/}
+        <div style={{width : '1650px', height : '600px' ,overflowX : 'auto', overflowY : 'hidden' }}>
+          <Bar
+            datasetKeyProvider={getDatasetKeyProvider}
+            data={charData}
+            height={500}
+            options={{
+              maintainAspectRatio: false,
+              responsive: true,
+              legend: {
+                display: true,
+              },
+              scales: {
+                xAxes: [{
+                  barPercentage: 1.0
+                }],
+                yAxes: [
+                  {
+                    barPercentage: 1.0,
+                    ticks: {
+                      min: 0,
+                      fontSize: 10,
+                      fontStyle: 'bold',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                    },
                   },
-                },
-              ],
-            },
-            // tooltips: {
-            //   enabled: true,
-            //   callbacks: {
-            //     title: (tooltipItem: any) => {
-            //       const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
-            //         statistics.dailySales.ordersCharts[tooltipItem[0].index];
-            //       return (
-            //         '순매출액 : ' +
-            //         (
-            //           statisticsDailySalesRow.totalOrderCompleteAmount - statisticsDailySalesRow.totalOrderCancelAmount
-            //         ).toLocaleString() +
-            //         '원'
-            //       );
-            //     },
-            //     label: (tooltipItem: any) => {
-            //       const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
-            //         statistics.dailySales.ordersCharts[tooltipItem.index];
-            //       const text: string =
-            //         ' - 결제일시: ' +
-            //         statisticsDailySalesRow.paymentDate +
-            //         '\n - 결제완료: ' +
-            //         statisticsDailySalesRow.totalOrderCompleteCount.toLocaleString() +
-            //         '건(총 ' +
-            //         statisticsDailySalesRow.totalOrderCompleteAmount.toLocaleString() +
-            //         '원)' +
-            //         '\n - 주문취소: ' +
-            //         statisticsDailySalesRow.totalOrderCancelCount.toLocaleString() +
-            //         '건(총 ' +
-            //         statisticsDailySalesRow.totalOrderCancelAmount.toLocaleString() +
-            //         '원)';
-            //       return text.split('\n');
-            //     },
-            //   },
-            // },
-          }}
-        />
+                ],
+              },
+              // tooltips: {
+              //   enabled: true,
+              //   callbacks: {
+              //     title: (tooltipItem: any) => {
+              //       const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
+              //         statistics.dailySales.ordersCharts[tooltipItem[0].index];
+              //       return (
+              //         '순매출액 : ' +
+              //         (
+              //           statisticsDailySalesRow.totalOrderCompleteAmount - statisticsDailySalesRow.totalOrderCancelAmount
+              //         ).toLocaleString() +
+              //         '원'
+              //       );
+              //     },
+              //     label: (tooltipItem: any) => {
+              //       const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
+              //         statistics.dailySales.ordersCharts[tooltipItem.index];
+              //       const text: string =
+              //         ' - 결제일시: ' +
+              //         statisticsDailySalesRow.paymentDate +
+              //         '\n - 결제완료: ' +
+              //         statisticsDailySalesRow.totalOrderCompleteCount.toLocaleString() +
+              //         '건(총 ' +
+              //         statisticsDailySalesRow.totalOrderCompleteAmount.toLocaleString() +
+              //         '원)' +
+              //         '\n - 주문취소: ' +
+              //         statisticsDailySalesRow.totalOrderCancelCount.toLocaleString() +
+              //         '건(총 ' +
+              //         statisticsDailySalesRow.totalOrderCancelAmount.toLocaleString() +
+              //         '원)';
+              //       return text.split('\n');
+              //     },
+              //   },
+              // },
+            }}
+          />
+        </div>
       </div>
+      {/*<div style={{ overflowX: 'auto', marginTop: 50 }}>*/}
+
+      {/*</div>*/}
     </>
   );
 };
