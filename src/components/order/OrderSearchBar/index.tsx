@@ -148,7 +148,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                 {getFieldDecorator('orderNo')(<Input width={50} />)}
               </Col>
               <Col className="text-align-center" span={4}>
-                <span>배송 받는 분</span>
+                <span>배송 받는 분</span>
               </Col>
               <Col span={4}>{getFieldDecorator('recipient')(<Input width={50} />)}</Col>
             </Row>
