@@ -17,13 +17,14 @@ import { StoreState } from '../../../store';
 import './index.less';
 
 
-interface Props extends FormComponentProps {
+interface Props {
   setSelectedBrand : Dispatch<SetStateAction<number[]>>;
+  onChange?: (value: any) => void;
 }
 
 // function BrandSalesMultiSearch(props: Props) {
-const BrandSalesMultiSearch = Form.create<Props>()((props: Props) => {
-  const { setSelectedBrand } = props;
+const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
+  const { setSelectedBrand, onChange } = props;
   const { Option } = Select;
   // const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
 
@@ -40,22 +41,25 @@ const BrandSalesMultiSearch = Form.create<Props>()((props: Props) => {
 
   const handleChange = (value: any) => {
     setSelectedBrand(value);
+
+    if (onChange) {
+      onChange(value);
+    }
   };
 
   return (
-    <>
-      <Select
-        mode="multiple"
-        style={{ width: '330px' }}
-        placeholder="Please select brand."
-        defaultValue={[]}
-        onChange={handleChange}
-      >
-        {brand.map((item , index) => {
-          return <Option key={index} value={item.brandId}>{item.brandName}</Option>
-        })}
-      </Select>
-    </>
+    <Select
+      ref={ref}
+      mode="multiple"
+      style={{ width: '330px' }}
+      placeholder="Please select brand."
+      defaultValue={[]}
+      onChange={handleChange}
+    >
+      {brand.map((item , index) => {
+        return <Option key={index} value={item.brandId}>{item.brandName}</Option>
+      })}
+    </Select>
   );
 });
 

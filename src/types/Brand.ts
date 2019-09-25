@@ -13,7 +13,7 @@ export interface BrandInfo {
 }
 
 export interface ResponseManagementBrandStatistics {
-
+  brandId: number
   brandName : string;
   totalSalesAmount : number;
   totalOrderCompleteAmount : number;

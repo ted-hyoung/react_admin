@@ -1,0 +1,31 @@
+.daily-sales {
+  width: 180vh;
+  .ant-table {
+    td {
+      padding: 0 !important;
+      vertical-align: middle;
+    }
+    th {
+      vertical-align: middle;
+    }
+    .sorter-no-tooltip .ant-table-column-sorters:before {
+      content: none !important;
+    }
+  }
+}
+
+.chartWrapper {
+  position: relative;
+}
+
+.chartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events:none;
+}
+
+.chartAreaWrapper {
+  width: 600px;
+  overflow-x: scroll;
+}

@@ -14,7 +14,7 @@ import BrandSalesSearchDate, {
 } from 'components/statistics/BrandSalesSearchDate';
 
 // utils
-import { startDateFormat, endDateFormat, defaultDateTimeFormat } from 'lib/utils';
+import { startDateFormat, endDateFormat } from 'lib/utils';
 
 import { BrandSalesMultiSearch } from '../index';
 
@@ -25,11 +25,12 @@ interface Props extends FormComponentProps {
 
 const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
-  const { getFieldDecorator, validateFields, resetFields } = form;
+  const { getFieldDecorator, validateFields, resetFields, getFieldValue } = form;
   const [ selectedBrand, setSelectedBrand ] = useState<number[]>([]);
 
   const handleSearch = useCallback(() => {
     validateFields((err, val) => {
+      console.log(err);
       if (!err) {
         Object.keys(val).map(key => {
           if (val[key] === undefined) {
@@ -41,13 +42,11 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
             return;
           }
         });
-        val.startDate = moment(val.startDate).format(defaultDateTimeFormat);
-        val.endDate = moment(val.endDate).format(defaultDateTimeFormat);
-
-        console.log('selectedDate', val);
-        console.log('selectedBrand',selectedBrand);
-        onSearch({startDate: "2019-09-24", endDate: "2019-09-24"});
-       // onSearch(val);
+        val.startDate = moment(val.startDate).format(startDateFormat);
+        val.endDate = moment(val.endDate).format(endDateFormat);
+        // val.selectedBrand = selectedBrand;
+        console.log('formData', val);
+        onSearch(val);
       }
     });
   }, [onSearch, selectedBrand, validateFields]);
@@ -68,10 +67,10 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
           })(<BrandSalesSearchDate/>)}
         </Form.Item>
         <Form.Item>
-          {getFieldDecorator('brand', {
+          {getFieldDecorator('brandIds', {
             rules: [
               {
-                required :false,
+                required :true,
                 message: '브랜드를 선택해 주세요',
               }
             ]
