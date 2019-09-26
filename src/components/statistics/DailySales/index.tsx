@@ -363,6 +363,9 @@ const DailySales = () => {
                 display: false,
               },
               scales: {
+                xAxes: [{
+                  barPercentage: 0.7
+                }],
                 yAxes: [
                   {
                     barPercentage: 1.0,

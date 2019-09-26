@@ -1,37 +1,28 @@
 // base
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { connectAdvanced, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 // modules
 import { Tabs } from 'antd';
 
-import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
-import { Bar } from 'react-chartjs-2';
+
 
 // store
-import { StoreState } from 'store';
-import { clearDailySalesStatus } from 'store/reducer/order';
+
 
 // components
 import { BrandSalesChart, BrandSalesSearchBar } from 'components';
 
 // utils
-import { startDateFormat, endDateFormat } from 'lib/utils';
 
 // types
-import { ChartData, DataSets } from 'types';
 
 // less
 import './index.less';
 import { clearBrandSalesStatus, getStatisticsBrandSalesAsync } from 'store/reducer/brand';
-import Form from 'antd/lib/form';
-
-const defaultSearchCondition = {
-  startDate: moment(new Date()).format(startDateFormat),
-  endDate: moment(new Date()).format(endDateFormat),
-  brandIds:[1,2,3,4,5,6,7,8,9]
-};
+import { StoreState } from 'store';
+import { ChartData, ResponseManagementBrandStatistics } from 'types';
 
 export interface BrandDataSets {
   label: string;
@@ -45,9 +36,20 @@ export interface BrandDataSets {
   stack: string;
 }
 
-const DailySales = () => {
+const BrandSales = () => {
   const { TabPane } = Tabs;
   const dispatch = useDispatch();
+  const setReset = () => {
+    setTotalChartData({
+      labels:[],
+      datasets:[]
+    });
+    setAvgChartData({
+      labels:[],
+      datasets:[]
+    });
+  };
+
   const getBrandSales = useCallback(
     (searchCondition?: any) => {
       dispatch(
@@ -55,177 +57,119 @@ const DailySales = () => {
           searchCondition,
         }),
       );
+      setTotalChartData({
+        labels:[],
+        datasets:[]
+      });
+      setAvgChartData({
+        labels:[],
+        datasets:[]
+      });
     },
     [dispatch],
   );
 
-  // useEffect(() => {
-  //   getBrandSales(defaultSearchCondition);
-  // }, [getBrandSales]);
+  const [totalChartData, setTotalChartData] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+  });
+  const [avgChartData, setAvgChartData] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+  });
 
-  // const { statistics } = useSelector((state: StoreState) => state.brand);
-  //
+  const { statistics } = useSelector((state: StoreState) => state.brand);
+  const chartAvg: ResponseManagementBrandStatistics[] = [];
+  const chartTotal: ResponseManagementBrandStatistics[] = [];
+  chartAvg.push(...statistics);
+  chartTotal.push(...statistics);
 
-  const statistics = useMemo(() => {
-    return [
-     {
-        brandId : 1,
-        brandName : "비클",                // 브랜드명
-        totalSalesAmount : 2220,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 2,
-        brandName : "코코넛워터",                // 브랜드명
-        totalSalesAmount : 3220,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 6000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 3,
-        brandName : "미니몰",                // 브랜드명
-        totalSalesAmount : 4220,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 2000,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 4,
-        brandName : "보라지유",                // 브랜드명
-        totalSalesAmount : 5220,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 800,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 5,
-        brandName : "미즈노",                // 브랜드명
-        totalSalesAmount : 4820,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 2550,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 6,
-        brandName : "비클2",                // 브랜드명
-        totalSalesAmount : 2320,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 4050,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 7,
-        brandName : "코코넛워터2",                // 브랜드명
-        totalSalesAmount : 3620,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 6500,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 8,
-        brandName : "미니몰2",                // 브랜드명
-        totalSalesAmount : 4270,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 2500,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 9,
-        brandName : "보라지유2",                // 브랜드명
-        totalSalesAmount : 5720,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 850,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      },{
-        brandId : 10,
-        brandName : "미즈노2",                // 브랜드명
-        totalSalesAmount : 4820,           // 총 순매출액
-        totalOrderCompleteAmount : 10000,   // 총 주문완료 금액
-        totalOrderCompleteCount : 5,        // 총 주문완료 건수
-        totalOrderCancelAmount : 50000,     // 총 주문취소 금액
-        totalOrderCancelCount : 5,          // 총 주문취소 건수
-        totalSalesAmountAvg : 2550,         // 총 순매출액 평균
-        totalOrderCompleteAmountAvg : 1000, // 총 주문완료 금액 평균
-        totalOrderCompleteCountAvg : 1000,  // 총 주문완료 건수 평균
-        totalOrderCancelAmountAvg : 1000,   // 총 주문취소 금액 평균
-        totalOrderCancelCountAvg : 1000     // 총 주문취소 건수 평균
-      }
-    ];
-  }, []);
+  useEffect(() => {
+    if (statistics) {
+      chartAvg.sort((a, b) => b.totalSalesAmountAvg - a.totalSalesAmountAvg);
+      const labelsAvg = chartAvg.map(item => item.brandName);
+      const totalSalesAmountDataAvg = chartAvg.map(item => item.totalSalesAmount);
+      const totalSalesAmountAvgDataAvg = chartAvg.map(item => item.totalSalesAmountAvg);
+      const datasetsAvg: BrandDataSets[] = [];
+      datasetsAvg.push(
+        {
+          label: '공구 전체',
+          backgroundColor: '#36a2eb',
+          stack: 'Stack 1',
+          data: totalSalesAmountDataAvg,
+          hoverBackgroundColor: '#0072ff',
+          hoverBorderColor: '#0072ff',
+        },{
+          label: '공구 평균',
+          backgroundColor: '#ff6384',
+          stack: 'Stack 2',
+          data: totalSalesAmountAvgDataAvg,
+          hoverBackgroundColor: '#ff0033',
+          hoverBorderColor: '#ff0033',
+        }
+      );
+      setAvgChartData({
+        labels:labelsAvg,
+        datasets:datasetsAvg
+      });
+
+      chartTotal.sort((a, b) => b.totalSalesAmount - a.totalSalesAmount);
+      const labelsTotal = chartTotal.map(item => item.brandName);
+      const totalSalesAmountDataTotal = chartTotal.map(item => item.totalSalesAmount);
+      const totalSalesAmountAvgDataTotal = chartTotal.map(item => item.totalSalesAmountAvg);
+      const datasetsTotal: BrandDataSets[] = [];
+
+      datasetsTotal.push(
+        {
+          label: '공구 전체',
+          backgroundColor: '#36a2eb',
+          stack: 'Stack 1',
+          data: totalSalesAmountDataTotal,
+          hoverBackgroundColor: '#0072ff',
+          hoverBorderColor: '#0072ff',
+        },{
+          label: '공구 평균',
+          backgroundColor: '#ff6384',
+          stack: 'Stack 2',
+          data: totalSalesAmountAvgDataTotal,
+          hoverBackgroundColor: '#ff0033',
+          hoverBorderColor: '#ff0033',
+        }
+      );
+      setTotalChartData({
+        labels:labelsTotal,
+        datasets:datasetsTotal
+      });
+      dispatch(clearBrandSalesStatus);
+    }
+  }, [statistics]);
 
   return (
     <>
       <div className="brand-sales">
         <BrandSalesSearchBar
           onSearch={value => getBrandSales(value)}
-          onReset={() => getBrandSales(defaultSearchCondition)}
+          onReset={() => setReset()}
         />
       </div>
+      {statistics.length > 0 &&
       <div className="card-container">
         <Tabs type="card">
-          <TabPane tab="전체 매출순" key="1" >
-            <div  style={{width : '100%' ,overflowX : 'auto', overflowY : 'hidden' }}>
-              <BrandSalesChart statistics={statistics} type={'total'}/>
+          <TabPane tab="전체 매출순" key="total">
+            <div style={{ width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
+              <BrandSalesChart statisticsData={chartTotal} type={'total'} chartData={totalChartData}/>
             </div>
           </TabPane>
-          <TabPane tab="평균 매출순" key="2">
-            <div  style={{width : '100%' ,overflowX : 'auto', overflowY : 'hidden' }}>
-              <BrandSalesChart statistics={statistics} type={'avg'}/>
+          <TabPane tab="평균 매출순" key="avg">
+            <div style={{ width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
+              <BrandSalesChart statisticsData={chartAvg} type={'avg'} chartData={avgChartData}/>
             </div>
           </TabPane>
         </Tabs>
       </div>
+      }
     </>
   );
 };
 
-export default DailySales;
+export default BrandSales;

@@ -30,7 +30,7 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
 
   const handleSearch = useCallback(() => {
     validateFields((err, val) => {
-      console.log(err);
+
       if (!err) {
         Object.keys(val).map(key => {
           if (val[key] === undefined) {
@@ -44,9 +44,9 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
         });
         val.startDate = moment(val.startDate).format(startDateFormat);
         val.endDate = moment(val.endDate).format(endDateFormat);
-        // val.selectedBrand = selectedBrand;
-        console.log('formData', val);
         onSearch(val);
+      }else{
+        console.error(err);
       }
     });
   }, [onSearch, selectedBrand, validateFields]);
@@ -54,6 +54,8 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const handleReset = useCallback(() => {
     resetFields();
     onReset();
+    console.log("handleReset");
+    setSelectedBrand([]);
   }, [onReset,resetFields]);
 
   return (

@@ -2,7 +2,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect } from 'react';
 
 // modules
-import Form, { FormComponentProps } from 'antd/lib/form';
 import { Select } from 'antd';
 
 // components
@@ -26,8 +25,6 @@ interface Props {
 const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
   const { setSelectedBrand, onChange } = props;
   const { Option } = Select;
-  // const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
-
   const { brand } = useSelector((state: StoreState) => state.brand);
   const dispatch = useDispatch();
 
@@ -37,11 +34,10 @@ const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
 
   useEffect(() => {
     getBrands();
-  }, []);
+  }, [getBrands]);
 
   const handleChange = (value: any) => {
     setSelectedBrand(value);
-
     if (onChange) {
       onChange(value);
     }

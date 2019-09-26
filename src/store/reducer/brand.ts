@@ -11,8 +11,9 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ResponseBrandForEvent,
-  ResponseManagementBrandStatistics,
+  ResponseManagementBrandStatistics, ResponseManagementOrdersDailySalesTable,
 } from 'types';
+import { useMemo } from 'react';
 
 export interface BrandState {
   brand: ResponseBrandForEvent[];
