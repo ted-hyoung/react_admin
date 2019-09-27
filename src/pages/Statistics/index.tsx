@@ -6,7 +6,6 @@ import { Tabs } from 'antd';
 
 // components
 import { DailySales } from 'components';
-import { ProductSales } from 'components';
 import { BrandSales } from 'components';
 
 // less
@@ -20,7 +19,6 @@ function Statistics() {
           <DailySales />
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 매출" key="PRODUCT_SALES">
-          <ProductSales />
         </Tabs.TabPane>
         <Tabs.TabPane tab="브랜드 매출" key="BRAND_SALES">
           <BrandSales />
