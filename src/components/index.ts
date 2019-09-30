@@ -9,5 +9,4 @@ export * from './product';
 export * from './celebReview';
 export * from './order';
 export * from './shipping';
-export * from './template';
 export * from './statistics';
