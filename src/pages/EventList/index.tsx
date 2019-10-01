@@ -14,7 +14,7 @@ import { PaginationTable } from 'components';
 import { EventStatus } from 'enums';
 import { StoreState } from 'store';
 import { getEventsAsync, clearEvent } from 'store/reducer/event';
-import { SearchEvent } from 'types';
+import { SearchEvent } from 'models';
 import { Button } from 'antd';
 import { sortedString } from 'lib/utils';
 

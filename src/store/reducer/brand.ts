@@ -6,7 +6,7 @@ import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from 'store/action/brandAction';
 
 // types
-import { ErrorAsyncAction, RequestAsyncAction, ResponseAsyncAction, ResponseBrandForEvent } from 'types';
+import { ErrorAsyncAction, RequestAsyncAction, ResponseAsyncAction, ResponseBrandForEvent } from 'models';
 
 export interface BrandState {
   brand: ResponseBrandForEvent[];

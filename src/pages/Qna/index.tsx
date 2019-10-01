@@ -18,7 +18,7 @@ import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
 import { dateTimeFormat } from 'lib/utils';
 
 // types
-import { ResponseQna, ResponseEventForQna, QnaComment } from 'types';
+import { ResponseQna, ResponseEventForQna, QnaComment } from 'models';
 
 // enums
 import { QnaStatus, QnaOrderType } from 'enums';

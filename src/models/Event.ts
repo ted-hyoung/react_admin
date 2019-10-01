@@ -4,6 +4,7 @@ import { ResponseCelebReview } from './CelebReview';
 import { ResponseProduct, SearchProductForOrder } from './Product';
 import { ResponseEventNotice } from './EventNotice';
 import { ResponseBrandForEvent, ResponseBrand, BrandInfo } from './Brand';
+import { ResponseClientAccount } from './Account';
 
 export interface CreateEvent {
   name: string;
@@ -60,7 +61,10 @@ export interface ResponseEventForList {
 
 export interface ResponseEventForOrders {
   brand: ResponseBrand;
+  images: FileObject[];
   name: string;
+  creator: ResponseClientAccount;
+  eventStatus: EventStatus;
 }
 export interface ResponseEventForReview {
   eventId: number;

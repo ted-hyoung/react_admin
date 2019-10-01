@@ -11,7 +11,7 @@ import { getThumbUrl } from 'lib/utils';
 import { InstagramIcon, YoutubeIcon, HeartTopIcon } from 'components/template/TemplateIcons';
 
 // types
-import { ResponseEvent } from 'types';
+import { ResponseEvent } from 'models';
 
 // assets
 import './index.less';

@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import anime from 'animejs';
 
 import './index.less';
-import { ResponseEventNotice } from 'types/EventNotice';
+import { ResponseEventNotice } from 'models/EventNotice';
 
 interface Props {
   eventNotices: ResponseEventNotice[];
