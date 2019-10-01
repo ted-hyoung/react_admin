@@ -11,7 +11,7 @@ import {
   UpdateRequestPayload,
   DeleteRequestPayload,
   GetRequestPayload,
-} from 'types';
+} from 'models';
 import {
   getContactsAsync,
   createContactCommentAsync,

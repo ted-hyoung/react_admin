@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from 'store/action/qnaAction';
-import { PageWrapper, ResponseQna, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction } from 'types';
+import { PageWrapper, ResponseQna, RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction } from 'models';
 
 // types
 export interface QnaState {

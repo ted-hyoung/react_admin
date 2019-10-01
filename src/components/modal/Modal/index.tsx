@@ -6,7 +6,7 @@ import { Modal as AntModal } from 'antd';
 import { Button } from 'antd/lib/radio';
 
 // types
-import { ModalTypes, ModalOptions, DetailModalContent, GalleryModalContent } from 'types';
+import { ModalTypes, ModalOptions, DetailModalContent, GalleryModalContent } from 'models';
 
 // components
 import { DetailModal, GalleryModal } from 'components';

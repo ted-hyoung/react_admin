@@ -9,7 +9,7 @@ import moment from 'moment';
 import { HeartOnIcon, PlayIcon } from 'components/template/TemplateIcons';
 
 // types
-import { FileObject } from 'types';
+import { FileObject } from 'models';
 
 // assets
 import mainImage from 'assets/images/main-image.png';

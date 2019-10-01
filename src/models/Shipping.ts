@@ -23,6 +23,14 @@ export interface ResponseShippingForOrders {
   shippingStatus: ShippingStatus;
 }
 
+export interface ResponseClientShippingForOrder {
+  shippingId: number;
+  shippingStatus: ShippingStatus;
+  shippingCompany: string;
+  shippingFee: number;
+  invoice: string;
+}
+
 export interface SearchShipping {
   startDate?: string;
   endDate?: string;

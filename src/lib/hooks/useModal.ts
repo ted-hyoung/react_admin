@@ -1,4 +1,4 @@
-import { ModalOptions } from './../../types/Modal';
+import { ModalOptions } from '../../models/Modal';
 import { useContext } from 'react';
 import { ModalContext } from 'lib/context/ModalProvider';
 

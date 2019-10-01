@@ -5,7 +5,7 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 import * as Api from 'lib/protocols';
 
 // action
-import { RequestAsyncAction } from 'types/AsyncAction';
+import { RequestAsyncAction } from 'models/AsyncAction';
 import * as Action from 'store/action/productAction';
 
 // reducer
