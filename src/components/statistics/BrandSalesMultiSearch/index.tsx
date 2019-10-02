@@ -17,13 +17,14 @@ import './index.less';
 
 
 interface Props {
+  selectedBrand: number[];
   setSelectedBrand : Dispatch<SetStateAction<number[]>>;
   onChange?: (value: any) => void;
 }
 
 // function BrandSalesMultiSearch(props: Props) {
 const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
-  const { setSelectedBrand, onChange } = props;
+  const { selectedBrand, setSelectedBrand, onChange } = props;
   const { Option } = Select;
   const { brand } = useSelector((state: StoreState) => state.brand);
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
 
   useEffect(() => {
     getBrands();
-  }, [getBrands]);
+  }, []);
 
   const handleChange = (value: any) => {
     setSelectedBrand(value);
@@ -49,7 +50,7 @@ const BrandSalesMultiSearch = React.forwardRef<Select, Props>((props, ref) => {
       mode="multiple"
       style={{ width: '330px' }}
       placeholder="Please select brand."
-      defaultValue={[]}
+      value={selectedBrand}
       onChange={handleChange}
     >
       {brand.map((item , index) => {

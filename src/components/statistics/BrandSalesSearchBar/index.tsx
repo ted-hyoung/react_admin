@@ -17,6 +17,9 @@ import BrandSalesSearchDate, {
 import { startDateFormat, endDateFormat } from 'lib/utils';
 
 import { BrandSalesMultiSearch } from '../index';
+import { getBrandsAsync } from '../../../store/reducer/brand';
+import { useDispatch, useSelector } from 'react-redux';
+import { StoreState } from '../../../store';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
@@ -25,7 +28,8 @@ interface Props extends FormComponentProps {
 
 const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
-  const { getFieldDecorator, validateFields, resetFields, getFieldValue } = form;
+  const dispatch = useDispatch();
+  const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
   const [ selectedBrand, setSelectedBrand ] = useState<number[]>([]);
 
   const handleSearch = useCallback(() => {
@@ -54,9 +58,14 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const handleReset = useCallback(() => {
     resetFields();
     onReset();
-    console.log("handleReset");
     setSelectedBrand([]);
-  }, [onReset,resetFields]);
+  }, [onReset,resetFields, setSelectedBrand]);
+
+  const getBrands = useCallback(() => {
+    dispatch(getBrandsAsync.request({}));
+  }, [dispatch]);
+
+  // const { brand } = useSelector((state: StoreState) => state.brand);
 
   return (
     <>
@@ -76,7 +85,7 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
                 message: '브랜드를 선택해 주세요',
               }
             ]
-          })(<BrandSalesMultiSearch setSelectedBrand={setSelectedBrand}/>)}
+          })(<BrandSalesMultiSearch setSelectedBrand={setSelectedBrand} selectedBrand={selectedBrand}/>)}
         </Form.Item>
         <Form.Item>
           <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
