@@ -1,10 +1,12 @@
-import { ResponseShippingDestination, ResponseShippingForOrders } from './Shipping';
+import { ResponseShippingDestination, ResponseShippingForOrders, ResponseClientShippingForOrder } from './Shipping';
 import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
-import { ResponsePaymentForOrders, ResponsePaymentForShipping } from './Payment';
+import { ResponsePaymentForOrders, ResponsePaymentForShipping, ResponseClientPaymentForOrder } from './Payment';
 import { PaymentStatus, ShippingStatus } from 'enums';
 import { ResponseEventForOrders, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
+import { ResponseOrderMemoForOrder } from './OrderMemo';
+import { UpdateShippingDestination } from './ShippingDestination';
 
 export interface ResponseOrder {
   orderId: number;
@@ -15,6 +17,19 @@ export interface ResponseOrder {
   event: ResponseEventForOrders;
   payment: ResponsePaymentForOrders;
   shipping: ResponseShippingForOrders;
+}
+
+export interface ResponseClientOrder {
+  orderId: number;
+  orderNo: string;
+  orderItems: ResponseOrderItem[];
+  orderMemos: ResponseOrderMemoForOrder[];
+  memo: string;
+  payment?: ResponseClientPaymentForOrder;
+  shipping?: ResponseClientShippingForOrder;
+  shippingDestination?: ResponseShippingDestination;
+  event?: ResponseEventForOrders;
+  consumer?: ResponseOrderConsumer;
 }
 
 export interface ResponseOrderForShipping {
@@ -96,4 +111,9 @@ export interface ChartData {
 
 export interface UpdateOrderForShipping {
   orderNo: string;
+}
+
+export interface UpdateOrderShippingDestination {
+  memo: string;
+  shippingDestination: UpdateShippingDestination;
 }

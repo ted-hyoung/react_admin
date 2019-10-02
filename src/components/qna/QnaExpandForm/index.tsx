@@ -7,7 +7,7 @@ import { Row, Col, Button, Input, Statistic, Popconfirm } from 'antd';
 import moment from 'moment';
 
 // types
-import { ResponseQna } from 'types';
+import { ResponseQna } from 'models';
 
 // store
 import {

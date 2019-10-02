@@ -6,7 +6,7 @@ import { Row, Col, Select, Button } from 'antd';
 
 // components
 import { EventList } from 'components/order/OrderSearchBar';
-import { SearchEventForOrder, ResponseOption } from 'types';
+import { SearchEventForOrder, ResponseOption } from 'models';
 
 import './index.less';
 

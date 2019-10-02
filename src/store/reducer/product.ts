@@ -10,7 +10,7 @@ import {
   ResponseAsyncAction,
   ErrorAsyncAction,
   ResponseShippingFeeInfo,
-} from 'types';
+} from 'models';
 
 interface ProductRequestState {
   message: string;

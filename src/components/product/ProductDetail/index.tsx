@@ -9,7 +9,7 @@ import { ProductTable, ShippingFreeInfo } from 'components';
 import { StoreState } from 'store';
 
 // types
-import { ResponseEvent } from 'types';
+import { ResponseEvent } from 'models';
 
 // less
 import './index.less';

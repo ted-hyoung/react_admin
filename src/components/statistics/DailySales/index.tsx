@@ -19,7 +19,7 @@ import { DailySalesSearchBar } from 'components';
 import { defaultDateTimeFormat, getNowYMD, createExcel } from 'lib/utils';
 
 // types
-import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'types';
+import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'models';
 
 // less
 import './index.less';

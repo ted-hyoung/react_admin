@@ -18,7 +18,7 @@ import OrderSearchDate, {
 } from 'components/order/OrderSearchDate';
 
 // types
-import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'types';
+import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'models';
 
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
