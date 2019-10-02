@@ -33,7 +33,7 @@ import {
   UpdateEventNotices,
   UpdateEventStatus,
   RequestAsyncAction,
-} from 'types';
+} from 'models';
 
 // sagas
 function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateEvent>>) {

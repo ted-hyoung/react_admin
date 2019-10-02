@@ -19,7 +19,7 @@ import {
 } from 'store/reducer/review';
 
 // types
-import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'types';
+import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'models';
 import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
 
 // component

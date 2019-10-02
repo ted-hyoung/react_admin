@@ -1,5 +1,4 @@
 export { default as Login } from './Login';
-export { default as EventTemplate } from './EventTemplate';
 export { default as EventDetail } from './EventDetail';
 export { default as EventList } from './EventList';
 export { default as Home } from './Home';

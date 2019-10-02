@@ -12,7 +12,7 @@ import { FlexRow } from 'components';
 import { calcStringByte } from 'lib/utils';
 
 // types
-import { ResponseEventNotice, UpdateEventNotices } from 'types';
+import { ResponseEventNotice, UpdateEventNotices } from 'models';
 
 import './index.less';
 import { useDispatch, useSelector } from 'react-redux';

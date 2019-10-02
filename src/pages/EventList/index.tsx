@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 // modules
 import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
+import { useClipboard } from 'use-clipboard-copy';
 
 // components
 import { PaginationTable } from 'components';
@@ -14,7 +15,7 @@ import { PaginationTable } from 'components';
 import { EventStatus } from 'enums';
 import { StoreState } from 'store';
 import { getEventsAsync, clearEvent } from 'store/reducer/event';
-import { SearchEvent } from 'types';
+import { SearchEvent } from 'models';
 import { Button } from 'antd';
 import { sortedString } from 'lib/utils';
 
@@ -27,81 +28,20 @@ interface EventList {
   brand: string;
   created: string;
   eventStatus: EventStatus;
+  eventLink: string;
 }
-
-const colums: ColumnProps<EventList>[] = [
-  {
-    title: 'NO',
-    dataIndex: 'key',
-    key: 'key',
-    sorter: (a, b) => a.key - b.key,
-  },
-  {
-    title: '공구기간',
-    dataIndex: 'period',
-    key: 'period',
-  },
-  {
-    title: '공구명',
-    dataIndex: 'name',
-    key: 'name',
-    sorter: (a, b) => sortedString(a.name, b.name),
-  },
-  {
-    title: '공구 링크',
-    dataIndex: 'eventLink',
-    key: 'eventLink',
-  },
-  {
-    title: '회차',
-    dataIndex: 'turn',
-    key: 'turn',
-    sorter: (a, b) => a.turn - b.turn,
-  },
-  {
-    title: '브랜드',
-    dataIndex: 'brand',
-    key: 'brand',
-    sorter: (a, b) => sortedString(a.brand, b.brand),
-  },
-  {
-    title: '등록일',
-    dataIndex: 'created',
-    key: 'created',
-    sorter: (a, b) => moment(a.created).unix() - moment(b.created).unix(),
-  },
-  {
-    title: '상태',
-    dataIndex: 'eventStatus',
-    key: 'eventStatus',
-    filters: [
-      {
-        text: EventStatus.READY,
-        value: EventStatus.READY,
-      },
-      {
-        text: EventStatus.IN_PROGRESS,
-        value: EventStatus.IN_PROGRESS,
-      },
-      {
-        text: EventStatus.COMPLETE,
-        value: EventStatus.COMPLETE,
-      },
-    ],
-    onFilter: (value, record) => record.eventStatus.indexOf(value) === 0,
-  },
-  // {
-  //   title: '복사',
-  //   dataIndex: 'copy',
-  //   key: 'copy',
-  // },
-];
 
 function EventList(props: RouteComponentProps) {
   const { history } = props;
 
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
+
+  const clipboard = useClipboard({
+    onSuccess: () => {
+      alert('URL 복사가 완료되었습니다.');
+    },
+  });
 
   const getEvents = useCallback(
     (page: number, size = 10, searchCondition?: SearchEvent) => {
@@ -154,13 +94,97 @@ function EventList(props: RouteComponentProps) {
       id: event.eventId,
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
-      eventLink: process.env.REACT_APP_CLIENT_URL + '/events/influence/' + event.creator.loginId + '/' + event.eventId,
+      eventLink: `${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${event.eventId}`,
       turn: event.turn,
       brand: event.brand.brandName,
       created: moment(event.created).format('YYYY-MM-DD'),
       eventStatus: EventStatus[event.eventStatus],
     };
   });
+
+  const colums: ColumnProps<EventList>[] = [
+    {
+      title: 'NO',
+      dataIndex: 'key',
+      key: 'key',
+      sorter: (a, b) => a.key - b.key,
+    },
+    {
+      title: '공구기간',
+      dataIndex: 'period',
+      key: 'period',
+    },
+    {
+      title: '공구명',
+      dataIndex: 'name',
+      key: 'name',
+      sorter: (a, b) => sortedString(a.name, b.name),
+    },
+    {
+      title: '공구 링크',
+      dataIndex: 'eventLink',
+      key: 'eventLink',
+      onCell: () => {
+        return {
+          onClick: e => e.stopPropagation(),
+        };
+      },
+      render: (value, record) => (
+        <div>
+          {value}{' '}
+          <Button
+            style={{ color: '#000000' }}
+            type="link"
+            icon="paper-clip"
+            onClick={() => clipboard.copy(record.eventLink)}
+          />
+        </div>
+      ),
+    },
+    {
+      title: '회차',
+      dataIndex: 'turn',
+      key: 'turn',
+      sorter: (a, b) => a.turn - b.turn,
+    },
+    {
+      title: '브랜드',
+      dataIndex: 'brand',
+      key: 'brand',
+      sorter: (a, b) => sortedString(a.brand, b.brand),
+    },
+    {
+      title: '등록일',
+      dataIndex: 'created',
+      key: 'created',
+      sorter: (a, b) => moment(a.created).unix() - moment(b.created).unix(),
+    },
+    {
+      title: '상태',
+      dataIndex: 'eventStatus',
+      key: 'eventStatus',
+      filters: [
+        {
+          text: EventStatus.READY,
+          value: EventStatus.READY,
+        },
+        {
+          text: EventStatus.IN_PROGRESS,
+          value: EventStatus.IN_PROGRESS,
+        },
+        {
+          text: EventStatus.COMPLETE,
+          value: EventStatus.COMPLETE,
+        },
+      ],
+      onFilter: (value, record) => record.eventStatus.indexOf(value) === 0,
+    },
+    // {
+    //   title: '복사',
+    //   dataIndex: 'copy',
+    //   key: 'copy',
+    // },
+  ];
 
   return (
     <div className="event-list">

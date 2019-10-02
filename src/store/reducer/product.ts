@@ -1,6 +1,6 @@
 // base
-import { action, createAsyncAction } from 'typesafe-actions';
-import produce from 'immer';
+import { createAsyncAction } from 'typesafe-actions';
+
 // action
 import * as Actions from 'store/action/productAction';
 
@@ -10,8 +10,8 @@ import {
   ResponseAsyncAction,
   ErrorAsyncAction,
   ResponseShippingFeeInfo,
-  ResponseManagementProductStatistics, ResponseManagementOrdersStatisticsDailySales, ProductOptions,
-} from 'types';
+  ResponseManagementProductStatistics, ProductOptions,
+} from 'models';
 
 interface ProductRequestState {
   message: string;

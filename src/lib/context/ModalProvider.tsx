@@ -5,7 +5,7 @@ import React, { createContext, useState, useCallback } from 'react';
 
 // components
 import { Modal } from 'components';
-import { ModalOptions } from 'types';
+import { ModalOptions } from 'models';
 
 // type
 interface CreateContext {

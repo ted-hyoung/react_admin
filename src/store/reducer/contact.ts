@@ -14,7 +14,7 @@ import {
   DeleteRequestPayload,
   SearchContact,
   CountContact,
-} from 'types';
+} from 'models';
 import { AxiosError } from 'axios';
 import { AnyAction } from 'redux';
 

@@ -6,8 +6,8 @@ import * as Actions from 'store/action/shippingAction';
 import { createAsyncAction, action } from 'typesafe-actions';
 
 // types
-import { ResponseAsyncAction, PageWrapper, RequestAsyncAction, ErrorAsyncAction } from 'types';
-import { ResponseShipping } from 'types/Shipping';
+import { ResponseAsyncAction, PageWrapper, RequestAsyncAction, ErrorAsyncAction } from 'models';
+import { ResponseShipping } from 'models/Shipping';
 import { ShippingStatus } from 'enums';
 
 // types

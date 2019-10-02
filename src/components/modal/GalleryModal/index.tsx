@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { Modal, Carousel, Icon } from 'antd';
 
 // types
-import { ModalOptions, GalleryModalContent } from 'types';
+import { ModalOptions, GalleryModalContent } from 'models';
 
 // assets
 import './index.less';

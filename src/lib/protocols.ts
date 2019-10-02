@@ -1,7 +1,7 @@
 // base
 import axios, { AxiosPromise, AxiosResponse } from 'axios';
 import { getToken, getRefreshToken, logout, setToken, isTokenExpired } from './utils';
-import { LoginAccount } from 'types';
+import { LoginAccount } from 'models';
 import { message } from 'antd';
 
 // defines

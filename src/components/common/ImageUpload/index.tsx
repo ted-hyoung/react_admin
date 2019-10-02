@@ -14,7 +14,7 @@ import { uploadImage } from 'lib/protocols';
 import { getThumbUrl } from 'lib/utils';
 
 // types
-import { FileObject } from 'types/FileObject';
+import { FileObject } from 'models/FileObject';
 
 // defeins
 const MB = 1048576;

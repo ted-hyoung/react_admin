@@ -14,7 +14,7 @@ import { getEventsAsync } from 'store/reducer/event';
 
 // enums
 import { EVENT_STATUS, DEFAULT_EVENT_STATUSES, EventStatus } from 'enums';
-import { SearchEvent } from 'types';
+import { SearchEvent } from 'models';
 import { EventList } from 'components/order/OrderSearchBar';
 
 interface EventSearchForm extends FormComponentProps {

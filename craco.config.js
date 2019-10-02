@@ -33,7 +33,7 @@ module.exports = {
           '@font-size-xl': '@font-size-base + 4px',
           '@text-color': '#000000',
           '@tab-content-padding': '30px',
-          '@border-grey': '#c6c6c6',
+          '@color-grey': '#c6c6c6',
         },
       },
     },
