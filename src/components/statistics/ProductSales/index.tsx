@@ -98,7 +98,6 @@ const ProductSales = () => {
   );
 
   useEffect(() => {
-    console.log("statistics.productSalesStatus" , statistics.productSalesStatus);
 
     if (statistics.productSalesStatus) {
       setChartData({
