@@ -31,7 +31,7 @@ import {
   SearchOrder, Indexable,
   ProductTables,
 
-} from 'types';
+} from 'models';
 
 // less
 import './index.less';

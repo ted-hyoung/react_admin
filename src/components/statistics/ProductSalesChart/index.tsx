@@ -12,7 +12,7 @@ import { Bar } from 'react-chartjs-2';
 // utils
 
 // types
-import { ChartData2, DataSets, ProductOptions, ResponseManagementProductStatistics } from 'types';
+import { ChartData2, DataSets, ProductOptions, ResponseManagementProductStatistics } from 'models';
 
 // less
 import './index.less';

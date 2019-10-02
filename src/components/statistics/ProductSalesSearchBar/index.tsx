@@ -16,7 +16,7 @@ import { EventSearch } from 'components';
 
 
 // types
-import { ResponseProduct, SearchProductForOrder } from 'types';
+import { ResponseProduct, SearchProductForOrder } from 'models';
 
 // less
 import './index.less';
