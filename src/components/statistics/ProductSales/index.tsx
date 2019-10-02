@@ -38,8 +38,8 @@ import './index.less';
 import { EventList } from '../ProductSalesSearchBar';
 import Orders from '../../../pages/Orders';
 import ReactToPrint from 'react-to-print';
-import { ShippingCompany, ShippingStatus } from '../../../enums';
-import { getOrdersExcelAsync } from '../../../store/reducer/order';
+import { PaymentStatus, ShippingCompany, ShippingStatus } from '../../../enums';
+import { clearOrderExcel, getOrdersExcelAsync } from '../../../store/reducer/order';
 
 export interface SearchEventForOrder {
   name: string;
@@ -79,7 +79,9 @@ const ProductSales = () => {
   // };
 
   const getProductStatistics = useCallback(
+
     ( searchCondition?: SearchEventForOrder[] ) => {
+
       //  console.log(searchCondition);
       dispatch(
         statisticsProductSalesAsync.request({
@@ -96,7 +98,8 @@ const ProductSales = () => {
   );
 
   useEffect(() => {
-    console.log(statistics.productSalesStatus);
+    console.log("statistics.productSalesStatus" , statistics.productSalesStatus);
+
     if (statistics.productSalesStatus) {
       setChartData({
         labels: [],
@@ -104,6 +107,7 @@ const ProductSales = () => {
       });
       const datasets: ProductDataSets[] = [];
       const labelArr: (string[])[] = [];
+
 
       let dataSetsSize = 1;
       chartProductData.map((item, index) => {
@@ -171,13 +175,11 @@ const ProductSales = () => {
           datasets[0].data[i] = chartProductData[i].totalSalesAmount
         }
       }
-      console.log(datasets);
-      console.log(labelArr);
+
       setChartData({
         labels:labelArr,
         datasets
       });
-      console.log(charData);
       dispatch(clearProductSalesStatus);
     }
   }, [statistics.productSalesStatus]);
@@ -203,7 +205,6 @@ const ProductSales = () => {
 
 
   chartProductData.map(product => {
-
     if(product.options.length > 0){
       const options = product.options;
 
@@ -221,19 +222,71 @@ const ProductSales = () => {
       dataSource.push({
         name: product.name,
         productName: product.productName,
-        optionName: "",
+        optionName: '옵션없음',
         salesPrice: product.discountSalesPrice.toLocaleString(),
         totalSalesQuantity: product.totalSalesQuantity,
         totalSalesAmount: product.totalSalesAmount.toLocaleString()
       })
     }
   });
-
+  useEffect(() => {
+    if (productsExcel.length !== 0) {
+      createProductExcel();
+      dispatch(clearOrderExcel);
+    }
+  }, [productsExcel]);
   const getOrdersExcel = useCallback(() => {
+
     dispatch(statisticsProductExcelAsync.request({
       lastSearchCondition
     }));
   }, [dispatch, lastSearchCondition]);
+
+
+  const createProductExcel = () => {
+    const data = [
+      [
+        '공구명',
+        '제품명',
+        '옵션명',
+        '판매가',
+        '판매수량',
+        '매출액'
+      ],
+    ];
+
+    if (productsExcel.length > 0) {
+
+      productsExcel.forEach(item => {
+
+
+        if (item.options.length > 0) {
+          for (let i = 1; i < item.options.length; i++) {
+            data.push([
+              item.name,
+              item.productName,
+              item.options[i].optionName,
+              item.options[i].salesPrice.toLocaleString(),
+              item.options[i].totalSalesQuantity.toLocaleString(),
+              item.options[i].totalSalesAmount.toLocaleString()
+            ]);
+          }
+        }else{
+          data.push([
+            item.name,
+            item.productName,
+            '옵션없음',
+            item.discountSalesPrice.toLocaleString(),
+            item.totalSalesQuantity.toLocaleString(),
+            item.totalSalesAmount.toLocaleString()
+          ]);
+        }
+      });
+
+      createExcel(data);
+    }
+  };
+
 
   // console.log('productsExcel', productsExcel);
 //  console.log('statistics', statistics);
@@ -278,6 +331,7 @@ const ProductSales = () => {
         ref={printRef}
         columns={columns}
         dataSource={dataSource}
+        pagination={false}
       />
     </div>
   );

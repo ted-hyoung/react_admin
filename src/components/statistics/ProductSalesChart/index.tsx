@@ -78,9 +78,7 @@ const ProductSalesChart = (props: Props) => {
             intersect: false,
             callbacks: {
               title: (tooltipItem: any) => {
-
                 const statisticsProductSalesRow: ResponseManagementProductStatistics = statistics[tooltipItem[0].index];
-
                 if(statisticsProductSalesRow.options.length > 0){
                   return (
                       statisticsProductSalesRow.options[tooltipItem[0].datasetIndex].optionName+' 순매출액 : ' +
