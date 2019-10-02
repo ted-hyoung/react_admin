@@ -6,3 +6,6 @@ export { default as BrandSalesChart } from './BrandSalesChart';
 export { default as BrandSalesSearchBar } from './BrandSalesSearchBar';
 export { default as BrandSalesMultiSearch } from './BrandSalesMultiSearch';
 export { default as BrandSalesSearchDate } from './BrandSalesSearchDate';
+export { default as ProductSales } from './ProductSales';
+export { default as ProductSalesSearchBar } from './ProductSalesSearchBar';
+export { default as ProductSalesChart } from './ProductSalesChart';

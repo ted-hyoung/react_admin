@@ -59,7 +59,7 @@ function EventDetail(props: RouteComponentProps<Params>) {
   };
 
   const handleOpenTemplate = () => {
-    window.open(`/events/${event.eventId}/template`);
+    window.open(`${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${eventId}`);
   };
 
   const handleDeleteEvent = () => {

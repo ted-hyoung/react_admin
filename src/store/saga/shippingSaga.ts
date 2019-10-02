@@ -2,7 +2,7 @@
 import { call, put, takeEvery } from 'redux-saga/effects';
 
 // types
-import { RequestAsyncAction } from 'types/AsyncAction';
+import { RequestAsyncAction } from 'models/AsyncAction';
 
 // lib
 import * as Api from 'lib/protocols';

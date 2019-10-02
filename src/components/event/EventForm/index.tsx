@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
-import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'types';
-import { FileObject } from 'types/FileObject';
+import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
+import { FileObject } from 'models/FileObject';
 
 // modules
 import moment, { Moment } from 'moment';

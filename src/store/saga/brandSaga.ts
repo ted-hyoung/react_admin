@@ -8,7 +8,7 @@ import { message } from 'antd';
 import * as Api from 'lib/protocols';
 
 // action
-import { RequestAsyncAction } from 'types/AsyncAction';
+import { RequestAsyncAction } from 'models/AsyncAction';
 import * as Action from 'store/action/brandAction';
 
 // reducer

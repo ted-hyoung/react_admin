@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { CreateContactComment, UpdateContactComment, ResponseContact } from 'types';
+import { CreateContactComment, UpdateContactComment, ResponseContact } from 'models';
 import Form, { FormComponentProps } from 'antd/lib/form';
 import { Avatar, Comment, Button, Input, Popconfirm } from 'antd';
 import moment from 'moment';

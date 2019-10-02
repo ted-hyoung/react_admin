@@ -5,7 +5,7 @@ import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel } from 'store/reducer/order';
+import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel, getOrderByIdAsync } from 'store/reducer/order';
 
 // modules
 import { Table, Button, Row, Col, Select, Modal, message } from 'antd';
@@ -16,13 +16,13 @@ import moment from 'moment';
 import { payCancelHost } from 'lib/protocols';
 
 // components
-import { OrderSearchBar } from 'components';
+import { OrderSearchBar, OrderDetailModal } from 'components';
 
 // utils
-import { getNowYMD, startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
-import { SearchOrder, ResponseOrder } from 'types/Order';
+import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
+import { SearchOrder } from 'models/Order';
 import { ShippingStatus, ShippingCompany, PaymentStatus, PAYMENT_STATUSES } from 'enums';
-import { ResponseOrderItem } from 'types/OrderItem';
+import { ResponseOrderItem } from 'models/OrderItem';
 
 // defines
 const { Option } = Select;
@@ -67,7 +67,8 @@ interface OrdersPaymentSelect {
 const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   const { niceSubmitRef, record, setSelectedOrder, status } = props;
 
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(status);
+  const paymentStatus = status;
+
   const dispatch = useDispatch();
   const [niceCancelPayment, setNiceCancelPayment] = useState(false);
 
@@ -112,7 +113,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             transactionId: record.transactionId,
             brandName: record.brandName,
             quantity: quantity.toString(),
-            productName: productName,
+            productName,
           });
 
           if (PaymentStatus[PaymentStatus.READY] === status) {
@@ -154,10 +155,13 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
 };
 
 const Orders = () => {
-  const { orders, ordersExcel } = useSelector((storeState: StoreState) => storeState.order);
+  const { order, orders, ordersExcel } = useSelector((storeState: StoreState) => storeState.order);
   const { size: pageSize, totalElements } = orders;
+
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
+
+  const [visible, setVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<SelectedOrder>();
   const printRef = useRef<any>();
   const niceSubmitRef = useRef<HTMLFormElement>(null);
@@ -177,6 +181,12 @@ const Orders = () => {
   );
 
   useEffect(() => {
+    if (order.orderId) {
+      setVisible(true);
+    }
+  }, [order]);
+
+  useEffect(() => {
     getOrders(0, pageSize, defaultSearchCondition);
   }, [getOrders, pageSize]);
 
@@ -186,6 +196,10 @@ const Orders = () => {
       dispatch(clearOrderExcel);
     }
   }, [ordersExcel]);
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
 
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
@@ -274,7 +288,18 @@ const Orders = () => {
       key: 'paymentDate',
       sorter: (a, b) => a.orderId - b.orderId,
     },
-    { title: '주문번호', dataIndex: 'orderNo', key: 'orderNo' },
+    {
+      title: '주문번호',
+      dataIndex: 'orderNo',
+      key: 'orderNo',
+      onCell: (record, rowIndex) => {
+        return {
+          onClick: () => {
+            dispatch(getOrderByIdAsync.request({ id: record.orderId }));
+          },
+        };
+      },
+    },
     { title: '브랜드명', dataIndex: 'brandName', key: 'brandName' },
     { title: '주문자', dataIndex: 'username', key: 'username' },
     {
@@ -409,6 +434,7 @@ const Orders = () => {
           <input type="hidden" name="productName" value={selectedOrder.productName} />
         </form>
       )}
+      <OrderDetailModal visible={visible} onCancel={handleCancel} />
     </div>
   );
 };

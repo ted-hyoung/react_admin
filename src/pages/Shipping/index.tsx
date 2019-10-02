@@ -25,7 +25,7 @@ import { ShippingSearchBar } from 'components';
 
 // uilts
 import { createExcel, startDateFormat, endDateFormat } from 'lib/utils';
-import { SearchShipping, UpdateShippingExcelInvoice } from 'types/Shipping';
+import { SearchShipping, UpdateShippingExcelInvoice } from 'models/Shipping';
 import { ShippingStatus, PaymentMethod, ShippingCompany, SHIPPING_STATUSES } from 'enums';
 import { UploadFile } from 'antd/lib/upload/interface';
 

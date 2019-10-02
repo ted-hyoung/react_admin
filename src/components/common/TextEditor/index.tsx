@@ -17,11 +17,11 @@ import { getThumbUrl } from 'lib/utils';
 import { QlImageIcon } from 'components/common/Icons';
 import Spinner from '../Spinner';
 
-const fontSize = Quill.import('attributors/style/size');
+// const fontSize = Quill.import('attributors/style/size');
 
-fontSize.whitelist = ['14px', '16px', '18px', '20px', '22px', '24px', '28px', '32px'];
+// fontSize.whitelist = ['14px', '16px', '18px', '20px', '22px', '24px', '28px', '32px'];
 
-Quill.register(fontSize, true);
+// Quill.register(fontSize, true);
 Quill.register({
   'formats/instagram': InstagramBlot,
 });
@@ -76,12 +76,12 @@ const Toolbar = (props: ToolbarProps) => {
         <button type="button" className="ql-underline" />
       </span>
       <span className="ql-formats">
-        <select className="ql-size" defaultValue={fontSize.whitelist[0]}>
-          {fontSize.whitelist.map((value: string, index: number) => (
+        <select className="ql-size">
+          {/* {fontSize.whitelist.map((value: string, index: number) => (
             <option key={value} value={value}>
               {value}
             </option>
-          ))}
+          ))} */}
         </select>
       </span>
       <span className="ql-formats">

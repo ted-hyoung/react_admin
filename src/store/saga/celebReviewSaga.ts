@@ -3,7 +3,7 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 import * as Api from 'lib/protocols';
 import * as Actions from 'store/action/celebReviewAction';
 import { PayloadAction } from 'typesafe-actions';
-import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload } from 'types';
+import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload } from 'models';
 import { updateCelebReviewAsync, getCelebReviewAsync } from 'store/reducer/celebReview';
 import { message } from 'antd';
 import { getEventByIdAsync } from 'store/reducer/event';

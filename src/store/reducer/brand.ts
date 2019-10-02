@@ -12,7 +12,7 @@ import {
   ResponseAsyncAction,
   ResponseBrandForEvent,
   ResponseManagementBrandStatistics, ResponseManagementOrdersDailySalesTable,
-} from 'types';
+} from 'models';
 import { useMemo } from 'react';
 
 export interface BrandState {

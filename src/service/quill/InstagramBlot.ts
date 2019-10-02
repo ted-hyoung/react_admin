@@ -24,7 +24,7 @@ class InstagramBlot extends QuillBlot {
       node.setAttribute('data-instgrm-permalink', convertUrl(data));
       node.setAttribute('data-instgrm-captioned', 'true');
       node.setAttribute('data-instgrm-version', '12');
-      node.setAttribute('style', 'width: 480px; border: 1px solid #ddd;');
+      node.setAttribute('style', 'width: 480px; max-width: 100%; border: 1px solid #ddd;');
     }
 
     return node;

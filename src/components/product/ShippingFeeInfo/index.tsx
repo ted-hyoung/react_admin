@@ -7,7 +7,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { useDispatch } from 'react-redux';
 
 // types
-import { ResponseEvent, ResponseShippingFeeInfo, UpdateEventShippingFeeInfo } from 'types';
+import { ResponseEvent, ResponseShippingFeeInfo, UpdateEventShippingFeeInfo } from 'models';
 
 // store
 import { updateEventShippingFeeInfoAsync } from 'store/reducer/event';

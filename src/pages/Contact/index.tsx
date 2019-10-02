@@ -6,7 +6,7 @@ import { StoreState } from 'store';
 import { getContactsAsync, getContactsCountAsync } from 'store/reducer/contact';
 
 // types
-import { SearchContact, ResponseContact } from 'types';
+import { SearchContact, ResponseContact } from 'models';
 import { QnaStatus, CsrCategory } from 'enums';
 import { ColumnProps } from 'antd/lib/table';
 

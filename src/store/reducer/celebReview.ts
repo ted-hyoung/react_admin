@@ -4,7 +4,7 @@ import { createAsyncAction } from 'typesafe-actions';
 
 import * as Actions from 'store/action/celebReviewAction';
 
-import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload, ResponseCelebReview } from 'types';
+import { UpdateRequestPayload, UpdateCelebReview, GetRequestPayload, ResponseCelebReview } from 'models';
 import { AxiosResponse, AxiosError } from 'axios';
 
 export interface CelebReviewState {

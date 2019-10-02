@@ -1,4 +1,8 @@
 // 제품 생성
+import { createAsyncAction } from 'typesafe-actions';
+import * as Actions from './orderAction';
+import { ErrorAsyncAction, RequestAsyncAction, ResponseAsyncAction } from '../../types';
+
 export const CREATE_PRODUCTS_REQUEST = 'product/CREATE_PRODUCTS_REQUEST';
 export const CREATE_PRODUCTS_SUCCESS = 'product/CREATE_PRODUCTS_SUCCESS';
 export const CREATE_PRODUCTS_FAILURE = 'product/CREATE_PRODUCTS_FAILURE';
@@ -17,3 +21,17 @@ export const DELETED_PRODUCTS_FAILURE = 'product/DELETED_PRODUCTS_FAILURE';
 export const SOLD_OUT_PRODUCTS_REQUEST = 'product/SOLD_OUT_PRODUCTS_REQUEST';
 export const SOLD_OUT_PRODUCTS_SUCCESS = 'product/SOLD_OUT_PRODUCTS_SUCCESS';
 export const SOLD_OUT_PRODUCTS_FAILURE = 'product/SOLD_OUT_PRODUCTS_FAILURE';
+
+// 제품 통계 조회
+export const STATISTICS_PRODUCTS_REQUEST = 'product/STATISTICS_PRODUCTS_REQUEST';
+export const STATISTICS_PRODUCTS_SUCCESS = 'product/STATISTICS_PRODUCTS_SUCCESS';
+export const STATISTICS_PRODUCTS_FAILURE = 'product/STATISTICS_PRODUCTS_FAILURE';
+export const CLEAR_PRODUCT_SALES_STATUS = 'product/CLEAR_PRODUCT_SALES_STATUS';
+
+// 제품 통계 Excel 다운로드
+export const STATISTICS_PRODUCTS_EXCEL_REQUEST = 'product/STATISTICS_PRODUCTS_EXCEL_REQUEST';
+export const STATISTICS_PRODUCTS_EXCEL_SUCCESS = 'product/STATISTICS_PRODUCTS_EXCEL_SUCCESS';
+export const STATISTICS_PRODUCTS_EXCEL_FAILURE = 'product/STATISTICS_PRODUCTS_EXCEL_FAILURE';
+export const CLEAR_PRODUCT_SALES_EXCEL_STATUS = 'product/CLEAR_PRODUCT_SALES_EXCEL_STATUS';
+
+

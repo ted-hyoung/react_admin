@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Descriptions } from 'antd';
-import { ModalOptions, DetailModalContent } from 'types';
+import { ModalOptions, DetailModalContent } from 'models';
 
 interface Props extends ModalOptions {
   content: DetailModalContent[];

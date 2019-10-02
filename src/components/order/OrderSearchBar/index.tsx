@@ -18,7 +18,7 @@ import OrderSearchDate, {
 } from 'components/order/OrderSearchDate';
 
 // types
-import { ResponseProduct } from 'types';
+import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'models';
 
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
@@ -32,7 +32,6 @@ import { EventSearch } from 'components/event';
 import EventSearchModal from 'components/event/EventSearch/EventSearchModal';
 
 // define
-
 
 export interface EventList {
   key: number;
@@ -53,7 +52,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
 
   const dispatch = useDispatch();
 
-  const [paymentChaeckALl, setPaymentCheckAll] = useState<boolean>(true);
+  const [paymentCheckAll, setPaymentCheckAll] = useState<boolean>(true);
   const [shippingCheckAll, setShippingCheckAll] = useState<boolean>(true);
   const [eventSearchModal, setEventSearchModal] = useState<boolean>(false);
 
@@ -98,7 +97,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               return;
             }
             if (key === 'paymentStatuses') {
-              if (paymentChaeckALl) {
+              if (paymentCheckAll) {
                 delete values[key];
                 return;
               }
@@ -110,12 +109,11 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               }
             }
           });
-
           onSearch(values);
         }
       });
     },
-    [onSearch, paymentChaeckALl, shippingCheckAll],
+    [onSearch, paymentCheckAll, shippingCheckAll],
   );
 
   const handleReset = useCallback(() => {
@@ -148,7 +146,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                 {getFieldDecorator('orderNo')(<Input width={50} />)}
               </Col>
               <Col className="text-align-center" span={4}>
-                <span>배송 받는 분</span>
+                <span>배송 받는 분</span>
               </Col>
               <Col span={4}>{getFieldDecorator('recipient')(<Input width={50} />)}</Col>
             </Row>
@@ -200,7 +198,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={24}>
                 <Form.Item>
-                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentChaeckALl}>
+                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentCheckAll}>
                     전체
                   </Checkbox>
                   {getFieldDecorator('paymentStatuses', {

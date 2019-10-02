@@ -9,3 +9,6 @@ export * from './PaymentStatus';
 export * from './PaymentMethod';
 export * from './ShippingCompany';
 export * from './DateRange';
+export * from './CardCode';
+export * from './Role';
+export * from './ImportanceCode';

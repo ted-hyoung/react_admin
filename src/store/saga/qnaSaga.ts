@@ -1,6 +1,6 @@
 // base
 import { call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
-import { RequestAsyncAction } from 'types/AsyncAction';
+import { RequestAsyncAction } from 'models/AsyncAction';
 import * as Api from 'lib/protocols';
 import * as Action from 'store/action/qnaAction';
 import {
