@@ -1,5 +1,6 @@
 import { CreateFileObject, FileObject, UpdateFileObject } from './FileObject';
 import { SearchOptionForOrder } from './Option';
+import { PageWrapper, ResponseManagementOrdersStatisticsDailySales, ResponseOrder } from './index';
 
 export interface ResponseProduct {
   productId: number;
@@ -84,3 +85,32 @@ export interface SearchProductForOrder {
   productId: number;
   option: SearchOptionForOrder;
 }
+
+export interface ResponseManagementProductStatistics {
+  productId: number;
+  name: string;
+  productName: string;
+  enableOption: boolean;
+  totalSalesAmount: number;
+  discountSalesPrice: number;
+  totalSalesQuantity: number;
+  options: ProductOptions[]
+}
+export interface ProductOptions {
+  "optionName": string;
+  "totalSalesAmount": number;
+  "salesPrice": number;
+  "totalSalesQuantity": number;
+  "salesRatio": number;
+}
+
+export interface ProductTables {
+  "name": string;
+  "productName": string;
+  "optionName": string;
+  "salesPrice": string;
+  "totalSalesQuantity": number;
+  "totalSalesAmount": string;
+}
+
+

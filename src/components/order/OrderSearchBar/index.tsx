@@ -53,7 +53,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
 
   const dispatch = useDispatch();
 
-  const [paymentChaeckALl, setPaymentCheckAll] = useState<boolean>(true);
+  const [paymentCheckAll, setPaymentCheckAll] = useState<boolean>(true);
   const [shippingCheckAll, setShippingCheckAll] = useState<boolean>(true);
   const [eventSearchModal, setEventSearchModal] = useState<boolean>(false);
 
@@ -98,7 +98,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               return;
             }
             if (key === 'paymentStatuses') {
-              if (paymentChaeckALl) {
+              if (paymentCheckAll) {
                 delete values[key];
                 return;
               }
@@ -110,12 +110,11 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               }
             }
           });
-
           onSearch(values);
         }
       });
     },
-    [onSearch, paymentChaeckALl, shippingCheckAll],
+    [onSearch, paymentCheckAll, shippingCheckAll],
   );
 
   const handleReset = useCallback(() => {
@@ -200,7 +199,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={24}>
                 <Form.Item>
-                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentChaeckALl}>
+                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentCheckAll}>
                     전체
                   </Checkbox>
                   {getFieldDecorator('paymentStatuses', {

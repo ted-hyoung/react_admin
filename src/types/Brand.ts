@@ -11,3 +11,5 @@ export interface BrandInfo {
   brandId: number;
   brandName: string;
 }
+
+
