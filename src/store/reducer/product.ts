@@ -1,6 +1,6 @@
 // base
-import { createAsyncAction } from 'typesafe-actions';
-
+import { createAsyncAction, action } from 'typesafe-actions';
+import produce from 'immer';
 // action
 import * as Actions from 'store/action/productAction';
 
@@ -10,6 +10,7 @@ import {
   ResponseAsyncAction,
   ErrorAsyncAction,
   ResponseShippingFeeInfo,
+  ResponseManagementProductStatistics, ProductOptions,
 } from 'models';
 
 interface ProductRequestState {
@@ -22,6 +23,11 @@ export interface ProductState {
   products: ResponseProduct[];
   shippingFeeInfo: ResponseShippingFeeInfo;
   requestState: ProductRequestState;
+  productsExcel: ResponseManagementProductStatistics[];
+  statistics: {
+    productSales: ResponseManagementProductStatistics[];
+    productSalesStatus: boolean;
+  }
 }
 
 export const createProductAsync = createAsyncAction(
@@ -48,6 +54,23 @@ export const soldOutProductsAsync = createAsyncAction(
   Actions.SOLD_OUT_PRODUCTS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const statisticsProductSalesAsync = createAsyncAction(
+  Actions.STATISTICS_PRODUCTS_REQUEST,
+  Actions.STATISTICS_PRODUCTS_SUCCESS,
+  Actions.STATISTICS_PRODUCTS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const clearProductSalesStatus = action(Actions.CLEAR_PRODUCT_SALES_STATUS);
+
+
+
+export const statisticsProductExcelAsync = createAsyncAction(
+  Actions.STATISTICS_PRODUCTS_EXCEL_REQUEST,
+  Actions.STATISTICS_PRODUCTS_EXCEL_SUCCESS,
+  Actions.STATISTICS_PRODUCTS_EXCEL_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const clearProductExcelStatus = action(Actions.CLEAR_PRODUCT_SALES_EXCEL_STATUS);
 // reducers
 const initialState: ProductState = {
   products: [],
@@ -58,6 +81,12 @@ const initialState: ProductState = {
   requestState: {
     message: '',
   },
+
+  productsExcel: [],
+  statistics: {
+    productSales: [],
+    productSalesStatus: false,
+  }
 };
 
 const product = (state = initialState, action: ResponseAsyncAction) => {
@@ -67,6 +96,32 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
     case Actions.DELETED_PRODUCTS_SUCCESS: {
       return state;
     }
+
+    case Actions.STATISTICS_PRODUCTS_SUCCESS: {
+      return produce(state, draft => {
+        draft.statistics.productSalesStatus = true;
+        draft.statistics.productSales = action.payload;
+      });
+    }
+
+    case Actions.STATISTICS_PRODUCTS_EXCEL_SUCCESS: {
+      return produce(state, draft => {
+        draft.productsExcel = action.payload;
+      });
+    }
+
+    case Actions.CLEAR_PRODUCT_SALES_STATUS: {
+      return produce(state, draft => {
+        draft.statistics.productSalesStatus = false;
+      });
+    }
+
+    case Actions.CLEAR_PRODUCT_SALES_EXCEL_STATUS: {
+      return produce(state, draft => {
+        draft.productsExcel = [];
+      });
+    }
+
     default: {
       return state;
     }

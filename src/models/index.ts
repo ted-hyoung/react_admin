@@ -25,3 +25,7 @@ export interface PageWrapper<T> {
   page: number;
   size: number;
 }
+
+export interface Indexable {
+  [key: string]: any
+}

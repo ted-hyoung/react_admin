@@ -109,6 +109,11 @@ export interface ChartData {
   datasets: DataSets[];
 }
 
+export interface ChartData2 {
+  labels: (string[])[];
+  datasets: DataSets[];
+}
+
 export interface UpdateOrderForShipping {
   orderNo: string;
 }
