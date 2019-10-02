@@ -28,7 +28,6 @@ interface Props extends FormComponentProps {
 
 const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
-  const dispatch = useDispatch();
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
   const [ selectedBrand, setSelectedBrand ] = useState<number[]>([]);
 
@@ -60,12 +59,6 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
     onReset();
     setSelectedBrand([]);
   }, [onReset,resetFields, setSelectedBrand]);
-
-  const getBrands = useCallback(() => {
-    dispatch(getBrandsAsync.request({}));
-  }, [dispatch]);
-
-  // const { brand } = useSelector((state: StoreState) => state.brand);
 
   return (
     <>
