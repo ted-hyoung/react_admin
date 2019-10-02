@@ -10,7 +10,14 @@ import moment, { Moment, duration } from 'moment';
 import { defaultDateFormat } from 'lib/utils';
 
 // enums
-import { DateRange } from 'enums';
+// import { DateRange } from 'enums';
+export enum DateRange {
+  RECENT_3DAYS = '최근 3일',
+  RECENT_WEEK = '최근 7일',
+  RECENT_MONTH = '최근 1개월',
+  RECENT_3MONTHS = '최근 3개월',
+  RECENT_YEAR = '최근 1년'
+}
 
 export function validateDate(val: any, key: string) {
   if (val[key].length > 0) {
@@ -43,7 +50,7 @@ export function getValuePropsForSearchDate(value: any) {
 
 
 
-const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
+const BrandSalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
   const { value, onChange } = props;
 
   const handleChange = useCallback(
@@ -67,8 +74,9 @@ const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerPr
           });
         }
 
-        if (Number(duration(newDates[1]!.diff(newDates[0])).asDays()) >= 93) {
-          return message.error('검색기간은 최대 89~92일(3개월) 입니다.');
+        // 검색 기간 1년
+        if (Number(duration(newDates[1]!.diff(newDates[0])).asDays()) >= 366) {
+          return message.error('검색기간은 최대 365일(12개월) 입니다.');
         }
         onChange(newDates, newDateStrings);
       }
@@ -98,6 +106,10 @@ const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerPr
           dates[0] = moment().subtract(3, 'month');
           break;
         }
+        case DateRange.RECENT_YEAR: {
+          dates[0] = moment().subtract(12, 'month');
+          break;
+        }
       }
       dates.forEach((date: Moment | undefined, index: number) => {
         if (date) {
@@ -124,4 +136,4 @@ const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerPr
   );
 });
 
-export default DailySalesSearchDate;
+export default BrandSalesSearchDate;

@@ -12,4 +12,17 @@ export interface BrandInfo {
   brandName: string;
 }
 
-
+export interface ResponseManagementBrandStatistics {
+  brandId: number
+  brandName : string;
+  totalSalesAmount : number;
+  totalOrderCompleteAmount : number;
+  totalOrderCompleteCount : number;
+  totalOrderCancelAmount : number;
+  totalOrderCancelCount : number;
+  totalSalesAmountAvg : number;
+  totalOrderCompleteAmountAvg : number;
+  totalOrderCompleteCountAvg : number;
+  totalOrderCancelAmountAvg : number;
+  totalOrderCancelCountAvg : number;
+}

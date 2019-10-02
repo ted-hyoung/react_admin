@@ -6,7 +6,6 @@ import { RequestAsyncAction } from 'models/AsyncAction';
 
 // lib
 import * as Api from 'lib/protocols';
-import { parseParams } from 'lib/utils';
 
 // modules
 import { Modal, message } from 'antd';

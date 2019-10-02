@@ -1,5 +1,5 @@
 // base
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';

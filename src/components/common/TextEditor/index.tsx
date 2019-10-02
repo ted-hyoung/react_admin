@@ -1,7 +1,7 @@
 // base
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { Delta, Sources } from 'quill';
+import { Delta } from 'quill';
 
 // modules
 import { Modal, Input, Icon } from 'antd';

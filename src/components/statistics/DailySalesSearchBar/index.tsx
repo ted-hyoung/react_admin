@@ -40,6 +40,7 @@ const DailySalesSearchBar = Form.create<Props>()((props: Props) => {
         });
         val.startDate = moment(val.startDate).format(defaultDateTimeFormat);
         val.endDate = moment(val.endDate).format(defaultDateTimeFormat);
+
         onSearch(val);
       }
     });

@@ -1,9 +1,9 @@
 // base
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // modules
-import { Button, Checkbox, Row, Col, Input, Icon, Select, Descriptions } from 'antd';
+import { Button, Checkbox, Row, Col, Input, Icon, Descriptions } from 'antd';
 import Form, { FormComponentProps } from 'antd/lib/form';
 import moment from 'moment';
 
@@ -32,7 +32,6 @@ import { EventSearch } from 'components/event';
 import EventSearchModal from 'components/event/EventSearch/EventSearchModal';
 
 // define
-const { Option } = Select;
 
 export interface EventList {
   key: number;
@@ -49,7 +48,7 @@ interface Props extends FormComponentProps {
 
 const OrderSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
-  const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, resetFields } = form;
+  const { getFieldDecorator, validateFields, setFieldsValue, resetFields } = form;
 
   const dispatch = useDispatch();
 

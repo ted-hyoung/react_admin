@@ -5,7 +5,7 @@ import React from 'react';
 import { Tabs } from 'antd';
 
 // components
-import { DailySales, ProductSales } from 'components';
+import { DailySales, ProductSales, BrandSales } from 'components';
 
 // less
 import './index.less';
@@ -21,7 +21,7 @@ function Statistics() {
           <ProductSales />
         </Tabs.TabPane>
         <Tabs.TabPane tab="브랜드 매출" key="BRAND_SALES">
-          브랜드 매출 컴포넌트
+          <BrandSales />
         </Tabs.TabPane>
       </Tabs>
     </div>
