@@ -16,10 +16,11 @@ import BrandSalesSearchDate, {
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
 
-import { BrandSalesMultiSearch } from '../index';
+
 import { getBrandsAsync } from '../../../store/reducer/brand';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from '../../../store';
+import BrandSalesMultiSearch from '../BrandSalesMultiSearch';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;

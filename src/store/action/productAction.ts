@@ -1,7 +1,7 @@
 // 제품 생성
 import { createAsyncAction } from 'typesafe-actions';
 import * as Actions from './orderAction';
-import { ErrorAsyncAction, RequestAsyncAction, ResponseAsyncAction } from '../../types';
+import { ErrorAsyncAction, RequestAsyncAction, ResponseAsyncAction } from '../../models';
 
 export const CREATE_PRODUCTS_REQUEST = 'product/CREATE_PRODUCTS_REQUEST';
 export const CREATE_PRODUCTS_SUCCESS = 'product/CREATE_PRODUCTS_SUCCESS';

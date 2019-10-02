@@ -7,22 +7,13 @@ import { Tabs } from 'antd';
 
 import moment from 'moment';
 
-
-// store
-
-
-// components
-import { BrandSalesChart, BrandSalesSearchBar } from 'components';
-
-// utils
-
-// types
-
 // less
 import './index.less';
 import { clearBrandSalesStatus, getStatisticsBrandSalesAsync } from 'store/reducer/brand';
 import { StoreState } from 'store';
-import { ChartData, ResponseManagementBrandStatistics } from 'types';
+import { ChartData, ResponseManagementBrandStatistics } from 'models';
+import BrandSalesChart from '../BrandSalesChart';
+import { BrandSalesSearchBar } from '../index';
 
 export interface BrandDataSets {
   label: string;
