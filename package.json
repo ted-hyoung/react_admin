@@ -32,7 +32,8 @@
     "runes": "^0.4.3",
     "typesafe-actions": "^4.4.2",
     "typescript": "3.5.2",
-    "universal-cookie": "^4.0.2"
+    "universal-cookie": "^4.0.2",
+    "use-clipboard-copy": "^0.1.1"
   },
   "scripts": {
     "start": "craco start",
