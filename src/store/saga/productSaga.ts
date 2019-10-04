@@ -5,7 +5,7 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 import * as Api from 'lib/protocols';
 
 // action
-import { RequestAsyncAction } from 'types/AsyncAction';
+import { RequestAsyncAction } from 'models/AsyncAction';
 import * as Action from 'store/action/productAction';
 
 // reducer
@@ -14,9 +14,12 @@ import {
   updateProductAsync,
   deleteProductsAsync,
   soldOutProductsAsync,
+  statisticsProductSalesAsync, statisticsProductExcelAsync,
 } from 'store/reducer/product';
 import { getEventByIdAsync } from 'store/reducer/event';
 import { message } from 'antd';
+import qs from 'qs';
+import { getOrdersAsync } from '../reducer/order';
 
 function* createProduct(action: RequestAsyncAction) {
   try {
@@ -86,9 +89,47 @@ function* soldOutProduct(action: RequestAsyncAction) {
   }
 }
 
+function* getProductStatistics(action: RequestAsyncAction) {
+  try {
+    const { searchCondition } = action.payload;
+
+    const res = yield call(() =>
+      Api.get('/management/products/statistics', {
+        params: {
+          ...searchCondition,
+        },
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
+      }),
+    );
+    yield put(statisticsProductSalesAsync.success(res.data));
+  } catch (error) {
+    yield put(statisticsProductSalesAsync.failure(error));
+  }
+}
+
+function* getProductStatisticsExcel(action: RequestAsyncAction) {
+  try {
+    const { searchCondition } = action.payload;
+
+    const res = yield call(() =>
+      Api.get('/management/products/statistics', {
+        params: {
+          ...searchCondition,
+        },
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
+      }),
+    );
+    yield put(statisticsProductExcelAsync.success(res.data));
+  } catch (error) {
+    yield put(statisticsProductExcelAsync.failure(error));
+  }
+}
+
 export default function* productSaga() {
   yield takeEvery(Action.CREATE_PRODUCTS_REQUEST, createProduct);
   yield takeEvery(Action.UPDATE_PRODUCTS_REQUEST, updateProduct);
   yield takeEvery(Action.DELETED_PRODUCTS_REQUEST, deleteProduct);
   yield takeEvery(Action.SOLD_OUT_PRODUCTS_REQUEST, soldOutProduct);
+  yield takeEvery(Action.STATISTICS_PRODUCTS_REQUEST, getProductStatistics);
+  yield takeEvery(Action.STATISTICS_PRODUCTS_EXCEL_REQUEST, getProductStatisticsExcel);
 }

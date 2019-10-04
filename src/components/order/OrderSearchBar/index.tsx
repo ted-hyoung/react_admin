@@ -1,9 +1,9 @@
 // base
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // modules
-import { Button, Checkbox, Row, Col, Input, Icon, Select, Descriptions } from 'antd';
+import { Button, Checkbox, Row, Col, Input, Icon, Descriptions } from 'antd';
 import Form, { FormComponentProps } from 'antd/lib/form';
 import moment from 'moment';
 
@@ -18,7 +18,7 @@ import OrderSearchDate, {
 } from 'components/order/OrderSearchDate';
 
 // types
-import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'types';
+import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'models';
 
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
@@ -32,7 +32,6 @@ import { EventSearch } from 'components/event';
 import EventSearchModal from 'components/event/EventSearch/EventSearchModal';
 
 // define
-const { Option } = Select;
 
 export interface EventList {
   key: number;
@@ -49,11 +48,11 @@ interface Props extends FormComponentProps {
 
 const OrderSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
-  const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, resetFields } = form;
+  const { getFieldDecorator, validateFields, setFieldsValue, resetFields } = form;
 
   const dispatch = useDispatch();
 
-  const [paymentChaeckALl, setPaymentCheckAll] = useState<boolean>(true);
+  const [paymentCheckAll, setPaymentCheckAll] = useState<boolean>(true);
   const [shippingCheckAll, setShippingCheckAll] = useState<boolean>(true);
   const [eventSearchModal, setEventSearchModal] = useState<boolean>(false);
 
@@ -98,7 +97,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               return;
             }
             if (key === 'paymentStatuses') {
-              if (paymentChaeckALl) {
+              if (paymentCheckAll) {
                 delete values[key];
                 return;
               }
@@ -110,12 +109,11 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               }
             }
           });
-
           onSearch(values);
         }
       });
     },
-    [onSearch, paymentChaeckALl, shippingCheckAll],
+    [onSearch, paymentCheckAll, shippingCheckAll],
   );
 
   const handleReset = useCallback(() => {
@@ -200,7 +198,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={24}>
                 <Form.Item>
-                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentChaeckALl}>
+                  <Checkbox onChange={handleChangePaymentStatusesAll} checked={paymentCheckAll}>
                     전체
                   </Checkbox>
                   {getFieldDecorator('paymentStatuses', {

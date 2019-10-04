@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Col, Input, message, Modal as AntModal, Row, Select, Table, Typography, InputNumber } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import ImageUpload from 'components/common/ImageUpload';
-import { FileObject } from 'types/FileObject';
+import { FileObject } from 'models/FileObject';
 import { calcStringByte } from 'lib/utils';
 import Form, { FormComponentProps } from 'antd/lib/form';
 
@@ -25,7 +25,7 @@ import {
   ResponseProduct,
   UpdateOption,
   UpdateProduct,
-} from 'types';
+} from 'models';
 
 // less
 import './index.less';
@@ -647,7 +647,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                 </Col>
               </Row>
             )}
-            {!product.enableOption && product.productId == 0 && (
+            {!product.enableOption && product.productId === 0 && (
               <Row>
                 <Col span={3} className="product-modal-col-3">
                   <Text type="danger">* 판매 재고</Text>

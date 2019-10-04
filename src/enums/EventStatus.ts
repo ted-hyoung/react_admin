@@ -3,9 +3,9 @@ export enum EventStatus {
   IN_PROGRESS = '진행 중',
   COMPLETE = '종료',
 
-  '진행 예정' = 'READY',
-  '진행 중' = 'IN_PROGRESS',
-  '종료' = 'COMPLETE',
+  '진행 예정' = READY,
+  '진행 중' = IN_PROGRESS,
+  '종료' = COMPLETE,
 }
 export const EVENT_STATUS = [
   { label: '진행 예정', value: 'READY' },

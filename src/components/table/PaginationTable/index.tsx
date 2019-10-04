@@ -1,9 +1,9 @@
 // base
-import React, { useCallback } from 'react';
+import React from 'react';
 
 // modules
 import { Table, Button, Select, Row, Col } from 'antd';
-import { TableComponents, TableProps, PaginationConfig } from 'antd/lib/table';
+import { TableProps, PaginationConfig } from 'antd/lib/table';
 
 // defines
 const pageSizeRange = [10, 20, 50, 100];

@@ -41,6 +41,8 @@ export function getValuePropsForSearchDate(value: any) {
   return value;
 }
 
+
+
 const DailySalesSearchDate = React.forwardRef<DatePickerDecorator, RangePickerProps>((props, ref) => {
   const { value, onChange } = props;
 

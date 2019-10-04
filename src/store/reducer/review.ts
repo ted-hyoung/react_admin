@@ -14,7 +14,7 @@ import {
   GetListRequestPayload,
   GetRequestPayload,
   UpdateRequestPayload,
-} from 'types';
+} from 'models';
 import { AnyAction } from 'redux';
 import { AxiosError } from 'axios';
 

@@ -5,7 +5,6 @@ import routes, { PrivateRoute } from './routes';
 
 // modules
 import { Layout } from 'antd';
-import { EventTemplate } from 'pages';
 
 // components
 import { Menu, Header } from 'components';
@@ -22,7 +21,6 @@ function App() {
     <div id="app">
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
-          <Route exact path="/events/:id/template" component={EventTemplate} />;
           {routes.map(({ path, component: Component, secret }, index) => {
             if (secret) {
               return (

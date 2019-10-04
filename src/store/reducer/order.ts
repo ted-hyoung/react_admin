@@ -14,9 +14,13 @@ import {
   ErrorAsyncAction,
   ResponseManagementOrdersStatisticsDailySales,
   ResponseManagementOrdersDailySalesTable,
-} from 'types';
+  ResponseClientOrder,
+  UpdateOrderShippingDestination,
+} from 'models';
+import { AxiosError } from 'axios';
 
 export interface OrderState {
+  order: ResponseClientOrder;
   orders: PageWrapper<ResponseOrder>;
   ordersExcel: ResponseOrder[];
   statistics: {
@@ -30,13 +34,6 @@ export const getOrdersAsync = createAsyncAction(
   Actions.GET_ORDERS_REQUEST,
   Actions.GET_ORDERS_SUCCESS,
   Actions.GET_ORDERS_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
-
-// 주문 목록 > 결제 상태 변경
-export const updateOrdersPaymentStatusAsync = createAsyncAction(
-  Actions.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST,
-  Actions.UPDATE_ORDERS_PAYMENT_STATUS_SUCCESS,
-  Actions.UPDATE_ORDERS_PAYMENT_STATUS_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 // 주문 목록 Excel 다운로드
@@ -53,11 +50,40 @@ export const getStatisticsDailySalesAsync = createAsyncAction(
   Actions.GET_ORDERS_STATISTICS_DAILY_SALES_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// 주문 상세 조회
+export const getOrderByIdAsync = createAsyncAction(
+  Actions.GET_ORDER_BY_ID_REQUEST,
+  Actions.GET_ORDER_BY_ID_SUCCESS,
+  Actions.GET_ORDER_BY_ID_FAILURE,
+)<{ id: number }, void, AxiosError>();
+
+// 주문 목록 > 결제 상태 변경
+export const updateOrdersPaymentStatusAsync = createAsyncAction(
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST,
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_SUCCESS,
+  Actions.UPDATE_ORDERS_PAYMENT_STATUS_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+// 해당 주문 건 배송지 정보 변경
+export const updateShippingDestinationByIdAsync = createAsyncAction(
+  Actions.UPDATE_SHIPPING_DESTINATION_BY_ID_REQUEST,
+  Actions.UPDATE_SHIPPING_DESTINATION_BY_ID_SUCCESS,
+  Actions.UPDATE_SHIPPING_DESTINATION_BY_ID_FAILURE,
+)<{ orderId: number; updateOrderShippingDestination: UpdateOrderShippingDestination }, void, AxiosError>();
+
 export const clearDailySalesStatus = action(Actions.CLEAR_DAILY_SALES_STATUS);
 export const clearOrderExcel = action(Actions.CLEAR_ORDER_EXCEL);
+export const clearOrder = action(Actions.CLEAR_ORDER);
 
 // reducers
 const initialState: OrderState = {
+  order: {
+    orderId: 0,
+    orderNo: '',
+    orderItems: [],
+    orderMemos: [],
+    memo: '',
+  },
   orders: {
     content: [],
     first: false,
@@ -89,6 +115,11 @@ const initialState: OrderState = {
 
 const order = (state = initialState, action: ResponseAsyncAction) => {
   switch (action.type) {
+    case Actions.GET_ORDER_BY_ID_SUCCESS: {
+      return produce(state, draft => {
+        draft.order = action.payload;
+      });
+    }
     case Actions.GET_ORDERS_SUCCESS: {
       return produce(state, draft => {
         draft.orders = action.payload.data;
@@ -116,6 +147,9 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
         draft.statistics.dailySalesStatus = true;
       });
     }
+    case Actions.UPDATE_SHIPPING_DESTINATION_BY_ID_SUCCESS: {
+      return state;
+    }
     case Actions.CLEAR_DAILY_SALES_STATUS: {
       return produce(state, draft => {
         draft.statistics.dailySalesStatus = false;
@@ -124,6 +158,11 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
     case Actions.CLEAR_ORDER_EXCEL: {
       return produce(state, draft => {
         draft.ordersExcel = [];
+      });
+    }
+    case Actions.CLEAR_ORDER: {
+      return produce(state, draft => {
+        draft.order = initialState.order;
       });
     }
     default: {

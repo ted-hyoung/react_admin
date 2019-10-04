@@ -16,10 +16,10 @@ import { getStatisticsDailySalesAsync, clearDailySalesStatus } from 'store/reduc
 import { DailySalesSearchBar } from 'components';
 
 // utils
-import { defaultDateTimeFormat, getNowYMD, createExcel } from 'lib/utils';
+import { defaultDateTimeFormat, createExcel } from 'lib/utils';
 
 // types
-import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'types';
+import { ResponseManagementOrdersDailySalesChart, ChartData, DataSets } from 'models';
 
 // less
 import './index.less';
@@ -76,7 +76,7 @@ const DailySales = () => {
         item => item.totalOrderCompleteAmount - item.totalOrderCancelAmount,
       );
       if (statistics.dailySales.ordersCharts.length < 10) {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
           labels.push('');
         }
       }
@@ -334,7 +334,8 @@ const DailySales = () => {
   ];
 
   return (
-    <div className="daily-sales" style={{ width: '300vh' }}>
+    <div className="daily-sales">
+    {/*<div className="daily-sales" style={{ width: '300vh' }}>*/}
       <DailySalesSearchBar
         onSearch={value => getDailySales(value)}
         onReset={() => getDailySales(defaultSearchCondition)}
@@ -349,67 +350,72 @@ const DailySales = () => {
           size="middle"
         />
       </div>
-      <div style={{ overflowX: 'auto', marginTop: 170 }}>
-        <Bar
-          datasetKeyProvider={getDatasetKeyProvider}
-          data={charData}
-          height={500}
-          options={{
-            maintainAspectRatio: false,
-            responsive: true,
-            legend: {
-              display: false,
-            },
-            scales: {
-              yAxes: [
-                {
-                  barPercentage: 1.0,
-                  ticks: {
-                    min: 0,
-                    fontSize: 10,
-                    fontStyle: 'bold',
-                    paddingTop: 10,
-                    paddingBottom: 10,
+      <div style={{width : '100%' ,overflowX : 'auto', overflowY : 'hidden' }}>
+        <div style={{width : '100%', height : '500px' ,overflowX : 'auto', overflowY : 'hidden' }}>
+          <Bar
+            datasetKeyProvider={getDatasetKeyProvider}
+            data={charData}
+            height={500}
+            options={{
+              maintainAspectRatio: false,
+              responsive: true,
+              legend: {
+                display: false,
+              },
+              scales: {
+                xAxes: [{
+                  barPercentage: 0.7
+                }],
+                yAxes: [
+                  {
+                    barPercentage: 1.0,
+                    ticks: {
+                      min: 0,
+                      fontSize: 10,
+                      fontStyle: 'bold',
+                      paddingTop: 10,
+                      paddingBottom: 10,
+                    },
+                  },
+                ],
+              },
+              tooltips: {
+                enabled: true,
+                callbacks: {
+                  title: (tooltipItem: any) => {
+                    const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
+                      statistics.dailySales.ordersCharts[tooltipItem[0].index];
+                    return (
+                      '순매출액 : ' +
+                      (
+                        statisticsDailySalesRow.totalOrderCompleteAmount - statisticsDailySalesRow.totalOrderCancelAmount
+                      ).toLocaleString() +
+                      '원'
+                    );
+                  },
+                  label: (tooltipItem: any) => {
+                    const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
+                      statistics.dailySales.ordersCharts[tooltipItem.index];
+                    const text: string =
+                      ' - 결제일시: ' +
+                      statisticsDailySalesRow.paymentDate +
+                      '\n - 결제완료: ' +
+                      statisticsDailySalesRow.totalOrderCompleteCount.toLocaleString() +
+                      '건(총 ' +
+                      statisticsDailySalesRow.totalOrderCompleteAmount.toLocaleString() +
+                      '원)' +
+                      '\n - 주문취소: ' +
+                      statisticsDailySalesRow.totalOrderCancelCount.toLocaleString() +
+                      '건(총 ' +
+                      statisticsDailySalesRow.totalOrderCancelAmount.toLocaleString() +
+                      '원)';
+                    return text.split('\n');
                   },
                 },
-              ],
-            },
-            tooltips: {
-              enabled: true,
-              callbacks: {
-                title: (tooltipItem: any) => {
-                  const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
-                    statistics.dailySales.ordersCharts[tooltipItem[0].index];
-                  return (
-                    '순매출액 : ' +
-                    (
-                      statisticsDailySalesRow.totalOrderCompleteAmount - statisticsDailySalesRow.totalOrderCancelAmount
-                    ).toLocaleString() +
-                    '원'
-                  );
-                },
-                label: (tooltipItem: any) => {
-                  const statisticsDailySalesRow: ResponseManagementOrdersDailySalesChart =
-                    statistics.dailySales.ordersCharts[tooltipItem.index];
-                  const text: string =
-                    ' - 결제일시: ' +
-                    statisticsDailySalesRow.paymentDate +
-                    '\n - 결제완료: ' +
-                    statisticsDailySalesRow.totalOrderCompleteCount.toLocaleString() +
-                    '건(총 ' +
-                    statisticsDailySalesRow.totalOrderCompleteAmount.toLocaleString() +
-                    '원)' +
-                    '\n - 주문취소: ' +
-                    statisticsDailySalesRow.totalOrderCancelCount.toLocaleString() +
-                    '건(총 ' +
-                    statisticsDailySalesRow.totalOrderCancelAmount.toLocaleString() +
-                    '원)';
-                  return text.split('\n');
-                },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
       <div style={{ width: 1100, marginTop: 20, textAlign: 'left' }}>
         <Button type="primary" icon="download" onClick={handleExcelDownLoad}>

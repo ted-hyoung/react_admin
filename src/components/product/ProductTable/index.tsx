@@ -13,7 +13,7 @@ import { ProductModal } from 'components';
 import { deleteProductsAsync, soldOutProductsAsync } from 'store/reducer/product';
 
 // types
-import { FileObject, ResponseEvent, ResponseOption, ResponseProduct } from 'types';
+import { FileObject, ResponseEvent, ResponseOption, ResponseProduct } from 'models';
 
 // enums
 import { EventStatus, ProductSold } from 'enums';

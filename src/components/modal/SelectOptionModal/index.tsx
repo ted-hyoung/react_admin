@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Select } from 'antd';
 import { LabeledValue, AbstractSelectProps } from 'antd/lib/select';
-import { ResponseBrandForEvent } from 'types';
+import { ResponseBrandForEvent } from 'models';
 
 // defines
 const { Option } = Select;
