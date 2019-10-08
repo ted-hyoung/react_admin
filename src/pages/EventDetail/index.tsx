@@ -15,7 +15,7 @@ import { getBrandsAsync } from 'store/reducer/brand';
 import { EventStatus } from 'enums';
 
 // components
-import { ProductDetail, EventForm, EventNotice, CelebReviewDetail } from 'components';
+import { ProductDetail, EventForm, EventNotice, CelebReviewDetail, ProductNotice } from 'components';
 
 import './index.less';
 
@@ -79,6 +79,9 @@ function EventDetail(props: RouteComponentProps<Params>) {
         </Tabs.TabPane>
         <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={!event.eventId}>
           <ProductDetail event={event} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="상품정보제공 고시" key="PRODUCT_NOTICE" disabled={!event.eventId}>
+          <ProductNotice event={event} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={!event.eventId}>
           <CelebReviewDetail />
