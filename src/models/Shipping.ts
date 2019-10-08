@@ -26,7 +26,7 @@ export interface ResponseShippingForOrders {
 export interface ResponseClientShippingForOrder {
   shippingId: number;
   shippingStatus: ShippingStatus;
-  shippingCompany: string;
+  shippingCompany: ShippingCompany;
   shippingFee: number;
   invoice: string;
 }
