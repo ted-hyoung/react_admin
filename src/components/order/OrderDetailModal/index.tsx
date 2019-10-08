@@ -1,10 +1,10 @@
 // base
 import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { StoreState } from 'store';
 
 // modules
-import { Modal, Table, Row, Col, Button, Popconfirm, Icon, Descriptions, Result, Tag } from 'antd';
+import { Modal, Table, Row, Col, Descriptions, Result, Tag } from 'antd';
 import { Element, scroller } from 'react-scroll';
 import moment from 'moment';
 
@@ -17,7 +17,7 @@ import MemoForm from './MemoForm';
 import { getThumbUrl } from 'lib/utils';
 
 // enums
-import { ShippingStatus, PaymentMethod, PaymentStatus, CardCode } from 'enums';
+import { ShippingStatus, PaymentMethod, PaymentStatus, CardCode, ShippingCompany } from 'enums';
 import { ImportanceCode } from 'enums/ImportanceCode';
 import { Role } from 'enums/Role';
 
@@ -66,7 +66,6 @@ function OrderDetailModal(props: OrderDetailModalProps) {
   const { orderNo, payment, orderItems, shipping, event, consumer, orderMemos } = useSelector(
     (state: StoreState) => state.order.order,
   );
-  const dispatch = useDispatch();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -280,7 +279,7 @@ function OrderDetailModal(props: OrderDetailModalProps) {
               <strong>배송정보</strong>
             </Col>
             <Col>
-              <span>{shipping ? shipping.shippingCompany : ''}</span>
+              <span>{shipping ? ShippingCompany[shipping.shippingCompany] : ''}</span>
             </Col>
             <Col>
               <span>{shipping ? shipping.invoice : ''}</span>
@@ -353,16 +352,18 @@ function OrderDetailModal(props: OrderDetailModalProps) {
         </Element>
         <Element id="section-4" className="scroll-section" name="section-4">
           <p className="scroll-section-title">환불정보</p>
-          {payment && payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ? (
+          {payment &&
+          (payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ||
+            payment.paymentStatus === PaymentStatus[PaymentStatus.REFUND_COMPLETE]) ? (
             <Descriptions bordered colon={false} column={24}>
               <Descriptions.Item span={24} label="환불번호">
                 <span>{payment.nicePayment.transactionId}</span>
               </Descriptions.Item>
               <Descriptions.Item span={24} label="환불금액">
-                <span>{payment.totalAmount}</span>
+                <span>{payment.totalAmount.toLocaleString()} 원</span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불수단">
-                <span>{payment.paymentMethod}</span>
+                <span>{PaymentMethod[payment.paymentMethod]}</span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불일자">
                 <span>{moment(payment.paymentCanceled).format('YYYY-MM-DD HH:mm:ss')}</span>
