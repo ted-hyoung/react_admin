@@ -9,17 +9,18 @@ import { FlexRow, MultiSelect } from 'components';
 import { StoreState } from 'store';
 
 // types
-import { ResponseEvent } from 'models';
+import { CreateEvent, ResponseEvent } from 'models';
 
 // less
 import './index.less';
 import { FormComponentProps } from 'antd/lib/form';
-import { Button, Col, Descriptions, Form, Input, message, Row, Typography } from 'antd';
+import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Typography } from 'antd';
 
 
 // enums
-import { productNoticeType, productProvision } from 'enums';
+import { PaymentStatus, productNoticeType, productProvision } from 'enums';
 import moment from 'moment';
+import { createProductNoticeAsync, updateProductNoticeAsync } from '../../../store/reducer/product';
 
 export interface OptionModel {
   "text" : string;
@@ -29,6 +30,7 @@ export interface OptionModel {
 // defines
 const { TextArea } = Input;
 const { Paragraph } = Typography;
+const { confirm, info, warning} = Modal;
 
 interface Props extends FormComponentProps{
   event: ResponseEvent;
@@ -41,19 +43,13 @@ function ProductNotice(props: Props) {
   const tests: {} = event;
   const {
     getFieldDecorator,
-    getFieldValue,
-    setFieldsValue,
-    isFieldsTouched,
-    resetFields,
     validateFieldsAndScroll,
-    validateFields,
   } = form;
 
   const [ selected, setSelected ] = useState<string[]>([]);
   const [ selectedTypes, setSelectedTypes ] = useState<OptionModel[]>([]);
   const [ noticeData, setNoticeData ] = useState <object[]>([]);
   const productProvisionDataTemp: object[] = [];
-
 
   const handleSetProductNoticeType = useCallback(value => {
     const selectTemp: OptionModel[] = [];
@@ -74,12 +70,8 @@ function ProductNotice(props: Props) {
       handleSetProductNoticeType(init);
       setSelected(init);
 
-
       productProvisionDataTemp.push(productProvisionData.productProvisions);
-      console.log(productProvisionDataTemp);
-      console.log(productProvisionData.productProvisions);
       setNoticeData(productProvisionDataTemp);
-      console.log(noticeData);
       // setFieldsValue(ETC:{
       //   name: event.name,
       //   brandName: event.brand.brandName,
@@ -129,11 +121,10 @@ function ProductNotice(props: Props) {
       return false;
     }
 
+    validateFieldsAndScroll({ first: true, force: true }, (error, values) => {
 
-    validateFields((errors, values) => {
-      console.log(values);
-      const productProvisions:object[] = [];
-      if (!errors) {
+      if (!error) {
+        const productProvisions:object[] = [];
         Object.keys(values).forEach(key => {
           if (values[key] === undefined) {
             delete values[key];
@@ -142,8 +133,42 @@ function ProductNotice(props: Props) {
           productProvisions.push([{ "productProvisionType" : key, ...values[key] }]);
         });
 
-        console.log('productProvisions: ' ,productProvisions);
-       // dispatch(updateEventNoticesAsync.request({ id: eventId, data }));
+        productProvisions.map((item: any, index: number) => {
+          Object.keys(item[0]).forEach(key => {
+            if (item[0][key] === null || item[0][key] === '') {
+              warning({
+                title: `입력하지 않은 정보가 있습니다.\n모든 정보를 입력해주세요.`,
+                okText: '확인',
+                // onOk() {
+                //   console.log("ok");
+                // },
+              });
+              return false;
+            }
+          });
+        });
+
+        if (event.eventId) {
+          console.log("이벤트 아이디 있다");
+          console.log('updateProductNoticeAsync: ' ,productProvisions);
+          dispatch(updateProductNoticeAsync.request({eventId : event.eventId, data: productProvisions }));
+        }else{
+          console.log("이벤트 아이디 없다");
+          console.log('createProductNoticeAsync: ' ,productProvisions);
+          dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: productProvisions }));
+        }
+      }else{
+        Object.keys(error).map(keys => {
+          Object.keys(error[keys]).map(key => {
+            warning({
+              title: error[keys][key].errors[0].message,
+              okText: '확인',
+              // onOk() {
+              //   console.log("ok");
+              // },
+            });
+          });
+        });
       }
     });
   };
@@ -208,7 +233,8 @@ function ProductNotice(props: Props) {
                                     <td>
                                       <Form.Item>
                                         {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
-                                          initialValue:productProvisionData.productProvisions[i][item.key]
+                                          initialValue:productProvisionData.productProvisions[i][item.key],
+                                          rules: [{ required: true, message: item.title+' 을 입력 바랍니다.' }],
                                         })(
                                           <TextArea
                                             spellCheck={false}
