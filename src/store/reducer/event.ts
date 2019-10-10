@@ -101,6 +101,7 @@ const initialState: EventState = {
     size: 10,
   },
   event: {
+    productProvisions:[],
     eventId: 0,
     name: '',
     eventStatus: EventStatus[EventStatus.READY],

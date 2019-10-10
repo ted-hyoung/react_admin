@@ -32,6 +32,7 @@ export interface ResponseEvent extends ResponseEventForList {
   likeCnt: number;
   eventNotices: ResponseEventNotice[];
   creator: ResponseEventCreator;
+  productProvisions:[];
 }
 
 export interface ResponseEventCreator {

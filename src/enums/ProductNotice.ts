@@ -161,6 +161,47 @@ export const productProvision = {
   ]
 };
 
+export const productProvisionData = {
+  ageOfUseOrWeightRange: '',
+  clockMainSpecification: '',
+  color: '',
+  configuration: '',
+  consumerConsultationNumber: '',
+  detailSpecification: '',
+  diseaseTreatmentMedicationNotContent: '',
+  foodMedicineSafetyAudit: '',
+  foodType: '',
+  functionalInformation: '',
+  guaranteeProvision: '',
+  handlingSafetyPrecautions: '',
+  importedFoodMedicineLaw: '',
+  ingredient: '',
+  jewelryMainSpecification: '',
+  kcCertified: '',
+  kind: '',
+  legalCertification: '',
+  majorIssue: '',
+  manufacturer: '',
+  manufacturerCountry: '',
+  manufacturingDate: '',
+  material: '',
+  medicalPermissionReportNumber: '',
+  modelName: '',
+  notationAdvertisementSideEffectOccurrence: '',
+  nutritionalInformation: '',
+  productProvisionId: 0,
+
+  qualityAssuranceCriteria: '',
+  rawMaterialContent: '',
+  sameModelLaunchDate: '',
+  serviceManagerNumber: '',
+  size: '',
+  transgenic: '',
+  useDeadLine: '',
+  usePurposeHow: '',
+  voltagePowerConsumption: '',
+  weight: ''
+};
 // export const productProvisionData = {
 //   productProvisions:[
 //     {

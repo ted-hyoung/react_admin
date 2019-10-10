@@ -114,7 +114,6 @@ function* getProductStatistics(action: RequestAsyncAction) {
 function* getProductStatisticsExcel(action: RequestAsyncAction) {
   try {
     const { searchCondition } = action.payload;
-
     const res = yield call(() =>
       Api.get('/management/products/statistics', {
         params: {
@@ -132,10 +131,13 @@ function* getProductStatisticsExcel(action: RequestAsyncAction) {
 function* createProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    console.log(eventId, data);
-    // const res = yield call(() => Api.post(`/events/${eventId}/product`, data));
-    // yield put(createProductNoticeAsync.success(res.data));
-    message.success('상품 정보를 등록하였습니다.');
+    const res = yield call(() => Api.post(`/provision/${eventId}`, {
+      productProvisions: [
+        ...data
+      ]
+    }));
+    yield put(createProductNoticeAsync.success(res.data));
+    message.success('상품 정보를 등록하였습니다s.');
   } catch (error) {
     yield put(createProductNoticeAsync.failure(error));
     message.error('상품 정보 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -145,9 +147,12 @@ function* createProductNotice(action: RequestAsyncAction) {
 function* updateProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    console.log(eventId, data);
-    // const res = yield call(() => Api.put(`/products/${eventId}`, data));
-    // yield put(updateProductNoticeAsync.success(res.data));
+    const res = yield call(() => Api.put(`/provision/${eventId}`, {
+      productProvisions: [
+        ...data
+      ]
+    }));
+    yield put(updateProductNoticeAsync.success(res.data));
     message.success('상품 정보를 수정했습니다.');
   } catch (error) {
     yield put(updateProductNoticeAsync.failure(error));
@@ -158,7 +163,12 @@ function* updateProductNotice(action: RequestAsyncAction) {
 function* deleteProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    console.log(eventId, data);
+    const data2 = {
+      productProvisions: [
+        {...data}
+      ]
+    };
+    console.log(eventId, data2);
     // const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
     // yield put(deleteProductsAsync.success(res.data));
     message.success('상품 제품을 삭제했습니다.');

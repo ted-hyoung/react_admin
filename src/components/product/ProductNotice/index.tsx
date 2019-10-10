@@ -9,7 +9,7 @@ import { FlexRow, MultiSelect } from 'components';
 import { StoreState } from 'store';
 
 // types
-import { CreateEvent, ResponseEvent } from 'models';
+import { ResponseEvent } from 'models';
 
 // less
 import './index.less';
@@ -18,8 +18,7 @@ import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Typography
 
 
 // enums
-import { PaymentStatus, productNoticeType, productProvision } from 'enums';
-import moment from 'moment';
+import { productNoticeType, productProvision, productProvisionData  } from 'enums';
 import { createProductNoticeAsync, updateProductNoticeAsync } from '../../../store/reducer/product';
 
 export interface OptionModel {
@@ -37,24 +36,28 @@ interface Props extends FormComponentProps{
 }
 
 function ProductNotice(props: Props) {
+
   const { event ,form} = props;
   const dispatch = useDispatch();
   const productJson: any = productProvision;
-  const tests: {} = event;
   const {
     getFieldDecorator,
     validateFieldsAndScroll,
   } = form;
 
   const [ selected, setSelected ] = useState<string[]>([]);
+  const [ multiSelected, setMultiSelected ] = useState<string[]>([]);
   const [ selectedTypes, setSelectedTypes ] = useState<OptionModel[]>([]);
-  const [ noticeData, setNoticeData ] = useState <object[]>([]);
-  const productProvisionDataTemp: object[] = [];
+  const [ noticeData, setNoticeData ] = useState <any[]>([]);
+  const productProvisionDataTemp: any[] = [];
 
   const handleSetProductNoticeType = useCallback(value => {
     const selectTemp: OptionModel[] = [];
-
+    setMultiSelected(value);
+    productProvisionDataTemp.length = 0;
     value.map((selectedItem: string) => {
+
+      productProvisionDataTemp.push({ "productProvisionType" : selectedItem, ...productProvisionData });
       productNoticeType.map((item, index) => {
         if(item.value === selectedItem){
           selectTemp.push(item);
@@ -62,55 +65,34 @@ function ProductNotice(props: Props) {
       });
     });
     setSelectedTypes(selectTemp);
-  }, [setSelectedTypes]);
+
+    if (event.productProvisions.length > 0) {
+
+      productProvisionDataTemp.map((selectedItem , i) => {
+        event.productProvisions.map((item, index) => {
+          if(selectedItem.productProvisionType === item[`productProvisionType`]){
+            productProvisionDataTemp[i]= item;
+          }
+        });
+      });
+    }
+    setNoticeData(productProvisionDataTemp);
+  }, [setSelectedTypes ,productProvisionDataTemp]);
 
   useEffect(() => {
-    if (event.eventId) {
-      const init = ["ETC","MEDICAL_APPLIANCES"];
+
+    if (event.productProvisions.length > 0) {
+      event.productProvisions.map((item, index) => {
+        productProvisionDataTemp.push({
+          item
+        });
+      });
+
+      const init = event.productProvisions.map(value => value[`productProvisionType`]);
       handleSetProductNoticeType(init);
       setSelected(init);
-
-      productProvisionDataTemp.push(productProvisionData.productProvisions);
-      setNoticeData(productProvisionDataTemp);
-      // setFieldsValue(ETC:{
-      //   name: event.name,
-      //   brandName: event.brand.brandName,
-      //   choiceReview: event.choiceReview,
-      //   salesStarted: moment(event.salesStarted),
-      //   salesEnded: moment(event.salesEnded),
-      //   targetAmount: event.targetAmount,
-      //   videoUrl: event.videoUrl,
-      //   shippingCompeny: event.shippingCompany,
-      // });
     }
   }, [event]);
-
-  const productProvisionData : any = {
-    productProvisions:[
-      {
-        legalCertification: "법에 의한 인증 허가 받았음을 확인할 수 있는 내용",
-        manufacturer: "제조국",
-        manufacturerCountry: "제조자(수입자)",
-        modelName: "품목 및 모델명",
-        productProvisionType: "ETC",
-        serviceManagerNumber: "A/S 책임자와 전화번호",
-      },
-      {
-        handlingSafetyPrecautions: "취급시 주의 사항",
-        kcCertified: "KC 인증 필 유무",
-        manufacturer: "제조자(수입자)",
-        manufacturerCountry: "제조국",
-        medicalPermissionReportNumber: "의료기기 법상 허가, 신고 번호 및 광고사전심의필 유무",
-        modelName: "품목 및 모델명",
-        productProvisionType: "MEDICAL_APPLIANCES",
-        qualityAssuranceCriteria: "품질보증기준",
-        sameModelLaunchDate: "동일 모델 출시년월",
-        serviceManagerNumber: "A/S 책임자와 전화번호",
-        usePurposeHow: "제품의 사용목적 및 사용 방법",
-        voltagePowerConsumption: "정격전압, 소비전력",
-      }
-    ]
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
 
@@ -130,12 +112,11 @@ function ProductNotice(props: Props) {
             delete values[key];
             return;
           }
-          productProvisions.push([{ "productProvisionType" : key, ...values[key] }]);
+          productProvisions.push({ "productProvisionType" : key, ...values[key] });
         });
-
         productProvisions.map((item: any, index: number) => {
-          Object.keys(item[0]).forEach(key => {
-            if (item[0][key] === null || item[0][key] === '') {
+          Object.keys(item).forEach(key => {
+            if (item[key] === null || item[key] === '') {
               warning({
                 title: `입력하지 않은 정보가 있습니다.\n모든 정보를 입력해주세요.`,
                 okText: '확인',
@@ -147,14 +128,9 @@ function ProductNotice(props: Props) {
             }
           });
         });
-
-        if (event.eventId) {
-          console.log("이벤트 아이디 있다");
-          console.log('updateProductNoticeAsync: ' ,productProvisions);
+        if (event.productProvisions.length > 0) {
           dispatch(updateProductNoticeAsync.request({eventId : event.eventId, data: productProvisions }));
         }else{
-          console.log("이벤트 아이디 없다");
-          console.log('createProductNoticeAsync: ' ,productProvisions);
           dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: productProvisions }));
         }
       }else{
@@ -180,7 +156,7 @@ function ProductNotice(props: Props) {
 
   return (
     <>
-      <Form className="event-notice" onSubmit={handleSubmit}>
+      <Form className="product-notice" onSubmit={handleSubmit}>
         <Descriptions.Item label="*상품 정보 제공 고시" span={24}>
           <FlexRow>
             <Col span={24}>
@@ -202,45 +178,45 @@ function ProductNotice(props: Props) {
                 </Col>
               </Paragraph>
             </Col>
-            <div style={{ width: '100%' }}  >
+            <div style={{ width: '100%', padding: '0 5px' }}  >
 
+              <Row style={{ marginBottom: 20 }}>
                 <Col span={4}> 상품 정보 제공 고시 </Col>
-                <Col span={15}>
+                <Col span={20} style={{ display: 'flex' }}>
                   <MultiSelect selectData={productNoticeType} selected={selected} setSelected={setSelected} onChange={handleSetProductNoticeType}/>
-                </Col>
-                <Col span={5}>
-                  <Button type="primary" htmlType="submit"> 등록 </Button>
+                  <Button type="primary" htmlType="submit" style={{marginLeft: '10px'}}> 등록 </Button>
                   <Button type="dashed" onClick={handleResetNotice} style={{marginLeft: '10px'}}> 초기화 </Button>
                 </Col>
-
+              </Row>
               <Col span ={24}>
                 {selectedTypes.length > 0 && (
                 <div >
-                  {selectedTypes.map((selectedItem:any, i:number) => {
-                    console.log(i);
+                  {selectedTypes.map((selectedItem, i: number) => {
+                    console.log(selectedTypes);
                     return (
                       <div key={selectedItem.value}>
-                        <h2>{selectedItem.text}</h2>
-                        <table  style={{ width: '98%',border : '1px solid #e7e7e7' ,backgroundColor: '#f3f3f2' }}>
+                        <h1 className='notice-product-title'>{selectedItem.text}</h1>
+                        <table  style={{ width: '98%',border : '1px solid #e7e7e7' ,backgroundColor: '#f3f3f2', marginBottom: 20 }}>
                           <tbody>
                             {
-                              productJson[selectedItem.value].map((item:any, index:number) => {
+                              productJson[selectedItem.value].map((item:any , index: number) => {
+
                                 return (
                                   <tr key={index} style={{ width: '100%' }}>
                                     <td style={{ width: '20%' }}>
-                                      {index} : {item.title}
+                                      {item.title}
                                     </td>
                                     <td>
                                       <Form.Item>
                                         {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
-                                          initialValue:productProvisionData.productProvisions[i][item.key],
+                                          initialValue: noticeData[i] === undefined ? '' : noticeData[i][item.key],
                                           rules: [{ required: true, message: item.title+' 을 입력 바랍니다.' }],
                                         })(
                                           <TextArea
                                             spellCheck={false}
                                             maxLength={100}
-                                            autosize={{ minRows: 3, maxRows: 3 }}
-                                            style={{ resize: 'none', marginBottom: '10px' }}
+                                            autosize={{ minRows: 4, maxRows: 5 }}
+                                            style={{ resize: 'none' }}
                                           />,
                                         )}
                                       </Form.Item>
