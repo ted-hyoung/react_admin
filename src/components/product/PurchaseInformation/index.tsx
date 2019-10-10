@@ -83,16 +83,14 @@ function PurchaseInformation(props: Props) {
 
   const dispatch = useDispatch();
 
-  const onChange = (e:any) => {
-    console.log(`checked = ${e.target.checked}`);
-  };
+  // const onChange = (e:any) => {
+  //   console.log(`checked = ${e.target.checked}`);
+  // };
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values) => {
-
-    console.log(values);
 
       if (!error) {
         if(!values.cancellationExchangeReturnRegulationAgree){
@@ -119,15 +117,14 @@ function PurchaseInformation(props: Props) {
         //    dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: values }));
         // }
       }else{
-        Object.keys(error).map(keys => {
-          Object.keys(error[keys]).map(key => {
-            warning({
-              title: error[keys][key].errors[0].message,
-              okText: '확인',
-              // onOk() {
-              //   console.log("ok");
-              // },
-            });
+        Object.keys(error).map(key => {
+          console.log(error[key].errors);
+          warning({
+            title: error[key].errors[0].message,
+            okText: '확인',
+            // onOk() {
+            //   console.log("ok");
+            // },
           });
         });
       }
@@ -173,7 +170,9 @@ function PurchaseInformation(props: Props) {
                       <td className="PurchaseInformation-td">
                         <Col span={6}>
                           <Form.Item>
-                            {getFieldDecorator('shippingFeeInfo.shippingFee',
+                            {getFieldDecorator('shippingFeeInfo.shippingFee',{
+                              rules: [{ required: true, message: '배송료를 입력 바랍니다.' }],
+                              }
                             )(
                               <InputNumber
                                 min={0}
@@ -208,6 +207,7 @@ function PurchaseInformation(props: Props) {
                       <td className="PurchaseInformation-td">
                           <Form.Item>
                             {getFieldDecorator('shippingPeriod', {
+                              rules: [{ required: true, message: '배송기간을 입력 바랍니다.' }],
                             })(
                               <Input/>,
                             )}
@@ -265,7 +265,8 @@ function PurchaseInformation(props: Props) {
                 <Col span={24}>
                   <Form.Item>
                     {getFieldDecorator('cancellationExchangeReturnRegulationAgree', {
-                      initialValue : cancelExchangeReturnRegulationAgree
+                      initialValue : cancelExchangeReturnRegulationAgree,
+                      rules: [{ required: true, message: '동의가 필요합니다..' }],
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
                     </Checkbox>)}
@@ -318,7 +319,8 @@ function PurchaseInformation(props: Props) {
                 <Col span={24}>
                   <Form.Item>
                     {getFieldDecorator('cancellationExchangeReturnAgree', {
-                      initialValue : cancelExchangeReturnAgree
+                      initialValue : cancelExchangeReturnAgree,
+                      rules: [{ required: true, message: '동의가 필요합니다..' }],
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
                     </Checkbox>)}
