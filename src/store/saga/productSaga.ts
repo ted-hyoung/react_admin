@@ -137,7 +137,7 @@ function* createProductNotice(action: RequestAsyncAction) {
       ]
     }));
     yield put(createProductNoticeAsync.success(res.data));
-    message.success('상품 정보를 등록하였습니다s.');
+    message.success('상품 정보를 등록하였습니다.');
   } catch (error) {
     yield put(createProductNoticeAsync.failure(error));
     message.error('상품 정보 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');

@@ -2,7 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
+import {
+  createEventAsync,
+  createEventShippingAsync,
+  updateEventByIdAsync,
+  updateEventShippingAsync,
+} from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
 import { FileObject } from 'models/FileObject';
 
@@ -20,7 +25,7 @@ import {
   Typography,
   InputNumber,
   message,
-  Select, Checkbox,
+  Select, Checkbox, Modal,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
@@ -35,12 +40,14 @@ import { calcStringByte, getAdminProfile } from 'lib/utils';
 import './index.less';
 import { DEFAULT_PAYMENT_STATUSES, EventStatus, PAYMENT_STATUSES, ShippingCompanies } from 'enums';
 import { initialValue } from '../../searchForm/SearchKeyAndValue';
+import { createProductNoticeAsync, updateProductNoticeAsync } from '../../../store/reducer/product';
 
 // defines
 const { TextArea } = Input;
 const { Paragraph, Text } = Typography;
 const TIME_FORMAT = 'HH:mm A';
 const { Option } = Select;
+const { confirm, info, warning} = Modal;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -48,6 +55,8 @@ interface Props extends FormComponentProps {
 
 function PurchaseInformation(props: Props) {
   const { event, form } = props;
+  const [cancelExchangeReturnRegulationAgree, setCancelExchangeReturnRegulationAgree] = useState<boolean>(true);
+  const [cancelExchangeReturnAgree, setCancelExchangeReturnAgree] = useState<boolean>(true);
   const {
     getFieldDecorator,
     getFieldValue,
@@ -57,13 +66,77 @@ function PurchaseInformation(props: Props) {
     validateFieldsAndScroll,
   } = form;
 
+  useEffect(() => {
+    setFieldsValue({
+      shippingFeeInfo : {
+        shippingFee : event.shippingFeeInfo.shippingFee,
+      },
+      shippingPeriod: event.shippingPeriod,
+      cancellationExchangeReturnRegulationAgree:event.cancellationExchangeReturnRegulationAgree,
+      cancellationExchangeReturnAgree:event.cancellationExchangeReturnAgree
+    });
+    setCancelExchangeReturnRegulationAgree(true);
+    setCancelExchangeReturnAgree(true);
+
+  }, [event, setFieldsValue]);
+
+
   const dispatch = useDispatch();
 
+  const onChange = (e:any) => {
+    console.log(`checked = ${e.target.checked}`);
+  };
 
+  const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    validateFieldsAndScroll({ first: true, force: true }, (error, values) => {
+
+    console.log(values);
+
+      if (!error) {
+        if(!values.cancellationExchangeReturnRegulationAgree){
+          message.info('취소/교환/반품 규정 안내 항목에 동의가 필요합니다.');
+          return false;
+        }
+        if(!values.cancellationExchangeReturnAgree){
+          message.info('취소/교환/반품비 안내 항목에 동의가 필요합니다.');
+          return false;
+        }
+        if(values.shippingPeriod === '' || values.shippingPeriod === null){
+          message.info('배송 안내의 배송기간을 입력해주세요.');
+          return false;
+        }
+        if(values.shippingFeeInfo.shippingFee === undefined ){
+          message.info('배송 안내의 배송비를 입력해주세요.');
+          return false;
+        }
+
+        dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
+        // if (values.cancellationExchangeReturnRegulationAgree) {
+        //    dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
+        // }else{
+        //    dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: values }));
+        // }
+      }else{
+        Object.keys(error).map(keys => {
+          Object.keys(error[keys]).map(key => {
+            warning({
+              title: error[keys][key].errors[0].message,
+              okText: '확인',
+              // onOk() {
+              //   console.log("ok");
+              // },
+            });
+          });
+        });
+      }
+    });
+  };
 
   return (
     <>
-      <Form className="PurchaseInformation-form" >
+      <Form className="PurchaseInformation-form" onSubmit={handleSubmit}>
         <Descriptions bordered title="구매안내" column={24}>
           <Descriptions.Item label="배송안내" span={24}>
             <FlexRow>
@@ -100,7 +173,8 @@ function PurchaseInformation(props: Props) {
                       <td className="PurchaseInformation-td">
                         <Col span={6}>
                           <Form.Item>
-                            {getFieldDecorator('shippingFeeInfo.shippingFee')(
+                            {getFieldDecorator('shippingFeeInfo.shippingFee',
+                            )(
                               <InputNumber
                                 min={0}
                                 step={500}
@@ -133,16 +207,9 @@ function PurchaseInformation(props: Props) {
                       </td>
                       <td className="PurchaseInformation-td">
                           <Form.Item>
-                            {form.getFieldDecorator('shippingPeriod', {
-                              initialValue: '공구 종료일로부터 익일 일괄 츨고 후, 영업일 기준 2~5일 소요',
+                            {getFieldDecorator('shippingPeriod', {
                             })(
-                              <InputNumber
-                                min={0}
-                                step={10000}
-                                style={{ width: '100%' }}
-                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                              />,
+                              <Input/>,
                             )}
                           </Form.Item>
                       </td>
@@ -198,10 +265,11 @@ function PurchaseInformation(props: Props) {
                 <Col span={24}>
                   <Form.Item>
                     {getFieldDecorator('cancellationExchangeReturnRegulationAgree', {
-                      initialValue: DEFAULT_PAYMENT_STATUSES,
+                      initialValue : cancelExchangeReturnRegulationAgree
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
                     </Checkbox>)}
+
                   </Form.Item>
                 </Col>
               </Row>
@@ -249,8 +317,8 @@ function PurchaseInformation(props: Props) {
               <Row>
                 <Col span={24}>
                   <Form.Item>
-                    {getFieldDecorator('checked', {
-                      initialValue: DEFAULT_PAYMENT_STATUSES,
+                    {getFieldDecorator('cancellationExchangeReturnAgree', {
+                      initialValue : cancelExchangeReturnAgree
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
                     </Checkbox>)}

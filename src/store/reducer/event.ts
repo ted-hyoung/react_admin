@@ -80,6 +80,18 @@ export const updateEventShippingFeeInfoAsync = createAsyncAction(
   Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+export const createEventShippingAsync = createAsyncAction(
+  Actions.CREATE_EVENT_SHIPPING_REQUEST,
+  Actions.CREATE_EVENT_SHIPPING_SUCCESS,
+  Actions.CREATE_EVENT_SHIPPING_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const updateEventShippingAsync = createAsyncAction(
+  Actions.UPDATE_EVENT_SHIPPING_REQUEST,
+  Actions.UPDATE_EVENT_SHIPPING_SUCCESS,
+  Actions.UPDATE_EVENT_SHIPPING_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 // 공구 삭제
 export const deleteEventAsync = createAsyncAction(
   Actions.DELETE_EVENT_REQUEST,
@@ -101,6 +113,9 @@ const initialState: EventState = {
     size: 10,
   },
   event: {
+    shippingPeriod: '',
+    cancellationExchangeReturnRegulationAgree: false,
+    cancellationExchangeReturnAgree: false,
     productProvisions:[],
     eventId: 0,
     name: '',
@@ -186,6 +201,12 @@ export default (state = initialState, action: AnyAction) => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
       });
     }
+
+    case Actions.CREATE_EVENT_SHIPPING_SUCCESS:
+    case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
+      return state;
+    }
+
     default: {
       return state;
     }
