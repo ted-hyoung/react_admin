@@ -153,15 +153,6 @@ function* deleteEvent(action: RequestAsyncAction) {
 function* createEventShipping(action: RequestAsyncAction) {
   const {eventId, data } = action.payload;
 
-  // {
-  //   "shippingFeeInfo" : {
-  //   "shippingFee" : 4500
-  // },
-  //   "shippingPeriod" : "배송기간",
-  //   "cancellationExchangeReturnRegulationAgree" : true,
-  //   "cancellationExchangeReturnAgree" : true
-  // }
-
   try {
     const res = yield call(() => Api.post(`/events/${eventId}/shipping`, data));
     yield put(createEventShippingAsync.success(res.data));
@@ -173,14 +164,7 @@ function* createEventShipping(action: RequestAsyncAction) {
 
 function* updateEventShipping(action: RequestAsyncAction) {
   const { eventId, data } = action.payload;
-  // {
-  //   "shippingFeeInfo" : {
-  //   "shippingFee" : 4500
-  // },
-  //   "shippingPeriod" : "배송기간",
-  //   "cancellationExchangeReturnRegulationAgree" : true,
-  //   "cancellationExchangeReturnAgree" : true
-  // }
+
   try {
     const res = yield call(() => Api.put(`/events/${eventId}/shipping`, data));
     yield put(updateEventShippingAsync.success(res.data));

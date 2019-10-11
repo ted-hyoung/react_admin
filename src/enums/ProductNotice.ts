@@ -50,7 +50,6 @@ export const productProvision = {
     { title: '취급시 주의사항', desc: '', key:'handlingSafetyPrecautions' },
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
-
   ],BAG : [
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '종류', desc: '', key:'kind' },
@@ -62,8 +61,6 @@ export const productProvision = {
     { title: '취급시 주의사항', desc: '', key:'handlingSafetyPrecautions' },
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
-
-
   ],FASHION_ITEM : [
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '종류', desc: '', key:'kind' },
@@ -74,8 +71,6 @@ export const productProvision = {
     { title: '취급시 주의사항', desc: '', key:'handlingSafetyPrecautions' },
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
-
-
   ],MEDICAL_APPLIANCES : [
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '의료기기법상 허가・신고 번호 및 광고사전심의필 유무', desc: '', key:'medicalPermissionReportNumber' },
@@ -201,29 +196,3 @@ export const productProvisionData = {
   voltagePowerConsumption: '',
   weight: ''
 };
-// export const productProvisionData = {
-//   productProvisions:[
-//     {
-//       legalCertification: "법에 의한 인증 허가 받았음을 확인할 수 있는 내용",
-//       manufacturer: "제조국",
-//       manufacturerCountry: "제조자(수입자)",
-//       modelName: "품목 및 모델명",
-//       productProvisionType: "ETC",
-//       serviceManagerNumber: "A/S 책임자와 전화번호",
-//     },
-//     {
-//       handlingSafetyPrecautions: "취급시 주의 사항",
-//       kcCertified: "KC 인증 필 유무",
-//       manufacturer: "제조자(수입자)",
-//       manufacturerCountry: "제조국",
-//       medicalPermissionReportNumber: "의료기기 법상 허가, 신고 번호 및 광고사전심의필 유무",
-//       modelName: "품목 및 모델명",
-//       productProvisionType: "MEDICAL_APPLIANCES",
-//       qualityAssuranceCriteria: "품질보증기준",
-//       sameModelLaunchDate: "동일 모델 출시년월",
-//       serviceManagerNumber: "A/S 책임자와 전화번호",
-//       usePurposeHow: "제품의 사용목적 및 사용 방법",
-//       voltagePowerConsumption: "정격전압, 소비전력",
-//     }
-//   ]
-// };
