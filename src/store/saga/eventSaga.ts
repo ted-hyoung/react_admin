@@ -12,6 +12,8 @@ import {
   updateEventStatusAsync,
   updateEventShippingFeeInfoAsync,
   deleteEventAsync,
+  createEventShippingAsync,
+  updateEventShippingAsync
 } from 'store/reducer/event';
 
 // lib
@@ -34,6 +36,7 @@ import {
   UpdateEventStatus,
   RequestAsyncAction,
 } from 'models';
+import { createProductNoticeAsync } from '../reducer/product';
 
 // sagas
 function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateEvent>>) {
@@ -147,6 +150,31 @@ function* deleteEvent(action: RequestAsyncAction) {
   }
 }
 
+function* createEventShipping(action: RequestAsyncAction) {
+  const {eventId, data } = action.payload;
+
+  try {
+    const res = yield call(() => Api.post(`/events/${eventId}/shipping`, data));
+    yield put(createEventShippingAsync.success(res.data));
+    message.success('공구배송정보가 등록되었습니다.');
+  } catch (error) {
+    yield put(createEventShippingAsync.failure(error));
+  }
+}
+
+function* updateEventShipping(action: RequestAsyncAction) {
+  const { eventId, data } = action.payload;
+
+  try {
+    const res = yield call(() => Api.put(`/events/${eventId}/shipping`, data));
+    yield put(updateEventShippingAsync.success(res.data));
+    yield message.success('공구배송정보가 수정되었습니다.');
+  } catch (error) {
+    yield put(updateEventShippingAsync.failure(error));
+    yield message.error(error);
+  }
+}
+
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
@@ -156,4 +184,6 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_STATUS_REQUEST, updateEventStatus);
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
   yield takeLatest(Actions.DELETE_EVENT_REQUEST, deleteEvent);
+  yield takeLatest(Actions.CREATE_EVENT_SHIPPING_REQUEST, createEventShipping);
+  yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_REQUEST, updateEventShipping);
 }

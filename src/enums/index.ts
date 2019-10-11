@@ -4,6 +4,7 @@ export * from './QnaOrderType';
 export * from './Csr';
 export * from './ProductMode';
 export * from './ProductSold';
+export * from './ProductNotice';
 export * from './ShippingStatus';
 export * from './PaymentStatus';
 export * from './PaymentMethod';

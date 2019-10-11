@@ -20,6 +20,7 @@ interface ProductRequestState {
 
 // types
 export interface ProductState {
+  productNotice: object[];
   products: ResponseProduct[];
   shippingFeeInfo: ResponseShippingFeeInfo;
   requestState: ProductRequestState;
@@ -62,8 +63,6 @@ export const statisticsProductSalesAsync = createAsyncAction(
 
 export const clearProductSalesStatus = action(Actions.CLEAR_PRODUCT_SALES_STATUS);
 
-
-
 export const statisticsProductExcelAsync = createAsyncAction(
   Actions.STATISTICS_PRODUCTS_EXCEL_REQUEST,
   Actions.STATISTICS_PRODUCTS_EXCEL_SUCCESS,
@@ -71,8 +70,28 @@ export const statisticsProductExcelAsync = createAsyncAction(
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const clearProductExcelStatus = action(Actions.CLEAR_PRODUCT_SALES_EXCEL_STATUS);
+
+export const createProductNoticeAsync = createAsyncAction(
+  Actions.CREATE_PRODUCT_NOTICE_REQUEST,
+  Actions.CREATE_PRODUCT_NOTICE_SUCCESS,
+  Actions.CREATE_PRODUCT_NOTICE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const updateProductNoticeAsync = createAsyncAction(
+  Actions.UPDATE_PRODUCT_NOTICE_REQUEST,
+  Actions.UPDATE_PRODUCT_NOTICE_SUCCESS,
+  Actions.UPDATE_PRODUCT_NOTICE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const deleteProductNoticeAsync = createAsyncAction(
+  Actions.DELETED_PRODUCT_NOTICE_REQUEST,
+  Actions.DELETED_PRODUCT_NOTICE_SUCCESS,
+  Actions.DELETED_PRODUCT_NOTICE_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 // reducers
 const initialState: ProductState = {
+  productNotice:[],
   products: [],
   shippingFeeInfo: {
     shippingFee: 0,
@@ -120,6 +139,14 @@ const product = (state = initialState, action: ResponseAsyncAction) => {
       return produce(state, draft => {
         draft.productsExcel = [];
       });
+    }
+
+    case Actions.CREATE_PRODUCT_NOTICE_SUCCESS: {
+      return state;
+    }
+
+    case Actions.UPDATE_PRODUCT_NOTICE_SUCCESS: {
+      return state;
     }
 
     default: {
