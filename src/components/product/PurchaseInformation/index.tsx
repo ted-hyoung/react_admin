@@ -12,7 +12,6 @@ import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from '
 import { FileObject } from 'models/FileObject';
 
 // modules
-import moment, { Moment } from 'moment';
 import {
   Form,
   Descriptions,
@@ -20,34 +19,26 @@ import {
   Row,
   Col,
   Button,
-  DatePicker,
-  TimePicker,
   Typography,
   InputNumber,
   message,
   Select, Checkbox, Modal,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
-import { LabeledValue } from 'antd/lib/select';
-import YouTube from 'react-youtube';
 
 // components
-import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components';
+import { FlexRow } from 'components';
 
 // libs
-import { calcStringByte, getAdminProfile } from 'lib/utils';
 
 import './index.less';
-import { DEFAULT_PAYMENT_STATUSES, EventStatus, PAYMENT_STATUSES, ShippingCompanies } from 'enums';
-import { initialValue } from '../../searchForm/SearchKeyAndValue';
-import { createProductNoticeAsync, updateProductNoticeAsync } from '../../../store/reducer/product';
+import { createProductNoticeAsync } from '../../../store/reducer/product';
 
 // defines
-const { TextArea } = Input;
+
 const { Paragraph, Text } = Typography;
-const TIME_FORMAT = 'HH:mm A';
-const { Option } = Select;
-const { confirm, info, warning} = Modal;
+
+const { warning } = Modal;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -55,14 +46,10 @@ interface Props extends FormComponentProps {
 
 function PurchaseInformation(props: Props) {
   const { event, form } = props;
-  const [cancelExchangeReturnRegulationAgree, setCancelExchangeReturnRegulationAgree] = useState<boolean>(true);
-  const [cancelExchangeReturnAgree, setCancelExchangeReturnAgree] = useState<boolean>(true);
   const {
     getFieldDecorator,
-    getFieldValue,
     setFieldsValue,
     isFieldsTouched,
-    resetFields,
     validateFieldsAndScroll,
   } = form;
 
@@ -75,17 +62,9 @@ function PurchaseInformation(props: Props) {
       cancellationExchangeReturnRegulationAgree:event.cancellationExchangeReturnRegulationAgree,
       cancellationExchangeReturnAgree:event.cancellationExchangeReturnAgree
     });
-    setCancelExchangeReturnRegulationAgree(true);
-    setCancelExchangeReturnAgree(true);
-
   }, [event, setFieldsValue]);
 
-
   const dispatch = useDispatch();
-
-  // const onChange = (e:any) => {
-  //   console.log(`checked = ${e.target.checked}`);
-  // };
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
@@ -110,12 +89,11 @@ function PurchaseInformation(props: Props) {
           return false;
         }
 
-        dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
-        // if (values.cancellationExchangeReturnRegulationAgree) {
-        //    dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
-        // }else{
-        //    dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: values }));
-        // }
+        if (event.cancellationExchangeReturnRegulationAgree) {
+           dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
+        }else{
+           dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: values }));
+        }
       }else{
         Object.keys(error).map(key => {
           console.log(error[key].errors);
@@ -144,29 +122,18 @@ function PurchaseInformation(props: Props) {
                 <br />
                 - 배송비의 경우 제품 정보 등록 시 동일하게 입력해주세요.
               </Paragraph>
-
                   <table>
                     <tbody>
                     <tr>
-                      <td className="PurchaseInformation-th">
-                        배송 방법
-                      </td>
-                      <td className="PurchaseInformation-td">
-                        택배
-                      </td>
+                      <td className="PurchaseInformation-th">배송 방법</td>
+                      <td className="PurchaseInformation-td">택배</td>
                     </tr>
                     <tr>
-                      <td className="PurchaseInformation-th">
-                        배송 지역
-                      </td>
-                      <td className="PurchaseInformation-td">
-                        전국 지역
-                      </td>
+                      <td className="PurchaseInformation-th">배송 지역</td>
+                      <td className="PurchaseInformation-td">전국 지역</td>
                     </tr>
                     <tr>
-                      <td className="PurchaseInformation-th">
-                        배송비
-                      </td>
+                      <td className="PurchaseInformation-th">배송비</td>
                       <td className="PurchaseInformation-td">
                         <Col span={6}>
                           <Form.Item>
@@ -193,17 +160,11 @@ function PurchaseInformation(props: Props) {
                       </td>
                     </tr>
                     <tr>
-                      <td className="PurchaseInformation-th">
-                        도서산간지역
-                      </td>
-                      <td className="PurchaseInformation-td">
-                        기본 배송비 외 도서산간지역 추가 배송비는 착불입니다.
-                      </td>
+                      <td className="PurchaseInformation-th">도서산간지역</td>
+                      <td className="PurchaseInformation-td">기본 배송비 외 도서산간지역 추가 배송비는 착불입니다.</td>
                     </tr>
                     <tr>
-                      <td className="PurchaseInformation-th">
-                        배송기간
-                      </td>
+                      <td className="PurchaseInformation-th">배송기간</td>
                       <td className="PurchaseInformation-td">
                           <Form.Item>
                             {getFieldDecorator('shippingPeriod', {
@@ -265,7 +226,7 @@ function PurchaseInformation(props: Props) {
                 <Col span={24}>
                   <Form.Item>
                     {getFieldDecorator('cancellationExchangeReturnRegulationAgree', {
-                      initialValue : cancelExchangeReturnRegulationAgree,
+                      valuePropName: 'checked',
                       rules: [{ required: true, message: '동의가 필요합니다..' }],
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
@@ -311,7 +272,6 @@ function PurchaseInformation(props: Props) {
                       <br />
                     </td>
                   </tr>
-
                   </tbody>
                 </table>
               </Col>
@@ -319,7 +279,7 @@ function PurchaseInformation(props: Props) {
                 <Col span={24}>
                   <Form.Item>
                     {getFieldDecorator('cancellationExchangeReturnAgree', {
-                      initialValue : cancelExchangeReturnAgree,
+                      valuePropName: 'checked',
                       rules: [{ required: true, message: '동의가 필요합니다..' }],
                     })(<Checkbox>본 공구 신청 시 상기 공구 규정 조항에 대해 숙지 하였으며,
                       본 규정에 따라 공구를 운영함에 동의합니다.
@@ -332,7 +292,7 @@ function PurchaseInformation(props: Props) {
         </Descriptions>
         <Form.Item style={{ textAlign: 'right', marginTop: 10 }}>
           <Button type="primary" htmlType="submit">
-            {event.eventId ? '수정' : '등록'}
+            {event.cancellationExchangeReturnAgree ? '수정' : '등록'}
           </Button>
         </Form.Item>
       </Form>

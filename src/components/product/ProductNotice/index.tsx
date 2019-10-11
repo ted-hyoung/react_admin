@@ -214,8 +214,7 @@ function ProductNotice(props: Props) {
                                         })(
                                           <TextArea
                                             spellCheck={false}
-                                            maxLength={100}
-                                            autosize={{ minRows: 4, maxRows: 5 }}
+                                            autosize={{ minRows: 4 }}
                                             style={{ resize: 'none' }}
                                           />,
                                         )}

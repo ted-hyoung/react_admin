@@ -190,7 +190,6 @@ export const productProvisionData = {
   notationAdvertisementSideEffectOccurrence: '',
   nutritionalInformation: '',
   productProvisionId: 0,
-
   qualityAssuranceCriteria: '',
   rawMaterialContent: '',
   sameModelLaunchDate: '',
