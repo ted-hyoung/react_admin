@@ -202,7 +202,9 @@ export default (state = initialState, action: AnyAction) => {
       });
     }
 
-    case Actions.CREATE_EVENT_SHIPPING_SUCCESS:
+    case Actions.CREATE_EVENT_SHIPPING_SUCCESS: {
+      return state;
+    }
     case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
       return state;
     }
