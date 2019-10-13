@@ -100,7 +100,9 @@ function* getProductStatistics(action: RequestAsyncAction) {
     const res = yield call(() =>
       Api.get('/management/products/statistics', {
         params: {
-          ...searchCondition,
+          events:[
+            ...searchCondition,
+          ]
         },
         paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
@@ -117,7 +119,9 @@ function* getProductStatisticsExcel(action: RequestAsyncAction) {
     const res = yield call(() =>
       Api.get('/management/products/statistics', {
         params: {
-          ...searchCondition,
+          events:[
+            ...searchCondition,
+          ]
         },
         paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
