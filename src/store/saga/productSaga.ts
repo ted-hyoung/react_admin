@@ -14,7 +14,11 @@ import {
   updateProductAsync,
   deleteProductsAsync,
   soldOutProductsAsync,
-  statisticsProductSalesAsync, statisticsProductExcelAsync,
+  statisticsProductSalesAsync,
+  statisticsProductExcelAsync,
+  createProductNoticeAsync,
+  updateProductNoticeAsync,
+  deleteProductNoticeAsync,
 } from 'store/reducer/product';
 import { getEventByIdAsync } from 'store/reducer/event';
 import { message } from 'antd';
@@ -110,7 +114,6 @@ function* getProductStatistics(action: RequestAsyncAction) {
 function* getProductStatisticsExcel(action: RequestAsyncAction) {
   try {
     const { searchCondition } = action.payload;
-
     const res = yield call(() =>
       Api.get('/management/products/statistics', {
         params: {
@@ -125,6 +128,56 @@ function* getProductStatisticsExcel(action: RequestAsyncAction) {
   }
 }
 
+function* createProductNotice(action: RequestAsyncAction) {
+  try {
+    const { eventId, data } = action.payload;
+    const res = yield call(() => Api.post(`/provision/${eventId}`, {
+      productProvisions: [
+        ...data
+      ]
+    }));
+    yield put(createProductNoticeAsync.success(res.data));
+    message.success('상품 정보를 등록하였습니다.');
+  } catch (error) {
+    yield put(createProductNoticeAsync.failure(error));
+    message.error('상품 정보 등록에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
+function* updateProductNotice(action: RequestAsyncAction) {
+  try {
+    const { eventId, data } = action.payload;
+    const res = yield call(() => Api.put(`/provision/${eventId}`, {
+      productProvisions: [
+        ...data
+      ]
+    }));
+    yield put(updateProductNoticeAsync.success(res.data));
+    message.success('상품 정보를 수정했습니다.');
+  } catch (error) {
+    yield put(updateProductNoticeAsync.failure(error));
+    message.error('상품 정보 수정에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
+function* deleteProductNotice(action: RequestAsyncAction) {
+  try {
+    const { eventId, data } = action.payload;
+    const data2 = {
+      productProvisions: [
+        {...data}
+      ]
+    };
+    console.log(eventId, data2);
+    // const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
+    // yield put(deleteProductsAsync.success(res.data));
+    message.success('상품 제품을 삭제했습니다.');
+  } catch (error) {
+    yield put(deleteProductNoticeAsync.failure(error));
+    message.error('상품 제품 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
 export default function* productSaga() {
   yield takeEvery(Action.CREATE_PRODUCTS_REQUEST, createProduct);
   yield takeEvery(Action.UPDATE_PRODUCTS_REQUEST, updateProduct);
@@ -132,4 +185,7 @@ export default function* productSaga() {
   yield takeEvery(Action.SOLD_OUT_PRODUCTS_REQUEST, soldOutProduct);
   yield takeEvery(Action.STATISTICS_PRODUCTS_REQUEST, getProductStatistics);
   yield takeEvery(Action.STATISTICS_PRODUCTS_EXCEL_REQUEST, getProductStatisticsExcel);
+  yield takeEvery(Action.CREATE_PRODUCT_NOTICE_REQUEST, createProductNotice);
+  yield takeEvery(Action.UPDATE_PRODUCT_NOTICE_REQUEST, updateProductNotice);
+  // yield takeEvery(Action.DELETED_PRODUCT_NOTICE_REQUEST, deleteProductNotice);
 }
