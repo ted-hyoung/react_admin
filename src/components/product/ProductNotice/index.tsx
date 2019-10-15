@@ -192,7 +192,6 @@ function ProductNotice(props: Props) {
                 {selectedTypes.length > 0 && (
                 <div >
                   {selectedTypes.map((selectedItem, i: number) => {
-                    console.log(selectedTypes);
                     return (
                       <div key={selectedItem.value}>
                         <h1 className='notice-product-title'>{selectedItem.text}</h1>
