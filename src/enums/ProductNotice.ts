@@ -196,7 +196,7 @@ export const productProvisionData = {
   modelName: '',
   notationAdvertisementSideEffectOccurrence: '',
   nutritionalInformation: '',
-  productProvisionId: 0,
+  productProvisionId: null,
   qualityAssuranceCriteria: '',
   rawMaterialContent: '',
   sameModelLaunchDate: '',
