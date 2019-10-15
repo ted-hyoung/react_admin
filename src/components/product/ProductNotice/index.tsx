@@ -116,6 +116,10 @@ function ProductNotice(props: Props) {
         });
         productProvisions.map((item: any, index: number) => {
           Object.keys(item).forEach(key => {
+
+            if(item[`productProvisionId`] === null){
+              delete item[`productProvisionId`];
+            }
             if (item[key] === null || item[key] === '') {
               warning({
                 title: `입력하지 않은 정보가 있습니다.\n모든 정보를 입력해주세요.`,
@@ -204,7 +208,6 @@ function ProductNotice(props: Props) {
                                     <tr key={index} style={{ width: '100%' }}>
                                       <td>
                                         <Form.Item>
-                                          {console.log( noticeData[i][item.key])}
                                           {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
                                             initialValue: noticeData[i] === undefined ? 0 : noticeData[i][item.key],
                                           })(
