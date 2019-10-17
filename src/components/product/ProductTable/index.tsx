@@ -16,7 +16,7 @@ import { deleteProductsAsync, soldOutProductsAsync } from 'store/reducer/product
 import { FileObject, ResponseEvent, ResponseOption, ResponseProduct } from 'models';
 
 // enums
-import { EventStatus, ProductSold } from 'enums';
+import { EventStatus, ProductSold, getEnumKeyByValue } from 'enums';
 
 // less
 import './index.less';
@@ -477,7 +477,7 @@ function ProductTable(props: Props) {
         onRow={handleRowProduct}
       />
       <div className="product-table-button">
-        {eventStatus === EventStatus[EventStatus.READY] ? (
+        {eventStatus === getEnumKeyByValue(EventStatus, EventStatus.READY) ? (
           <>
             <Button type="primary" size="large" onClick={handleProductModalOpen}>
               제품 등록
