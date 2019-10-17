@@ -55,9 +55,9 @@ const ReviewSearchKeyAndValue = React.forwardRef<HTMLDivElement, ReviewSearchKey
   return (
     <div ref={ref} style={{ display: 'flex' }}>
       <Select style={{ width: 120, marginRight: 5 }} onChange={handleSelectChange} value={value && value.key}>
-        <Select.Option value={'null'}>전체</Select.Option>onSearch
-        {searchConditions.map(condition => (
-          <Select.Option key={condition.key} value={condition.key}>
+        <Select.Option value={'null'}>전체</Select.Option>
+        {searchConditions.map((condition, idx) => (
+          <Select.Option key={idx} value={condition.key}>
             {condition.text}
           </Select.Option>
         ))}
