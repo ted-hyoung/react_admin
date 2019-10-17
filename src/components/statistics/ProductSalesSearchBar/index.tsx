@@ -67,12 +67,6 @@ interface Props extends FormComponentProps {
                 return;
               }
             });
-            // console.log("events", values.events);
-            // console.log("selectedEvents", eventsData);
-
-             // onSearch({
-             //   eventsData
-             // });
             onSearch(values);
           }else{
             console.error(errors);
