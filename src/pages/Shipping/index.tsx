@@ -212,7 +212,7 @@ const Shipping = () => {
 
     for (let i = 0; i < excelDataLength; i++) {
       const orderNo = excelData[i]['주문번호'];
-      const shipping = ShippingCompany[excelData[i]['택배사']];
+      const shipping = ShippingCompany[excelData[i]['택배사'] as ShippingCompany];
       const invoice = excelData[i]['운송장번호'];
 
       data.push({

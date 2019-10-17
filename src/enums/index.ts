@@ -12,3 +12,4 @@ export * from './DateRange';
 export * from './CardCode';
 export * from './Role';
 export * from './ImportanceCode';
+export * from './PrizeStatus';

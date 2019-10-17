@@ -4,7 +4,6 @@ import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
-import { FileObject } from 'models/FileObject';
 
 // modules
 import moment, { Moment } from 'moment';
@@ -30,7 +29,7 @@ import YouTube from 'react-youtube';
 import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components';
 
 // libs
-import { calcStringByte, getAdminProfile } from 'lib/utils';
+import { getBytes, getAdminProfile } from 'lib/utils';
 
 import './index.less';
 import { EventStatus, ShippingCompanies } from 'enums';
@@ -38,8 +37,8 @@ import { EventStatus, ShippingCompanies } from 'enums';
 // defines
 const { TextArea } = Input;
 const { Paragraph, Text } = Typography;
-const TIME_FORMAT = 'HH:mm A';
 const { Option } = Select;
+const TIME_FORMAT = 'HH:mm A';
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -61,7 +60,6 @@ function EventForm(props: Props) {
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
-  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
 
   const dispatch = useDispatch();
 
@@ -76,9 +74,18 @@ function EventForm(props: Props) {
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
-        const { name, choiceReview, salesStarted, salesEnded, targetAmount, videoUrl, shippingCompany } = values;
+        const {
+          name,
+          choiceReview,
+          salesStarted,
+          salesEnded,
+          targetAmount,
+          videoUrl,
+          shippingCompany,
+          images,
+        } = values;
 
-        if (fileObjectList.length < 3) {
+        if (images && images.length < 3) {
           message.error('이미지는 최소 3개 이상 등록해주세요.');
 
           return false;
@@ -101,17 +108,11 @@ function EventForm(props: Props) {
             videoUrl,
             detail,
             shippingCompany,
-            images: fileObjectList,
+            images,
           };
 
           dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
         } else {
-          if (fileObjectList.length < 3) {
-            message.error('이미지는 최소 3개 이상 등록해주세요.');
-
-            return false;
-          }
-
           const data: CreateEvent = {
             name,
             brand: selectedBrand,
@@ -122,7 +123,7 @@ function EventForm(props: Props) {
             videoUrl,
             detail,
             shippingCompany,
-            images: fileObjectList,
+            images,
           };
 
           dispatch(createEventAsync.request({ data }));
@@ -176,7 +177,6 @@ function EventForm(props: Props) {
         shippingCompeny: event.shippingCompany,
       });
       setVideoUrl(event.videoUrl);
-      setFileObjectList(event.images);
       setSelectedBrand({
         ...event.brand,
       });
@@ -205,7 +205,7 @@ function EventForm(props: Props) {
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('name'))}/100</span>
+                <span>{getBytes(getFieldValue('name'))}/100</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -231,7 +231,7 @@ function EventForm(props: Props) {
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{calcStringByte(getFieldValue('choiceReview'))}/500</span>
+                <span>{getBytes(getFieldValue('choiceReview'))}/500</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -422,14 +422,9 @@ function EventForm(props: Props) {
                 <Row type="flex">
                   <Col span={24}>
                     <Form.Item>
-                      {getFieldDecorator(`images`)(
-                        <ImageUpload
-                          fileObjectList={fileObjectList}
-                          setFileObjectList={setFileObjectList}
-                          disabled={false}
-                          // disabled={event.eventStatus !== EventStatus[EventStatus.READY]}
-                        />,
-                      )}
+                      {getFieldDecorator(`images`, {
+                        initialValue: event.images,
+                      })(<ImageUpload disabled={false} />)}
                     </Form.Item>
                   </Col>
                   <Col span={24}>

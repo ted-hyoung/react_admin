@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
-import { getEventByIdAsync, updateEventStatusAsync, deleteEventAsync } from 'store/reducer/event';
+import { getEventByIdAsync, updateEventStatusAsync, deleteEventAsync, clearEvent } from 'store/reducer/event';
 
 // modules
 import { Tabs, Button, message, Row, Col, Popconfirm } from 'antd';
@@ -65,6 +65,12 @@ function EventDetail(props: RouteComponentProps<Params>) {
   const handleDeleteEvent = () => {
     dispatch(deleteEventAsync.request({ eventId: event.eventId }));
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearEvent());
+    };
+  }, []);
 
   useEffect(() => {
     getEvent(eventId);

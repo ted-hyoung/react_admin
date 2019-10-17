@@ -6,15 +6,13 @@ import Form, { FormComponentProps } from 'antd/lib/form';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 
 // components
-import { SearchKeyAndValue, SearchDate } from 'components';
-import {
-  getValuePropsForSearchDate,
-  getValueFromEventForSearchDate,
-  validateDate,
-} from 'components/searchForm/SearchDate';
+import { SearchKeyAndValue, SearchDateFormItem } from 'components';
 
 // types
 import { SearchCondition } from '../SearchKeyAndValue';
+
+// lib
+import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
 
 // assets
 import './index.less';
@@ -31,27 +29,36 @@ const SearchBar = Form.create<Props>()((props: Props) => {
   const { getFieldDecorator, resetFields, validateFieldsAndScroll } = form;
 
   const handleSearch = useCallback(() => {
-    validateFieldsAndScroll((err, val) => {
-      if (!err) {
-        Object.keys(val).forEach(key => {
-          if (val[key] === undefined) {
-            delete val[key];
+    validateFieldsAndScroll((errors, values) => {
+      if (!errors) {
+        Object.keys(values).forEach(key => {
+          if (values[key] === undefined) {
+            delete values[key];
+
             return;
           }
+
           if (key === 'searchCondition') {
-            const searchCondition = val[key];
+            const searchCondition = values[key];
             if (searchCondition.value && searchCondition.key && searchCondition.key !== 'null') {
-              val[searchCondition.key] = searchCondition.value;
+              values[searchCondition.key] = searchCondition.value;
             }
-            delete val[key];
+            delete values[key];
             return;
           }
-          if (key === 'date') {
-            validateDate(val, 'date');
+
+          if (key === 'dates') {
+            const dates = values[key];
+
+            values.startDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+            values.endDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+
+            delete values[key];
             return;
           }
         });
-        onSearch(val);
+
+        onSearch(values);
       }
     });
   }, [onSearch]);
@@ -74,12 +81,7 @@ const SearchBar = Form.create<Props>()((props: Props) => {
         </Form.Item>
       )}
       {customFormItems && customFormItems(form).map(item => item)}
-      <Form.Item>
-        {getFieldDecorator('date', {
-          getValueFromEvent: getValueFromEventForSearchDate,
-          getValueProps: getValuePropsForSearchDate,
-        })(<SearchDate />)}
-      </Form.Item>
+      <Form.Item>{getFieldDecorator('dates')(<SearchDateFormItem />)}</Form.Item>
       <Form.Item>
         <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
           검색

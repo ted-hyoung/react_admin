@@ -31,13 +31,17 @@ const contactColumns: Array<ColumnProps<ResponseContact>> = [
     title: '상태',
     dataIndex: 'status',
     key: 'status',
-    render: status => <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>,
+    render: status => (
+      <Tag color={QnaStatus[status as QnaStatus] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>
+        {QnaStatus[status as QnaStatus]}
+      </Tag>
+    ),
   },
   {
     title: '분류',
     dataIndex: 'category',
     key: 'category',
-    render: category => CsrCategory[category],
+    render: category => CsrCategory[category as CsrCategory],
   },
   {
     title: '공구명',

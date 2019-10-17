@@ -15,6 +15,8 @@ export * from './Payment';
 export * from './FileObject';
 export * from './Consumer';
 export * from './Brand';
+export * from './ExpGroup';
+export * from './ExpGroupConsumer';
 
 export interface PageWrapper<T> {
   content: T[];
@@ -27,5 +29,5 @@ export interface PageWrapper<T> {
 }
 
 export interface Indexable {
-  [key: string]: any
+  [key: string]: any;
 }

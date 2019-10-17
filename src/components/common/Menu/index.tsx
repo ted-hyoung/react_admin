@@ -85,6 +85,17 @@ const MENU_LIST = [
       // },
     ],
   },
+  {
+    key: 'event',
+    name: '이벤트',
+    icon: 'schedule',
+    subMenus: [
+      {
+        key: 'exps',
+        name: '체험단 후기',
+      },
+    ],
+  },
 ];
 
 function Menu(props: RouteComponentProps) {
@@ -93,12 +104,12 @@ function Menu(props: RouteComponentProps) {
   const defaultSelectedKeys = location.pathname.split('/')[1];
   const defaultOpenKeys = useMemo(
     () =>
-      MENU_LIST.reduce((ac, menu) => {
+      MENU_LIST.reduce((key, menu) => {
         if (menu.subMenus.find(subMenu => subMenu.key === defaultSelectedKeys)) {
           return menu.key;
         }
 
-        return ac;
+        return key;
       }, ''),
     [defaultSelectedKeys],
   );

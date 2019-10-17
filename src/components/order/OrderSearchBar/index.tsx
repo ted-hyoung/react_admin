@@ -11,17 +11,11 @@ import moment from 'moment';
 import { clearEvents } from 'store/reducer/event';
 
 // components
-import OrderSearchDate, {
-  getValueFromEventForSearchDate,
-  getValuePropsForSearchDate,
-  validateDate,
-} from 'components/order/OrderSearchDate';
 
 // types
-import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'models';
+import { ResponseProduct } from 'models';
 
 // utils
-import { startDateFormat, endDateFormat } from 'lib/utils';
 
 // enums
 import { PAYMENT_STATUSES, SHIPPING_STATUSES, DEFAULT_PAYMENT_STATUSES, DEFAULT_SHIPPING_STATUSES } from 'enums';
@@ -30,6 +24,8 @@ import { PAYMENT_STATUSES, SHIPPING_STATUSES, DEFAULT_PAYMENT_STATUSES, DEFAULT_
 import './index.less';
 import { EventSearch } from 'components/event';
 import EventSearchModal from 'components/event/EventSearch/EventSearchModal';
+import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
+import { SearchDateFormItem } from 'components/formItem';
 
 // define
 
@@ -92,8 +88,13 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               delete values[key];
               return;
             }
-            if (key === 'date') {
-              validateDate(values, 'date');
+            if (key === 'dates') {
+              const dates = values[key];
+
+              values.startDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+              values.endDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+
+              delete values[key];
               return;
             }
             if (key === 'paymentStatuses') {
@@ -182,14 +183,9 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={24}>
                 <Form.Item>
-                  {getFieldDecorator('date', {
-                    initialValue: [
-                      moment(new Date()).format(startDateFormat),
-                      moment(new Date()).format(endDateFormat),
-                    ],
-                    getValueFromEvent: getValueFromEventForSearchDate,
-                    getValueProps: getValuePropsForSearchDate,
-                  })(<OrderSearchDate />)}
+                  {getFieldDecorator('dates', {
+                    initialValue: [moment().startOf('day'), moment().endOf('day')],
+                  })(<SearchDateFormItem />)}
                 </Form.Item>
               </Col>
             </Row>

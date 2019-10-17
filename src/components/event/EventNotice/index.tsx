@@ -9,7 +9,7 @@ import { FormComponentProps } from 'antd/lib/form';
 import { FlexRow } from 'components';
 
 // lib
-import { calcStringByte } from 'lib/utils';
+import { getBytes } from 'lib/utils';
 
 // types
 import { ResponseEventNotice, UpdateEventNotices } from 'models';
@@ -134,7 +134,7 @@ function EventNotice(props: Props) {
         </Form.Item>
       </Col>
       <Col>
-        <span>{calcStringByte(getFieldValue(`eventNotices[${index}].contents`))}/30</span>
+        <span>{getBytes(getFieldValue(`eventNotices[${index}].contents`))}/30</span>
       </Col>
     </FlexRow>
   ));

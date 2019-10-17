@@ -5,12 +5,7 @@ import { LoginAccount } from 'models';
 import { message } from 'antd';
 
 // defines
-type AxiosFunction = (
-  url: string,
-  data?: {},
-  cb?: (res: AxiosResponse) => AxiosResponse,
-  withCredentials?: boolean,
-) => AxiosPromise;
+type AxiosFunction = (url: string, data?: {}, cb?: (res: AxiosResponse) => AxiosResponse) => AxiosPromise;
 
 const getAPIVersion = () => {
   // return "v1/";
@@ -81,9 +76,9 @@ export const get: AxiosFunction = (url, data, cb) => {
  * @param url api url
  * @param data api data
  * @param cb callback function
- * @param withCredentials withCredentials
+
  */
-export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
+export const post: AxiosFunction = (url, data, cb) => {
   return axiosInstance.post(host + url, data).then(res => (cb ? cb(res) : res));
 };
 

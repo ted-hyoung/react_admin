@@ -4,6 +4,17 @@ export { default as PrivateRoute } from './PrivateRoute';
 
 export default [
   {
+    path: ['/exps/detail', '/exps/detail/:id'],
+    component: lazy(() => import('../pages/ExpDetail')),
+    secret: true,
+  },
+  {
+    path: '/exps',
+    component: lazy(() => import('../pages/ExpList')),
+    secret: true,
+  },
+
+  {
     path: '/sales',
     component: lazy(() => import('../pages/Statistics')),
     secret: true,
@@ -34,12 +45,7 @@ export default [
     secret: true,
   },
   {
-    path: '/events/detail/:id',
-    component: lazy(() => import('../pages/EventDetail')),
-    secret: true,
-  },
-  {
-    path: '/events/detail',
+    path: ['/events/detail', '/events/detail/:id'],
     component: lazy(() => import('../pages/EventDetail')),
     secret: true,
   },

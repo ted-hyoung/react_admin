@@ -3,11 +3,11 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // modules
-import { Button, Col, Input, message, Modal as AntModal, Row, Select, Table, Typography, InputNumber } from 'antd';
+import { Button, Col, Input, message, Modal, Row, Select, Table, Typography, InputNumber } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import ImageUpload from 'components/common/ImageUpload';
 import { FileObject } from 'models/FileObject';
-import { calcStringByte } from 'lib/utils';
+import { getBytes } from 'lib/utils';
 import Form, { FormComponentProps } from 'antd/lib/form';
 
 // store
@@ -35,27 +35,15 @@ const { TextArea } = Input;
 const { Option } = Select;
 const { Text } = Typography;
 
-interface ProductModalForm extends FormComponentProps {
+interface ProductForm extends FormComponentProps {
   product: ResponseProduct;
   setProduct: Dispatch<SetStateAction<ResponseProduct>>;
   event: ResponseEvent;
-  productModalVisible: boolean;
-  setProductModalVisible: Dispatch<SetStateAction<boolean>>;
-  fileObjectList: FileObject[];
-  setFileObjectList: Dispatch<SetStateAction<FileObject[]>>;
+  onCancel: () => void;
 }
 
-const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalForm) => {
-  const {
-    product,
-    setProduct,
-    event,
-    productModalVisible,
-    setProductModalVisible,
-    fileObjectList,
-    setFileObjectList,
-    form,
-  } = props;
+const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
+  const { form, product, setProduct, event, onCancel } = props;
   const { eventId, eventStatus } = event;
   const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll, resetFields } = form;
   const dispatch = useDispatch();
@@ -116,12 +104,6 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
     }
   };
 
-  const handleProductModalClose = () => {
-    resetFields();
-    setFileObjectList([]);
-    setProductModalVisible(false);
-  };
-
   const columns: Array<ColumnProps<ResponseOption>> = [
     {
       title: '옵션',
@@ -177,7 +159,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     <InputNumber
                       min={0}
                       style={{ width: '100%' }}
-                      className="product-modal-input"
+                      className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
@@ -219,7 +201,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     <InputNumber
                       min={0}
                       style={{ width: '100%' }}
-                      className="product-modal-input"
+                      className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                     />,
@@ -244,7 +226,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     <InputNumber
                       min={0}
                       style={{ width: '100%' }}
-                      className="product-modal-input"
+                      className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                       disabled={eventStatus !== EventStatus[EventStatus.READY]}
@@ -315,6 +297,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           enableOption,
           freebie,
           options,
+          images,
           updateDisabledOptionStock,
         } = values;
         if (product.productId === 0) {
@@ -328,7 +311,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             enableOption: true,
             options: [],
             freebie,
-            images: fileObjectList,
+            images,
           };
           if (enableOption === 0) {
             // 옵션 사용
@@ -369,7 +352,7 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
             enableOption: true,
             options: [],
             freebie,
-            images: fileObjectList,
+            images,
           };
           if (enableOption === 0) {
             // 옵션 사용
@@ -403,14 +386,20 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
 
           dispatch(updateProductAsync.request({ eventId, productId, data: updateProduct }));
         }
-        resetFields();
-        setFileObjectList([]);
-        setProductModalVisible(false);
+
+        onCancel();
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
     });
   };
+
+  useEffect(() => {
+    return () => {
+      console.log('reset');
+      resetFields();
+    };
+  }, []);
 
   useEffect(() => {
     if (product.productId) {
@@ -447,76 +436,324 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
           disabledOptionSafeStock: product.disabledOptionSafeStock,
         });
       }
-      setFileObjectList(product.images);
     }
-  }, [product, setFieldsValue, setFileObjectList]);
+  }, [product, setFieldsValue]);
 
   return (
-    <>
-      <div className="product-modal">
-        <AntModal
-          title={product.productId === 0 ? '제품 등록' : '제품 수정'}
-          visible={productModalVisible}
-          footer={false}
-          width={1200}
-          destroyOnClose
-          onCancel={handleProductModalClose}
-        >
-          <Form onSubmit={handleSubmit}>
-            <Row>
-              <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 제품 이미지</Text>
-              </Col>
-              <Col span={8} className="product-modal-col-8">
-                <ImageUpload
-                  fileObjectList={fileObjectList}
-                  setFileObjectList={setFileObjectList}
+    <div className="product-form">
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col span={3} className="product-form-col-3">
+            <Text type="danger">* 제품 이미지</Text>
+          </Col>
+          <Col span={8} className="product-form-col-8">
+            {getFieldDecorator('images', {
+              initialValue: product.images,
+            })(<ImageUpload disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3} className="product-form-col-3">
+            <Text type="danger">* 제품명</Text>
+          </Col>
+          <Col span={8} className="product-form-col-8">
+            <Form.Item>
+              {getFieldDecorator('productName', {
+                initialValue: '',
+                rules: [
+                  {
+                    required: true,
+                    message: '상품명을 입력해주세요.',
+                  },
+                ],
+              })(
+                <Input
+                  name="productName"
+                  placeholder="텍스트 입력"
+                  maxLength={50}
                   disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                />
-              </Col>
-            </Row>
+                />,
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={3} className="product-form-explanation">
+            <span>{getBytes(getFieldValue('productName'))}/50자</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3} className="product-form-col-3">
+            <Text type="danger">* 정상가</Text>
+          </Col>
+          <Col span={8} className="product-form-col-8">
+            <Form.Item>
+              {getFieldDecorator('normalSalesPrice', {
+                initialValue: 0,
+                rules: [
+                  {
+                    required: true,
+                    message: '정상가를 입력해주세요.',
+                    validator: (rule, value, callback) => {
+                      if (value === 0) {
+                        callback(rule.message);
+                      }
+                      callback();
+                    },
+                  },
+                ],
+              })(
+                <InputNumber
+                  min={0}
+                  style={{ width: '100%' }}
+                  className="product-form-input"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                  disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                />,
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={1} className="product-form-explanation">
+            원
+          </Col>
+          <Col span={3} className="product-form-col-3">
+            <Text type="danger">* 판매가</Text>
+          </Col>
+          <Col span={8} className="product-form-col-8">
+            <Form.Item>
+              {getFieldDecorator('discountSalesPrice', {
+                initialValue: 0,
+                rules: [
+                  {
+                    required: true,
+                    message: '판매가를 입력해주세요.',
+                    validator: (rule, value, callback) => {
+                      if (value === 0) {
+                        callback(rule.message);
+                      }
+                      callback();
+                    },
+                  },
+                  {
+                    required: true,
+                    message: '판매가는 정상가보다 클 수 없습니다.',
+                    validator: (rule, value, callback) => {
+                      if (value > getFieldValue('normalSalesPrice')) {
+                        callback(rule.message);
+                      }
+                      callback();
+                    },
+                  },
+                ],
+              })(
+                <InputNumber
+                  min={0}
+                  style={{ width: '100%' }}
+                  className="product-form-input"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                  disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                />,
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={1} className="product-form-explanation">
+            원
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3} className="product-form-col-3">
+            <Text>사은품</Text>
+          </Col>
+          <Col span={20} style={{ height: 52 }}>
+            <Form.Item>
+              {getFieldDecorator('freebie', {
+                initialValue: '',
+              })(<TextArea disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3} className="product-form-col-3" />
+          <Col span={10}>
+            <Text type="danger">※ ","(쉼표)를 기입하여 사은품 종류를 구별해 주세요.</Text>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={23} className="product-form-col-23">
+            <hr style={{ backgroundColor: '#e8e8e8' }} />
+          </Col>
+        </Row>
+        <Row>
+          <Col span={3} className="product-form-col-3">
+            <Text>옵션</Text>
+          </Col>
+          <Col span={8} className="product-form-col-8">
+            <Form.Item>
+              {getFieldDecorator('enableOption', {
+                initialValue: 0,
+                rules: [
+                  {
+                    required: true,
+                    message: '옵션 사용여부를 선택해주세요.',
+                  },
+                ],
+              })(
+                <Select
+                  style={{ width: 100 }}
+                  onChange={onChangeEnableOption}
+                  disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                >
+                  <Option value={0}>사용함</Option>
+                  <Option value={1}>사용안함</Option>
+                </Select>,
+              )}
+            </Form.Item>
+          </Col>
+        </Row>
+        {product.enableOption && (
+          <Row>
+            <Col>
+              <Table
+                columns={columns}
+                rowKey={(recode, index) => index.toString()}
+                bordered
+                pagination={false}
+                dataSource={product.options}
+                size="middle"
+              />
+            </Col>
+          </Row>
+        )}
+        {!product.enableOption && product.productId === 0 && (
+          <Row>
+            <Col span={3} className="product-form-col-3">
+              <Text type="danger">* 판매 재고</Text>
+            </Col>
+            <Col span={8} className="product-form-col-8">
+              <Form.Item>
+                {getFieldDecorator('disabledOptionStock', {
+                  initialValue: 0,
+                  rules: [
+                    {
+                      required: true,
+                      message: '판매 재고를 입력해주세요.',
+                    },
+                  ],
+                })(
+                  <InputNumber
+                    min={0}
+                    style={{ width: '100%' }}
+                    className="product-form-input"
+                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                  />,
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={3} className="product-form-col-3">
+              <Text>안전 재고</Text>
+            </Col>
+            <Col span={8} className="product-form-col-8">
+              <Form.Item>
+                {getFieldDecorator('disabledOptionSafeStock', {
+                  initialValue: 0,
+                  rules: [
+                    {
+                      required: true,
+                      message: '안전 재고를 입력해주세요.',
+                    },
+                  ],
+                })(
+                  <InputNumber
+                    min={0}
+                    style={{ width: '100%' }}
+                    className="product-form-input"
+                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                    disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                  />,
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
+        {!product.enableOption && product.productId !== 0 && (
+          <>
             <Row>
-              <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 제품명</Text>
+              <Col span={3} className="product-form-col-3">
+                <Text>남은 재고 / 총 재고</Text>
               </Col>
-              <Col span={8} className="product-modal-col-8">
+              <Col span={3}>
                 <Form.Item>
-                  {getFieldDecorator('productName', {
-                    initialValue: '',
-                    rules: [
-                      {
-                        required: true,
-                        message: '상품명을 입력해주세요.',
-                      },
-                    ],
+                  {getFieldDecorator('disabledOptionStock', {
+                    initialValue: 0,
                   })(
-                    <Input
-                      name="productName"
-                      placeholder="텍스트 입력"
-                      maxLength={50}
-                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      className="product-form-input"
+                      disabled={true}
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
                     />,
                   )}
                 </Form.Item>
               </Col>
-              <Col span={3} className="product-modal-explanation">
-                <span>{calcStringByte(getFieldValue('productName'))}/50자</span>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 정상가</Text>
-              </Col>
-              <Col span={8} className="product-modal-col-8">
+              <Col span={3}>
                 <Form.Item>
-                  {getFieldDecorator('normalSalesPrice', {
+                  {getFieldDecorator('disabledOptionTotalStock', {
+                    initialValue: 0,
+                  })(
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%', marginLeft: 10 }}
+                      className="product-form-input"
+                      disabled={true}
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                    />,
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={3} className="product-form-col-3">
+                <Text>안전 재고</Text>
+              </Col>
+              <Col span={8} className="product-form-col-8">
+                <Form.Item>
+                  {getFieldDecorator('disabledOptionSafeStock', {
                     initialValue: 0,
                     rules: [
                       {
                         required: true,
-                        message: '정상가를 입력해주세요.',
+                        message: '안전 재고를 입력해주세요.',
+                      },
+                    ],
+                  })(
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      className="product-form-input"
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                    />,
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={3} className="product-form-col-3">
+                <Text type="danger">* 재고 수량 수정</Text>
+              </Col>
+              <Col span={8} className="product-form-col-8" style={{ height: 40 }}>
+                <Form.Item>
+                  {getFieldDecorator('updateDisabledOptionStock', {
+                    initialValue: 0,
+                    rules: [
+                      {
+                        required: true,
+                        message: '현재 남은 재고를 확인해주세요.',
                         validator: (rule, value, callback) => {
-                          if (value === 0) {
+                          if (getFieldValue('disabledOptionStock') + value < 0) {
                             callback(rule.message);
                           }
                           callback();
@@ -525,298 +762,36 @@ const ProductModalForm = Form.create<ProductModalForm>()((props: ProductModalFor
                     ],
                   })(
                     <InputNumber
-                      min={0}
                       style={{ width: '100%' }}
-                      className="product-modal-input"
+                      className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
                     />,
                   )}
                 </Form.Item>
               </Col>
-              <Col span={1} className="product-modal-explanation">
-                원
-              </Col>
-              <Col span={3} className="product-modal-col-3">
-                <Text type="danger">* 판매가</Text>
-              </Col>
-              <Col span={8} className="product-modal-col-8">
-                <Form.Item>
-                  {getFieldDecorator('discountSalesPrice', {
-                    initialValue: 0,
-                    rules: [
-                      {
-                        required: true,
-                        message: '판매가를 입력해주세요.',
-                        validator: (rule, value, callback) => {
-                          if (value === 0) {
-                            callback(rule.message);
-                          }
-                          callback();
-                        },
-                      },
-                      {
-                        required: true,
-                        message: '판매가는 정상가보다 클 수 없습니다.',
-                        validator: (rule, value, callback) => {
-                          if (value > getFieldValue('normalSalesPrice')) {
-                            callback(rule.message);
-                          }
-                          callback();
-                        },
-                      },
-                    ],
-                  })(
-                    <InputNumber
-                      min={0}
-                      style={{ width: '100%' }}
-                      className="product-modal-input"
-                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    />,
-                  )}
-                </Form.Item>
-              </Col>
-              <Col span={1} className="product-modal-explanation">
-                원
-              </Col>
             </Row>
             <Row>
-              <Col span={3} className="product-modal-col-3">
-                <Text>사은품</Text>
-              </Col>
-              <Col span={20} style={{ height: 52 }}>
-                <Form.Item>
-                  {getFieldDecorator('freebie', {
-                    initialValue: '',
-                  })(<TextArea disabled={eventStatus !== EventStatus[EventStatus.READY]} />)}
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={3} className="product-modal-col-3" />
+              <Col span={3} className="product-form-col-3" />
               <Col span={10}>
-                <Text type="danger">※ ","(쉼표)를 기입하여 사은품 종류를 구별해 주세요.</Text>
+                <Text type="danger">※ 총 재고에서 입력한 수량 만큼 추가/감소 처리 됩니다.</Text>
               </Col>
             </Row>
-            <Row>
-              <Col span={23} className="product-modal-col-23">
-                <hr style={{ backgroundColor: '#e8e8e8' }} />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={3} className="product-modal-col-3">
-                <Text>옵션</Text>
-              </Col>
-              <Col span={8} className="product-modal-col-8">
-                <Form.Item>
-                  {getFieldDecorator('enableOption', {
-                    initialValue: 0,
-                    rules: [
-                      {
-                        required: true,
-                        message: '옵션 사용여부를 선택해주세요.',
-                      },
-                    ],
-                  })(
-                    <Select
-                      style={{ width: 100 }}
-                      onChange={onChangeEnableOption}
-                      disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                    >
-                      <Option value={0}>사용함</Option>
-                      <Option value={1}>사용안함</Option>
-                    </Select>,
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
-            {product.enableOption && (
-              <Row>
-                <Col>
-                  <Table
-                    columns={columns}
-                    rowKey={(recode, index) => index.toString()}
-                    bordered
-                    pagination={false}
-                    dataSource={product.options}
-                    size="middle"
-                  />
-                </Col>
-              </Row>
-            )}
-            {!product.enableOption && product.productId === 0 && (
-              <Row>
-                <Col span={3} className="product-modal-col-3">
-                  <Text type="danger">* 판매 재고</Text>
-                </Col>
-                <Col span={8} className="product-modal-col-8">
-                  <Form.Item>
-                    {getFieldDecorator('disabledOptionStock', {
-                      initialValue: 0,
-                      rules: [
-                        {
-                          required: true,
-                          message: '판매 재고를 입력해주세요.',
-                        },
-                      ],
-                    })(
-                      <InputNumber
-                        min={0}
-                        style={{ width: '100%' }}
-                        className="product-modal-input"
-                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                      />,
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={3} className="product-modal-col-3">
-                  <Text>안전 재고</Text>
-                </Col>
-                <Col span={8} className="product-modal-col-8">
-                  <Form.Item>
-                    {getFieldDecorator('disabledOptionSafeStock', {
-                      initialValue: 0,
-                      rules: [
-                        {
-                          required: true,
-                          message: '안전 재고를 입력해주세요.',
-                        },
-                      ],
-                    })(
-                      <InputNumber
-                        min={0}
-                        style={{ width: '100%' }}
-                        className="product-modal-input"
-                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        disabled={eventStatus !== EventStatus[EventStatus.READY]}
-                      />,
-                    )}
-                  </Form.Item>
-                </Col>
-              </Row>
-            )}
-            {!product.enableOption && product.productId !== 0 && (
-              <>
-                <Row>
-                  <Col span={3} className="product-modal-col-3">
-                    <Text>남은 재고 / 총 재고</Text>
-                  </Col>
-                  <Col span={3}>
-                    <Form.Item>
-                      {getFieldDecorator('disabledOptionStock', {
-                        initialValue: 0,
-                      })(
-                        <InputNumber
-                          min={0}
-                          style={{ width: '100%' }}
-                          className="product-modal-input"
-                          disabled={true}
-                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        />,
-                      )}
-                    </Form.Item>
-                  </Col>
-                  <Col span={3}>
-                    <Form.Item>
-                      {getFieldDecorator('disabledOptionTotalStock', {
-                        initialValue: 0,
-                      })(
-                        <InputNumber
-                          min={0}
-                          style={{ width: '100%', marginLeft: 10 }}
-                          className="product-modal-input"
-                          disabled={true}
-                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        />,
-                      )}
-                    </Form.Item>
-                  </Col>
-                  <Col span={3} className="product-modal-col-3">
-                    <Text>안전 재고</Text>
-                  </Col>
-                  <Col span={8} className="product-modal-col-8">
-                    <Form.Item>
-                      {getFieldDecorator('disabledOptionSafeStock', {
-                        initialValue: 0,
-                        rules: [
-                          {
-                            required: true,
-                            message: '안전 재고를 입력해주세요.',
-                          },
-                        ],
-                      })(
-                        <InputNumber
-                          min={0}
-                          style={{ width: '100%' }}
-                          className="product-modal-input"
-                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        />,
-                      )}
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={3} className="product-modal-col-3">
-                    <Text type="danger">* 재고 수량 수정</Text>
-                  </Col>
-                  <Col span={8} className="product-modal-col-8" style={{ height: 40 }}>
-                    <Form.Item>
-                      {getFieldDecorator('updateDisabledOptionStock', {
-                        initialValue: 0,
-                        rules: [
-                          {
-                            required: true,
-                            message: '현재 남은 재고를 확인해주세요.',
-                            validator: (rule, value, callback) => {
-                              if (getFieldValue('disabledOptionStock') + value < 0) {
-                                callback(rule.message);
-                              }
-                              callback();
-                            },
-                          },
-                        ],
-                      })(
-                        <InputNumber
-                          style={{ width: '100%' }}
-                          className="product-modal-input"
-                          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                          parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                        />,
-                      )}
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={3} className="product-modal-col-3" />
-                  <Col span={10}>
-                    <Text type="danger">※ 총 재고에서 입력한 수량 만큼 추가/감소 처리 됩니다.</Text>
-                  </Col>
-                </Row>
-              </>
-            )}
+          </>
+        )}
 
-            <Row>
-              <div className="product-modal-button">
-                <Button type="primary" size="large" htmlType="submit">
-                  {product.productId !== 0 ? '수정' : '등록'}
-                </Button>
-                <Button type="danger" size="large" onClick={handleProductModalClose}>
-                  취소
-                </Button>
-              </div>
-            </Row>
-          </Form>
-        </AntModal>
-      </div>
-    </>
+        <Row>
+          <div className="product-form-button">
+            <Button type="primary" size="large" htmlType="submit">
+              {product.productId !== 0 ? '수정' : '등록'}
+            </Button>
+            <Button type="danger" size="large" onClick={onCancel}>
+              취소
+            </Button>
+          </div>
+        </Row>
+      </Form>
+    </div>
   );
 });
 
@@ -824,26 +799,30 @@ interface Props {
   product: ResponseProduct;
   setProduct: Dispatch<SetStateAction<ResponseProduct>>;
   event: ResponseEvent;
-  productModalVisible: boolean;
-  setProductModalVisible: Dispatch<SetStateAction<boolean>>;
+  visible: boolean;
+  onCancel?: () => void;
 }
 
 function ProductModal(props: Props) {
-  const { product, setProduct, event, productModalVisible, setProductModalVisible } = props;
-  const [fileObjectList, setFileObjectList] = useState<FileObject[]>([]);
+  const { product, setProduct, event, visible, onCancel } = props;
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    }
+  };
 
   return (
-    <>
-      <ProductModalForm
-        product={product}
-        setProduct={setProduct}
-        event={event}
-        productModalVisible={productModalVisible}
-        setProductModalVisible={setProductModalVisible}
-        fileObjectList={fileObjectList}
-        setFileObjectList={setFileObjectList}
-      />
-    </>
+    <Modal
+      title={product.productId === 0 ? '제품 등록' : '제품 수정'}
+      visible={visible}
+      footer={false}
+      width={1200}
+      destroyOnClose
+      onCancel={handleCancel}
+    >
+      <ProductForm product={product} setProduct={setProduct} event={event} onCancel={handleCancel} />
+    </Modal>
   );
 }
 

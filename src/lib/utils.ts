@@ -15,7 +15,7 @@ export const endDateFormat = 'YYYY-MM-DDT23:59:59';
 
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 
-export const calcStringByte = (str: string) => {
+export const getBytes = (str: string) => {
   if (str) {
     return String(str).length;
   } else {
@@ -205,6 +205,31 @@ export function createExcel(data: (string[])[], options?: CreateExcelOptions) {
 
     FileSaver.saveAs(blob, `fromc_${getNowYMD()}${EXCEL_EXTENSION}`);
   });
+}
+
+export async function readExcel(buffer: ArrayBuffer) {
+  const workbook = new ExcelJS.Workbook();
+
+  // let result;
+
+  await workbook.xlsx.load(buffer);
+
+  return workbook;
+
+  // const worksheet = workbook.getWorksheet(1);
+
+  // return worksheet.getSheetValues();
+
+  // workbook.xlsx.load(buffer).then(() => {
+  //   // use workbook
+  //   const worksheet = workbook.getWorksheet(1);
+
+  //   result = worksheet.getSheetValues()
+
+  //   console.log(worksheet.getSheetValues());
+  // });
+
+  // return result;
 }
 
 export function decodeToken(token: string) {

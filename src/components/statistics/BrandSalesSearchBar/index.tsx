@@ -7,20 +7,13 @@ import { Button } from 'antd';
 import moment from 'moment';
 
 // components
-import BrandSalesSearchDate, {
-  getValueFromEventForSearchDate,
-  getValuePropsForSearchDate,
-  validateDate,
-} from 'components/statistics/BrandSalesSearchDate';
 
 // utils
 import { startDateFormat, endDateFormat } from 'lib/utils';
 
-
-import { getBrandsAsync } from '../../../store/reducer/brand';
-import { useDispatch, useSelector } from 'react-redux';
-import { StoreState } from '../../../store';
 import BrandSalesMultiSearch from '../BrandSalesMultiSearch';
+import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
+import { SearchDateFormItem } from 'components/formItem';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
@@ -30,27 +23,31 @@ interface Props extends FormComponentProps {
 const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
   const { form, onSearch, onReset } = props;
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
-  const [ selectedBrand, setSelectedBrand ] = useState<number[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<number[]>([]);
 
   const handleSearch = useCallback(() => {
-    validateFields((err, val) => {
-
-      if (!err) {
-        Object.keys(val).map(key => {
-          if (val[key] === undefined) {
-            delete val[key];
+    validateFields((errors, values) => {
+      if (!errors) {
+        Object.keys(values).map(key => {
+          if (values[key] === undefined) {
+            delete values[key];
             return false;
           }
-          if (key === 'date') {
-            validateDate(val, 'date');
+          if (key === 'dates') {
+            const dates = values[key];
+
+            values.startDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+            values.endDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+
+            delete values[key];
             return;
           }
         });
-        val.startDate = moment(val.startDate).format(startDateFormat);
-        val.endDate = moment(val.endDate).format(endDateFormat);
-        onSearch(val);
-      }else{
-        console.error(err);
+        values.startDate = moment(values.startDate).format(startDateFormat);
+        values.endDate = moment(values.endDate).format(endDateFormat);
+        onSearch(values);
+      } else {
+        console.error(errors);
       }
     });
   }, [onSearch, selectedBrand, validateFields]);
@@ -59,27 +56,25 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
     resetFields();
     onReset();
     setSelectedBrand([]);
-  }, [onReset,resetFields, setSelectedBrand]);
+  }, [onReset, resetFields, setSelectedBrand]);
 
   return (
     <>
       <Form>
         <Form.Item>
-          {getFieldDecorator('date', {
-            initialValue: [moment(new Date()).format(startDateFormat), moment(new Date()).format(endDateFormat)],
-            getValueFromEvent: getValueFromEventForSearchDate,
-            getValueProps: getValuePropsForSearchDate,
-          })(<BrandSalesSearchDate/>)}
+          {getFieldDecorator('dates', {
+            initialValue: [moment().startOf('day'), moment().endOf('day')],
+          })(<SearchDateFormItem />)}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('brandIds', {
             rules: [
               {
-                required :true,
+                required: true,
                 message: '브랜드를 선택해 주세요',
-              }
-            ]
-          })(<BrandSalesMultiSearch setSelectedBrand={setSelectedBrand} selectedBrand={selectedBrand}/>)}
+              },
+            ],
+          })(<BrandSalesMultiSearch setSelectedBrand={setSelectedBrand} selectedBrand={selectedBrand} />)}
         </Form.Item>
         <Form.Item>
           <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
