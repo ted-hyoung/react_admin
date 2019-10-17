@@ -116,6 +116,10 @@ function ProductNotice(props: Props) {
         });
         productProvisions.map((item: any, index: number) => {
           Object.keys(item).forEach(key => {
+
+            if(item[`productProvisionId`] === null){
+              delete item[`productProvisionId`];
+            }
             if (item[key] === null || item[key] === '') {
               warning({
                 title: `입력하지 않은 정보가 있습니다.\n모든 정보를 입력해주세요.`,
@@ -192,7 +196,6 @@ function ProductNotice(props: Props) {
                 {selectedTypes.length > 0 && (
                 <div >
                   {selectedTypes.map((selectedItem, i: number) => {
-                    console.log(selectedTypes);
                     return (
                       <div key={selectedItem.value}>
                         <h1 className='notice-product-title'>{selectedItem.text}</h1>
@@ -200,29 +203,44 @@ function ProductNotice(props: Props) {
                           <tbody>
                             {
                               productJson[selectedItem.value].map((item:any , index: number) => {
-
-                                return (
-                                  <tr key={index} style={{ width: '100%' }}>
-                                    <td style={{ width: '20%' }}>
-                                      {item.title}
-                                    </td>
-                                    <td>
-                                      <Form.Item>
-                                        {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
-                                          initialValue: noticeData[i] === undefined ? '' : noticeData[i][item.key],
-                                          rules: [{ required: true, message: item.title+' 을 입력 바랍니다.' }],
-                                        })(
-                                          <TextArea
-                                            spellCheck={false}
-                                            autosize={{ minRows: 4 }}
-                                            style={{ resize: 'none' }}
-                                          />,
-                                        )}
-                                      </Form.Item>
-                                      <span>{item.desc}</span>
-                                    </td>
-                                  </tr>
-                                )
+                                if(item.key === 'productProvisionId'){
+                                  return (
+                                    <tr key={index} style={{ width: '100%' }}>
+                                      <td>
+                                        <Form.Item>
+                                          {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
+                                            initialValue: noticeData[i] === undefined ? 0 : noticeData[i][item.key],
+                                          })(
+                                            <TextArea hidden={true}/>,
+                                          )}
+                                        </Form.Item>
+                                        <span>{item.desc}</span>
+                                      </td>
+                                    </tr>
+                                  )
+                                }
+                                if(item.key !== 'productProvisionId'){
+                                  return (
+                                    <tr key={index} style={{ width: '100%' }}>
+                                      <td style={{ width: '20%' }}>{item.title}</td>
+                                      <td>
+                                        <Form.Item>
+                                          {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
+                                            initialValue: noticeData[i] === undefined ? '' : noticeData[i][item.key],
+                                            rules: [{ required: true, message: item.title+' 을 입력 바랍니다.' }],
+                                          })(
+                                            <TextArea
+                                              spellCheck={false}
+                                              autosize={{ minRows: 4 }}
+                                              style={{ resize: 'none' }}
+                                            />,
+                                          )}
+                                        </Form.Item>
+                                        <span>{item.desc}</span>
+                                      </td>
+                                    </tr>
+                                  )
+                                }
                               })
                             }
                           </tbody>

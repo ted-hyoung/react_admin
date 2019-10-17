@@ -2,12 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-  createEventAsync,
-  createEventShippingAsync,
-  updateEventByIdAsync,
-  updateEventShippingAsync,
-} from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
 import { FileObject } from 'models/FileObject';
 
@@ -32,7 +26,8 @@ import { FlexRow } from 'components';
 // libs
 
 import './index.less';
-import { createProductNoticeAsync } from '../../../store/reducer/product';
+import { createProductNoticeAsync, updateProductNoticeAsync } from '../../../store/reducer/product';
+// import { createProductNoticeAsync } from '../../../store/reducer/product';
 
 // defines
 
@@ -90,7 +85,7 @@ function PurchaseInformation(props: Props) {
         }
 
         if (event.cancellationExchangeReturnRegulationAgree) {
-           dispatch(updateEventShippingAsync.request({eventId : event.eventId, data: values }));
+           dispatch(updateProductNoticeAsync.request({eventId : event.eventId, data: values }));
         }else{
            dispatch(createProductNoticeAsync.request({eventId : event.eventId, data: values }));
         }

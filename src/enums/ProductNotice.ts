@@ -17,6 +17,7 @@ export const productNoticeType = [
 export const productProvision = {
 
   CLOTHING : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName'},
     { title: '제품 소재', desc: '* 섬유의 조성 또는 혼용률을 백분율로 표기\n* 기능성인 경우 성적서 또는 허가서 내용 표기', key:'material' },
     { title: '색상', desc: '* 두 가지 이상일 경우라도 대표 색상 표기 가능\n* 여러 색상을 포함한 경우 주된 색상을 기재하거나 ‘사진참조 등’으로 기재 가능\n', key:'color'},
@@ -29,6 +30,7 @@ export const productProvision = {
     { title: 'A/S 책임자와 전화번호', desc: '*담당자 표기가 어려운 경우, 업페의 업체명 및 연락처 표', key:'serviceManagerNumber' }
   ],
   PROCESSED_FOOD : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '식품의 유형', desc: '', key:'foodType' },
     { title: '생산자 및 소재지', desc: '', key:'manufacturerCountry' },
@@ -41,6 +43,7 @@ export const productProvision = {
     { title: '수입식품에 해당하는 경우 “식품위생법에 따른 수입신고를 필함”의 문구', desc: '', key:'importedFoodMedicineLaw' },
     { title: '소비자상담 관련 전화번호', desc: '', key:'consumerConsultationNumber' },
   ],SHOES : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '제품 주 소재', desc: '', key:'material' },
     { title: '색상', desc: '', key:'color' },
@@ -51,6 +54,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],BAG : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '종류', desc: '', key:'kind' },
     { title: '소재', desc: '', key:'material' },
@@ -62,6 +66,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],FASHION_ITEM : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '종류', desc: '', key:'kind' },
     { title: '소재', desc: '', key:'material' },
@@ -72,6 +77,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],MEDICAL_APPLIANCES : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '의료기기법상 허가・신고 번호 및 광고사전심의필 유무', desc: '', key:'medicalPermissionReportNumber' },
     { title: 'KC 인증 필 유무', desc: '', key:'voltagePowerConsumption' },
@@ -84,6 +90,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],COSMETICS : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '용량 또는 중량', desc: '', key:'majorIssue' },
     { title: '제품 주요 사향', desc: '', key:'useDeadLine' },
@@ -96,6 +103,7 @@ export const productProvision = {
     { title: '사용할 때 주의사항', desc: '', key:'qualityAssuranceCriteria' },
     { title: '품질보증기준', desc: '', key:'consumerConsultationNumber' },
   ],DECORATIVE_ITEM : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '소재/순도/밴드재질', desc: '', key:'material' },
     { title: '중량', desc: '', key:'weight' },
@@ -109,6 +117,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],HEALTH_FOOD : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '식품의 유형', desc: '', key:'foodType' },
     { title: '제조업소의 명칭과 소재지', desc: '', key:'manufacturerCountry' },
@@ -123,6 +132,7 @@ export const productProvision = {
     { title: '표시광고 사전심의필', desc: '', key:'importedFoodMedicineLaw' },
     { title: '수입식품에 해당하는 경우 “건강기능식품에 관한 법률에 따른 수입신고를 필함”의 문구', desc: '', key:'consumerConsultationNumber' },
   ],INFANT_ITEM : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: 'KC인증 필 유무', desc: '', key:'kcCertified' },
     { title: '크기, 중량', desc: '', key:'weight' },
@@ -136,6 +146,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],SPORTS_ITEM : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '크기, 중량', desc: '', key:'weight' },
     { title: '색상', desc: '', key:'color' },
@@ -148,6 +159,7 @@ export const productProvision = {
     { title: '품질보증기준', desc: '', key:'qualityAssuranceCriteria' },
     { title: 'A/S 책임자와 전화번호', desc: '', key:'serviceManagerNumber' },
   ],ETC : [
+    { title: '아이디', desc: '', key:'productProvisionId'},
     { title: '품목 및 모델명', desc: '', key:'modelName' },
     { title: '법에 의한 인증・허가 등을 받았음을 확인할 수 있는 경우 그에 대한 사항', desc: '', key:'legalCertification' },
     { title: '제조국 또는 원산지', desc: '', key:'manufacturerCountry' },
@@ -184,7 +196,7 @@ export const productProvisionData = {
   modelName: '',
   notationAdvertisementSideEffectOccurrence: '',
   nutritionalInformation: '',
-  productProvisionId: 0,
+  productProvisionId: null,
   qualityAssuranceCriteria: '',
   rawMaterialContent: '',
   sameModelLaunchDate: '',
