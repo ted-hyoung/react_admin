@@ -23,7 +23,6 @@ import {
 import { getEventByIdAsync } from 'store/reducer/event';
 import { message } from 'antd';
 import qs from 'qs';
-import { getOrdersAsync } from '../reducer/order';
 
 function* createProduct(action: RequestAsyncAction) {
   try {
@@ -62,7 +61,7 @@ function* updateProduct(action: RequestAsyncAction) {
 function* deleteProduct(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
+    const res = yield call(() => Api.del(`/events/${eventId}/products`, { data }));
     yield put(deleteProductsAsync.success(res.data));
     yield put(
       getEventByIdAsync.request({
@@ -131,12 +130,13 @@ function* getProductStatisticsExcel(action: RequestAsyncAction) {
 function* createProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    const res = yield call(() => Api.post(`/provision/${eventId}`, {
-      productProvisions: [
-        ...data
-      ]
-    }));
+    const res = yield call(() =>
+      Api.post(`/provision/${eventId}`, {
+        productProvisions: [...data],
+      }),
+    );
     yield put(createProductNoticeAsync.success(res.data));
+    yield put(getEventByIdAsync.request({ id: eventId }));
     message.success('상품 정보를 등록하였습니다.');
   } catch (error) {
     yield put(createProductNoticeAsync.failure(error));
@@ -147,12 +147,13 @@ function* createProductNotice(action: RequestAsyncAction) {
 function* updateProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
-    const res = yield call(() => Api.put(`/provision/${eventId}`, {
-      productProvisions: [
-        ...data
-      ]
-    }));
+    const res = yield call(() =>
+      Api.put(`/provision/${eventId}`, {
+        productProvisions: [...data],
+      }),
+    );
     yield put(updateProductNoticeAsync.success(res.data));
+    yield put(getEventByIdAsync.request({ id: eventId }));
     message.success('상품 정보를 수정했습니다.');
   } catch (error) {
     yield put(updateProductNoticeAsync.failure(error));
@@ -164,9 +165,7 @@ function* deleteProductNotice(action: RequestAsyncAction) {
   try {
     const { eventId, data } = action.payload;
     const data2 = {
-      productProvisions: [
-        {...data}
-      ]
+      productProvisions: [{ ...data }],
     };
     console.log(eventId, data2);
     // const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
