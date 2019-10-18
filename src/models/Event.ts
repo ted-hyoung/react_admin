@@ -32,10 +32,10 @@ export interface ResponseEvent extends ResponseEventForList {
   likeCnt: number;
   eventNotices: ResponseEventNotice[];
   creator: ResponseEventCreator;
-  productProvisions:[];
-  shippingPeriod: string
-  cancellationExchangeReturnRegulationAgree: boolean
-  cancellationExchangeReturnAgree: boolean
+  productProvisions: [];
+  shippingPeriod: string;
+  cancellationExchangeReturnRegulationAgree: boolean;
+  cancellationExchangeReturnAgree: boolean;
 }
 
 export interface ResponseEventCreator {
@@ -124,4 +124,15 @@ export interface ResponseShippingFeeInfo {
 export interface UpdateEventShippingFeeInfo {
   shippingFee: number;
   shippingFreeCondition: number;
+}
+
+export interface UpdateEventShippingInfo {
+  shippingFeeInfo: UpdateEventShipping;
+  shippingPeriod: string;
+  cancellationExchangeReturnRegulationAgree: boolean;
+  cancellationExchangeReturnAgree: boolean;
+}
+
+export interface UpdateEventShipping {
+  shippingFee: number;
 }

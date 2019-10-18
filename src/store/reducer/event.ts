@@ -80,12 +80,6 @@ export const updateEventShippingFeeInfoAsync = createAsyncAction(
   Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
-export const createEventShippingAsync = createAsyncAction(
-  Actions.CREATE_EVENT_SHIPPING_REQUEST,
-  Actions.CREATE_EVENT_SHIPPING_SUCCESS,
-  Actions.CREATE_EVENT_SHIPPING_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
-
 export const updateEventShippingAsync = createAsyncAction(
   Actions.UPDATE_EVENT_SHIPPING_REQUEST,
   Actions.UPDATE_EVENT_SHIPPING_SUCCESS,
@@ -116,7 +110,7 @@ const initialState: EventState = {
     shippingPeriod: '',
     cancellationExchangeReturnRegulationAgree: false,
     cancellationExchangeReturnAgree: false,
-    productProvisions:[],
+    productProvisions: [],
     eventId: 0,
     name: '',
     eventStatus: EventStatus[EventStatus.READY],
@@ -200,10 +194,6 @@ export default (state = initialState, action: AnyAction) => {
       return produce(state, draft => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
       });
-    }
-
-    case Actions.CREATE_EVENT_SHIPPING_SUCCESS: {
-      return state;
     }
     case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
       return state;
