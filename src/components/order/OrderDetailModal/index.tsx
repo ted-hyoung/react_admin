@@ -338,15 +338,33 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                 ''
               )}
             </Descriptions.Item>
-            <Descriptions.Item span={24} label="결제카드정보">
-              {payment ? CardCode[Number(payment.nicePayment.cardCode)] : ''}
+            <Descriptions.Item span={24} label="결제정보">
+              { payment &&
+                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
+                 payment.nicePayment.virtualBankName+" / "+payment.nicePayment.virtualBankNumber
+                )
+              }
+              { payment &&
+                payment.paymentMethod === 'CARD' && (
+                  CardCode[Number(payment.nicePayment.cardCode)]
+                )
+              }
             </Descriptions.Item>
-            <Descriptions.Item span={24} label="카드결제상세내역">
-              {payment
-                ? `카드결제: ${moment(payment.paymentDate).format(
+            <Descriptions.Item span={24} label="결제상세내역">
+              { payment &&
+                payment.paymentMethod === 'CARD' && (
+                  `카드결제: ${moment(payment.paymentDate).format(
                     'YYYY-MM-DD HH:mm:ss',
                   )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`
-                : ''}
+                )
+              }
+              { payment &&
+                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
+                  `결제일(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
+                    'YYYY-MM-DD HH:mm:ss',
+                  )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`
+                )
+              }
             </Descriptions.Item>
           </Descriptions>
         </Element>
@@ -354,6 +372,7 @@ function OrderDetailModal(props: OrderDetailModalProps) {
           <p className="scroll-section-title">환불정보</p>
           {payment &&
           (payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ||
+            payment.paymentStatus === PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_COMPLETE] ||
             payment.paymentStatus === PaymentStatus[PaymentStatus.REFUND_COMPLETE]) ? (
             <Descriptions bordered colon={false} column={24}>
               <Descriptions.Item span={24} label="환불번호">
@@ -363,10 +382,20 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                 <span>{payment.totalAmount.toLocaleString()} 원</span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불수단">
-                <span>{PaymentMethod[payment.paymentMethod]}</span>
+                <span>현금 환불</span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불일자">
                 <span>{moment(payment.paymentCanceled).format('YYYY-MM-DD HH:mm:ss')}</span>
+              </Descriptions.Item>
+              {payment &&
+                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
+                    <Descriptions.Item span={24} label="환불계좌정보">
+                      <span>환불은행: {payment.refundAccountBank} | 환불계좌: {payment.refundAccountNumber} | 예금주: {payment.refundAccountDepositor}</span>
+                    </Descriptions.Item>
+                )
+              }
+              <Descriptions.Item span={24} label="환불사유">
+                <span>-</span>
               </Descriptions.Item>
             </Descriptions>
           ) : (
