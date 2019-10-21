@@ -126,12 +126,10 @@ export function login(account: LoginAccount) {
     .post(host + '/accounts/login', account)
     .then(res => {
       setToken(res.data.access_token, res.data.refresh_token);
-
       return res;
     })
     .catch(error => {
       message.error('로그인에 실패했습니다. 다시 시도해주세요');
-
       throw error;
     });
 }
