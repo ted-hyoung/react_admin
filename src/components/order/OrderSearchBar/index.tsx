@@ -24,7 +24,13 @@ import { ResponseProduct, SearchEventForOrder, ResponseOption } from 'models';
 import { startDateFormat, endDateFormat } from 'lib/utils';
 
 // enums
-import { PAYMENT_STATUSES, SHIPPING_STATUSES, DEFAULT_PAYMENT_STATUSES, DEFAULT_SHIPPING_STATUSES } from 'enums';
+import {
+  PAYMENT_STATUSES,
+  SHIPPING_STATUSES,
+  DEFAULT_PAYMENT_STATUSES,
+  DEFAULT_SHIPPING_STATUSES,
+  PAYMENT_VIRTUAL_STATUSES, PAYMENT_STATUSES_TOTAL, DEFAULT_PAYMENT_STATUSES_TOTAL,
+} from 'enums';
 
 // assets
 import './index.less';
@@ -69,7 +75,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
 
   const handleChangePaymentStatusesAll = useCallback(e => {
     setFieldsValue({
-      paymentStatuses: e.target.checked ? DEFAULT_PAYMENT_STATUSES : [],
+      paymentStatuses: e.target.checked ? DEFAULT_PAYMENT_STATUSES_TOTAL : [],
     });
     setPaymentCheckAll(e.target.checked);
   }, []);
@@ -202,8 +208,10 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                     전체
                   </Checkbox>
                   {getFieldDecorator('paymentStatuses', {
-                    initialValue: DEFAULT_PAYMENT_STATUSES,
-                  })(<Checkbox.Group options={PAYMENT_STATUSES} onChange={handleChangePaymentStatuses} />)}
+                    initialValue: DEFAULT_PAYMENT_STATUSES_TOTAL,
+                  })(
+                    <Checkbox.Group options={PAYMENT_STATUSES_TOTAL} onChange={handleChangePaymentStatuses} />
+                  )}
                 </Form.Item>
               </Col>
             </Row>

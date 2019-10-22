@@ -1,6 +1,7 @@
 import { PaymentMethod, PaymentStatus } from 'enums';
 
 export interface ResponsePaymentForOrders {
+  paymentMethod: PaymentMethod;
   paymentId: number;
   paymentStatus: PaymentStatus;
   paymentDate: string;
