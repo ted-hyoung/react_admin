@@ -125,22 +125,22 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
           });
           if(method !== 'VIRTUAL_ACCOUNT'){
             if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_READY] === status) {
-              message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
+              message.error('관리자 홈페이지에서는 입금대기로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === status) {
-              message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
+              message.error('관리자 홈페이지에서는 입금완료로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
               if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === paymentStatus) {
                 setNiceCancelPayment(true);
               } else {
-                message.error('결제완료인 경우에만 결제취소가 가능합니다.');
+                message.error('입금완료인 경우에만 결제취소가 가능합니다.');
               }
             } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === status) {
-              message.error('관리자 홈페이지에서는 환불요청으로 변경하실 수 없습니다.');
+              message.error('관리자 홈페이지에서는 취소요청으로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_COMPLETE] === status) {
               if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === paymentStatus) {
                 setNiceCancelPayment(true);
               } else {
-                message.error('환불요청인 경우에만 환불완료가 가능합니다.');
+                message.error('취소요청인 경우에만 취소완료가 가능합니다.');
               }
             }
           }else{
