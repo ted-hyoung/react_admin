@@ -1,6 +1,7 @@
 // base
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 // modules
@@ -17,11 +18,11 @@ import { StoreState } from 'store';
 import { getEventsAsync, clearEvent } from 'store/reducer/event';
 import { SearchEvent } from 'models';
 import { Button } from 'antd';
-import { sortedString } from 'lib/utils';
+import { sortedString, setPagingIndex } from 'lib/utils';
 
 interface EventList {
   key: number;
-  id: number;
+  no: number;
   period: string;
   name: string;
   turn: number;
@@ -31,8 +32,8 @@ interface EventList {
   eventLink: string;
 }
 
-function EventList(props: RouteComponentProps) {
-  const { history } = props;
+function EventList() {
+  const history = useHistory();
 
   const { events } = useSelector((state: StoreState) => state.event);
   const dispatch = useDispatch();
@@ -82,16 +83,16 @@ function EventList(props: RouteComponentProps) {
     };
   }, [events]);
 
-  const handleRowEvent = (recode: EventList) => {
+  const onRow = (recode: EventList) => {
     return {
-      onClick: () => history.push('/events/detail/' + recode.id),
+      onClick: () => history.push('/events/detail/' + recode.key),
     };
   };
 
   const data: EventList[] = events.content.map((event, i) => {
     return {
-      key: i + 1,
-      id: event.eventId,
+      key: event.eventId,
+      no: setPagingIndex(events.totalElements, events.page, events.size, i),
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
       eventLink: `${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${event.eventId}`,
@@ -105,9 +106,9 @@ function EventList(props: RouteComponentProps) {
   const colums: ColumnProps<EventList>[] = [
     {
       title: 'NO',
-      dataIndex: 'key',
-      key: 'key',
-      sorter: (a, b) => a.key - b.key,
+      dataIndex: 'no',
+      key: 'no',
+      sorter: (a, b) => a.no - b.no,
     },
     {
       title: '공구기간',
@@ -194,7 +195,7 @@ function EventList(props: RouteComponentProps) {
         dataSource={data}
         onChangePageSize={handleChangePageSize}
         pagination={pagination}
-        onRow={handleRowEvent}
+        onRow={onRow}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
         <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent())}>
@@ -205,4 +206,4 @@ function EventList(props: RouteComponentProps) {
   );
 }
 
-export default withRouter(EventList);
+export default EventList;

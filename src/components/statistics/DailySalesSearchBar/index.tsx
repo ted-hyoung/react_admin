@@ -7,14 +7,11 @@ import { Button } from 'antd';
 import moment from 'moment';
 
 // components
-import DailySalesSearchDate, {
-  getValueFromEventForSearchDate,
-  getValuePropsForSearchDate,
-  validateDate,
-} from 'components/statistics/DailySalesSearchDate';
 
 // utils
-import { startDateFormat, endDateFormat, defaultDateTimeFormat } from 'lib/utils';
+import { defaultDateTimeFormat } from 'lib/utils';
+import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
+import { SearchDateFormItem } from 'components/formItem';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
@@ -26,22 +23,27 @@ const DailySalesSearchBar = Form.create<Props>()((props: Props) => {
   const { getFieldDecorator, validateFields, resetFields } = form;
 
   const handleSearch = useCallback(() => {
-    validateFields((err, val) => {
-      if (!err) {
-        Object.keys(val).forEach(key => {
-          if (val[key] === undefined) {
-            delete val[key];
+    validateFields((errors, values) => {
+      if (!errors) {
+        Object.keys(values).forEach(key => {
+          if (values[key] === undefined) {
+            delete values[key];
             return;
           }
-          if (key === 'date') {
-            validateDate(val, 'date');
+          if (key === 'dates') {
+            const dates = values[key];
+
+            values.startDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+            values.endDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+
+            delete values[key];
             return;
           }
         });
-        val.startDate = moment(val.startDate).format(defaultDateTimeFormat);
-        val.endDate = moment(val.endDate).format(defaultDateTimeFormat);
+        values.startDate = moment(values.startDate).format(defaultDateTimeFormat);
+        values.endDate = moment(values.endDate).format(defaultDateTimeFormat);
 
-        onSearch(val);
+        onSearch(values);
       }
     });
   }, [onSearch]);
@@ -51,15 +53,12 @@ const DailySalesSearchBar = Form.create<Props>()((props: Props) => {
     onReset();
   }, [onReset]);
 
-
   return (
     <Form>
       <Form.Item>
-        {getFieldDecorator('date', {
-          initialValue: [moment(new Date()).format(startDateFormat), moment(new Date()).format(endDateFormat)],
-          getValueFromEvent: getValueFromEventForSearchDate,
-          getValueProps: getValuePropsForSearchDate,
-        })(<DailySalesSearchDate />)}
+        {getFieldDecorator('dates', {
+          initialValue: [moment().startOf('day'), moment().endOf('day')],
+        })(<SearchDateFormItem />)}
       </Form.Item>
       <Form.Item>
         <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>

@@ -137,28 +137,27 @@ const Toolbar = (props: ToolbarProps) => {
 
 interface ReactQuillProps {
   name?: string;
+  value?: string;
   onChange?: (value: string) => void;
-  defaultValue?: string;
+  initialValue?: string;
   instagramTool?: boolean;
 }
 
 const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQuillProps, ref) => {
+  const { name = 'editor', value, initialValue, onChange, instagramTool = true } = props;
+
   const quillRef = useRef<ReactQuill>(null);
+
   const [lastSelection, setLastSelection] = useState(0);
   const [inProgress, setInProgress] = useState(false);
 
-  const { name = 'editor', onChange, defaultValue, instagramTool = true } = props;
-
   const instagramHandler = (value: string) => {
-    // editor focus 로 인한 비동기 처리
-    setTimeout(() => {
-      if (quillRef.current) {
-        const editor = quillRef.current.getEditor();
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
 
-        editor.insertEmbed(lastSelection, 'instagram', value);
-        editor.blur();
-      }
-    }, 0);
+      editor.insertEmbed(lastSelection, 'instagram', value);
+      editor.blur();
+    }
   };
 
   const imageHandler = async (file: File) => {
@@ -176,7 +175,7 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
     setInProgress(false);
   };
 
-  const instgramProcess = useCallback((delta: Delta) => {
+  const instgramProcess = (delta: Delta) => {
     if (delta.ops) {
       delta.ops.forEach(op => {
         if (op.insert) {
@@ -186,17 +185,15 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
         }
       });
     }
-  }, []);
+  };
 
   const handleChange = (editor: any) => {
     if (onChange) {
-      const contentDelta = editor.getContents();
+      const contents = editor.getContents();
 
-      instgramProcess(contentDelta);
+      instgramProcess(contents);
 
-      setTimeout(() => {
-        onChange(editor.getHTML());
-      }, 1000);
+      onChange(editor.getHTML());
     }
   };
 
@@ -212,17 +209,14 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      if (quillRef.current && defaultValue) {
-        const editor = quillRef.current.getEditor();
+    if (quillRef.current && initialValue) {
+      const editor = quillRef.current.getEditor();
 
-        editor.focus();
-        editor.pasteHTML(defaultValue);
-        editor.blur();
-        window.scrollTo(0, 0);
-      }
-    }, 0);
-  }, [defaultValue]);
+      editor.clipboard.dangerouslyPasteHTML(initialValue);
+
+      window.scrollTo(0, 0);
+    }
+  }, [initialValue]);
 
   return (
     <div className={`text-editor ${name}`}>

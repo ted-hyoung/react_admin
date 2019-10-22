@@ -48,7 +48,7 @@ function CelebReviewDetail() {
       <TextEditor
         name="celeb-editor"
         onChange={value => setValue(value)}
-        defaultValue={celebReview.contents || undefined}
+        initialValue={celebReview.contents || undefined}
       />
       <Button onClick={handleConfirm} style={{ marginTop: 10 }}>
         확인

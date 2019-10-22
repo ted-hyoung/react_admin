@@ -15,7 +15,7 @@ export const endDateFormat = 'YYYY-MM-DDT23:59:59';
 
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 
-export const calcStringByte = (str: string) => {
+export const getBytes = (str: string) => {
   if (str) {
     return String(str).length;
   } else {
@@ -207,6 +207,14 @@ export function createExcel(data: (string[])[], options?: CreateExcelOptions) {
   });
 }
 
+export async function readExcel(buffer: ArrayBuffer) {
+  const workbook = new ExcelJS.Workbook();
+
+  await workbook.xlsx.load(buffer);
+
+  return workbook;
+}
+
 export function decodeToken(token: string) {
   return decode<Token>(token);
 }
@@ -221,4 +229,8 @@ export function getAdminProfile() {
   } else {
     return undefined;
   }
+}
+
+export function setPagingIndex(totalElements: number, page: number, size: number, index: number) {
+  return totalElements - (index + page * size);
 }

@@ -334,7 +334,7 @@ function ProductTable(props: Props) {
 
   const [product, setProduct] = useState(initProduct);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
-  const [productModalVisible, setProductModalVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
 
   const rowSelection: TableRowSelection<ProductList> = {
@@ -347,7 +347,7 @@ function ProductTable(props: Props) {
   const handleRowProduct = (record: ProductList) => {
     return {
       onClick: () => {
-        setProductModalVisible(true);
+        setVisible(true);
         if (eventStatus === EventStatus[EventStatus.READY]) {
           setProduct({
             ...product,
@@ -393,9 +393,7 @@ function ProductTable(props: Props) {
   };
 
   const handleProductModalOpen = () => {
-    setProductModalVisible(true);
     setProduct({
-      ...product,
       productId: 0,
       productName: '',
       normalSalesPrice: 0,
@@ -406,6 +404,7 @@ function ProductTable(props: Props) {
       soldOut: false,
       freebie: '',
       enableOption: true,
+      images: [],
       options: [
         {
           optionId: 0,
@@ -417,6 +416,11 @@ function ProductTable(props: Props) {
         },
       ],
     });
+    setVisible(true);
+  };
+
+  const handleProductModalClose = () => {
+    setVisible(false);
   };
 
   const handleProductDelete = () => {
@@ -514,13 +518,15 @@ function ProductTable(props: Props) {
           </>
         )}
       </div>
-      <ProductModal
-        product={product}
-        setProduct={setProduct}
-        event={event}
-        productModalVisible={productModalVisible}
-        setProductModalVisible={setProductModalVisible}
-      />
+      {visible && (
+        <ProductModal
+          product={product}
+          setProduct={setProduct}
+          event={event}
+          visible={visible}
+          onCancel={handleProductModalClose}
+        />
+      )}
     </div>
   );
 }
