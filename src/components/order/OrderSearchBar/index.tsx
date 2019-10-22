@@ -102,12 +102,12 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
               validateDate(values, 'date');
               return;
             }
-            if (key === 'paymentStatuses') {
-              if (paymentCheckAll) {
-                delete values[key];
-                return;
-              }
-            }
+            // if (key === 'paymentStatuses') {
+            //   if (paymentCheckAll) {
+            //     delete values[key];
+            //     return;
+            //   }
+            // }
             if (key === 'shippingStatuses') {
               if (shippingCheckAll) {
                 delete values[key];

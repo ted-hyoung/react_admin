@@ -395,7 +395,7 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                 )
               }
               <Descriptions.Item span={24} label="환불사유">
-                <span>-</span>
+                <span> - </span>
               </Descriptions.Item>
             </Descriptions>
           ) : (
