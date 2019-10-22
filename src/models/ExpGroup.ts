@@ -18,6 +18,10 @@ export interface CreateExperienceGroup {
   experienceGroupNoticeImages: CreateFileObject[];
 }
 
+export interface CreateExperienceGroupEvent {
+  experienceGroupIds: number[];
+}
+
 export interface UpdateExperienceGroup {
   experienceGroupName: string;
   images: UpdateFileObject[];
@@ -64,4 +68,25 @@ export interface ResponseExperienceGroup {
 
 export interface UpdateExperienceGroupConsumerUpload {
   consumers: CreateConsumerForExperienceGroupConsumerUpload[];
+}
+
+export interface SearchExperienceGroupForEvent {
+  experienceGroupName: string;
+  recruitmentStarted: string;
+  recruitmentEnded: string;
+  experienceGroupStatuses: ExperienceGroupStatus[];
+}
+
+export interface ResponseSearchExperienceGroupForEventNoConsumer {
+  experienceGroupId: number;
+  experienceGroupName: string;
+  recruitmentStarted: string;
+  recruitmentEnded: string;
+  recruitmentPersonnelCount: number;
+  experienceGroupConsumerCount: number;
+  experienceGroupStatus: ExperienceGroupStatus;
+}
+
+export interface DeleteExperienceGroupEvent {
+  experienceGroupIds: number[];
 }

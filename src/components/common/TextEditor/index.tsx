@@ -139,12 +139,12 @@ interface ReactQuillProps {
   name?: string;
   value?: string;
   onChange?: (value: string) => void;
-  defaultValue?: string;
+  initialValue?: string;
   instagramTool?: boolean;
 }
 
 const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQuillProps, ref) => {
-  const { name = 'editor', value, defaultValue, onChange, instagramTool = true } = props;
+  const { name = 'editor', value, initialValue, onChange, instagramTool = true } = props;
 
   const quillRef = useRef<ReactQuill>(null);
 
@@ -209,14 +209,14 @@ const TextEditor = React.forwardRef<ReactQuill, ReactQuillProps>((props: ReactQu
   };
 
   useEffect(() => {
-    if (quillRef.current && defaultValue) {
+    if (quillRef.current && initialValue) {
       const editor = quillRef.current.getEditor();
 
-      editor.clipboard.dangerouslyPasteHTML(defaultValue);
+      editor.clipboard.dangerouslyPasteHTML(initialValue);
 
       window.scrollTo(0, 0);
     }
-  }, [defaultValue]);
+  }, [initialValue]);
 
   return (
     <div className={`text-editor ${name}`}>

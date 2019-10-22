@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 
 // modules
 import moment from 'moment';
-import { Form, Descriptions, Input, Col, Row, DatePicker, TimePicker, Typography, Button } from 'antd';
+import { Form, Descriptions, Input, Col, Row, DatePicker, TimePicker, Typography, Button, message } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 
 // components
@@ -19,23 +19,25 @@ import { LOCAL_DATE_TIME_FORMAT, TIME_FORMAT } from 'lib/constants';
 // defines
 const { Paragraph } = Typography;
 
-interface ExpFormProps extends FormComponentProps {
+interface ExpGroupFormProps extends FormComponentProps {
   initailValues?: ResponseExperienceGroup;
   onSubmit?: (values: CreateExperienceGroup) => void;
 }
 
-function ExpForm(props: ExpFormProps) {
+function ExpGroupForm(props: ExpGroupFormProps) {
   const { form, initailValues, onSubmit } = props;
   const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll } = form;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    validateFieldsAndScroll((errors, values) => {
+    validateFieldsAndScroll({ first: true, force: true }, (errors, values) => {
       if (!errors) {
         const data = {
           ...values,
-          recruitmentStarted: moment().format(LOCAL_DATE_TIME_FORMAT),
+          recruitmentStarted: initailValues
+            ? initailValues.recruitmentStarted
+            : moment().format(LOCAL_DATE_TIME_FORMAT),
           recruitmentEnded: moment(values.recruitmentEnded).format(LOCAL_DATE_TIME_FORMAT),
           prizeDate: moment(values.prizeDate).format(LOCAL_DATE_TIME_FORMAT),
           shippingStarted: moment(values.shippingStarted).format(LOCAL_DATE_TIME_FORMAT),
@@ -45,6 +47,8 @@ function ExpForm(props: ExpFormProps) {
         if (onSubmit) {
           onSubmit(data);
         }
+      } else {
+        Object.keys(errors).forEach(key => message.error(errors[key].errors[0].message));
       }
     });
   };
@@ -71,6 +75,12 @@ function ExpForm(props: ExpFormProps) {
             <Col span={8}>
               {getFieldDecorator('experienceGroupName', {
                 initialValue: initailValues ? initailValues.experienceGroupName : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '체험단 후기명을 입력해주세요.',
+                  },
+                ],
               })(<Input maxLength={15} placeholder="텍스트를 입력해주세요." />)}
             </Col>
             <Col>{getBytes(getFieldValue('experienceGroupName'))}/15</Col>
@@ -81,6 +91,12 @@ function ExpForm(props: ExpFormProps) {
             <Col>
               {getFieldDecorator(`images`, {
                 initialValue: initailValues ? initailValues.images : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '썸네일을 업로드 해주세요.',
+                  },
+                ],
               })(<ImageUpload options={{ fileListLimit: 1, accept: 'image/png, image/jpeg' }} disabled={false} />)}
             </Col>
             <Col style={{ marginLeft: 20 }}>
@@ -107,6 +123,12 @@ function ExpForm(props: ExpFormProps) {
             <Col span={8}>
               {getFieldDecorator('title', {
                 initialValue: initailValues ? initailValues.title : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '제목을 입력해주세요.',
+                  },
+                ],
               })(<Input placeholder="텍스트를 입력해주세요." />)}
             </Col>
           </FlexRow>
@@ -117,6 +139,12 @@ function ExpForm(props: ExpFormProps) {
             <Col span={8}>
               {getFieldDecorator('recruitmentPersonnelCount', {
                 initialValue: initailValues ? initailValues.recruitmentPersonnelCount : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '모집 인원을 입력해주세요.',
+                  },
+                ],
               })(<Input placeholder="숫자 입력" />)}
             </Col>
           </FlexRow>
@@ -124,18 +152,23 @@ function ExpForm(props: ExpFormProps) {
             <Col span={4}>
               <span>모집 기간</span>
             </Col>
+            <Col>{getFieldDecorator('recruitmentEnded')(<DatePicker placeholder="종료일" />)}</Col>
             <Col>
               {getFieldDecorator('recruitmentEnded', {
-                // initialValue: initailValues ? initailValues.recruitmentEnded : undefined,
-              })(<DatePicker placeholder="종료일" />)}
-            </Col>
-            <Col>
-              {getFieldDecorator('recruitmentEnded', {
-                // initialValue: initailValues ? initailValues.recruitmentEnded : undefined,
                 rules: [
                   {
                     required: true,
-                    message: '종료일을 입력해주세요.',
+                    message: '모집 기간 종료일을 입력해주세요.',
+                  },
+                  {
+                    message: '모집 기간 종료일은 현재 시간 이후여야 합니다.',
+                    validator: (rule, value, callback) => {
+                      if (value && moment(value).isBefore(moment())) {
+                        callback(rule.message);
+                      }
+
+                      callback();
+                    },
                   },
                 ],
               })(
@@ -155,6 +188,12 @@ function ExpForm(props: ExpFormProps) {
             <Col span={8}>
               {getFieldDecorator('benefit', {
                 initialValue: initailValues ? initailValues.benefit : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '제공 혜택을 입력해주세요.',
+                  },
+                ],
               })(<Input placeholder="텍스트를 입력해주세요." />)}
             </Col>
           </FlexRow>
@@ -168,7 +207,7 @@ function ExpForm(props: ExpFormProps) {
                 rules: [
                   {
                     required: true,
-                    message: '종료일을 입력해주세요.',
+                    message: '당첨 결과일을 입력해주세요.',
                   },
                 ],
               })(
@@ -191,7 +230,7 @@ function ExpForm(props: ExpFormProps) {
                 rules: [
                   {
                     required: true,
-                    message: '종료일을 입력해주세요.',
+                    message: '배송 시작일을 입력해주세요.',
                   },
                 ],
               })(
@@ -214,7 +253,7 @@ function ExpForm(props: ExpFormProps) {
                 rules: [
                   {
                     required: true,
-                    message: '종료일을 입력해주세요.',
+                    message: '리뷰 마감일을 입력해주세요.',
                   },
                 ],
               })(
@@ -231,7 +270,7 @@ function ExpForm(props: ExpFormProps) {
         <Descriptions.Item label="* 체험단 후기 제품 상세" span={24}>
           {getFieldDecorator('detail', {
             // initialValue: initailValues ? initailValues.detail : undefined,
-          })(<TextEditor defaultValue={initailValues ? initailValues.detail : undefined} name="exp-form-editor" />)}
+          })(<TextEditor initialValue={initailValues ? initailValues.detail : undefined} name="exp-form-editor" />)}
         </Descriptions.Item>
         <Descriptions.Item label="* 체험단 후기 안내" span={24}>
           {getFieldDecorator('experienceGroupNoticeImages', {
@@ -248,4 +287,4 @@ function ExpForm(props: ExpFormProps) {
   );
 }
 
-export default Form.create<ExpFormProps>()(ExpForm);
+export default Form.create<ExpGroupFormProps>()(ExpGroupForm);

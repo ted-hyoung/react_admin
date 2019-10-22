@@ -23,12 +23,14 @@ const defaultOptions = {
   fileListLimit: 5,
   fileSize: 5,
   accept: 'image/*',
+  showRemoveIcon: true,
 };
 
 interface ImageUploadOptions {
   fileListLimit?: number;
   fileSize?: number;
   accept?: string;
+  showRemoveIcon?: boolean;
 }
 
 interface Props {
@@ -40,7 +42,7 @@ interface Props {
 
 const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
   const { value = [], onChange, options = defaultOptions, disabled = false } = props;
-  const { fileListLimit = 5, fileSize = 5, accept = 'image/*' } = options;
+  const { fileListLimit = 5, fileSize = 5, accept = 'image/*', showRemoveIcon = true } = options;
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [inProgress, setInProgress] = useState(false);
@@ -116,9 +118,9 @@ const ImageUpload = React.forwardRef<Upload, Props>((props, ref) => {
         ref={ref}
         multiple
         listType="picture-card"
-        accept="image/*"
+        accept={accept}
         fileList={fileList}
-        showUploadList={{ showPreviewIcon: false }}
+        showUploadList={{ showPreviewIcon: false, showRemoveIcon }}
         beforeUpload={() => false}
         onChange={handleChange}
         onRemove={handleRemove}

@@ -1,4 +1,4 @@
-import { FileObject } from './FileObject';
+import { FileObject, UpdateFileObject } from './FileObject';
 import { ResponseExperienceGroupConsumer } from './Consumer';
 import { PrizeStatus } from 'enums';
 
@@ -44,4 +44,10 @@ export interface UpdateExperienceGroupConsumersPrize {
 
 export interface UpdateExperienceGroupConsumerExpose {
   expose: boolean;
+}
+
+export interface UpdateExperienceGroupConsumer {
+  contents: string;
+  starRate: number;
+  images: UpdateFileObject[]
 }

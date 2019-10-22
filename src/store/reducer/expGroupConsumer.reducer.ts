@@ -8,18 +8,20 @@ import {
   GET_EXP_GROUP_CONSUMERS_BY_ID_SUCCESS,
   UPDATE_EXP_GROUP_CONSUMERS_PRIZE_SUCCESS,
   GET_EXP_GROUP_CONSUMER_BY_ID_SUCCESS,
+  GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_SUCCESS,
 } from '../action/expGroupConsumer.action';
 
 // models
 import { ResponseSearchExperienceGroupConsumers, PageWrapper, ResponseExperienceGroupConsumers } from 'models';
-import { PrizeStatus } from 'enums';
 
 export interface ExpGroupConsumerState {
-  expGroupConsumers: PageWrapper<ResponseSearchExperienceGroupConsumers>;
   expGroupConsumer: ResponseExperienceGroupConsumers | null;
+  expGroupConsumers: PageWrapper<ResponseSearchExperienceGroupConsumers>;
+  expGroupConsumersExcel: ResponseSearchExperienceGroupConsumers[];
 }
 
 const initialState: ExpGroupConsumerState = {
+  expGroupConsumer: null,
   expGroupConsumers: {
     content: [],
     first: false,
@@ -29,10 +31,14 @@ const initialState: ExpGroupConsumerState = {
     page: 0,
     size: 0,
   },
-  expGroupConsumer: null,
+  expGroupConsumersExcel: [],
 };
 
 export default createReducer<ExpGroupConsumerState, ExpGroupConsumerAction>(initialState, {
+  [GET_EXP_GROUP_CONSUMER_BY_ID_SUCCESS]: (state, action) =>
+    produce(state, draft => {
+      draft.expGroupConsumer = action.payload;
+    }),
   [UPDATE_EXP_GROUP_CONSUMERS_PRIZE_SUCCESS]: (state, action) =>
     produce(state, draft => {
       const { experienceGroupConsumerIds, prizeStatus } = action.payload;
@@ -49,8 +55,8 @@ export default createReducer<ExpGroupConsumerState, ExpGroupConsumerAction>(init
     produce(state, draft => {
       draft.expGroupConsumers = action.payload;
     }),
-  [GET_EXP_GROUP_CONSUMER_BY_ID_SUCCESS]: (state, action) =>
+  [GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_SUCCESS]: (state, action) =>
     produce(state, draft => {
-      draft.expGroupConsumer = action.payload;
+      draft.expGroupConsumersExcel = action.payload;
     }),
 });

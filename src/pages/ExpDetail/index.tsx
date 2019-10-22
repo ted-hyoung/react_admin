@@ -7,7 +7,7 @@ import {
   createExpGroupAsync,
   getExpGroupsByIdAsync,
   updateExpGroupsByIdAsync,
-  clearExpGroupDetail,
+  clearStoreExpGroup,
   updateExpGroupConsumersAsync,
 } from 'store/action/expGroup.action';
 import {
@@ -15,17 +15,20 @@ import {
   updateExpGroupConsumersPrizeAsync,
   updateExpGroupConsumerExposeByIdAsync,
   getExpGroupConsumerByIdAsync,
+  updateExpGroupConsumerByIdAsync,
+  getExpGroupConsumersExcelByIdAsync,
 } from 'store/action/expGroupConsumer.action';
 
 // modules
 import moment from 'moment';
-import { Tabs, Row, Col, Button, Select } from 'antd';
+import { Tabs, Row, Col, Button, Select, Modal, message } from 'antd';
 
 // components
-import { ExpForm, ExpSearchForm, PaginationTable } from 'components';
+import { ExpGroupForm, ExpConsumerSearchForm, PaginationTable, ExpGroupConsumerForm } from 'components';
+import { ExpGroupConsumerFormValues } from 'components/form/ExpGroupConsumerForm';
 
 // lib
-import { readExcel } from 'lib/utils';
+import { readExcel, createExcel, setPagingIndex } from 'lib/utils';
 import { CLIENT_DATE_TIME_FORMAT } from 'lib/constants';
 
 // models, enums
@@ -41,14 +44,21 @@ import { PrizeStatus } from 'enums';
 function ExpDetail() {
   const { id } = useParams();
 
+  const [visible, setVisible] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[] | number[]>([]);
+  const [searchExpGroupConsumerParams, setSearchExpGroupConsumerParams] = useState<SearchExperienceGroupConsumer>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { expGroup, expGroupConsumers } = useSelector((state: StoreState) => ({
-    expGroup: state.expGroupState.expGroup,
-    expGroupConsumers: state.expGroupConsumerState.expGroupConsumers,
-  }));
+  const { expGroup, expGroupConsumers, expGroupConsumer, expGroupConsumersExcel } = useSelector(
+    (state: StoreState) => ({
+      expGroup: state.expGroupState.expGroup,
+      expGroupConsumer: state.expGroupConsumerState.expGroupConsumer,
+      expGroupConsumers: state.expGroupConsumerState.expGroupConsumers,
+      expGroupConsumersExcel: state.expGroupConsumerState.expGroupConsumersExcel,
+    }),
+  );
+
   const dispatch = useDispatch();
 
   const getExpGroupsById = (id: number) => {
@@ -123,11 +133,41 @@ function ExpDetail() {
 
   const handleExpSearch = (values: SearchExperienceGroupConsumer) => {
     getExpGroupConsumersById(Number(id), 0, 20, values);
+
+    setSearchExpGroupConsumerParams(values);
+  };
+
+  const handleViewReview = (id: number) => {
+    dispatch(getExpGroupConsumerByIdAsync.request({ id }));
+
+    setVisible(true);
+  };
+
+  const handleUpdateExpGroupConsumer = (values: ExpGroupConsumerFormValues) => {
+    const { contents, starRate, images } = values;
+
+    if (!expGroupConsumer) {
+      message.error('서버 문제로 인해 수정에 실패하였습니다.');
+
+      return;
+    }
+
+    const data = {
+      contents,
+      starRate,
+      images,
+    };
+
+    dispatch(updateExpGroupConsumerByIdAsync.request({ id: expGroupConsumer.experienceGroupConsumerId, data }));
+  };
+
+  const handleDownloadExcel = () => {
+    dispatch(getExpGroupConsumersExcelByIdAsync.request({ id: Number(id), params: searchExpGroupConsumerParams }));
   };
 
   const handlePaginationChange = useCallback(
     (currentPage: number) => {
-      getExpGroupConsumersById(currentPage - 1);
+      getExpGroupConsumersById(Number(id), currentPage - 1);
     },
     [getExpGroupConsumersById],
   );
@@ -149,7 +189,7 @@ function ExpDetail() {
 
   useEffect(() => {
     return () => {
-      dispatch(clearExpGroupDetail());
+      dispatch(clearStoreExpGroup());
     };
   }, []);
 
@@ -160,16 +200,42 @@ function ExpDetail() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (expGroupConsumersExcel.length > 0) {
+      const data = expGroupConsumersExcel.reduce(
+        (ac, item, index) => {
+          const no = (index + 1).toString();
+          const expose = item.expose ? '공개' : '비공개';
+
+          ac.push([
+            no,
+            moment(item.created).format(CLIENT_DATE_TIME_FORMAT),
+            item.consumer.username,
+            item.consumer.phone,
+            PrizeStatus[item.prizeStatus],
+            item.experienceGroupReviewCreated ? 'O' : 'X',
+            expose,
+          ]);
+
+          return ac;
+        },
+        [['No', '참여일', '이름', '연락처', '당첨 상태', '후기', '공개/비공개']],
+      );
+
+      createExcel(data);
+    }
+  }, [expGroupConsumersExcel]);
+
   return (
     <div className="exp-detail">
       <Tabs defaultActiveKey="EVENT">
         <Tabs.TabPane tab="이벤트 정보" key="EVENT">
-          <ExpForm initailValues={expGroup ? expGroup : undefined} onSubmit={handleSubmit} />
+          <ExpGroupForm initailValues={expGroup ? expGroup : undefined} onSubmit={handleSubmit} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="참여자 정보" key="PRODUCT" disabled={!id}>
-          <ExpSearchForm onSubmit={handleExpSearch} />
+          <ExpConsumerSearchForm onSubmit={handleExpSearch} onResetAfter={() => getExpGroupConsumersById(Number(id))} />
           <div style={{ marginTop: 50 }}>
-            <span>검색결과 총 00건</span>
+            <span>검색결과 총 {expGroupConsumers.totalElements}건</span>
             <Row style={{ marginBottom: 10 }} type="flex" justify="end" align="middle" gutter={10}>
               <Col>
                 <Button onClick={() => handleChangePrizeStatus(PrizeStatus[PrizeStatus.COMPLETE], selectedRowKeys)}>
@@ -187,7 +253,7 @@ function ExpDetail() {
                 </Button>
               </Col>
               <Col>
-                <Button type="primary" icon="download">
+                <Button type="primary" icon="download" onClick={handleDownloadExcel}>
                   엑셀 다운로드
                 </Button>
               </Col>
@@ -199,7 +265,12 @@ function ExpDetail() {
                 expGroupConsumers
                   ? expGroupConsumers.content.map((item, index) => ({
                       key: item.experienceGroupConsumerId,
-                      no: index + 1,
+                      no: setPagingIndex(
+                        expGroupConsumers.totalElements,
+                        expGroupConsumers.page,
+                        expGroupConsumers.size,
+                        index,
+                      ),
                       created: moment(item.created).format(CLIENT_DATE_TIME_FORMAT),
                       username: item.consumer.username,
                       phone: item.consumer.phone,
@@ -251,10 +322,7 @@ function ExpDetail() {
                   key: 'experienceGroupReviewCreated',
                   render: (text, record) =>
                     text ? (
-                      <Button
-                        type="primary"
-                        onClick={() => dispatch(getExpGroupConsumerByIdAsync.request({ id: record.key }))}
-                      >
+                      <Button type="primary" onClick={() => handleViewReview(record.key)}>
                         보기
                       </Button>
                     ) : (
@@ -281,6 +349,26 @@ function ExpDetail() {
           </div>
         </Tabs.TabPane>
       </Tabs>
+      <Modal
+        title="후기 상세"
+        width={800}
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={false}
+        destroyOnClose
+      >
+        {expGroupConsumer && (
+          <ExpGroupConsumerForm
+            username={expGroupConsumer.consumer.username}
+            phone={expGroupConsumer.consumer.phone}
+            created={expGroupConsumer.experienceGroupReviewCreated}
+            starRate={expGroupConsumer.starRate}
+            contents={expGroupConsumer.contents}
+            images={expGroupConsumer.images}
+            onSubmit={handleUpdateExpGroupConsumer}
+          />
+        )}
+      </Modal>
     </div>
   );
 }

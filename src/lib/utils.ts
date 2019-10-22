@@ -210,26 +210,9 @@ export function createExcel(data: (string[])[], options?: CreateExcelOptions) {
 export async function readExcel(buffer: ArrayBuffer) {
   const workbook = new ExcelJS.Workbook();
 
-  // let result;
-
   await workbook.xlsx.load(buffer);
 
   return workbook;
-
-  // const worksheet = workbook.getWorksheet(1);
-
-  // return worksheet.getSheetValues();
-
-  // workbook.xlsx.load(buffer).then(() => {
-  //   // use workbook
-  //   const worksheet = workbook.getWorksheet(1);
-
-  //   result = worksheet.getSheetValues()
-
-  //   console.log(worksheet.getSheetValues());
-  // });
-
-  // return result;
 }
 
 export function decodeToken(token: string) {
@@ -246,4 +229,8 @@ export function getAdminProfile() {
   } else {
     return undefined;
   }
+}
+
+export function setPagingIndex(totalElements: number, page: number, size: number, index: number) {
+  return totalElements - (index + page * size);
 }

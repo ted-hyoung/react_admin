@@ -449,7 +449,7 @@ function EventForm(props: Props) {
             <TextEditor
               name="event-editor"
               onChange={value => setDetail(value)}
-              defaultValue={event.detail || undefined}
+              initialValue={event.detail || undefined}
               instagramTool={false}
             />
           </Descriptions.Item>

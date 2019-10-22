@@ -15,6 +15,8 @@ import {
   updateExpGroupConsumersPrizeAsync,
   updateExpGroupConsumerExposeByIdAsync,
   getExpGroupConsumerByIdAsync,
+  updateExpGroupConsumerByIdAsync,
+  getExpGroupConsumersExcelByIdAsync,
 } from 'store/action/expGroupConsumer.action';
 
 // models
@@ -22,7 +24,10 @@ import {
   SearchExperienceGroupConsumer,
   UpdateExperienceGroupConsumersPrize,
   UpdateExperienceGroupConsumerExpose,
+  UpdateExperienceGroupConsumer,
+  ResponseSearchExperienceGroupConsumers,
 } from 'models';
+import { createExcel } from 'lib/utils';
 
 function* getExpGroupConsumers(
   action: PayloadAction<string, { id: number; page: number; size: number; params: SearchExperienceGroupConsumer }>,
@@ -78,9 +83,46 @@ function* getExpGroupConsumerById(action: PayloadAction<string, { id: number }>)
   }
 }
 
-export default function* expGroupSaga() {
+function* updateExpGroupConsumerById(
+  action: PayloadAction<string, { id: number; data: UpdateExperienceGroupConsumer }>,
+) {
+  const { id, data } = action.payload;
+
+  try {
+    yield call(() => Api.put(`/experience-groups/consumers/${id}`, data));
+
+    yield put(updateExpGroupConsumerByIdAsync.success());
+    yield put(getExpGroupConsumerByIdAsync.request({ id }));
+    yield message.success('체험단 리뷰 수정이 완료되었습니다.');
+  } catch (error) {
+    yield put(updateExpGroupConsumerByIdAsync.failure(error));
+  }
+}
+
+function* getExpGroupConsumersExcelById(
+  action: PayloadAction<string, { id: number; params: SearchExperienceGroupConsumer }>,
+) {
+  const { id, params } = action.payload;
+
+  try {
+    const res = yield call(() =>
+      Api.get(`/experience-groups/${id}/consumers/excel`, {
+        params,
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
+      }),
+    );
+
+    yield put(getExpGroupConsumersExcelByIdAsync.success(res.data));
+  } catch (error) {
+    yield put(getExpGroupConsumersExcelByIdAsync.failure(error));
+  }
+}
+
+export default function* expGroupConsumerSaga() {
   yield takeEvery(Actions.GET_EXP_GROUP_CONSUMERS_BY_ID_REQUEST, getExpGroupConsumers);
   yield takeLatest(Actions.UPDATE_EXP_GROUP_CONSUMERS_PRIZE_REQUEST, updateExpGroupConsumersPrize);
   yield takeLatest(Actions.UPDATE_EXP_GROUP_CONSUMER_EXPOSE_BY_ID_REQUEST, updateExpGroupConsumerExposeById);
   yield takeEvery(Actions.GET_EXP_GROUP_CONSUMER_BY_ID_REQUEST, getExpGroupConsumerById);
+  yield takeLatest(Actions.UPDATE_EXP_GROUP_CONSUMER_BY_ID_REQUEST, updateExpGroupConsumerById);
+  yield takeEvery(Actions.GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_REQUEST, getExpGroupConsumersExcelById);
 }

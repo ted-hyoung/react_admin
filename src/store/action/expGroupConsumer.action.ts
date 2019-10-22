@@ -10,6 +10,7 @@ import {
   UpdateExperienceGroupConsumersPrize,
   UpdateExperienceGroupConsumerExpose,
   ResponseExperienceGroupConsumers,
+  UpdateExperienceGroupConsumer,
 } from 'models/ExpGroupConsumer';
 
 // action types
@@ -28,9 +29,17 @@ export const UPDATE_EXP_GROUP_CONSUMER_EXPOSE_BY_ID_SUCCESS =
 export const UPDATE_EXP_GROUP_CONSUMER_EXPOSE_BY_ID_FAILURE =
   'expConsumer/UPDATE_EXP_GROUP_CONSUMER_EXPOSE_BY_ID_FAILURE';
 
+export const UPDATE_EXP_GROUP_CONSUMER_BY_ID_REQUEST = 'expConsumer/UPDATE_EXP_GROUP_CONSUMER_BY_ID_REQUEST';
+export const UPDATE_EXP_GROUP_CONSUMER_BY_ID_SUCCESS = 'expConsumer/UPDATE_EXP_GROUP_CONSUMER_BY_ID_SUCCESS';
+export const UPDATE_EXP_GROUP_CONSUMER_BY_ID_FAILURE = 'expConsumer/UPDATE_EXP_GROUP_CONSUMER_BY_ID_FAILURE';
+
 export const GET_EXP_GROUP_CONSUMER_BY_ID_REQUEST = 'expConsumer/GET_EXP_GROUP_CONSUMER_REQUEST';
 export const GET_EXP_GROUP_CONSUMER_BY_ID_SUCCESS = 'expConsumer/GET_EXP_GROUP_CONSUMER_SUCCESS';
 export const GET_EXP_GROUP_CONSUMER_BY_ID_FAILURE = 'expConsumer/GET_EXP_GROUP_CONSUMER_FAILURE';
+
+export const GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_REQUEST = 'expConsumer/GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_REQUEST';
+export const GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_SUCCESS = 'expConsumer/GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_SUCCESS';
+export const GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_FAILURE = 'expConsumer/GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_FAILURE';
 
 // 체험단 그룹 참여자 조회
 export const getExpGroupConsumersByIdAsync = createAsyncAction(
@@ -64,12 +73,27 @@ export const getExpGroupConsumerByIdAsync = createAsyncAction(
   GET_EXP_GROUP_CONSUMER_BY_ID_FAILURE,
 )<{ id: number }, ResponseExperienceGroupConsumers, AxiosError>();
 
+// 후기 이벤트 참여자 상세 수정
+export const updateExpGroupConsumerByIdAsync = createAsyncAction(
+  UPDATE_EXP_GROUP_CONSUMER_BY_ID_REQUEST,
+  UPDATE_EXP_GROUP_CONSUMER_BY_ID_SUCCESS,
+  UPDATE_EXP_GROUP_CONSUMER_BY_ID_FAILURE,
+)<{ id: number; data: UpdateExperienceGroupConsumer }, void, AxiosError>();
+
+export const getExpGroupConsumersExcelByIdAsync = createAsyncAction(
+  GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_REQUEST,
+  GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_SUCCESS,
+  GET_EXP_GROUP_CONSUMERS_EXCEL_BY_ID_FAILURE,
+)<{ id: number; params?: SearchExperienceGroupConsumer }, ResponseSearchExperienceGroupConsumers[], AxiosError>();
+
 // actions
 const actions = {
   getExpGroupConsumersByIdAsync,
   updateExpGroupConsumersPrizeAsync,
   updateExpGroupConsumerExposeByIdAsync,
   getExpGroupConsumerByIdAsync,
+  updateExpGroupConsumerByIdAsync,
+  getExpGroupConsumersExcelByIdAsync,
 };
 
 export type ExpGroupConsumerAction = ActionType<typeof actions>;

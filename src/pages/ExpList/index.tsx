@@ -6,18 +6,17 @@ import { getExpGroupsAsync } from 'store/action/expGroup.action';
 import { StoreState } from 'store';
 
 // modules
-import { Table, Button } from 'antd';
+import { Button } from 'antd';
 import moment from 'moment';
-import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
-import { ResponseExperienceGroups } from 'models';
 import { PaginationTable } from 'components';
 import { ExperienceGroupStatus } from 'enums/ExperienceGroupStatus';
+import { setPagingIndex } from 'lib/utils';
 
 const columns = [
   {
     title: 'No',
-    dataIndex: 'key',
-    key: 'key',
+    dataIndex: 'index',
+    key: 'index',
   },
   {
     title: '체험단 후기명',
@@ -48,7 +47,7 @@ const columns = [
 
 interface DataSource {
   key: number;
-  no: number;
+  index: number;
   experienceGroupName: string;
   recruitmentPeriod: string;
   recruitmentPersonnelCount: number;
@@ -61,6 +60,8 @@ function ExpList() {
 
   const { expGroups } = useSelector((state: StoreState) => state.expGroupState);
   const dispatch = useDispatch();
+
+  const { page, size, totalElements } = expGroups;
 
   const getExpList = (page = 0, size = 20) => {
     dispatch(getExpGroupsAsync.request({ page, size }));
@@ -79,8 +80,8 @@ function ExpList() {
 
   const pagination = useMemo(() => {
     return {
-      total: expGroups.totalElements,
-      pageSize: expGroups.size,
+      total: totalElements,
+      pageSize: size,
       onChange: handlePaginationChange,
     };
   }, [expGroups]);
@@ -97,7 +98,7 @@ function ExpList() {
         dataSource={expGroups.content.map((item, index) => {
           return {
             key: item.experienceGroupId,
-            no: index + 1,
+            index: setPagingIndex(totalElements, page, size, index),
             experienceGroupName: item.experienceGroupName,
             recruitmentPeriod: `${moment(item.recruitmentStarted).format('YYYY-MM-DD')} ~ ${moment(
               item.recruitmentEnded,

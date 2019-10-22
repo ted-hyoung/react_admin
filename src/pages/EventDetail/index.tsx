@@ -1,5 +1,5 @@
 // base
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
@@ -22,6 +22,7 @@ import {
   CelebReviewDetail,
   ProductNotice,
   PurchaseInformation,
+  EventExpGroup,
 } from 'components';
 
 import './index.less';
@@ -32,6 +33,7 @@ interface Params {
 
 function EventDetail(props: RouteComponentProps<Params>) {
   const { match } = props;
+
   const eventId = Number(match.params.id);
 
   const { event } = useSelector((state: StoreState) => state.event);
@@ -84,53 +86,61 @@ function EventDetail(props: RouteComponentProps<Params>) {
     getBrands();
   }, [getBrands]);
 
+  const isCreatedEvent = !event.eventId;
+
   return (
     <div className="event-detail">
       <Tabs defaultActiveKey="EVENT">
         <Tabs.TabPane tab="공구 정보" key="EVENT">
           <EventForm event={event} brands={brand} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={!event.eventId}>
+        <Tabs.TabPane tab="제품 정보" key="PRODUCT" disabled={isCreatedEvent}>
           <ProductDetail event={event} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="상품 정보" key="PRODUCT_NOTICE" disabled={!event.eventId}>
+        <Tabs.TabPane tab="상품 정보" key="PRODUCT_NOTICE" disabled={isCreatedEvent}>
           <ProductNotice event={event} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="구매 안내" key="PURCHASE_INFORMATION" disabled={!event.eventId}>
+        <Tabs.TabPane tab="구매 안내" key="PURCHASE_INFORMATION" disabled={isCreatedEvent}>
           <PurchaseInformation event={event} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={!event.eventId}>
+        <Tabs.TabPane tab="셀럽 리뷰" key="CELUB" disabled={isCreatedEvent}>
           <CelebReviewDetail />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="긴급 공지" key="NOTICE" disabled={!event.eventId}>
+        <Tabs.TabPane tab="긴급 공지" key="NOTICE" disabled={isCreatedEvent}>
           <EventNotice eventNotices={event.eventNotices} />
         </Tabs.TabPane>
+        <Tabs.TabPane tab="후기 불러오기" key="EXP_GROUP" disabled={isCreatedEvent}>
+          <EventExpGroup />
+        </Tabs.TabPane>
       </Tabs>
-      {event.eventId !== 0 && (
-        <Button className="btn-event-template" type="primary" onClick={handleOpenTemplate}>
-          미리보기
-        </Button>
-      )}
+
       <Row type="flex" align="middle" gutter={10} style={{ position: 'absolute', top: 6, right: 0 }}>
-        <Col>
-          {event.eventId !== 0 && event.eventStatus === EventStatus[EventStatus.READY] && (
+        {event.eventId !== 0 && event.eventStatus === EventStatus[EventStatus.READY] && (
+          <Col>
             <Popconfirm
               title="해당 공구를 삭제하시겠습니까?"
               onConfirm={handleDeleteEvent}
               okText="확인"
               cancelText="닫기"
             >
-              공구 삭제
+              <Button type="danger">공구 삭제</Button>
             </Popconfirm>
-          )}
-        </Col>
-        <Col>
-          {event.celebReview.contents && event.products.length > 0 && (
+          </Col>
+        )}
+        {event.eventId !== 0 && (
+          <Col>
+            <Button className="btn-event-template" type="primary" onClick={handleOpenTemplate}>
+              미리보기
+            </Button>
+          </Col>
+        )}
+        {event.celebReview.contents && event.products.length > 0 && (
+          <Col>
             <Button type="primary" onClick={handleOpenEvent}>
               오픈
             </Button>
-          )}
-        </Col>
+          </Col>
+        )}
       </Row>
     </div>
   );

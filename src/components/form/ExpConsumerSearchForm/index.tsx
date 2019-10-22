@@ -23,12 +23,13 @@ const winningStatuses = [
 
 const defaultCheckboxOptions = winningStatuses.map(status => status.value);
 
-interface ExpSearchFormProps extends FormComponentProps {
+interface ExpConsumerSearchFormProps extends FormComponentProps {
   onSubmit?: (values: SearchExperienceGroupConsumer) => void;
+  onResetAfter?: () => void;
 }
 
-function ExpSearchForm(props: ExpSearchFormProps) {
-  const { form, onSubmit } = props;
+function ExpConsumerSearchForm(props: ExpConsumerSearchFormProps) {
+  const { form, onSubmit, onResetAfter } = props;
   const { setFieldsValue, getFieldDecorator, validateFieldsAndScroll, resetFields } = form;
 
   const [checkboxOption, setCheckboxOption] = useState({
@@ -59,6 +60,10 @@ function ExpSearchForm(props: ExpSearchFormProps) {
 
   const handleReset = () => {
     resetFields();
+
+    if (onResetAfter) {
+      onResetAfter();
+    }
   };
 
   const onChange = (checkedList: CheckboxValueType[]) => {
@@ -133,4 +138,4 @@ function ExpSearchForm(props: ExpSearchFormProps) {
   );
 }
 
-export default Form.create<ExpSearchFormProps>()(ExpSearchForm);
+export default Form.create<ExpConsumerSearchFormProps>()(ExpConsumerSearchForm);
