@@ -83,7 +83,7 @@ const BrandSalesChart = (props: Props) => {
                   return (
                     statisticsBrandSalesRow.brandName +
                     ' 순매출액 : ' +
-                    statisticsBrandSalesRow.totalSalesAmount.toLocaleString() +
+                    (statisticsBrandSalesRow.totalSalesAmount - statisticsBrandSalesRow.totalOrderCancelAmount).toLocaleString() +
                     '원'
                   );
                 }
@@ -91,7 +91,7 @@ const BrandSalesChart = (props: Props) => {
                   return (
                     statisticsBrandSalesRow.brandName +
                     ' 평균매출액 : ' +
-                    statisticsBrandSalesRow.totalSalesAmountAvg.toLocaleString() +
+                    (statisticsBrandSalesRow.totalSalesAmountAvg - statisticsBrandSalesRow.totalOrderCancelAmountAvg).toLocaleString() +
                     '원'
                   );
                 }
