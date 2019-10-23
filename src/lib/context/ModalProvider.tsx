@@ -4,7 +4,7 @@ import React, { createContext, useState, useCallback } from 'react';
 // modules
 
 // components
-import { Modal } from 'components';
+import { MainModal } from 'components';
 import { ModalOptions } from 'models';
 
 // type
@@ -54,7 +54,7 @@ function ModalProvider({ children }: { children: JSX.Element }) {
   return (
     <ModalContext.Provider value={{ openModal }}>
       {children}
-      <Modal visible={visible} type={options.type} onOk={onOk} onCancel={onCancel} content={options.content} />
+      <MainModal visible={visible} type={options.type} onOk={onOk} onCancel={onCancel} content={options.content} />
     </ModalContext.Provider>
   );
 }

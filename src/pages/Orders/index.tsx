@@ -15,8 +15,8 @@ import moment from 'moment';
 // lib
 import { payCancelHost } from 'lib/protocols';
 
-// components
-import { OrderSearchBar, OrderDetailModal } from 'components';
+// containers
+import { OrderSearchBar, OrderDetailModal } from 'containers';
 
 // utils
 import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
@@ -26,7 +26,8 @@ import {
   ShippingCompany,
   PaymentStatus,
   PAYMENT_STATUSES,
-  PAYMENT_VIRTUAL_STATUSES, PaymentMethod,
+  PAYMENT_VIRTUAL_STATUSES,
+  PaymentMethod,
 } from 'enums';
 import { ResponseOrderItem } from 'models/OrderItem';
 
@@ -73,8 +74,7 @@ interface OrdersPaymentSelect {
 }
 
 const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
-
-  const { niceSubmitRef, record, setSelectedOrder, status, method} = props;
+  const { niceSubmitRef, record, setSelectedOrder, status, method } = props;
   const paymentStatus = status;
   const paymentMethod = method;
 
@@ -123,7 +123,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             quantity: quantity.toString(),
             productName,
           });
-          if(method !== 'VIRTUAL_ACCOUNT'){
+          if (method !== 'VIRTUAL_ACCOUNT') {
             if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_READY] === status) {
               message.error('관리자 홈페이지에서는 입금대기로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === status) {
@@ -143,7 +143,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
                 message.error('취소요청인 경우에만 취소완료가 가능합니다.');
               }
             }
-          }else{
+          } else {
             if (PaymentStatus[PaymentStatus.READY] === status) {
               message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
@@ -173,19 +173,17 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   return (
     <>
       <Select value={paymentStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
-        {paymentMethod === 'VIRTUAL_ACCOUNT' ? (
-          PAYMENT_VIRTUAL_STATUSES.map(option => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))
-        ):(
-          PAYMENT_STATUSES.map(option => (
-            <Option key={option.value} value={option.value}>
-              {option.label}
-            </Option>
-          ))
-        )}
+        {paymentMethod === 'VIRTUAL_ACCOUNT'
+          ? PAYMENT_VIRTUAL_STATUSES.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))
+          : PAYMENT_STATUSES.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
       </Select>
     </>
   );

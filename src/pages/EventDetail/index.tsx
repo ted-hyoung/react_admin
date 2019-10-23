@@ -14,7 +14,7 @@ import { getBrandsAsync } from 'store/reducer/brand';
 // enums
 import { EventStatus } from 'enums';
 
-// components
+// containers
 import {
   ProductDetail,
   EventForm,
@@ -23,7 +23,7 @@ import {
   ProductNotice,
   PurchaseInformation,
   EventExpGroup,
-} from 'components';
+} from 'containers';
 
 import './index.less';
 

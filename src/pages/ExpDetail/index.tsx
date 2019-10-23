@@ -23,9 +23,11 @@ import {
 import moment from 'moment';
 import { Tabs, Row, Col, Button, Select, Modal, message } from 'antd';
 
-// components
-import { ExpGroupForm, ExpConsumerSearchForm, PaginationTable, ExpGroupConsumerForm } from 'components';
-import { ExpGroupConsumerFormValues } from 'components/form/ExpGroupConsumerForm';
+import { PaginationTable } from 'components';
+
+// containers
+import { ExpGroupForm, ExpConsumerSearchForm, ExpGroupConsumerForm } from 'containers';
+import { ExpGroupConsumerFormValues } from 'containers/ExpGroupConsumerForm';
 
 // lib
 import { readExcel, createExcel, setPagingIndex } from 'lib/utils';

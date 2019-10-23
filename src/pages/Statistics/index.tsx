@@ -4,8 +4,8 @@ import React from 'react';
 // moudels
 import { Tabs } from 'antd';
 
-// components
-import { DailySales, ProductSales, BrandSales } from 'components';
+// containers
+import { DailySales, ProductSales, BrandSales } from 'containers';
 
 // less
 import './index.less';

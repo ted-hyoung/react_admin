@@ -15,7 +15,10 @@ import { Tag, Divider, Select, Input, Form } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
+import { PaginationTable, SearchBar } from 'components';
+
+// containers
+import { ContactCommentRow } from 'containers';
 
 // lib
 import useModal from 'lib/hooks/useModal';

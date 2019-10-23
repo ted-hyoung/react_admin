@@ -20,8 +20,8 @@ import {
   clearShippingExcel,
 } from 'store/reducer/shipping';
 
-// components
-import { ShippingSearchBar } from 'components';
+// containers
+import { ShippingSearchBar } from 'containers';
 
 // uilts
 import { createExcel, startDateFormat, endDateFormat } from 'lib/utils';
