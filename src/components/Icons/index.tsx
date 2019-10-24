@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const QlImageIcon = () => {
+export const InstagramIcon = () => {
   return (
     <svg viewBox="0 0 18 18">
       <rect className="ql-stroke" height="10" width="12" x="3" y="4" />
