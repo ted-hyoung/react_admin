@@ -22,6 +22,7 @@ interface Props extends FormComponentProps {
 }
 
 const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
+  const start = moment().startOf('day');
   const { form, onSearch, onReset } = props;
   const { getFieldDecorator, validateFields, resetFields } = form;
   const [selectedBrand, setSelectedBrand] = useState<number[]>([]);
@@ -34,18 +35,22 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
             delete values[key];
             return false;
           }
+
           if (key === 'dates') {
             const dates = values[key];
-
             values.startDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
             values.endDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
-
             delete values[key];
             return;
           }
         });
-        values.startDate = moment(values.startDate).format(startDateFormat);
-        values.endDate = moment(values.endDate).format(endDateFormat);
+        if (values.startDate !== undefined ) {
+          values.startDate = moment(values.startDate).format(startDateFormat);
+          values.endDate = moment(values.endDate).format(endDateFormat);
+        }else{ // 검색 기간 미지정 전체 선택시 최장 기간 입력
+          values.startDate = moment(start).subtract(6, 'month').format(startDateFormat);
+          values.endDate = moment(values.endDate).format(endDateFormat);
+        }
         onSearch(values);
       } else {
         console.error(errors);
@@ -65,7 +70,7 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
         <Form.Item>
           {getFieldDecorator('dates', {
             initialValue: [moment().startOf('day'), moment().endOf('day')],
-          })(<SearchDateFormItem />)}
+          })(<SearchDateFormItem expansion={true}/>)}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('brandIds', {
