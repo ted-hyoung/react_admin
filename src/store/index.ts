@@ -15,6 +15,8 @@ import order, { OrderState } from './reducer/order';
 import orderMemoState, { OrderMemoState } from './reducer/orderMemo';
 import shipping, { ShippingState } from './reducer/shipping';
 import brand, { BrandState } from './reducer/brand';
+import expGroupState, { ExpGroupState } from './reducer/expGroup.reducer';
+import expGroupConsumerState, { ExpGroupConsumerState } from './reducer/expGroupConsumer.reducer';
 
 // saga
 import eventSaga from './saga/eventSaga';
@@ -27,6 +29,8 @@ import orderSaga from './saga/orderSaga';
 import orderMemoSaga from './saga/orderMemoSaga';
 import shippingSaga from './saga/shippingSaga';
 import brandSaga from './saga/brandSaga';
+import expGroupSaga from './saga/expGroup.saga';
+import expGroupConsumerSaga from './saga/expGroupConsumer.saga';
 
 export interface StoreState {
   router: RouterState;
@@ -40,6 +44,8 @@ export interface StoreState {
   orderMemoState: OrderMemoState;
   shipping: ShippingState;
   brand: BrandState;
+  expGroupState: ExpGroupState;
+  expGroupConsumerState: ExpGroupConsumerState;
 }
 
 export function* saga() {
@@ -54,10 +60,10 @@ export function* saga() {
     orderMemoSaga(),
     shippingSaga(),
     brandSaga(),
+    expGroupSaga(),
+    expGroupConsumerSaga(),
   ]);
 }
-
-
 
 const reducer = (history: History) =>
   combineReducers<StoreState>({
@@ -72,6 +78,8 @@ const reducer = (history: History) =>
     orderMemoState,
     shipping,
     brand,
+    expGroupState,
+    expGroupConsumerState,
   });
 
 export default reducer;

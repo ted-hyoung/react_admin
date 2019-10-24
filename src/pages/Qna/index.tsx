@@ -11,8 +11,8 @@ import { Table, Tag } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
-// components
-import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'components';
+// containers
+import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'containers';
 
 // utils
 import { dateTimeFormat } from 'lib/utils';

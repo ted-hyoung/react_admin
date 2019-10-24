@@ -8,20 +8,27 @@ import { StoreState } from 'store';
 import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel, getOrderByIdAsync } from 'store/reducer/order';
 
 // modules
-import { Table, Button, Row, Col, Select, Modal, message } from 'antd';
+import { Table, Button, Row, Col, Select, Modal, message, Statistic } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
 // lib
 import { payCancelHost } from 'lib/protocols';
 
-// components
-import { OrderSearchBar, OrderDetailModal } from 'components';
+// containers
+import { OrderSearchBar, OrderDetailModal } from 'containers';
 
 // utils
 import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
 import { SearchOrder } from 'models/Order';
-import { ShippingStatus, ShippingCompany, PaymentStatus, PAYMENT_STATUSES } from 'enums';
+import {
+  ShippingStatus,
+  ShippingCompany,
+  PaymentStatus,
+  PAYMENT_STATUSES,
+  PAYMENT_VIRTUAL_STATUSES,
+  PaymentMethod,
+} from 'enums';
 import { ResponseOrderItem } from 'models/OrderItem';
 
 // defines
@@ -43,6 +50,7 @@ interface Orders {
   totalAmount: string;
   paymentId: number;
   paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod;
   shippingStatus: ShippingStatus;
   shippingCompany: ShippingCompany;
   transactionId: string;
@@ -62,12 +70,13 @@ interface OrdersPaymentSelect {
   record: Orders;
   setSelectedOrder: Dispatch<SetStateAction<SelectedOrder | undefined>>;
   status: PaymentStatus;
+  method: PaymentMethod;
 }
 
 const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
-  const { niceSubmitRef, record, setSelectedOrder, status } = props;
-
+  const { niceSubmitRef, record, setSelectedOrder, status, method } = props;
   const paymentStatus = status;
+  const paymentMethod = method;
 
   const dispatch = useDispatch();
   const [niceCancelPayment, setNiceCancelPayment] = useState(false);
@@ -101,7 +110,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             } else {
               productName += '/옵션없음';
             }
-
             if (record.orderItems.length - 1 > index) {
               productName += ', ';
             }
@@ -115,24 +123,45 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             quantity: quantity.toString(),
             productName,
           });
-
-          if (PaymentStatus[PaymentStatus.READY] === status) {
-            message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
-          } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
-            message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
-          } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
-            if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
-              setNiceCancelPayment(true);
-            } else {
-              message.error('결제완료인 경우에만 결제취소가 가능합니다.');
+          if (method !== 'VIRTUAL_ACCOUNT') {
+            if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_READY] === status) {
+              message.error('관리자 홈페이지에서는 입금대기로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === status) {
+              message.error('관리자 홈페이지에서는 입금완료로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
+              if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === paymentStatus) {
+                setNiceCancelPayment(true);
+              } else {
+                message.error('입금완료인 경우에만 결제취소가 가능합니다.');
+              }
+            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === status) {
+              message.error('관리자 홈페이지에서는 취소요청으로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_COMPLETE] === status) {
+              if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === paymentStatus) {
+                setNiceCancelPayment(true);
+              } else {
+                message.error('취소요청인 경우에만 취소완료가 가능합니다.');
+              }
             }
-          } else if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === status) {
-            message.error('관리자 홈페이지에서는 환불요청으로 변경하실 수 없습니다.');
-          } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
-            if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === paymentStatus) {
-              setNiceCancelPayment(true);
-            } else {
-              message.error('환불요청인 경우에만 환불완료가 가능합니다.');
+          } else {
+            if (PaymentStatus[PaymentStatus.READY] === status) {
+              message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
+              message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
+              if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
+                setNiceCancelPayment(true);
+              } else {
+                message.error('결제완료인 경우에만 결제취소가 가능합니다.');
+              }
+            } else if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === status) {
+              message.error('관리자 홈페이지에서는 환불요청으로 변경하실 수 없습니다.');
+            } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
+              if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === paymentStatus) {
+                setNiceCancelPayment(true);
+              } else {
+                message.error('환불요청인 경우에만 환불완료가 가능합니다.');
+              }
             }
           }
         },
@@ -144,11 +173,17 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   return (
     <>
       <Select value={paymentStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
-        {PAYMENT_STATUSES.map(option => (
-          <Option key={option.value} value={option.value}>
-            {option.label}
-          </Option>
-        ))}
+        {paymentMethod === 'VIRTUAL_ACCOUNT'
+          ? PAYMENT_VIRTUAL_STATUSES.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))
+          : PAYMENT_STATUSES.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
       </Select>
     </>
   );
@@ -157,7 +192,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
 const Orders = () => {
   const { order, orders, ordersExcel } = useSelector((storeState: StoreState) => storeState.order);
   const { size: pageSize, totalElements } = orders;
-
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const dispatch = useDispatch();
 
@@ -347,12 +381,14 @@ const Orders = () => {
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
       render: (text, record: Orders) => {
+        console.log(record);
         return (
           <OrdersPaymentSelect
             niceSubmitRef={niceSubmitRef}
             record={record}
             setSelectedOrder={setSelectedOrder}
             status={text}
+            method={record.paymentMethod}
           />
         );
       },
@@ -376,6 +412,7 @@ const Orders = () => {
       shippingStatus: ShippingStatus[order.shipping.shippingStatus],
       shippingCompany: ShippingCompany[order.shipping.shippingCompany],
       transactionId: order.payment.nicePayment.transactionId,
+      paymentMethod: order.payment.paymentMethod,
     };
   });
 

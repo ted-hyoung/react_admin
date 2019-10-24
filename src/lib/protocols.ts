@@ -5,12 +5,7 @@ import { LoginAccount } from 'models';
 import { message } from 'antd';
 
 // defines
-type AxiosFunction = (
-  url: string,
-  data?: {},
-  cb?: (res: AxiosResponse) => AxiosResponse,
-  withCredentials?: boolean,
-) => AxiosPromise;
+type AxiosFunction = (url: string, data?: {}, cb?: (res: AxiosResponse) => AxiosResponse) => AxiosPromise;
 
 const getAPIVersion = () => {
   // return "v1/";
@@ -81,9 +76,9 @@ export const get: AxiosFunction = (url, data, cb) => {
  * @param url api url
  * @param data api data
  * @param cb callback function
- * @param withCredentials withCredentials
+
  */
-export const post: AxiosFunction = (url, data, cb, withCredentials = false) => {
+export const post: AxiosFunction = (url, data, cb) => {
   return axiosInstance.post(host + url, data).then(res => (cb ? cb(res) : res));
 };
 
@@ -126,12 +121,10 @@ export function login(account: LoginAccount) {
     .post(host + '/accounts/login', account)
     .then(res => {
       setToken(res.data.access_token, res.data.refresh_token);
-
       return res;
     })
     .catch(error => {
       message.error('로그인에 실패했습니다. 다시 시도해주세요');
-
       throw error;
     });
 }

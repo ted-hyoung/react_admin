@@ -20,7 +20,7 @@ import {
 
 // types
 import { ResponseReview, SearchReview, UpdateReview, UpdateRequestPayload } from 'models';
-import { SearchCondition } from 'components/searchForm/SearchKeyAndValue';
+import { SearchCondition } from 'components/SearchKeyAndValue';
 
 // component
 import { PaginationTable, SearchBar } from 'components';

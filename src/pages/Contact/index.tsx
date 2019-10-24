@@ -15,7 +15,10 @@ import { Tag, Divider, Select, Input, Form } from 'antd';
 import moment from 'moment';
 
 // components
-import { ContactCommentRow, PaginationTable, SearchBar } from 'components';
+import { PaginationTable, SearchBar } from 'components';
+
+// containers
+import { ContactCommentRow } from 'containers';
 
 // lib
 import useModal from 'lib/hooks/useModal';
@@ -31,13 +34,17 @@ const contactColumns: Array<ColumnProps<ResponseContact>> = [
     title: '상태',
     dataIndex: 'status',
     key: 'status',
-    render: status => <Tag color={QnaStatus[status] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>{QnaStatus[status]}</Tag>,
+    render: status => (
+      <Tag color={QnaStatus[status as QnaStatus] === QnaStatus.COMPLETE ? 'blue' : 'gold'}>
+        {QnaStatus[status as QnaStatus]}
+      </Tag>
+    ),
   },
   {
     title: '분류',
     dataIndex: 'category',
     key: 'category',
-    render: category => CsrCategory[category],
+    render: category => CsrCategory[category as CsrCategory],
   },
   {
     title: '공구명',
