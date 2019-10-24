@@ -11,6 +11,9 @@ enum ActionType {
   TODAY = 'TODAY',
   RECENT_DAYS = 'RECENT_DAYS',
   RECENT_WEEK = 'RECENT_WEEK',
+  RECENT_MONTH = 'RECENT_MONTH',
+  RECENT_THREE_MONTH = 'RECENT_THREE_MONTH',
+  RECENT_SIX_MONTH = 'RECENT_SIX_MONTH',
   DEFAULT = 'DEFAULT',
 }
 
@@ -65,6 +68,30 @@ const reducer: React.Reducer<State, Action> = (state, action) => {
         dateStrings: [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')],
       };
     }
+    case ActionType.RECENT_MONTH: {
+      start.subtract(1, 'month');
+
+      return {
+        dates: [start, end],
+        dateStrings: [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')],
+      };
+    }
+    case ActionType.RECENT_THREE_MONTH: {
+      start.subtract(3, 'month');
+
+      return {
+        dates: [start, end],
+        dateStrings: [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')],
+      };
+    }
+    case ActionType.RECENT_SIX_MONTH: {
+      start.subtract(6, 'month');
+
+      return {
+        dates: [start, end],
+        dateStrings: [start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')],
+      };
+    }
     default: {
       if (action.payload) {
         const { dates, dateStrings } = action.payload;
@@ -86,10 +113,11 @@ const { RangePicker } = DatePicker;
 interface SearchDateFormItemProps {
   value?: undefined | [moment.Moment, moment.Moment];
   onChange?: (dates: undefined | [moment.Moment, moment.Moment], dataString: [string, string]) => void;
+  expansion?: boolean;
 }
 
 const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormItemProps>((props, ref) => {
-  const { value, onChange }: SearchDateFormItemProps = props;
+  const { value, onChange, expansion }: SearchDateFormItemProps = props;
 
   const [isMount, setIsMount] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(reducer, initialState);
@@ -129,6 +157,19 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
       <Col>
         <Button onClick={() => dispatch({ type: ActionType.RECENT_WEEK })}>최근 7일</Button>
       </Col>
+      { expansion &&
+        <>
+          <Col>
+            <Button onClick={() => dispatch({ type: ActionType.RECENT_MONTH })}>최근 1개월</Button>
+          </Col>
+          <Col>
+            <Button onClick={() => dispatch({ type: ActionType.RECENT_THREE_MONTH })}>최근 3개월</Button>
+          </Col>
+          <Col>
+            <Button onClick={() => dispatch({ type: ActionType.RECENT_SIX_MONTH })}>최근 6개월</Button>
+          </Col>
+        </>
+      }
     </Row>
   );
 });
