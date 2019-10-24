@@ -13,6 +13,7 @@ import {
   getStatisticsDailySalesAsync,
   getOrderByIdAsync,
   updateShippingDestinationByIdAsync,
+  cancelPaymentVirtualAccountAsync,
 } from 'store/reducer/order';
 
 // modules
@@ -129,6 +130,16 @@ function* updateShippingDestinationById(action: RequestAsyncAction) {
   }
 }
 
+function* cancelPaymentVirtualAccount(action: RequestAsyncAction) {
+  const { orderNo } = action.payload;
+  try {
+    const res = yield call(() => Api.put(`/payments/cancel/virtual-account/${orderNo}`));
+    yield put(cancelPaymentVirtualAccountAsync.success(res.data));
+  } catch (error) {
+    yield put(cancelPaymentVirtualAccountAsync.failure(error));
+  }
+}
+
 export default function* orderSaga() {
   yield takeEvery(Action.GET_ORDER_BY_ID_REQUEST, getOrderById);
   yield takeEvery(Action.GET_ORDERS_REQUEST, getOrders);
@@ -136,4 +147,5 @@ export default function* orderSaga() {
   yield takeEvery(Action.GET_ORDERS_STATISTICS_DAILY_SALES_REQUEST, getStatisticsDailySales);
   yield takeLatest(Action.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST, updateOrdersPaymentStatus);
   yield takeLatest(Action.UPDATE_SHIPPING_DESTINATION_BY_ID_REQUEST, updateShippingDestinationById);
+  yield takeLatest(Action.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_REQUEST, cancelPaymentVirtualAccount);
 }
