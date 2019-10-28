@@ -5,7 +5,13 @@ import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel, getOrderByIdAsync, cancelPaymentVirtualAccountAsync } from 'store/reducer/order';
+import {
+  getOrdersAsync,
+  getOrdersExcelAsync,
+  clearOrderExcel,
+  getOrderByIdAsync,
+  cancelPaymentVirtualAccountAsync,
+} from 'store/reducer/order';
 // modules
 import { Table, Button, Row, Col, Select, Modal, message, Statistic } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
@@ -29,7 +35,6 @@ import {
   PaymentMethod,
 } from 'enums';
 import { ResponseOrderItem } from 'models/OrderItem';
-import { getEventByIdAsync } from '../../store/reducer/event';
 
 // defines
 const { Option } = Select;
@@ -86,19 +91,17 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   }, []);
 
   useEffect(() => {
-    console.log(record);
     if (niceCancelPayment && niceSubmitRef.current) {
-        if(PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method){
-          dispatch(cancelPaymentVirtualAccountAsync.request({ orderNo: record.orderNo }));
-        }else{
-          niceSubmitRef.current.submit();
-        }
+      if (PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method) {
+        dispatch(cancelPaymentVirtualAccountAsync.request({ orderNo: record.orderNo }));
+      } else {
+        niceSubmitRef.current.submit();
+      }
     }
   }, [niceCancelPayment]);
 
   const showConfirm = useCallback(
     (status: PaymentStatus) => {
-
       confirm({
         title: `결제상태를 [${PaymentStatus[status]}]로 변경하시겠습니까?`,
         okText: '변경',
@@ -203,6 +206,7 @@ const Orders = () => {
 
   const [visible, setVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<SelectedOrder>();
+
   const printRef = useRef<any>();
   const niceSubmitRef = useRef<HTMLFormElement>(null);
 
@@ -219,12 +223,6 @@ const Orders = () => {
     },
     [dispatch, pageSize, setLastSearchCondition],
   );
-
-  useEffect(() => {
-    if (order.orderId) {
-      setVisible(true);
-    }
-  }, [order]);
 
   useEffect(() => {
     getOrders(0, pageSize, defaultSearchCondition);
@@ -336,6 +334,7 @@ const Orders = () => {
         return {
           onClick: () => {
             dispatch(getOrderByIdAsync.request({ id: record.orderId }));
+            setVisible(true);
           },
         };
       },
