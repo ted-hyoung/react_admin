@@ -25,6 +25,7 @@ export interface ResponseClientOrder {
   orderItems: ResponseOrderItem[];
   orderMemos: ResponseOrderMemoForOrder[];
   memo: string;
+  created?: string;
   payment?: ResponseClientPaymentForOrder;
   shipping?: ResponseClientShippingForOrder;
   shippingDestination?: ResponseShippingDestination;

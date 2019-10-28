@@ -63,7 +63,7 @@ interface OrderDetailModalProps {
 function OrderDetailModal(props: OrderDetailModalProps) {
   const { visible, onCancel } = props;
 
-  const { orderNo, payment, orderItems, shipping, event, consumer, orderMemos } = useSelector(
+  const { orderNo, created, payment, orderItems, shipping, event, consumer, orderMemos } = useSelector(
     (state: StoreState) => state.order.order,
   );
 
@@ -106,7 +106,7 @@ function OrderDetailModal(props: OrderDetailModalProps) {
           </Col>
           <Col>
             <strong>주문 일자: </strong>
-            <span>{payment ? moment(payment.paymentDate).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
+            <span>{created ? moment(created).format('YYYY-MM-DD HH:mm:ss') : ''}</span>
           </Col>
         </Row>
         <Row type="flex" gutter={20}>

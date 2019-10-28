@@ -90,6 +90,7 @@ const initialState: OrderState = {
     orderItems: [],
     orderMemos: [],
     memo: '',
+    created: '',
   },
   orders: {
     content: [],
