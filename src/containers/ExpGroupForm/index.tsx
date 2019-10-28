@@ -31,7 +31,7 @@ function ExpGroupForm(props: ExpGroupFormProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    validateFieldsAndScroll({ first: true, force: true }, (errors, values) => {
+    validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const data = {
           ...values,

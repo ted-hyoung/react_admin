@@ -75,6 +75,13 @@ export const clearDailySalesStatus = action(Actions.CLEAR_DAILY_SALES_STATUS);
 export const clearOrderExcel = action(Actions.CLEAR_ORDER_EXCEL);
 export const clearOrder = action(Actions.CLEAR_ORDER);
 
+// 가상 계좌 주문 건 취소
+export const cancelPaymentVirtualAccountAsync = createAsyncAction(
+  Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_REQUEST,
+  Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_SUCCESS,
+  Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
 // reducers
 const initialState: OrderState = {
   order: {
@@ -164,6 +171,9 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
       return produce(state, draft => {
         draft.order = initialState.order;
       });
+    }
+    case Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_SUCCESS:{
+      return state;
     }
     default: {
       return state;

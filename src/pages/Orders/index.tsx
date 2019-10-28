@@ -5,8 +5,7 @@ import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel, getOrderByIdAsync } from 'store/reducer/order';
-
+import { getOrdersAsync, getOrdersExcelAsync, clearOrderExcel, getOrderByIdAsync, cancelPaymentVirtualAccountAsync } from 'store/reducer/order';
 // modules
 import { Table, Button, Row, Col, Select, Modal, message, Statistic } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
@@ -30,6 +29,7 @@ import {
   PaymentMethod,
 } from 'enums';
 import { ResponseOrderItem } from 'models/OrderItem';
+import { getEventByIdAsync } from '../../store/reducer/event';
 
 // defines
 const { Option } = Select;
@@ -86,13 +86,19 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   }, []);
 
   useEffect(() => {
+    console.log(record);
     if (niceCancelPayment && niceSubmitRef.current) {
-      niceSubmitRef.current.submit();
+        if(PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method){
+          dispatch(cancelPaymentVirtualAccountAsync.request({ orderNo: record.orderNo }));
+        }else{
+          niceSubmitRef.current.submit();
+        }
     }
   }, [niceCancelPayment]);
 
   const showConfirm = useCallback(
     (status: PaymentStatus) => {
+
       confirm({
         title: `결제상태를 [${PaymentStatus[status]}]로 변경하시겠습니까?`,
         okText: '변경',
@@ -123,7 +129,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             quantity: quantity.toString(),
             productName,
           });
-          if (method !== 'VIRTUAL_ACCOUNT') {
+          if (PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method) {
             if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_READY] === status) {
               message.error('관리자 홈페이지에서는 입금대기로 변경하실 수 없습니다.');
             } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === status) {
@@ -381,7 +387,6 @@ const Orders = () => {
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
       render: (text, record: Orders) => {
-        console.log(record);
         return (
           <OrdersPaymentSelect
             niceSubmitRef={niceSubmitRef}
