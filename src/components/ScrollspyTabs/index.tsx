@@ -1,5 +1,5 @@
 // base
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 // modules
 import Scrollspy, { ScrollspyProps } from 'react-scrollspy';
@@ -22,6 +22,14 @@ function ScrollspyTabs(props: ScrollspyTabsProps) {
   const [activeKey, setActiveKey] = useState(0);
   const prevActiveKey = usePrevious(activeKey);
 
+  const scrollSpyRef = useRef<Scrollspy>(null);
+
+  useEffect(() => {
+    if (scrollSpyRef.current) {
+      scrollSpyRef.current.offEvent = () => undefined;
+    }
+  }, [scrollSpyRef]);
+
   useEffect(() => {
     if (prevActiveKey !== undefined && activeKey !== prevActiveKey) {
       onChange(String(activeKey + 1));
@@ -36,7 +44,7 @@ function ScrollspyTabs(props: ScrollspyTabsProps) {
             <div className="ant-tabs-nav-wrap">
               <div className="ant-tabs-nav-scroll">
                 <div className="ant-tabs-nav ant-tabs-nav-animated">
-                  <Scrollspy {...props}>
+                  <Scrollspy ref={scrollSpyRef} {...props}>
                     {Array.isArray(children)
                       ? children.map((child, index) => {
                           return React.cloneElement(child, {

@@ -91,6 +91,7 @@ function OrderDetailModal(props: OrderDetailModalProps) {
   return (
     <Modal
       centered
+      destroyOnClose
       className="order-detail-modal"
       visible={visible}
       footer={null}
@@ -339,32 +340,22 @@ function OrderDetailModal(props: OrderDetailModalProps) {
               )}
             </Descriptions.Item>
             <Descriptions.Item span={24} label="결제정보">
-              { payment &&
-                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
-                 payment.nicePayment.virtualBankName+" / "+payment.nicePayment.virtualBankNumber
-                )
-              }
-              { payment &&
-                payment.paymentMethod === 'CARD' && (
-                  CardCode[Number(payment.nicePayment.cardCode)]
-                )
-              }
+              {payment &&
+                payment.paymentMethod === 'VIRTUAL_ACCOUNT' &&
+                payment.nicePayment.virtualBankName + ' / ' + payment.nicePayment.virtualBankNumber}
+              {payment && payment.paymentMethod === 'CARD' && CardCode[Number(payment.nicePayment.cardCode)]}
             </Descriptions.Item>
             <Descriptions.Item span={24} label="결제상세내역">
-              { payment &&
-                payment.paymentMethod === 'CARD' && (
-                  `카드결제: ${moment(payment.paymentDate).format(
-                    'YYYY-MM-DD HH:mm:ss',
-                  )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`
-                )
-              }
-              { payment &&
-                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
-                  `결제일(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
-                    'YYYY-MM-DD HH:mm:ss',
-                  )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`
-                )
-              }
+              {payment &&
+                payment.paymentMethod === 'CARD' &&
+                `카드결제: ${moment(payment.paymentDate).format(
+                  'YYYY-MM-DD HH:mm:ss',
+                )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
+              {payment &&
+                payment.paymentMethod === 'VIRTUAL_ACCOUNT' &&
+                `결제일(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
+                  'YYYY-MM-DD HH:mm:ss',
+                )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
             </Descriptions.Item>
           </Descriptions>
         </Element>
@@ -387,13 +378,14 @@ function OrderDetailModal(props: OrderDetailModalProps) {
               <Descriptions.Item span={12} label="환불일자">
                 <span>{moment(payment.paymentCanceled).format('YYYY-MM-DD HH:mm:ss')}</span>
               </Descriptions.Item>
-              {payment &&
-                payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
-                    <Descriptions.Item span={24} label="환불계좌정보">
-                      <span>환불은행: {payment.refundAccountBank} | 환불계좌: {payment.refundAccountNumber} | 예금주: {payment.refundAccountDepositor}</span>
-                    </Descriptions.Item>
-                )
-              }
+              {payment && payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
+                <Descriptions.Item span={24} label="환불계좌정보">
+                  <span>
+                    환불은행: {payment.refundAccountBank} | 환불계좌: {payment.refundAccountNumber} | 예금주:{' '}
+                    {payment.refundAccountDepositor}
+                  </span>
+                </Descriptions.Item>
+              )}
               <Descriptions.Item span={24} label="환불사유">
                 <span> - </span>
               </Descriptions.Item>
