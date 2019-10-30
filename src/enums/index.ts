@@ -16,6 +16,7 @@ export * from './CardCode';
 export * from './Role';
 export * from './ImportanceCode';
 export * from './PrizeStatus';
+export * from './BankCode';
 
 export function getEnumKeyByValue<T extends Indexable, V>(enumType: T, enumValue: V): string | undefined {
   const keys = Object.keys(enumType).filter(k => enumType[k] === enumValue);

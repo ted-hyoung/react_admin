@@ -232,7 +232,6 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                   if (
                     payment &&
                     (payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ||
-                      payment.paymentStatus === PaymentStatus[PaymentStatus.REFUND_REQUEST] ||
                       payment.paymentStatus === PaymentStatus[PaymentStatus.REFUND_COMPLETE])
                   ) {
                     orderStatus = PaymentStatus[payment.paymentStatus];
@@ -363,7 +362,6 @@ function OrderDetailModal(props: OrderDetailModalProps) {
           <p className="scroll-section-title">환불정보</p>
           {payment &&
           (payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ||
-            payment.paymentStatus === PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_COMPLETE] ||
             payment.paymentStatus === PaymentStatus[PaymentStatus.REFUND_COMPLETE]) ? (
             <Descriptions bordered colon={false} column={24}>
               <Descriptions.Item span={24} label="환불번호">
