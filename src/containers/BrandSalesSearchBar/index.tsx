@@ -70,7 +70,7 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
         <Form.Item>
           {getFieldDecorator('dates', {
             initialValue: [moment().startOf('day'), moment().endOf('day')],
-          })(<SearchDateFormItem expansion={true}/>)}
+          })(<SearchDateFormItem/>)}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('brandIds', {
