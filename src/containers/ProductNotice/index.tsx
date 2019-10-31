@@ -185,10 +185,10 @@ function ProductNotice(props: Props) {
                     setSelected={setSelected}
                     onChange={handleSetProductNoticeType}
                   />
-                  <Button type="primary" htmlType="submit" style={{ marginLeft: '10px' }}>
-                    {' '}
-                    등록{' '}
-                  </Button>
+                  {/*<Button type="primary" htmlType="submit" style={{ marginLeft: '10px' }}>*/}
+                  {/*  {' '}*/}
+                  {/*  등록{' '}*/}
+                  {/*</Button>*/}
                   <Button type="dashed" onClick={handleResetNotice} style={{ marginLeft: '10px' }}>
                     {' '}
                     초기화{' '}
