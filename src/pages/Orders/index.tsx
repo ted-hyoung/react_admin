@@ -423,9 +423,9 @@ const Orders = () => {
   return (
     <div className="order">
       <OrderSearchBar
-        onSearch={value => getOrders(0, pageSize, value)}
-        onReset={() => getOrders(0, pageSize, defaultSearchCondition)}
-      />
+      onSearch={value => getOrders(0, pageSize, value)}
+      onReset={() => getOrders(0, pageSize, defaultSearchCondition)}
+    />
 
       <Table
         rowKey={record => record.orderId.toString()}

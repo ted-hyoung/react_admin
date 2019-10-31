@@ -7,24 +7,6 @@ import { Menu as AntMenu, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 
 const MENU_LIST = [
-  // {
-  //   key: 'store',
-  //   name: '상점 관리',
-  //   subMenus: [
-  //     {
-  //       key: 'account',
-  //       name: '계정 관리',
-  //     },
-  //     {
-  //       key: 'celeb',
-  //       name: '셀럽 관리',
-  //     },
-  //     {
-  //       key: 'settlement',
-  //       name: '결산 관리',
-  //     },
-  //   ],
-  // },
   {
     key: 'product',
     name: '상품 관리',
@@ -52,17 +34,17 @@ const MENU_LIST = [
     ],
   },
   {
-    key: 'member',
+    key: 'account',
     name: '회원 관리',
     icon: 'team',
     subMenus: [
       {
-        key: 'member',
+        key: 'account',
         name: '회원정보 조회',
       },
       // {
       //   key: 'withdrawal',
-      //   name: '회원탈퇴 관',
+      //   name: '회원탈퇴 관리',
       // },
       // {
       //   key: 'resting',
@@ -75,7 +57,7 @@ const MENU_LIST = [
     ],
   },
   {
-    key: 'celebrity',
+    key: 'celeb',
     name: '셀럽',
     icon: 'star',
     subMenus: [

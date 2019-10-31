@@ -50,6 +50,11 @@ export default [
     secret: true,
   },
   {
+    path: '/account',
+    component: lazy(() => import('../pages/Account')),
+    secret: true,
+  },
+  {
     path: '/events',
     component: lazy(() => import('../pages/EventList')),
     secret: true,
