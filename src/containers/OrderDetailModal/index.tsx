@@ -339,10 +339,9 @@ function OrderDetailModal(props: OrderDetailModalProps) {
               )}
             </Descriptions.Item>
             <Descriptions.Item span={24} label="결제정보">
-              {payment &&
-                payment.paymentMethod === 'VIRTUAL_ACCOUNT' &&
-                payment.nicePayment.virtualBankName + ' / ' + payment.nicePayment.virtualBankNumber}
+              {payment && payment.paymentMethod === 'VIRTUAL_ACCOUNT' && payment.nicePayment.virtualBankName + ' / ' + payment.nicePayment.virtualBankNumber}
               {payment && payment.paymentMethod === 'CARD' && CardCode[Number(payment.nicePayment.cardCode)]}
+              {payment && payment.paymentMethod === 'ACCOUNT_TRANSFER' && payment.nicePayment.paymentBankName}
             </Descriptions.Item>
             <Descriptions.Item span={24} label="결제상세내역">
               {payment &&
@@ -352,9 +351,21 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                 )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
               {payment &&
                 payment.paymentMethod === 'VIRTUAL_ACCOUNT' &&
-                `결제일(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
+                payment.paymentStatus === 'CANCEL' &&
+                `${PaymentStatus[payment.paymentStatus]}: ${moment(payment.paymentDate).format(
                   'YYYY-MM-DD HH:mm:ss',
-                )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
+                )} / 최종결제금액: 미 입금`}
+              {payment &&
+              payment.paymentMethod === 'VIRTUAL_ACCOUNT' &&
+              payment.paymentStatus !== 'CANCEL' &&
+              `입금일(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
+                'YYYY-MM-DD HH:mm:ss',
+              )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
+              {payment &&
+              payment.paymentMethod === 'ACCOUNT_TRANSFER' &&
+              `계좌이체(${PaymentStatus[payment.paymentStatus]}): ${moment(payment.paymentDate).format(
+                'YYYY-MM-DD HH:mm:ss',
+              )} / 최종결제금액: ${payment.totalAmount.toLocaleString()}원`}
             </Descriptions.Item>
           </Descriptions>
         </Element>
@@ -371,7 +382,9 @@ function OrderDetailModal(props: OrderDetailModalProps) {
                 <span>{payment.totalAmount.toLocaleString()} 원</span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불수단">
-                <span>현금 환불</span>
+                <span>
+                  {payment.paymentStatus === PaymentStatus[PaymentStatus.CANCEL] ? '미 입금' :  ' 현금 환불'}
+                </span>
               </Descriptions.Item>
               <Descriptions.Item span={12} label="환불일자">
                 <span>{moment(payment.paymentCanceled).format('YYYY-MM-DD HH:mm:ss')}</span>
@@ -379,8 +392,9 @@ function OrderDetailModal(props: OrderDetailModalProps) {
               {payment && payment.paymentMethod === 'VIRTUAL_ACCOUNT' && (
                 <Descriptions.Item span={24} label="환불계좌정보">
                   <span>
-                    환불은행: {payment.refundAccountBank} | 환불계좌: {payment.refundAccountNumber} | 예금주:{' '}
-                    {payment.refundAccountDepositor}
+                    환불은행: {payment.refundAccountBank ? (payment.refundAccountBank) : ' - '} |
+                    환불계좌: {payment.refundAccountNumber ? (payment.refundAccountNumber):' - '} |
+                    예금주:{payment.refundAccountDepositor ? (payment.refundAccountDepositor):' - '}
                   </span>
                 </Descriptions.Item>
               )}

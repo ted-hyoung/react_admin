@@ -26,6 +26,7 @@ export interface ResponseClientNicePaymentForOrder {
   cardQuota: string;
   cardCode: string;
   transactionId: string;
+  paymentBankName:string;
 }
 
 export interface ResponseClientPaymentForOrder {

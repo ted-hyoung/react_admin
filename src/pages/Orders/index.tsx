@@ -116,7 +116,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             if (PaymentStatus[PaymentStatus.READY] === paymentStatus) {
               if(record.paymentMethod === PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT]){
                 // 가상 계좌 주문 취소 API 호출
-                console.log("가상 계좌 주문 취소 API 호출");
                 dispatch(cancelVirtualAccountWaitingAsync.request({
                     orderNo: record.orderNo,
                     totalAmount: Number(record.totalAmount)
