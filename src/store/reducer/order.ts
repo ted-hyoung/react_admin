@@ -27,6 +27,7 @@ export interface OrderState {
     dailySales: ResponseManagementOrdersStatisticsDailySales;
     dailySalesStatus: boolean;
   };
+  refundAccountState: boolean;
 }
 
 // 주문 목록 조회
@@ -82,6 +83,28 @@ export const cancelPaymentVirtualAccountAsync = createAsyncAction(
   Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_FAILURE,
 )<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
+// 결제 주문 건 취소 (카드, 실시간 계좌이체)
+export const cancelPaymentAsync = createAsyncAction(
+  Actions.CANCEL_PAYMENT_REQUEST,
+  Actions.CANCEL_PAYMENT_SUCCESS,
+  Actions.CANCEL_PAYMENT_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const checkRefundAccountAsync = createAsyncAction(
+  Actions.CHECK_REFUND_ACCOUNT_REQUEST,
+  Actions.CHECK_REFUND_ACCOUNT_SUCCESS,
+  Actions.CHECK_REFUND_ACCOUNT_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+export const resetRefundAccountStateReducer = () => action(Actions.RESET_REFUND_ACCOUNT_STATE_REDUCER);
+
+export const cancelVirtualAccountWaitingAsync = createAsyncAction(
+  Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_REQUEST,
+  Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_SUCCESS,
+  Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+
+
 // reducers
 const initialState: OrderState = {
   order: {
@@ -119,6 +142,7 @@ const initialState: OrderState = {
     },
     dailySalesStatus: false,
   },
+  refundAccountState: false,
 };
 
 const order = (state = initialState, action: ResponseAsyncAction) => {
@@ -175,6 +199,21 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
     }
     case Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_SUCCESS:{
       return state;
+    }
+    case Actions.CANCEL_PAYMENT_SUCCESS:{
+      return state;
+    }
+
+    case Actions.CHECK_REFUND_ACCOUNT_SUCCESS: {
+      return produce(state, draft => {
+        draft.refundAccountState = action.payload;
+      });
+    }
+
+    case Actions.RESET_REFUND_ACCOUNT_STATE_REDUCER: {
+      return produce(state, draft => {
+        draft.refundAccountState = false;
+      });
     }
     default: {
       return state;
