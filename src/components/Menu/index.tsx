@@ -52,6 +52,40 @@ const MENU_LIST = [
     ],
   },
   {
+    key: 'member',
+    name: '회원 관리',
+    icon: 'team',
+    subMenus: [
+      {
+        key: 'member',
+        name: '회원정보 조회',
+      },
+      // {
+      //   key: 'withdrawal',
+      //   name: '회원탈퇴 관',
+      // },
+      // {
+      //   key: 'resting',
+      //   name: '회원휴먼 관리',
+      // },
+      // {
+      //   key: 'level',
+      //   name: '회원등급 관리',
+      // },
+    ],
+  },
+  {
+    key: 'celebrity',
+    name: '셀럽',
+    icon: 'star',
+    subMenus: [
+      {
+        key: 'celebrity',
+        name: '셀럽정보 조회',
+      },
+    ],
+  },
+  {
     key: 'statistics',
     name: '통계 관리',
     icon: 'bar-chart',
