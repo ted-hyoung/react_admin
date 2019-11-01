@@ -136,7 +136,7 @@ function* cancelPaymentVirtualAccount(action: RequestAsyncAction) {
   const { orderNo, data  } = action.payload;
   try {
     const res = yield call(() => Api.put(`/orders/${orderNo}/cancel/virtual-account`,data));
-    yield put(cancelPaymentVirtualAccountAsync.success(res.data));
+    yield put(cancelPaymentVirtualAccountAsync.success(orderNo));
   } catch (error) {
     yield put(cancelPaymentVirtualAccountAsync.failure(error));
   }
@@ -146,7 +146,7 @@ function* cancelPayment(action: RequestAsyncAction) {
   const { orderNo, totalAmount  } = action.payload;
   try {
     const res = yield call(() => Api.put(`/orders/${orderNo}/cancel`,{totalAmount}));
-    yield put(cancelPaymentAsync.success(res.data));
+    yield put(cancelPaymentAsync.success(orderNo));
   } catch (error) {
     yield put(cancelPaymentAsync.failure(error));
   }
@@ -174,7 +174,7 @@ function* cancelVirtualAccountWaiting(action: RequestAsyncAction) {
   try {
     const { orderNo, totalAmount } = action.payload;
     const res = yield call(() => Api.put(`/orders/${orderNo}/cancel/virtual-account/waiting`,{totalAmount}));
-    yield put(cancelVirtualAccountWaitingAsync.success(res.data));
+    yield put(cancelVirtualAccountWaitingAsync.success(orderNo));
   } catch (error) {
     yield put(cancelVirtualAccountWaitingAsync.failure(error));
     yield message.error(error);
