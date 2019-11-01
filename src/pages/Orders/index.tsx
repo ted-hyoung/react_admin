@@ -28,7 +28,7 @@ import { ResponseOrderItem } from 'models/OrderItem';
 
 // defines
 const { Option } = Select;
-const { confirm } = Modal;
+const { confirm, info } = Modal;
 const defaultSearchCondition = {
   startDate: moment(new Date()).format(startDateFormat),
   endDate: moment(new Date()).format(endDateFormat),
@@ -104,7 +104,6 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
               productName += ', ';
             }
           });
-
           setSelectedOrder({
             totalAmount: Number(record.totalAmount),
             orderNo: record.orderNo,
@@ -114,17 +113,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
           } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
             if (PaymentStatus[PaymentStatus.READY] === paymentStatus) {
-              if(record.paymentMethod === PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT]){
-                // 가상 계좌 주문 취소 API 호출
-                dispatch(cancelVirtualAccountWaitingAsync.request({
-                    orderNo: record.orderNo,
-                    totalAmount: Number(record.totalAmount)
-                  })
-                )
-              }else{
-                console.log("카드 및 계좌 이체 주문 취소 API 호출");
-                // 카드 및 계좌 이체 주문 취소 API 호출
-              }
+              message.error('관리자 홈페이지에서는 주문취소로 변경하실 수 없습니다.');
             } else {
               message.error('결제 대기인 경우에만 주문 취소가 가능합니다.');
             }
@@ -144,6 +133,9 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
                     orderNo: record.orderNo,
                   }),
                 );
+                info({
+                  title: '결제취소 완료 되었습니다.',
+                });
               }
             } else {
               // setVisibleCancelForm(true);
@@ -431,7 +423,6 @@ const Orders = () => {
           onChange: handlePaginationChange,
         }}
       />
-      {console.log(visibleCancelForm)}
       {selectedOrder && (
         <>
           <OrderCancelForm
