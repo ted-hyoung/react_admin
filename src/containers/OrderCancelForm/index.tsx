@@ -13,9 +13,10 @@ import { banksCode } from 'enums';
 import './index.less';
 import {
   cancelPaymentVirtualAccountAsync,
-  checkRefundAccountAsync,
+  checkRefundAccountAsync, OrderState,
   resetRefundAccountStateReducer,
 } from '../../store/reducer/order';
+import { ResponseOrder } from '../../models';
 const { warning, info } = Modal;
 const { Option } = Select;
 // types
@@ -85,12 +86,10 @@ const OrderCancelForm = Form.create<Props>()((props: Props) => {
             },
           }),
         );
-        if (refundAccountState) {
-          info({
-            title: '주문취소 신청이 완료 되었습니다.',
-            okText: '주문 취소 승인 후 입금까지 수분 소요되오니 참고해주시기 바랍니다.',
-          });
-        }
+        setVisible(false);
+        info({
+          title: '결제취소 완료 되었습니다.',
+        });
       } else {
         Object.keys(error).map(key => {
           warning({
@@ -170,7 +169,6 @@ const OrderCancelForm = Form.create<Props>()((props: Props) => {
                       {banksCode.banks.map((item, index) => {
                         return (
                           <Option key={index} value={item.code} style={{ zIndex: 2050 }}>
-                            {console.log(item.key)}
                             {item.key}
                           </Option>
                         );
