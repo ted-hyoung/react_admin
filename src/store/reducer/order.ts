@@ -18,6 +18,7 @@ import {
   UpdateOrderShippingDestination,
 } from 'models';
 import { AxiosError } from 'axios';
+import { PaymentStatus } from '../../enums';
 
 export interface OrderState {
   order: ResponseClientOrder;
@@ -81,14 +82,14 @@ export const cancelPaymentVirtualAccountAsync = createAsyncAction(
   Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_REQUEST,
   Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_SUCCESS,
   Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+)<RequestAsyncAction, {id:number}, ErrorAsyncAction>();
 
 // 결제 주문 건 취소 (카드, 실시간 계좌이체)
 export const cancelPaymentAsync = createAsyncAction(
   Actions.CANCEL_PAYMENT_REQUEST,
   Actions.CANCEL_PAYMENT_SUCCESS,
   Actions.CANCEL_PAYMENT_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+)<RequestAsyncAction, {id:number}, ErrorAsyncAction>();
 
 export const checkRefundAccountAsync = createAsyncAction(
   Actions.CHECK_REFUND_ACCOUNT_REQUEST,
@@ -102,7 +103,7 @@ export const cancelVirtualAccountWaitingAsync = createAsyncAction(
   Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_REQUEST,
   Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_SUCCESS,
   Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_FAILURE,
-)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
+)<RequestAsyncAction, {orderNo:number}, ErrorAsyncAction>();
 
 
 // reducers
@@ -198,10 +199,31 @@ const order = (state = initialState, action: ResponseAsyncAction) => {
       });
     }
     case Actions.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_SUCCESS:{
-      return state;
+      return produce(state, draft => {
+        const item = draft.orders.content.find(item => item.orderNo === action.payload);
+
+        if (item) {
+          item.payment.paymentStatus = PaymentStatus[PaymentStatus.REFUND_COMPLETE];
+        }
+      });
     }
     case Actions.CANCEL_PAYMENT_SUCCESS:{
-      return state;
+      return produce(state, draft => {
+        const item = draft.orders.content.find(item => item.orderNo === action.payload);
+
+        if (item) {
+          item.payment.paymentStatus = PaymentStatus[PaymentStatus.REFUND_COMPLETE];
+        }
+      });
+    }
+    case Actions.CANCEL_VIRTUAL_ACCOUNT_WAITING_SUCCESS:{
+      return produce(state, draft => {
+        const item = draft.orders.content.find(item => item.orderNo === action.payload);
+
+        if (item) {
+          item.payment.paymentStatus = PaymentStatus[PaymentStatus.CANCEL];
+        }
+      });
     }
 
     case Actions.CHECK_REFUND_ACCOUNT_SUCCESS: {

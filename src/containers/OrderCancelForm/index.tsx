@@ -120,7 +120,7 @@ const OrderCancelForm = Form.create<Props>()((props: Props) => {
           flexDirection: 'column',
           whiteSpace: 'normal',
         }}
-        zIndex={2000}
+        // zIndex={1000}
         centered
         closable={false}
         visible={visible}
