@@ -13,7 +13,7 @@ import {
   getStatisticsDailySalesAsync,
   getOrderByIdAsync,
   updateShippingDestinationByIdAsync,
-  cancelPaymentVirtualAccountAsync,
+  cancelPaymentVirtualAccountAsync, cancelPaymentAsync, checkRefundAccountAsync, cancelVirtualAccountWaitingAsync,
 } from 'store/reducer/order';
 
 // modules
@@ -25,6 +25,7 @@ import { parseParams } from 'lib/utils';
 // types
 import { RequestAsyncAction } from 'models/AsyncAction';
 import { message } from 'antd';
+import { getBrandsAsync } from '../reducer/brand';
 
 function* getOrderById(action: RequestAsyncAction) {
   try {
@@ -130,13 +131,53 @@ function* updateShippingDestinationById(action: RequestAsyncAction) {
   }
 }
 
+// ### 관리자 주문 환불 처리 (가상계좌) -> 관리자 단에서 취소하는 Case (결제 완료)
 function* cancelPaymentVirtualAccount(action: RequestAsyncAction) {
-  const { orderNo } = action.payload;
+  const { orderNo, data  } = action.payload;
   try {
-    const res = yield call(() => Api.put(`/payments/cancel/virtual-account/${orderNo}`));
-    yield put(cancelPaymentVirtualAccountAsync.success(res.data));
+    const res = yield call(() => Api.put(`/orders/${orderNo}/cancel/virtual-account`,data));
+    yield put(cancelPaymentVirtualAccountAsync.success(orderNo));
   } catch (error) {
     yield put(cancelPaymentVirtualAccountAsync.failure(error));
+  }
+}
+// ### 관리자 주문 취소 처리 (카드, 계좌이체) -> 관리자 단에서 취소하는 Case (결제 완료)
+function* cancelPayment(action: RequestAsyncAction) {
+  const { orderNo, totalAmount  } = action.payload;
+  try {
+    const res = yield call(() => Api.put(`/orders/${orderNo}/cancel`,{totalAmount}));
+    yield put(cancelPaymentAsync.success(orderNo));
+  } catch (error) {
+    yield put(cancelPaymentAsync.failure(error));
+  }
+}
+
+// 가상 계좌 결제 환불시 환불 계좌 정보 확인
+function* getCheckRefundAccount(action: RequestAsyncAction) {
+  try {
+    const { data } = action.payload;
+    const res = yield call(() =>
+      Api.get('/payments/refund/account/validate', {
+        params: {
+          ...data,
+        },
+      }),
+    );
+    yield put(checkRefundAccountAsync.success(res.data));
+  } catch (error) {
+    yield put(checkRefundAccountAsync.failure(error));
+    yield message.error(error);
+  }
+}
+
+function* cancelVirtualAccountWaiting(action: RequestAsyncAction) {
+  try {
+    const { orderNo, totalAmount } = action.payload;
+    const res = yield call(() => Api.put(`/orders/${orderNo}/cancel/virtual-account/waiting`,{totalAmount}));
+    yield put(cancelVirtualAccountWaitingAsync.success(orderNo));
+  } catch (error) {
+    yield put(cancelVirtualAccountWaitingAsync.failure(error));
+    yield message.error(error);
   }
 }
 
@@ -148,4 +189,8 @@ export default function* orderSaga() {
   yield takeLatest(Action.UPDATE_ORDERS_PAYMENT_STATUS_REQUEST, updateOrdersPaymentStatus);
   yield takeLatest(Action.UPDATE_SHIPPING_DESTINATION_BY_ID_REQUEST, updateShippingDestinationById);
   yield takeLatest(Action.CANCEL_PAYMENT_VIRTUAL_ACCOUNT_REQUEST, cancelPaymentVirtualAccount);
+  yield takeLatest(Action.CANCEL_PAYMENT_REQUEST, cancelPayment);
+  yield takeLatest(Action.CHECK_REFUND_ACCOUNT_REQUEST, getCheckRefundAccount);
+  yield takeLatest(Action.CANCEL_VIRTUAL_ACCOUNT_WAITING_REQUEST, cancelVirtualAccountWaiting);
+
 }

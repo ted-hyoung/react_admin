@@ -1,0 +1,178 @@
+.cancel-modal {
+
+  .ant-modal-content {
+    min-height: 340px;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+
+  .ant-modal-body {
+    min-height: 270px;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.54;
+    letter-spacing: -0.65px;
+    text-align: center;
+    white-space: pre;
+  }
+
+  .ant-modal-footer {
+    height: 70px;
+    background-color: #f6f6f6;
+  }
+
+  .ant-btn {
+    border: 0;
+    background-color: transparent !important;
+    box-shadow: none;
+    font-size: 22px;
+    line-height: 1.82;
+    letter-spacing: 2.2px;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    padding: 0 !important;
+  }
+
+  .cancel-modal-footer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: transparent;
+
+    &--confirm {
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 1px;
+        height: 24px;
+        background: #c6c6c6;
+      }
+    }
+  }
+
+  @media screen and (max-width: 540px) {
+    width: 85vw !important;
+
+    .ant-modal-content {
+      min-height: 63vw;
+      border-radius: 6vw;
+    }
+
+    .ant-modal-body {
+      min-height: 50vw;
+      font-size: 5vw;
+    }
+
+    .ant-modal-footer {
+      height: 13vw;
+    }
+
+    .ant-btn {
+      font-size: 4vw;
+    }
+
+    .main-modal-footer {
+      &--confirm {
+        &::after {
+          width: 1px;
+          height: 4vw;
+        }
+      }
+    }
+  }
+
+  &-orders-cancel {
+
+
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+    .ant-collapse {
+      border: 0;
+      border-radius: 0;
+    }
+
+    .ant-collapse-header {
+      padding: 30px !important;
+      background-color: #f5f6f8;
+    }
+
+    .ant-collapse-arrow {
+      font-size: 30px !important;
+      color: #959595 !important;
+    }
+
+    .ant-collapse-content-box {
+      padding: 0 !important;
+    }
+
+    .ant-list-item {
+      padding: 30px 40px !important;
+    }
+
+    &-header-main {
+      font-size: 26px;
+      margin: 19px 0;
+    }
+    &-header-sub {
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    &-form {
+      width: 312px;
+
+      &-title {
+        font-size: 15px;
+      }
+
+      &-option{
+        width: 100%;
+        height: 100%;
+        font-size: 15px;
+      }
+
+      &-input {
+        font-size: 15px;
+      }
+
+      &-button {
+        font-size: 15px;
+      }
+
+      &-check {
+        margin: 20px 0;
+      }
+
+      &-checkbox {
+        font-size: 15px;
+      }
+    }
+
+    .cancel-modal-orders-cancel-form-button {
+      background-color: #6a98f8 !important;
+
+      &:disabled {
+        background-color: #dddddd !important;
+      }
+    }
+  }
+}
+
+//.ant-select-dropdown {
+//  z-index: 2050 !important;
+//}
+//.ant-modal-wrap {
+//  z-index: 2000;
+//}
+
+//.ant-select-dropdown {
+//  z-index: 2050 !important;
+//}
