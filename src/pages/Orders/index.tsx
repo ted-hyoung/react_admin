@@ -1,44 +1,34 @@
 // base
-import React, { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ReactToPrint from 'react-to-print';
-
 // store
 import { StoreState } from 'store';
 import {
-  getOrdersAsync,
-  getOrdersExcelAsync,
+  cancelPaymentAsync,
   clearOrderExcel,
   getOrderByIdAsync,
-  cancelPaymentVirtualAccountAsync,
+  getOrdersAsync,
+  getOrdersExcelAsync,
+  cancelVirtualAccountWaitingAsync
 } from 'store/reducer/order';
 // modules
-import { Table, Button, Row, Col, Select, Modal, message, Statistic } from 'antd';
+import { Button, Col, message, Modal, Row, Select, Table } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
-
 // lib
 import { payCancelHost } from 'lib/protocols';
-
 // containers
-import { OrderSearchBar, OrderDetailModal } from 'containers';
-
+import { OrderCancelForm, OrderDetailModal, OrderSearchBar } from 'containers';
 // utils
-import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
-import { SearchOrder } from 'models/Order';
-import {
-  ShippingStatus,
-  ShippingCompany,
-  PaymentStatus,
-  PAYMENT_STATUSES,
-  PAYMENT_VIRTUAL_STATUSES,
-  PaymentMethod,
-} from 'enums';
+import { createExcel, dateTimeFormat, endDateFormat, startDateFormat } from 'lib/utils';
+import { CheckAccount, SearchOrder } from 'models/Order';
+import { PAYMENT_STATUSES, PaymentMethod, PaymentStatus, ShippingCompany, ShippingStatus } from 'enums';
 import { ResponseOrderItem } from 'models/OrderItem';
 
 // defines
 const { Option } = Select;
-const { confirm } = Modal;
+const { confirm, info } = Modal;
 const defaultSearchCondition = {
   startDate: moment(new Date()).format(startDateFormat),
   endDate: moment(new Date()).format(endDateFormat),
@@ -62,16 +52,17 @@ interface Orders {
 }
 
 interface SelectedOrder {
-  totalAmount: string;
+  totalAmount: number;
   orderNo: string;
-  transactionId: string;
-  brandName: string;
-  quantity: string;
-  productName: string;
+  // transactionId: string;
+  // brandName: string;
+  // quantity: string;
+  // productName: string;
 }
 
 interface OrdersPaymentSelect {
-  niceSubmitRef: React.RefObject<HTMLFormElement>;
+  visible: boolean;
+  setVisible: Dispatch<SetStateAction<boolean>>;
   record: Orders;
   setSelectedOrder: Dispatch<SetStateAction<SelectedOrder | undefined>>;
   status: PaymentStatus;
@@ -79,26 +70,16 @@ interface OrdersPaymentSelect {
 }
 
 const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
-  const { niceSubmitRef, record, setSelectedOrder, status, method } = props;
+
+  const { record, setSelectedOrder, status, method, setVisible } = props;
   const paymentStatus = status;
   const paymentMethod = method;
-
   const dispatch = useDispatch();
-  const [niceCancelPayment, setNiceCancelPayment] = useState(false);
+ // const [niceCancelPayment, setNiceCancelPayment] = useState(false);
 
   const handlePaymentStatusChange = useCallback(value => {
     showConfirm(value);
   }, []);
-
-  useEffect(() => {
-    if (niceCancelPayment && niceSubmitRef.current) {
-      if (PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method) {
-        dispatch(cancelPaymentVirtualAccountAsync.request({ orderNo: record.orderNo }));
-      } else {
-        niceSubmitRef.current.submit();
-      }
-    }
-  }, [niceCancelPayment]);
 
   const showConfirm = useCallback(
     (status: PaymentStatus) => {
@@ -123,54 +104,39 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
               productName += ', ';
             }
           });
-
           setSelectedOrder({
-            totalAmount: record.totalAmount,
+            totalAmount: Number(record.totalAmount.replace(/\$\s?|(,*)/g, '')),
             orderNo: record.orderNo,
-            transactionId: record.transactionId,
-            brandName: record.brandName,
-            quantity: quantity.toString(),
-            productName,
           });
-          if (PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT] === method) {
-            if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_READY] === status) {
-              message.error('관리자 홈페이지에서는 입금대기로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === status) {
-              message.error('관리자 홈페이지에서는 입금완료로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
-              if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_COMPLETE] === paymentStatus) {
-                setNiceCancelPayment(true);
-              } else {
-                message.error('입금완료인 경우에만 결제취소가 가능합니다.');
-              }
-            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === status) {
-              message.error('관리자 홈페이지에서는 취소요청으로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_COMPLETE] === status) {
-              if (PaymentStatus[PaymentStatus.VIRTUAL_ACCOUNT_REFUND_REQUEST] === paymentStatus) {
-                setNiceCancelPayment(true);
-              } else {
-                message.error('취소요청인 경우에만 취소완료가 가능합니다.');
-              }
+
+          if (PaymentStatus[PaymentStatus.READY] === status) {
+            message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
+          } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
+            if (PaymentStatus[PaymentStatus.READY] === paymentStatus) {
+              message.error('관리자 홈페이지에서는 주문취소로 변경하실 수 없습니다.');
+            } else {
+              message.error('결제 대기인 경우에만 주문 취소가 가능합니다.');
             }
-          } else {
-            if (PaymentStatus[PaymentStatus.READY] === status) {
-              message.error('관리자 홈페이지에서는 결제대기로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
-              message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.CANCEL] === status) {
-              if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
-                setNiceCancelPayment(true);
-              } else {
-                message.error('결제완료인 경우에만 결제취소가 가능합니다.');
+          } else if (PaymentStatus[PaymentStatus.COMPLETE] === status) {
+            message.error('관리자 홈페이지에서는 결제완료로 변경하실 수 없습니다.');
+          } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
+            if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
+              if(record.paymentMethod === PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT]){
+                // 가상계좌 주문 취소시 팝업(환불 정보 입력폼)
+                console.log("가상계좌 주문 취소시 팝업(환불 정보 입력폼)");
+                setVisible(true);
+              }else{
+                console.log("카드 및 계좌 이체 결제 환불 API 호출");
+                // 카드 및 계좌 이체 결제 환불 API 호출
+                dispatch(cancelPaymentAsync.request({
+                    totalAmount: Number(record.totalAmount.replace(/\$\s?|(,*)/g, '')),
+                    orderNo: record.orderNo,
+                  }),
+                );
               }
-            } else if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === status) {
-              message.error('관리자 홈페이지에서는 환불요청으로 변경하실 수 없습니다.');
-            } else if (PaymentStatus[PaymentStatus.REFUND_COMPLETE] === status) {
-              if (PaymentStatus[PaymentStatus.REFUND_REQUEST] === paymentStatus) {
-                setNiceCancelPayment(true);
-              } else {
-                message.error('환불요청인 경우에만 환불완료가 가능합니다.');
-              }
+            } else {
+              // setVisibleCancelForm(true);
+               message.error('결제완료인 경우에만 환불이 가능합니다.');
             }
           }
         },
@@ -182,13 +148,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
   return (
     <>
       <Select value={paymentStatus} style={{ width: 120 }} onChange={handlePaymentStatusChange}>
-        {paymentMethod === 'VIRTUAL_ACCOUNT'
-          ? PAYMENT_VIRTUAL_STATUSES.map(option => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))
-          : PAYMENT_STATUSES.map(option => (
+        {PAYMENT_STATUSES.map(option => (
               <Option key={option.value} value={option.value}>
                 {option.label}
               </Option>
@@ -205,6 +165,7 @@ const Orders = () => {
   const dispatch = useDispatch();
 
   const [visible, setVisible] = useState(false);
+  const [visibleCancelForm, setVisibleCancelForm] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<SelectedOrder>();
 
   const printRef = useRef<any>();
@@ -388,8 +349,9 @@ const Orders = () => {
       render: (text, record: Orders) => {
         return (
           <OrdersPaymentSelect
-            niceSubmitRef={niceSubmitRef}
             record={record}
+            visible={visibleCancelForm}
+            setVisible={setVisibleCancelForm}
             setSelectedOrder={setSelectedOrder}
             status={text}
             method={record.paymentMethod}
@@ -459,21 +421,13 @@ const Orders = () => {
         }}
       />
       {selectedOrder && (
-        <form
-          id={'form'}
-          action={payCancelHost}
-          target="_self"
-          method="POST"
-          style={{ width: 0, height: 0, visibility: 'hidden' }}
-          ref={niceSubmitRef}
-        >
-          <input type="hidden" name="cancelAmt" value={selectedOrder.totalAmount.toLocaleString()} />
-          <input type="hidden" name="moid" value={selectedOrder.orderNo} />
-          <input type="hidden" name="tid" value={selectedOrder.transactionId} />
-          <input type="hidden" name="quantity" value={selectedOrder.quantity} />
-          <input type="hidden" name="brandName" value={selectedOrder.brandName} />
-          <input type="hidden" name="productName" value={selectedOrder.productName} />
-        </form>
+        <>
+          <OrderCancelForm
+            totalAmount={selectedOrder.totalAmount}
+            orderNo={selectedOrder.orderNo}
+            visible={visibleCancelForm}
+            setVisible={setVisibleCancelForm} />
+        </>
       )}
       <OrderDetailModal visible={visible} onCancel={handleCancel} />
     </div>

@@ -23,9 +23,6 @@ import {
   SHIPPING_STATUSES,
   DEFAULT_PAYMENT_STATUSES,
   DEFAULT_SHIPPING_STATUSES,
-  PAYMENT_VIRTUAL_STATUSES,
-  PAYMENT_STATUSES_TOTAL,
-  DEFAULT_PAYMENT_STATUSES_TOTAL,
 } from 'enums';
 
 // lib
@@ -73,7 +70,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
 
   const handleChangePaymentStatusesAll = useCallback(e => {
     setFieldsValue({
-      paymentStatuses: e.target.checked ? DEFAULT_PAYMENT_STATUSES_TOTAL : [],
+      paymentStatuses: e.target.checked ? DEFAULT_PAYMENT_STATUSES : [],
     });
     setPaymentCheckAll(e.target.checked);
   }, []);
@@ -206,8 +203,8 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                     전체
                   </Checkbox>
                   {getFieldDecorator('paymentStatuses', {
-                    initialValue: DEFAULT_PAYMENT_STATUSES_TOTAL,
-                  })(<Checkbox.Group options={PAYMENT_STATUSES_TOTAL} onChange={handleChangePaymentStatuses} />)}
+                    initialValue: DEFAULT_PAYMENT_STATUSES,
+                  })(<Checkbox.Group options={PAYMENT_STATUSES} onChange={handleChangePaymentStatuses} />)}
                 </Form.Item>
               </Col>
             </Row>

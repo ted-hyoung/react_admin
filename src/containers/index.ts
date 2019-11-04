@@ -30,4 +30,5 @@ export { default as QnaSearch } from './QnaSearch';
 export { default as ShippingSearchBar } from './ShippingSearchBar';
 export { default as OrderSearchBar } from './OrderSearchBar';
 export { default as OrderDetailModal } from './OrderDetailModal';
+export { default as OrderCancelForm } from './OrderCancelForm';
 export { default as AccountSearchBar } from './AccountSearchBar';

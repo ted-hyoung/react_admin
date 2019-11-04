@@ -123,3 +123,9 @@ export interface UpdateOrderShippingDestination {
   memo: string;
   shippingDestination: UpdateShippingDestination;
 }
+
+export interface CheckAccount {
+  refundAccountDepositor:string;
+  refundAccountBank:string;
+  refundAccountNumber:string;
+}
