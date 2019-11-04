@@ -87,9 +87,6 @@ const OrderCancelForm = Form.create<Props>()((props: Props) => {
           }),
         );
         setVisible(false);
-        info({
-          title: '결제취소 완료 되었습니다.',
-        });
       } else {
         Object.keys(error).map(key => {
           warning({
