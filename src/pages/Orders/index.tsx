@@ -105,7 +105,7 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             }
           });
           setSelectedOrder({
-            totalAmount: Number(record.totalAmount),
+            totalAmount: Number(record.totalAmount.replace(/\$\s?|(,*)/g, '')),
             orderNo: record.orderNo,
           });
 
@@ -129,13 +129,10 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
                 console.log("카드 및 계좌 이체 결제 환불 API 호출");
                 // 카드 및 계좌 이체 결제 환불 API 호출
                 dispatch(cancelPaymentAsync.request({
-                    totalAmount: Number(record.totalAmount),
+                    totalAmount: Number(record.totalAmount.replace(/\$\s?|(,*)/g, '')),
                     orderNo: record.orderNo,
                   }),
                 );
-                info({
-                  title: '결제취소 완료 되었습니다.',
-                });
               }
             } else {
               // setVisibleCancelForm(true);
