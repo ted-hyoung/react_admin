@@ -137,6 +137,7 @@ function* cancelPaymentVirtualAccount(action: RequestAsyncAction) {
   try {
     const res = yield call(() => Api.put(`/orders/${orderNo}/cancel/virtual-account`,data));
     yield put(cancelPaymentVirtualAccountAsync.success(orderNo));
+    message.success('결제취소 완료 되었습니다.');
   } catch (error) {
     yield put(cancelPaymentVirtualAccountAsync.failure(error));
   }
@@ -147,6 +148,7 @@ function* cancelPayment(action: RequestAsyncAction) {
   try {
     const res = yield call(() => Api.put(`/orders/${orderNo}/cancel`,{totalAmount}));
     yield put(cancelPaymentAsync.success(orderNo));
+    message.success('결제취소 완료 되었습니다.');
   } catch (error) {
     yield put(cancelPaymentAsync.failure(error));
   }

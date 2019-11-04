@@ -171,7 +171,6 @@ function* deleteProductNotice(action: RequestAsyncAction) {
     const data2 = {
       productProvisions: [{ ...data }],
     };
-    console.log(eventId, data2);
     // const res = yield call(() => Api.del(`/events/${eventId}/products`, {data}));
     // yield put(deleteProductsAsync.success(res.data));
     message.success('상품 제품을 삭제했습니다.');
