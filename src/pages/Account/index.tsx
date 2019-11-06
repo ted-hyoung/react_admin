@@ -5,13 +5,7 @@ import ReactToPrint from 'react-to-print';
 
 // store
 import { StoreState } from 'store';
-import {
-  getOrdersAsync,
-  getOrdersExcelAsync,
-  clearOrderExcel,
-  getOrderByIdAsync,
-  cancelPaymentVirtualAccountAsync,
-} from 'store/reducer/order';
+
 // modules
 import { Table, Button, Row, Col, Select, Modal, message, Statistic, Divider, Tag } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
@@ -21,7 +15,7 @@ import moment from 'moment';
 import { payCancelHost } from 'lib/protocols';
 
 // containers
-import { AccountSearchBar } from 'containers';
+import { AccountDetailModal, AccountSearchBar } from 'containers';
 
 // utils
 import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
@@ -42,8 +36,12 @@ const Account = () => {
   const printRef = useRef<any>();
   const { accounts } = useSelector((storeState: StoreState) => storeState.accountState);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[] | number[]>([]);
-  const { size: pageSize, totalElements } = accounts;
+  const { size: pageSize, totalElements, content } = accounts;
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
+  const [account, setAccount] = useState<ResponseAccounts>();
+
+
+  const [visible, setVisible] = useState<boolean>(false);
   const getAccounts = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchAccounts) => {
       dispatch(
@@ -69,8 +67,6 @@ const Account = () => {
     getAccounts(0, pageSize);
   }, [getAccounts, pageSize]);
 
-  console.log(accounts);
-
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: string[] | number[]) => {
@@ -78,12 +74,16 @@ const Account = () => {
     },
   };
 
-
   const handleChangeBlackMember = (ids: string[] | number[]) => {
     console.log(ids);
   };
   const handleDeleteAccount = (ids: string[] | number[]) => {
     console.log(ids);
+  };
+
+  const handleVisible = (id : string) => {
+    setVisible(true);
+    setAccount(content.find(item => item.loginId === id));
   };
 
   const columns: Array<ColumnProps<ResponseAccounts>> = [
@@ -111,7 +111,7 @@ const Account = () => {
       key: 'button',
       render: (text, account) =>
         <>
-          <Button style={{ marginRight: '5px' }} type="primary" onClick={() => console.log(account.loginId)}>
+          <Button style={{ marginRight: '5px' }} type="primary" onClick={() => handleVisible(account.loginId)}>
             보기
           </Button>
           <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log()}>
@@ -148,7 +148,6 @@ const Account = () => {
           rowKey={accounts => accounts.loginId.toString()+'_'+accounts.userName}
           title={() => (
             <>
-
               <Row type="flex" justify="space-between">
                 <Col>
                   <p style={{marginBottom: '10px'}}>검색결과 총 {accounts.totalElements}건</p>
@@ -188,6 +187,13 @@ const Account = () => {
             pageSize: accounts.size,
             onChange: handlePaginationChange,
           }}
+        />
+      }
+      { account &&
+        <AccountDetailModal
+          visible={visible}
+          onCancel={() => setVisible(false)}
+          account={account}
         />
       }
     </div>
