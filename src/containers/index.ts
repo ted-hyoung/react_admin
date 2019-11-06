@@ -32,3 +32,4 @@ export { default as OrderSearchBar } from './OrderSearchBar';
 export { default as OrderDetailModal } from './OrderDetailModal';
 export { default as OrderCancelForm } from './OrderCancelForm';
 export { default as AccountSearchBar } from './AccountSearchBar';
+export { default as AccountDetailModal } from './AccountDetailModal';
