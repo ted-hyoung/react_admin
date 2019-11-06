@@ -22,7 +22,7 @@ import {
   PAYMENT_STATUSES,
   SHIPPING_STATUSES,
   DEFAULT_PAYMENT_STATUSES,
-  DEFAULT_SHIPPING_STATUSES,
+  DEFAULT_SHIPPING_STATUSES, ActionType,
 } from 'enums';
 
 // lib
@@ -190,7 +190,16 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                 <Form.Item>
                   {getFieldDecorator('dates', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
-                  })(<SearchDateFormItem />)}
+                  })(<SearchDateFormItem
+                    option={[
+                      ActionType.TODAY,
+                      ActionType.RECENT_3DAYS,
+                      ActionType.RECENT_WEEK,
+                      ActionType.RECENT_MONTH,
+                      ActionType.RECENT_THREE_MONTH,
+                      ActionType.RECENT_SIX_MONTH
+                    ]}
+                  />)}
                 </Form.Item>
               </Col>
             </Row>

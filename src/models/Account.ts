@@ -28,3 +28,37 @@ export interface ResponseAccountForOrderMemo {
   loginId: string;
   role: Role;
 }
+
+export interface ResponseAccounts {
+  created: string;
+  userName: string;
+  loginId: string;
+  loginMethod: string;
+  grade:string;
+  phone: string;
+  isAdvertise : boolean;
+}
+
+export interface SearchAccounts {
+  username?: string;
+  phone?: string;
+  userId?: string;
+  address?: string;
+  signUpStartDate?: string;
+  signUpEndDate?: string;
+  startAge?: string;
+  endAge?: string;
+  totalOrderAmountStart?: string;
+  totalOrderAmountEnd?: string;
+  totalPaymentAmountStart?: string;
+  totalPaymentAmountEnd?: string;
+  totalOrderCountStart?: string;
+  totalOrderCountEnd?: string;
+  totalPaymentCountStart?: string;
+  totalPaymentCountEnd?: string;
+  orderStartDate?: string;
+  orderEndDate?: string;
+  firstOrder?: boolean;
+  accessEndDate?: string;
+  accessStartDate?: string;
+}

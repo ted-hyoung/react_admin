@@ -1,6 +1,20 @@
 export enum DateRange {
+  TODAY = '오늘',
   RECENT_3DAYS = '최근 3일',
   RECENT_WEEK = '최근 7일',
   RECENT_MONTH = '최근 1개월',
-  RECENT_3MONTHS = '최근 3개월',
+  RECENT_THREE_MONTH = '최근 3개월',
+  RECENT_SIX_MONTH = '최근 6개월',
+  DEFAULT = 'DEFAULT',
+}
+
+export enum ActionType {
+  // ALL = 'ALL',
+  TODAY = 'TODAY',
+  RECENT_3DAYS = 'RECENT_3DAYS',
+  RECENT_WEEK = 'RECENT_WEEK',
+  RECENT_MONTH = 'RECENT_MONTH',
+  RECENT_THREE_MONTH = 'RECENT_THREE_MONTH',
+  RECENT_SIX_MONTH = 'RECENT_SIX_MONTH',
+  DEFAULT = 'DEFAULT',
 }

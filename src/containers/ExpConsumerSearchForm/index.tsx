@@ -14,6 +14,7 @@ import { FlexRow, SearchDateFormItem } from 'components';
 import { SearchExperienceGroupConsumer } from 'models';
 import { PrizeStatus } from 'enums/PrizeStatus';
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
+import { ActionType } from '../../enums';
 
 // defines
 const winningStatuses = [
@@ -107,7 +108,17 @@ function ExpConsumerSearchForm(props: ExpConsumerSearchFormProps) {
           </FlexRow>
         </Descriptions.Item>
         <Descriptions.Item label="검색 기간" span={24}>
-          {getFieldDecorator('dates')(<SearchDateFormItem />)}
+          {getFieldDecorator('dates')(
+            <SearchDateFormItem
+              option={[
+                ActionType.TODAY,
+                ActionType.RECENT_3DAYS,
+                ActionType.RECENT_WEEK,
+                ActionType.RECENT_MONTH,
+                ActionType.RECENT_THREE_MONTH,
+                ActionType.RECENT_SIX_MONTH
+              ]}
+          />)}
         </Descriptions.Item>
         <Descriptions.Item label="검색어" span={24}>
           <Checkbox
