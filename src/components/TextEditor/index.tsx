@@ -79,7 +79,9 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
 
       instgramProcess(contents);
 
-      onChange(editor.getHTML());
+      setTimeout(() => {
+        onChange(editor.getHTML());
+      }, 1000);
     }
   };
 
