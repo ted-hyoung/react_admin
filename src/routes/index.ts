@@ -55,6 +55,11 @@ export default [
     secret: true,
   },
   {
+    path: '/banner',
+    component: lazy(() => import('../pages/Banner')),
+    secret: true,
+  },
+  {
     path: '/home',
     component: lazy(() => import('../pages/Home')),
     secret: true,

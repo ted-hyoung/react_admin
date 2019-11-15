@@ -96,6 +96,21 @@ const MENU_LIST = [
       },
     ],
   },
+  {
+    key: 'banner',
+    name: '배너 관리',
+    icon: 'idcard',
+    subMenus: [
+      {
+        key: 'banner',
+        name: '배너 오픈 관리',
+      },
+      {
+        key: 'add-banner',
+        name: '배너 신규 등록',
+      },
+    ],
+  },
 ];
 
 function Menu(props: RouteComponentProps) {
