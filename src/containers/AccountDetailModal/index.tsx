@@ -26,25 +26,17 @@ import moment from 'moment';
 import { ScrollspyTabs } from 'components';
 
 // lib
-import { endDateFormat, getThumbUrl, pad, startDateFormat } from 'lib/utils';
+import { endDateFormat, startDateFormat } from 'lib/utils';
 
 // enums
-import { ShippingStatus, PaymentMethod, PaymentStatus, CardCode, ShippingCompany } from 'enums';
-import { ImportanceCode } from 'enums/ImportanceCode';
-import { Role } from 'enums/Role';
+import { SocialProviderCode } from 'enums';
 
 import './index.less';
 import {
   ResponseAccounts,
-  ResponseClientPaymentForOrder,
-  ResponseEventForOrders,
-  ResponseOrderConsumer, SearchOrder,
+  SearchOrder,
 } from '../../models';
 import Form, { FormComponentProps } from 'antd/lib/form';
-import { LOCAL_DATE_TIME_FORMAT } from '../../lib/constants';
-import { ResponseOrderItem } from '../../models/OrderItem';
-import { ResponseOrderMemoForOrder } from '../../models/OrderMemo';
-import { ResponseClientShippingForOrder, ResponseShippingDestination } from '../../models/Shipping';
 import { getOrdersAsync } from '../../store/reducer/order';
 
 interface AccountDetailModalProps extends FormComponentProps {
@@ -59,7 +51,7 @@ const defaultSearchCondition = {
 const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: AccountDetailModalProps) => {
 // function AccountDetailModal(props: AccountDetailModalProps) {
   const { visible, onCancel, account, form } = props;
-  const { loginId , loginMethod, userName, isAdvertise, created, grade, phone } = account;
+  const { consumerId , socialProvider, username, marketingInfoAgree, created, phone } = account;
   const { getFieldDecorator, validateFields, setFieldsValue, resetFields } = form;
   const dispatch = useDispatch();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -152,7 +144,7 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
           <Row type="flex" gutter={20}>
             <Col>
               <strong>성명: </strong>
-              <span>{userName}</span>
+              <span>{username}</span>
             </Col>
             <Col>
               <strong>가입일: </strong>
@@ -179,10 +171,10 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
             <p className="scroll-section-title">회원기본정보</p>
             <Descriptions bordered colon={false} column={24}>
               <Descriptions.Item  span={24} label="아이디">
-                {loginId}
+                {consumerId}
               </Descriptions.Item>
               <Descriptions.Item  span={24} label="이름">
-                {userName}
+                {username}
               </Descriptions.Item>
               <Descriptions.Item span={24} label="휴대폰번호">
                 {modifiable ?
@@ -222,10 +214,19 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
                 }
               </Descriptions.Item>
               <Descriptions.Item span={24} label="로그인 방법">
-                <Tag style={{color: '#381e1f'}} color={loginMethod === '카카오톡' ? '#e4d533' : '#a6a6a6'}>{loginMethod}</Tag>
+                <Tag
+                  style={{
+                    boxShadow: '1px 1px 1px 1px #b3b3b3',
+                    color: SocialProviderCode.카카오 === account.socialProvider ? '#381e1f' : '#ffffff'
+                  }}
+                  color={
+                    SocialProviderCode.카카오 === account.socialProvider ? '#e4d533' : '#1bba00'
+                  }>
+                  {SocialProviderCode[account.socialProvider]}
+                </Tag>
               </Descriptions.Item>
               <Descriptions.Item span={24}  label="마케팅 정보 수신 동의">
-                <Radio.Group onChange={onChangeRadio} defaultValue={isAdvertise} disabled={!modifiable}>
+                <Radio.Group onChange={onChangeRadio} defaultValue={marketingInfoAgree} disabled={!modifiable}>
                   <Radio value={true}>수신</Radio>
                   <Radio value={false}>수신거부</Radio>
                 </Radio.Group>

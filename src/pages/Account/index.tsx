@@ -17,6 +17,9 @@ import { payCancelHost } from 'lib/protocols';
 // containers
 import { AccountDetailModal, AccountSearchBar } from 'containers';
 
+// enums
+import { SocialProviderCode } from 'enums';
+
 // utils
 import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
 import { ResponseAccounts, ResponseOption, SearchAccounts, SearchOrder } from '../../models';
@@ -83,26 +86,51 @@ const Account = () => {
 
   const handleVisible = (id : string) => {
     setVisible(true);
-    setAccount(content.find(item => item.loginId === id));
+    setAccount(content.find(item => item.consumerId === id));
   };
+
+// username; // 이름
+// phone; // 연락처
+// consumerCreatedStarted; // 가입일 검색 조건 시작
+// consumerCreatedEnded; // 가입일 검색 조건 마지막
+// AgeCode ageCode; // 나이
+// consumerAccessDateStarted; // 마지막 로그인 검색 조건 시작
+// consumerAccessDateEnded; // 마지막 로그인 검색 조건 마지막
+// OrderSearch orderSearch; // 구매금액/건수 Enum
+// orderTotalStarted;  // 구매금액/건수 검색 조건 시작
+// orderTotalEnded;  // 구매금액/건수 검색 조건 마지막
+// orderCreateStarted; // 주문 검색 조건 시작
+// orderCreateEnded; // 주문 검색 조건 마지막
+// firstOrderFlag; // 첫 주문 여부 값
+// event ; // 공구 및 상품 검색 조건
 
   const columns: Array<ColumnProps<ResponseAccounts>> = [
     { title: '가입일', dataIndex: 'created', key: 'created'},
-    { title: '이름', dataIndex: 'userName', key: 'userName' },
-    { title: '아이디', dataIndex: 'loginId', key: 'loginId' },
+    { title: '이름', dataIndex: 'username', key: 'username' },
+    { title: '아이디', dataIndex: 'consumerId', key: 'consumerId' },
     {
-      title: '가입수단', dataIndex: 'loginMethod', key: 'loginMethod',
+      title: '가입수단', dataIndex: 'socialProvider', key: 'socialProvider',
       render: (text: string, account: ResponseAccounts, index: number) => {
-        return <Tag style={{color: '#381e1f'}} color={account.loginMethod === '카카오톡' ? '#e4d533' : '#a6a6a6'}>{account.loginMethod}</Tag>;
+        return (
+          <Tag
+            style={{
+              boxShadow: '1px 1px 1px 1px #b3b3b3',
+              color: SocialProviderCode.카카오 === account.socialProvider ? '#381e1f' : '#ffffff'
+            }}
+            color={
+              SocialProviderCode.카카오 === account.socialProvider ? '#e4d533' : '#1bba00'
+            }>
+            {SocialProviderCode[account.socialProvider]}
+          </Tag>
+        )
       }
     },
-    { title: '등급', dataIndex: 'grade', key: 'grade' },
     { title: '연락처', dataIndex: 'phone', key: 'phone' },
     { title: '광고 수신동의',
-      dataIndex: 'isAdvertise',
-      key: 'isAdvertise',
+      dataIndex: 'marketingInfoAgree',
+      key: 'marketingInfoAgree',
       render: (text: string, account: ResponseAccounts, index: number) => {
-        return account.isAdvertise ? ('수신동의') : ('수신거부');
+        return account.marketingInfoAgree ? ('수신동의') : ('수신거부');
       }
     },
     {
@@ -111,7 +139,7 @@ const Account = () => {
       key: 'button',
       render: (text, account) =>
         <>
-          <Button style={{ marginRight: '5px' }} type="primary" onClick={() => handleVisible(account.loginId)}>
+          <Button style={{ marginRight: '5px' }} type="primary" onClick={() => handleVisible(account.consumerId)}>
             보기
           </Button>
           <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log()}>
@@ -127,13 +155,12 @@ const Account = () => {
   const dataSource: ResponseAccounts[] = accounts.content.map((account, i) => {
     return {
       created: moment(account.created).format(dateTimeFormat),
-      userName: account.userName,
-      loginId: account.loginId,
-      loginMethod: account.loginMethod,
-      grade: account.grade,
+      username: account.username,
+      consumerId: account.consumerId,
+      socialProvider: account.socialProvider,
       phone: account.phone,
-      isAdvertise: account.isAdvertise,
-      button: account.loginId,
+      marketingInfoAgree: account.marketingInfoAgree,
+      button: account.consumerId,
     };
   });
   return (
@@ -145,7 +172,7 @@ const Account = () => {
       <Divider />
       {accounts.size > 0 &&
         <Table style={{ padding: '16px 10px'}}
-          rowKey={accounts => accounts.loginId.toString()+'_'+accounts.userName}
+          rowKey={accounts => accounts.consumerId.toString()+'_'+accounts.username}
           title={() => (
             <>
               <Row type="flex" justify="space-between">

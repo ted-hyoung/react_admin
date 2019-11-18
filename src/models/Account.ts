@@ -1,5 +1,6 @@
 import { FileObject } from './FileObject';
 import { Role } from 'enums/Role';
+import { SocialProviderCode } from '../enums';
 
 export interface LoginAccount {
   loginId: string;
@@ -31,12 +32,11 @@ export interface ResponseAccountForOrderMemo {
 
 export interface ResponseAccounts {
   created: string;
-  userName: string;
-  loginId: string;
-  loginMethod: string;
-  grade:string;
+  username: string;
+  consumerId: string;
+  socialProvider: SocialProviderCode;
   phone: string;
-  isAdvertise : boolean;
+  marketingInfoAgree : boolean;
 }
 
 export interface SearchAccounts {
