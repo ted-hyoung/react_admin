@@ -18,6 +18,8 @@ export * from './ImportanceCode';
 export * from './PrizeStatus';
 export * from './BankCode';
 export * from './SocialProviderCode';
+export * from './AgeCode';
+export * from './OrderSearch'
 
 
 

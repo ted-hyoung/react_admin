@@ -19,10 +19,8 @@ import { EventSearch, EventSearchModal } from 'containers';
 // models, enums
 import { ResponseProduct } from 'models';
 import {
-  PAYMENT_STATUSES,
-  SHIPPING_STATUSES,
-  DEFAULT_PAYMENT_STATUSES,
-  DEFAULT_SHIPPING_STATUSES, ActionType,
+  ageDatas,
+  OrderSearch
 } from 'enums';
 
 // lib
@@ -56,7 +54,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
   const [startAge, setStartAge] = useState<number>(0);
   const [endAge, setEndAge] = useState<number>(0);
   const [privateInfoKey, setPrivateInfoKey] = useState<string>('');
-  const [selectedTotal, setSelectedTotal] = useState<string>('total');
+  const [selectedTotal, setSelectedTotal] = useState<string>('TOTAL');
 
   const [eventSearchModal, setEventSearchModal] = useState<boolean>(false);
 
@@ -71,47 +69,54 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
         if (!errors) {
           Object.keys(values).forEach(key => {
 
-            if (values[key] === undefined) {
+            if ((values[key] === undefined) || (values[key] === "")) {
               delete values[key];
               return;
             }
 
-            if (key === 'endAge') {
-              const startAge = values[`startAge`];
-              const endAge = values[key];
-              if(startAge > endAge){
-                message.error("시작 나이가 종료나이보다 클 수 없습니다.");
-                setFieldsValue({
-                  startAge: endAge,
-                });
-                return false;
-              }else if(startAge === 0 &&  endAge ===0){
-                  delete values[key];
-                  delete values[`startAge`];
-                  return;
+            values.orderSearch = selectedTotal;
+
+            if(selectedTotal !== 'TOTAL'){
+              if (key === 'orderTotalEnded') {
+                const start = values[`orderTotalStarted`];
+                const end = values[key];
+                if(start > end){
+                  message.error("시작값이 종료값보다 클 수 없습니다.");
+                  setFieldsValue({
+                    orderTotalStarted: end,
+                  });
+                  return false;
+                }else if(start === 0 ||  end ===0){
+                  message.error("값을 입력 바랍니다.");
+                  return false;
+                }
               }
+            }else{
+              delete values[`orderSearch`];
+              delete values[`orderTotalEnded`];
+              delete values[`orderTotalStarted`];
             }
 
-            if (key === 'accessDates') {
+            if (key === 'consumerCreated') {
               const dates = values[key];
-              values.accessStartDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
-              values.accessEndDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+              values.consumerCreatedStarted= dates[0].format(LOCAL_DATE_TIME_FORMAT);
+              values.consumerCreatedEnded = dates[1].format(LOCAL_DATE_TIME_FORMAT);
               delete values[key];
               return;
             }
 
-            if (key === 'orderDates') {
+            if (key === 'consumerAccessDate') {
               const dates = values[key];
-              values.orderStartDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
-              values.orderEndDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+              values.consumerAccessDateStarted = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+              values.consumerAccessDateEnded = dates[1].format(LOCAL_DATE_TIME_FORMAT);
               delete values[key];
               return;
             }
 
-            if (key === 'signUpDates') {
+            if (key === 'orderCreate') {
               const dates = values[key];
-              values.signUpStartDate = dates[0].format(LOCAL_DATE_TIME_FORMAT);
-              values.signUpEndDate = dates[1].format(LOCAL_DATE_TIME_FORMAT);
+              values.orderCreateStarted = dates[0].format(LOCAL_DATE_TIME_FORMAT);
+              values.orderCreateEnded = dates[1].format(LOCAL_DATE_TIME_FORMAT);
               delete values[key];
               return;
             }
@@ -130,7 +135,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
         }
       });
     },
-    [onSearch, privateInfoKey],
+    [onSearch, privateInfoKey, selectedTotal],
   );
 
   const handleReset = useCallback(() => {
@@ -160,14 +165,14 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
 
   const getSelectedTotal = () => {
 
-    if((selectedTotal === 'totalOrderAmount') || (selectedTotal === 'totalPaymentAmount')){
+    if((selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT]) || (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT_COMPLETE])){
       return (
         <Col span={12} className="text-align-left" style={{minWidth:'316px'}}>
           {getFieldDecorator('privateInfo')(
             <>
               <Col className="text-align-left" span={3} style={{width:'156px'}}>
                 <Form.Item>
-                  {getFieldDecorator(`${selectedTotal}Start`, {
+                  {getFieldDecorator(`orderTotalStarted`, {
                     initialValue: 0,
                   })(<InputNumber
                       min={0}
@@ -192,7 +197,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
               </Col>
               <Col className="text-align-left" span={3} style={{width:'160px'}}>
                 <Form.Item>
-                  {getFieldDecorator(`${selectedTotal}End`, {
+                  {getFieldDecorator(`orderTotalEnded`, {
                     initialValue: 0,
                   })(<InputNumber
                       min={0}
@@ -220,14 +225,14 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
           )}
         </Col>
       );
-    }else if((selectedTotal === 'totalOrderCount') || (selectedTotal === 'totalPaymentCount')){
+    }else if((selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT]) || (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT_COMPLETE])){
       return (
         <Col span={12} className="text-align-left" style={{minWidth:'316px'}}>
           {getFieldDecorator('privateInfo')(
             <>
               <Col className="text-align-left" span={3} style={{width:'156px'}}>
                 <Form.Item>
-                  {getFieldDecorator(`${selectedTotal}Start`, {
+                  {getFieldDecorator(`orderTotalStarted`, {
                     initialValue: 0,
                   })(<InputNumber
                     type='number'
@@ -251,7 +256,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
               </Col>
               <Col className="text-align-left" span={3} style={{width:'160px'}}>
                 <Form.Item>
-                  {getFieldDecorator(`${selectedTotal}End`, {
+                  {getFieldDecorator(`orderTotalEnded`, {
                     initialValue: 0,
                   })(<InputNumber
                     type='number'
@@ -296,10 +301,8 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                 <span>
                     <Select defaultValue={ privateInfoKey } style={{ width: 120 }} onChange={handleChange}>
                       <Option value="">선택</Option>
-                      <Option value="name">이름</Option>
-                      <Option value="id">아이디</Option>
-                      <Option value="tel">연락처</Option>
-                      <Option value="address">주소</Option>
+                      <Option value="username">이름</Option>
+                      <Option value="phone">연락처</Option>
                     </Select>
                 </span>
               </Col>
@@ -310,10 +313,11 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={24}>
                 <Form.Item>
-                  {getFieldDecorator('signUpDates', {
+                  {getFieldDecorator('consumerCreated', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(
-                    <SearchDateFormItem />)}
+                    <SearchDateFormItem />
+                  )}
                 </Form.Item>
               </Col>
             </Row>
@@ -321,57 +325,79 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
           <Descriptions.Item label="나이" span={24}>
             <Row>
               <Col className="text-align-left" span={3} style={{width:'160px'}}>
-                <Form.Item>
-                  {getFieldDecorator('startAge', {
-                    initialValue: 0,
-                  })(<InputNumber
-                    min={0}
-                    max={99}
-                    type='number'
-                    style={{ width: 100, textAlign: 'center' }}
-                    placeholder="시작"
-                  />)}
-                  <Input
-                    style={{
-                      width: 55,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
-                    placeholder="세  ~ "
-                    disabled
-                  />
-                </Form.Item>
+                {getFieldDecorator('age', {
+                  initialValue: '',
+                  rules: [
+                    {
+                      required: false,
+                      message: '연령대 선택해 주세요!',
+                    },
+                  ],
+                })(
+                  <Select className="cancel-modal-orders-cancel-form-option" >
+                    <Option value="" style={{ zIndex: 2050 }}>선택</Option>
+                    {ageDatas.map((item, index) => {
+                      return (
+                        <Option key={index} value={item.key} style={{ zIndex: 2050 }}>
+                          {item.value}
+                        </Option>
+                      );
+                    })}
+                  </Select>,
+                )}
               </Col>
-              <Col className="text-align-left" span={3} style={{width:'160px'}}>
-                <Form.Item>
-                  {getFieldDecorator('endAge', {
-                    initialValue: 0,
-                  })(<InputNumber
-                    min={0}
-                    max={99}
-                    type='number'
-                    style={{ width: 100, textAlign: 'center' }}
-                    placeholder="시작"
-                  />)}
-                  <Input
-                    style={{
-                      width: 52,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
-                    placeholder="세"
-                    disabled
-                  />
-                </Form.Item>
-              </Col>
+              {/*<Col className="text-align-left" span={3} style={{width:'160px'}}>*/}
+              {/*  <Form.Item>*/}
+              {/*    {getFieldDecorator('startAge', {*/}
+              {/*      initialValue: 0,*/}
+              {/*    })(<InputNumber*/}
+              {/*      min={0}*/}
+              {/*      max={99}*/}
+              {/*      type='number'*/}
+              {/*      style={{ width: 100, textAlign: 'center' }}*/}
+              {/*      placeholder="시작"*/}
+              {/*    />)}*/}
+              {/*    <Input*/}
+              {/*      style={{*/}
+              {/*        width: 55,*/}
+              {/*        borderLeft: 0,*/}
+              {/*        pointerEvents: 'none',*/}
+              {/*        backgroundColor: '#fff',*/}
+              {/*        marginRight: '0px',*/}
+              {/*        marginLeft: '1px',*/}
+              {/*        border: 'none',*/}
+              {/*      }}*/}
+              {/*      placeholder="세  ~ "*/}
+              {/*      disabled*/}
+              {/*    />*/}
+              {/*  </Form.Item>*/}
+              {/*</Col>*/}
+              {/*<Col className="text-align-left" span={3} style={{width:'160px'}}>*/}
+              {/*  <Form.Item>*/}
+              {/*    {getFieldDecorator('endAge', {*/}
+              {/*      initialValue: 0,*/}
+              {/*    })(<InputNumber*/}
+              {/*      min={0}*/}
+              {/*      max={99}*/}
+              {/*      type='number'*/}
+              {/*      style={{ width: 100, textAlign: 'center' }}*/}
+              {/*      placeholder="시작"*/}
+              {/*    />)}*/}
+              {/*    <Input*/}
+              {/*      style={{*/}
+              {/*        width: 52,*/}
+              {/*        borderLeft: 0,*/}
+              {/*        pointerEvents: 'none',*/}
+              {/*        backgroundColor: '#fff',*/}
+              {/*        marginRight: '0px',*/}
+              {/*        marginLeft: '1px',*/}
+              {/*        border: 'none',*/}
+              {/*      }}*/}
+              {/*      placeholder="세"*/}
+              {/*      disabled*/}
+              {/*    />*/}
+              {/*  </Form.Item>*/}
+              {/*</Col>*/}
             </Row>
           </Descriptions.Item>
           <Descriptions.Item label="구매금액/건수" span={24}>
@@ -379,11 +405,11 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
               <Col className="text-align-left" span={3} style={{width:'160px'}}>
                 <span>
                     <Select defaultValue={ selectedTotal } style={{ width: 120 }} onChange={handleChangeSelectedTotal}>
-                      <Option value="total">전체</Option>
-                      <Option value="totalOrderAmount">총 주문금액</Option>
-                      <Option value="totalPaymentAmount">총 실결제금액</Option>
-                      <Option value="totalOrderCount">총 주문 건수</Option>
-                      <Option value="totalPaymentCount">충 실결제 건수</Option>
+                      <Option value="TOTAL">전체</Option>
+                      <Option value="TOTAL_ORDER_AMOUNT">총 주문금액</Option>
+                      <Option value="TOTAL_ORDER_AMOUNT_COMPLETE">총 실결제금액</Option>
+                      <Option value="TOTAL_ORDER_COUNT">총 주문 건수</Option>
+                      <Option value="TOTAL_ORDER_COUNT_COMPLETE">충 실결제 건수</Option>
                     </Select>
                 </span>
               </Col>
@@ -394,7 +420,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={11} style={{width:'349px'}}>
                 <Form.Item>
-                  {getFieldDecorator('orderDates', {
+                  {getFieldDecorator('orderCreate', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(<SearchDateFormItem />)}
                 </Form.Item>
@@ -427,7 +453,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={11} style={{width:'349px'}}>
                 <Form.Item>
-                  {getFieldDecorator('accessDates', {
+                  {getFieldDecorator('consumerAccessDate', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(<SearchDateFormItem />)}
                 </Form.Item>

@@ -2,7 +2,7 @@ import { ResponseShippingDestination, ResponseShippingForOrders, ResponseClientS
 import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping, ResponseClientPaymentForOrder } from './Payment';
-import { PaymentStatus, ShippingStatus } from 'enums';
+import { PaymentStatus, ShippingStatus, PaymentMethod } from 'enums';
 import { ResponseEventForOrders, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
 import { ResponseOrderMemoForOrder } from './OrderMemo';

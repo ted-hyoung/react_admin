@@ -1,6 +1,6 @@
 // base
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
 
 // modules
@@ -22,6 +22,7 @@ import { ImportanceCode } from 'enums/ImportanceCode';
 import { Role } from 'enums/Role';
 
 import './index.less';
+import { getOrderByIdAsync } from '../../store/reducer/order';
 
 // defines
 const getPaymentMethodColor = (paymentMethod: PaymentMethod) => {
@@ -58,15 +59,15 @@ const getPaymentMethodColor = (paymentMethod: PaymentMethod) => {
 interface OrderDetailModalProps {
   visible: boolean;
   onCancel: () => void;
+ // orderId?:number;
 }
 
 function OrderDetailModal(props: OrderDetailModalProps) {
   const { visible, onCancel } = props;
-
+  const dispatch = useDispatch();
   const { orderNo, created, payment, orderItems, shipping, event, consumer, orderMemos } = useSelector(
     (state: StoreState) => state.order.order,
   );
-
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleChangeTabs = (activeKey: string) => {
@@ -86,6 +87,9 @@ function OrderDetailModal(props: OrderDetailModalProps) {
 
   useEffect(() => {
     initScrollTop();
+    // if(orderId){
+    //   dispatch(getOrderByIdAsync.request({ id: orderId }));
+    // }
   }, [visible]);
 
   return (

@@ -23,3 +23,18 @@ export enum AgeCode {
   '90대' ='NIGHTY_AGE',
 }
 
+
+export const ageDatas = [
+    {key: 'TENN_AGE_LESS_TEN', value:'10대 미만'},
+    {key: 'TEEN_AGE', value:'10대'},
+    {key: 'TWENTY_AGE', value:'20대'},
+    {key: 'THIRTY_AGE', value:'30대'},
+    {key: 'FORTY_AGE', value:'40대'},
+    {key: 'FIFTY_AGE', value:'50대'},
+    {key: 'SIXTY_AGE', value:'60대'},
+    {key: 'SEVENTY_AGE', value:'70대'},
+    {key: 'EIGHTY_AGE', value:'80대'},
+    {key: 'NIGHTY_AGE', value:'90대'},
+  ];
+
+

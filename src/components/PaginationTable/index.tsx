@@ -44,7 +44,9 @@ function PaginationTable<T>(props: Props<T>) {
           )}
         </Col>
       </Row>
-      <Table {...rest} />
+      <Table
+
+        {...rest} />
     </>
   );
 }

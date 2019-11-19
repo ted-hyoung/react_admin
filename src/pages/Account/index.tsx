@@ -18,13 +18,14 @@ import { payCancelHost } from 'lib/protocols';
 import { AccountDetailModal, AccountSearchBar } from 'containers';
 
 // enums
-import { SocialProviderCode } from 'enums';
+import { SocialProviderCode, ageDatas, PaymentStatus, ShippingStatus, ShippingCompany } from 'enums';
 
 // utils
 import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
 import { ResponseAccounts, ResponseOption, SearchAccounts, SearchOrder } from '../../models';
 import { getAccountsAsync } from '../../store/action/account.action';
 import './index.less';
+import { clearOrderExcel, getOrdersExcelAsync } from '../../store/reducer/order';
 
 // defines
 const { Option } = Select;
@@ -40,12 +41,14 @@ const Account = () => {
   const { accounts } = useSelector((storeState: StoreState) => storeState.accountState);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[] | number[]>([]);
   const { size: pageSize, totalElements, content } = accounts;
+  const [excelDownload, setExcelDownload] = useState<boolean>(false);
+
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchOrder>();
   const [account, setAccount] = useState<ResponseAccounts>();
-
-
   const [visible, setVisible] = useState<boolean>(false);
+
   const getAccounts = useCallback(
+
     (page: number, size = pageSize, searchCondition?: SearchAccounts) => {
       dispatch(
         getAccountsAsync.request({
@@ -70,6 +73,14 @@ const Account = () => {
     getAccounts(0, pageSize);
   }, [getAccounts, pageSize]);
 
+  useEffect(() => {
+    if (excelDownload) {
+      createAccountExcel();
+      setExcelDownload(false);
+    }
+  }, [excelDownload]);
+
+
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys: string[] | number[]) => {
@@ -79,9 +90,12 @@ const Account = () => {
 
   const handleChangeBlackMember = (ids: string[] | number[]) => {
     console.log(ids);
+    message.info("준비중입니다.");
   };
+
   const handleDeleteAccount = (ids: string[] | number[]) => {
     console.log(ids);
+    message.info("준비중입니다.");
   };
 
   const handleVisible = (id : string) => {
@@ -89,40 +103,63 @@ const Account = () => {
     setAccount(content.find(item => item.consumerId === id));
   };
 
-// username; // 이름
-// phone; // 연락처
-// consumerCreatedStarted; // 가입일 검색 조건 시작
-// consumerCreatedEnded; // 가입일 검색 조건 마지막
-// AgeCode ageCode; // 나이
-// consumerAccessDateStarted; // 마지막 로그인 검색 조건 시작
-// consumerAccessDateEnded; // 마지막 로그인 검색 조건 마지막
-// OrderSearch orderSearch; // 구매금액/건수 Enum
-// orderTotalStarted;  // 구매금액/건수 검색 조건 시작
-// orderTotalEnded;  // 구매금액/건수 검색 조건 마지막
-// orderCreateStarted; // 주문 검색 조건 시작
-// orderCreateEnded; // 주문 검색 조건 마지막
-// firstOrderFlag; // 첫 주문 여부 값
-// event ; // 공구 및 상품 검색 조건
-
   const columns: Array<ColumnProps<ResponseAccounts>> = [
     { title: '가입일', dataIndex: 'created', key: 'created'},
     { title: '이름', dataIndex: 'username', key: 'username' },
-    { title: '아이디', dataIndex: 'consumerId', key: 'consumerId' },
+    { title: '아이디', dataIndex: 'loginId', key: 'loginId' },
     {
       title: '가입수단', dataIndex: 'socialProvider', key: 'socialProvider',
       render: (text: string, account: ResponseAccounts, index: number) => {
-        return (
-          <Tag
-            style={{
-              boxShadow: '1px 1px 1px 1px #b3b3b3',
-              color: SocialProviderCode.카카오 === account.socialProvider ? '#381e1f' : '#ffffff'
-            }}
-            color={
-              SocialProviderCode.카카오 === account.socialProvider ? '#e4d533' : '#1bba00'
-            }>
-            {SocialProviderCode[account.socialProvider]}
-          </Tag>
-        )
+
+        if(SocialProviderCode[account.socialProvider] === SocialProviderCode.KAKAO){
+          return (
+            <Tag
+              style={{
+                boxShadow: '1px 1px 1px 1px #b3b3b3',
+                color:  '#381e1f'
+              }}
+              color={'#e4d533'}
+            >
+              {SocialProviderCode[account.socialProvider]}
+            </Tag>
+          )
+        }else if(SocialProviderCode[account.socialProvider] === SocialProviderCode.NAVER){
+          return (
+            <Tag
+              style={{
+                boxShadow: '1px 1px 1px 1px #b3b3b3',
+                color: '#ffffff'
+              }}
+              color={'#1bba00'}
+            >
+              {SocialProviderCode[account.socialProvider]}
+            </Tag>
+          )
+        }else{
+          return (
+            <Tag
+              style={{
+                boxShadow: '1px 1px 1px 1px #b3b3b3',
+                color: '#ffffff'
+              }}
+              color={'#909090'}>
+              {SocialProviderCode[account.socialProvider]}
+            </Tag>
+          )
+        }
+
+        // return (
+        //   <Tag
+        //     style={{
+        //       boxShadow: '1px 1px 1px 1px #b3b3b3',
+        //       color: SocialProviderCode.카카오 === account.socialProvider ? '#381e1f' : '#ffffff'
+        //     }}
+        //     color={
+        //       SocialProviderCode.카카오 === account.socialProvider ? '#e4d533' : '#1bba00'
+        //     }>
+        //     {SocialProviderCode[account.socialProvider]}
+        //   </Tag>
+        // )
       }
     },
     { title: '연락처', dataIndex: 'phone', key: 'phone' },
@@ -156,6 +193,7 @@ const Account = () => {
     return {
       created: moment(account.created).format(dateTimeFormat),
       username: account.username,
+      loginId:account.loginId,
       consumerId: account.consumerId,
       socialProvider: account.socialProvider,
       phone: account.phone,
@@ -163,10 +201,45 @@ const Account = () => {
       button: account.consumerId,
     };
   });
+
+  const getAccountExcel = useCallback(() => {
+    dispatch(getAccountsAsync.request({ lastSearchCondition }));
+    setExcelDownload(true);
+  }, [dispatch, lastSearchCondition]);
+
+  const createAccountExcel = () => {
+    const data = [
+      [
+        'NO',
+        '가입일',
+        '이름',
+        '아이디',
+        '가입수단',
+        '연락처',
+        '광고수신동의'
+      ],
+    ];
+
+    if (content.length > 0) {
+      content.forEach((item, i) => {
+        data.push([
+          (i+1).toString(),
+          moment(item.created).format(dateTimeFormat),
+          item.username,
+          item.loginId,
+          SocialProviderCode[item.socialProvider],
+          item.phone,
+          item.marketingInfoAgree ? '동의' : '미동의',
+        ]);
+      });
+      createExcel(data);
+    }
+  };
+
   return (
     <div className="account">
       <AccountSearchBar
-        onSearch={value => console.log('onSearch : ' ,value)}
+        onSearch={value => getAccounts(0, pageSize, value)}
         onReset={() => (alert('onReset'))}
       />
       <Divider />
@@ -190,7 +263,7 @@ const Account = () => {
                   </Button>
                 </Col>
                 <Col>
-                  <Button type="primary" icon="download" onClick={() => console.log('excelDownload')}>
+                  <Button type="primary" icon="download" onClick={getAccountExcel}>
                     엑셀 다운로드
                   </Button>
                   <ReactToPrint
@@ -220,7 +293,7 @@ const Account = () => {
         <AccountDetailModal
           visible={visible}
           onCancel={() => setVisible(false)}
-          account={account}
+          consumerId={Number(account.consumerId)}
         />
       }
     </div>
