@@ -66,11 +66,11 @@ function EventForm(props: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
-    if (getAdminProfile()) {
-      message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
-
-      return false;
-    }
+    // if (getAdminProfile()) {
+    //   message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
+    //
+    //   return false;
+    // }
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
@@ -297,21 +297,21 @@ function EventForm(props: Props) {
                         required: true,
                         message: '시작일을 입력해주세요.',
                       },
-                      {
-                        validator: (rule, value: Moment, callback) => {
-                          if (event.eventStatus === EventStatus[EventStatus.READY]) {
-                            if (value.isBefore(moment())) {
-                              return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
-                            }
-                          }
-
-                          if (value.isAfter(getFieldValue('salesEnded'))) {
-                            return callback('공구 시작일은 종료일보다 이전이여야 합니다.');
-                          }
-
-                          return callback();
-                        },
-                      },
+                      // {
+                      //   validator: (rule, value: Moment, callback) => {
+                      //     if (event.eventStatus === EventStatus[EventStatus.READY]) {
+                      //       if (value.isBefore(moment())) {
+                      //         return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
+                      //       }
+                      //     }
+                      //
+                      //     if (value.isAfter(getFieldValue('salesEnded'))) {
+                      //       return callback('공구 시작일은 종료일보다 이전이여야 합니다.');
+                      //     }
+                      //
+                      //     return callback();
+                      //   },
+                      // },
                     ],
                   })(
                     <TimePicker
