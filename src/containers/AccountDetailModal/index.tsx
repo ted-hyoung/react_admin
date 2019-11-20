@@ -284,17 +284,17 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
             {totalOrderCompleteAmount.toLocaleString()} 원
           </Descriptions.Item>
         </Descriptions>
-          { modifiable && (
-            <div style={{ textAlign: 'center', marginTop: '10px'}}>
-              <Button type="danger" htmlType="submit">확인</Button>
-              <Button type="default" style={{ marginLeft: '10px'}} onClick={() => handleChangeCancelInfo(false)}>취소</Button>
-            </div>
-          )}
+        { modifiable && (
+          <div style={{ textAlign: 'center', marginTop: '10px'}}>
+            <Button type="danger" htmlType="submit">확인</Button>
+            <Button type="default" style={{ marginLeft: '10px'}} onClick={() => handleChangeCancelInfo(false)}>취소</Button>
+          </div>
+        )}
       </Form>
       {!modifiable &&
-        <div style={{ textAlign: 'center', marginTop: '10px'}}>
-          <Button type="primary" onClick={() => handleChangeInfo(true)}>수정</Button>
-        </div>
+      <div style={{ textAlign: 'center', marginTop: '10px'}}>
+        <Button type="primary" onClick={() => handleChangeInfo(true)}>수정</Button>
+      </div>
       }
       <PaginationTable
         size={'small'}

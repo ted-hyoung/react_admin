@@ -244,58 +244,58 @@ const Account = () => {
       />
       <Divider />
       {accounts.size > 0 &&
-        <Table style={{ padding: '16px 10px'}}
-          rowKey={accounts => accounts.consumerId.toString()+'_'+accounts.username}
-          title={() => (
-            <>
-              <Row type="flex" justify="space-between">
-                <Col>
-                  <p style={{marginBottom: '10px'}}>검색결과 총 {accounts.totalElements}건</p>
-                </Col>
-              </Row>
-              <Row type="flex" justify="space-between">
-                <Col>
-                  <Button style={{ marginRight: '5px' }} icon= "frown" onClick={() => handleChangeBlackMember(selectedRowKeys)}>
-                    블랙회원 설정
-                  </Button>
-                  <Button type="danger" icon="user-delete" onClick={() => handleDeleteAccount(selectedRowKeys)}>
-                    삭제
-                  </Button>
-                </Col>
-                <Col>
-                  <Button type="primary" icon="download" onClick={getAccountExcel}>
-                    엑셀 다운로드
-                  </Button>
-                  <ReactToPrint
-                    trigger={() => (
-                      <Button style={{ marginLeft: 4 }} type="danger">
-                        인쇄
-                      </Button>
-                    )}
-                    content={() => printRef.current}
-                  />
-                </Col>
-              </Row>
-            </>
-          )}
-          rowSelection={rowSelection}
-          ref={printRef}
-          columns={columns}
-          dataSource={dataSource}
-          pagination={{
-            total: accounts.totalElements,
-            pageSize: accounts.size,
-            onChange: handlePaginationChange,
-          }}
-        />
+      <Table style={{ padding: '16px 10px'}}
+             rowKey={accounts => accounts.consumerId.toString()+'_'+accounts.username}
+             title={() => (
+               <>
+                 <Row type="flex" justify="space-between">
+                   <Col>
+                     <p style={{marginBottom: '10px'}}>검색결과 총 {accounts.totalElements}건</p>
+                   </Col>
+                 </Row>
+                 <Row type="flex" justify="space-between">
+                   <Col>
+                     <Button style={{ marginRight: '5px' }} icon= "frown" onClick={() => handleChangeBlackMember(selectedRowKeys)}>
+                       블랙회원 설정
+                     </Button>
+                     <Button type="danger" icon="user-delete" onClick={() => handleDeleteAccount(selectedRowKeys)}>
+                       삭제
+                     </Button>
+                   </Col>
+                   <Col>
+                     <Button type="primary" icon="download" onClick={getAccountExcel}>
+                       엑셀 다운로드
+                     </Button>
+                     <ReactToPrint
+                       trigger={() => (
+                         <Button style={{ marginLeft: 4 }} type="danger">
+                           인쇄
+                         </Button>
+                       )}
+                       content={() => printRef.current}
+                     />
+                   </Col>
+                 </Row>
+               </>
+             )}
+             rowSelection={rowSelection}
+             ref={printRef}
+             columns={columns}
+             dataSource={dataSource}
+             pagination={{
+               total: accounts.totalElements,
+               pageSize: accounts.size,
+               onChange: handlePaginationChange,
+             }}
+      />
       }
       { account &&
-        <AccountDetailModal
-          visible={visible}
-          onCancel={() => setVisible(false)}
-          // consumerId={Number(account.consumerId)}
-          account={account}
-        />
+      <AccountDetailModal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        // consumerId={Number(account.consumerId)}
+        account={account}
+      />
       }
     </div>
   );
