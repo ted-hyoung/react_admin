@@ -9,7 +9,7 @@ import {
   RequestAsyncAction,
   ResponseAccounts,
   ResponseDetailAccount,
-  ResponseOrdersForAccount
+  ResponseOrdersForAccount,
 } from '../../models';
 import * as Actions from './orderAction';
 
@@ -26,6 +26,10 @@ export const GET_ACCOUNT_DETAIL_FAILURE = 'account/GET_ACCOUNT_DETAIL_FAILURE';
 export const GET_ACCOUNT_ORDERS_REQUEST = 'account/GET_ACCOUNT_ORDERS_REQUEST';
 export const GET_ACCOUNT_ORDERS_SUCCESS = 'account/GET_ACCOUNT_ORDERS_SUCCESS';
 export const GET_ACCOUNT_ORDERS_FAILURE = 'account/GET_ACCOUNT_ORDERS_FAILURE';
+
+export const UPDATE_ACCOUNT_REQUEST = 'account/UPDATE_ACCOUNT_REQUEST';
+export const UPDATE_ACCOUNT_SUCCESS = 'account/UPDATE_ACCOUNT_SUCCESS';
+export const UPDATE_ACCOUNT_FAILURE = 'account/UPDATE_ACCOUNT_FAILURE';
 
 // actions
 export const getAccountsAsync = createAsyncAction(
@@ -46,10 +50,17 @@ export const getAccountOrdersAsync = createAsyncAction(
   GET_ACCOUNT_ORDERS_FAILURE,
 )<RequestAsyncAction, ResponseOrdersForAccount, ErrorAsyncAction>();
 
+export const updateAccountAsync = createAsyncAction(
+  UPDATE_ACCOUNT_REQUEST,
+  UPDATE_ACCOUNT_SUCCESS,
+  UPDATE_ACCOUNT_FAILURE,
+)<RequestAsyncAction, {marketingInfoAgree: boolean, phone: string, consumerId: number}, ErrorAsyncAction>();
+
 const actions = {
   getAccountsAsync,
   getAccountDetailAsync,
   getAccountOrdersAsync,
+  updateAccountAsync,
 };
 
 export type AccountAction = ActionType<typeof actions>;

@@ -65,8 +65,8 @@ export interface ResponseOrdersAccount {
   orderNo: string;
   totalAmount: number;
   paymentMethod: PaymentMethod;
-  paymentStatuses: PaymentStatus;
-  shippingStatuses: ShippingStatus;
+  paymentStatus: PaymentStatus;
+  shippingStatus: ShippingStatus;
 }
 
 export interface SearchAccounts {

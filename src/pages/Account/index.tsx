@@ -293,7 +293,8 @@ const Account = () => {
         <AccountDetailModal
           visible={visible}
           onCancel={() => setVisible(false)}
-          consumerId={Number(account.consumerId)}
+          // consumerId={Number(account.consumerId)}
+          account={account}
         />
       }
     </div>

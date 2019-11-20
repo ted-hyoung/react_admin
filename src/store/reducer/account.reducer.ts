@@ -8,6 +8,7 @@ import {
   GET_ACCOUNTS_SUCCESS,
   GET_ACCOUNT_DETAIL_SUCCESS,
   GET_ACCOUNT_ORDERS_SUCCESS,
+  UPDATE_ACCOUNT_SUCCESS
 } from '../action/account.action';
 
 // models
@@ -80,7 +81,26 @@ export default createReducer<AccountState, AccountAction>(initialState, {
     produce(state, draft => {
       draft.accountOrders = action.payload;
     }
-  )
+  ),
+
+  [UPDATE_ACCOUNT_SUCCESS]: (state, action) =>
+    produce(state, draft => {
+
+      const { marketingInfoAgree, phone, consumerId } = action.payload;
+
+      console.log(action.payload);
+
+      const item = draft.accounts.content.find(item => Number(item.consumerId) === consumerId);
+
+      if (item) {
+        item.marketingInfoAgree = marketingInfoAgree;
+        item.phone = phone;
+      }
+
+      draft.accountDetail.phone = phone;
+      draft.accountDetail.marketingInfoAgree = marketingInfoAgree;
+      }
+    )
 });
 
 
