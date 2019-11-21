@@ -23,6 +23,7 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
+  ResponseCreateEventId,
 } from 'models';
 
 import { EventStatus } from 'enums';
@@ -30,6 +31,7 @@ import { EventStatus } from 'enums';
 export interface EventState {
   events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
+  createEventId : ResponseCreateEventId
 }
 
 // 공구 생성
@@ -37,7 +39,7 @@ export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_REQUEST,
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
-)<CreateRequestPayload<CreateEvent>, AxiosResponse, AxiosError>();
+)<CreateRequestPayload<CreateEvent>, {eventId : number}, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -93,10 +95,14 @@ export const deleteEventAsync = createAsyncAction(
   Actions.DELETE_EVENT_FAILURE,
 )<RequestAsyncAction, void, ErrorAsyncAction>();
 
+export const clearCreateEventId = () => action(Actions.CLEAR_CREATE_EVENT_ID);
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
 
 const initialState: EventState = {
+  createEventId : {
+    eventId : 0
+  },
   events: {
     content: [],
     first: false,
@@ -163,7 +169,9 @@ const initialState: EventState = {
 export default (state = initialState, action: AnyAction) => {
   switch (action.type) {
     case Actions.CREATE_EVENT_SUCCESS: {
-      return state;
+      return produce(state, draft => {
+        draft.createEventId.eventId = action.payload;
+      });
     }
     case Actions.GET_EVENTS_SUCCESS: {
       return produce(state, draft => {
@@ -188,6 +196,11 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.CLEAR_EVENT: {
       return produce(state, draft => {
         draft.event = initialState.event;
+      });
+    }
+    case Actions.CLEAR_CREATE_EVENT_ID: {
+      return produce(state, draft => {
+        draft.createEventId.eventId = 0;
       });
     }
     case Actions.CLEAR_EVENTS: {
