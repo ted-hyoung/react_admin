@@ -81,7 +81,8 @@ const qna = (state = initialState, action: ResponseAsyncAction) => {
         if (page === 0) {
           draft.qna = action.payload;
         } else {
-          draft.qna.content = state.qna.content.concat(content);
+          draft.qna.content = content;
+          draft.qna.page = page;
           draft.qna.last = last;
           draft.qna.totalElements = totalElements;
         }
