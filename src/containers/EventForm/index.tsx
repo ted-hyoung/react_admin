@@ -195,17 +195,16 @@ function EventForm(props: Props) {
               <Col span={18}>
                 <Form.Item>
                   {getFieldDecorator('name')(
-                    <TextArea
+                    <Input
                       spellCheck={false}
-                      maxLength={100}
-                      autosize={{ minRows: 3, maxRows: 3 }}
+                      maxLength={12}
                       style={{ resize: 'none' }}
                     />,
                   )}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{getBytes(getFieldValue('name'))}/100</span>
+                <span>{getBytes(getFieldValue('name'))}/12</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
