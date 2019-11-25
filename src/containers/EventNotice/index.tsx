@@ -126,7 +126,7 @@ function EventNotice(props: Props) {
             <Input
               name={`eventNotices[${index}]`}
               data-index={index}
-              maxLength={30}
+              maxLength={15}
               placeholder="공지 내용"
               onChange={handleChangeNotice}
             />,
@@ -134,7 +134,7 @@ function EventNotice(props: Props) {
         </Form.Item>
       </Col>
       <Col>
-        <span>{getBytes(getFieldValue(`eventNotices[${index}].contents`))}/30</span>
+        <span>{getBytes(getFieldValue(`eventNotices[${index}].contents`))}/15</span>
       </Col>
     </FlexRow>
   ));
