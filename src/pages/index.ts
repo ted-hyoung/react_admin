@@ -10,3 +10,4 @@ export { default as Statistics } from './Statistics';
 export { default as ExpList } from './ExpList';
 export { default as ExpDetail } from './ExpDetail';
 export { default as Banner } from './Banner';
+export { default as BannerAdd } from './BannerAdd';

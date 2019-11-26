@@ -106,9 +106,9 @@ const MENU_LIST = [
         name: '배너 오픈 관리',
       },
       {
-        key: 'add-banner',
+        key: 'bannerAdd',
         name: '배너 신규 등록',
-      },
+      }
     ],
   },
 ];
