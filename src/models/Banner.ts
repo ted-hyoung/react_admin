@@ -1,5 +1,5 @@
 
-import { FileObject } from "./FileObject";
+import { CreateFileObject, FileObject } from './FileObject';
 import { BannerExposeStatus, BannerType, BannerOrder } from 'enums/Banner';
 
 export interface ResponseBannerList
@@ -24,3 +24,22 @@ export interface SearchBannerList
   bannerExposeStatus:BannerExposeStatus;
   title:string;
 }
+
+export interface SearchAccount
+{
+  searchText:string;
+}
+
+export interface CreateBanner
+{
+  exposeStarted: string;
+  exposeEnded: string;
+  bannerType: BannerType;
+  periodEnable: boolean;
+  title:string;
+  url:string;
+  videoUrl?: string;
+  image: CreateFileObject;
+  eventId:number;
+}
+

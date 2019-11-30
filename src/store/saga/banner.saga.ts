@@ -1,6 +1,6 @@
 // base
 import { put, call, takeLatest, takeEvery, select } from 'redux-saga/effects';
-import { replace } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 import { message } from 'antd';
 import qs from 'qs';
 
@@ -12,11 +12,13 @@ import { PayloadAction, ActionType } from 'typesafe-actions';
 import * as Actions from 'store/action/banner.action';
 import {
   getBannersAsync,
-  getBannersMainAsync,
+  getBannersMainAsync, getCelebsAsync,
 
 } from 'store/action/banner.action';
 
 import { BannerExposeStatus, BannerType } from '../../enums/Banner';
+import { CreateBanner, CreateExperienceGroup } from '../../models';
+import { createExpGroupAsync } from '../action/expGroup.action';
 
 function* getBanners(action: ActionType<typeof getBannersAsync.request>) {
   const { page, size, searchCondition } = action.payload;
@@ -407,8 +409,41 @@ function* getBannersMain(action: ActionType<typeof getBannersMainAsync.request>)
   }
 }
 
+function* getSelebs(action: ActionType<typeof getCelebsAsync.request>) {
+  const { page, size, searchText } = action.payload;
+
+  try {
+    const res = yield call(() =>
+      Api.get(`/accounts/celeb`, {
+        params: { page, size, searchText },
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
+      }),
+    );
+    yield put(getCelebsAsync.success(res.data));
+  } catch (error) {
+    yield put(getCelebsAsync.failure(error));
+  }
+}
+
+function* createBanner(action: PayloadAction<string, CreateBanner>) {
+  const data = action.payload;
+
+  try {
+    const res = yield call(() => Api.post('/banners', data));
+
+    yield put(createExpGroupAsync.success(res.data));
+
+    yield message.success('신규 배너 등록 되었습니다..');
+    yield put(replace('/bannerAdd'));
+  } catch (error) {
+    yield put(createExpGroupAsync.failure(error));
+  }
+}
+
 export default function* bannerSaga() {
   yield takeLatest(Actions.GET_BANNERS_REQUEST, getBanners);
   yield takeLatest(Actions.GET_BANNERS_MAIN_REQUEST, getBannersMain);
+  yield takeLatest(Actions.GET_SELEBS_REQUEST, getSelebs);
+  yield takeLatest(Actions.CREATE_BANNER_REQUEST, createBanner);
 
 }
