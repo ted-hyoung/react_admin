@@ -11,12 +11,18 @@ import moment from 'moment';
 
 // store
 import { StoreState } from 'store';
+
 import {
- BannerState
-} from 'store/reducer/banner.reducer';
-import { clearReview, getReviewsAsync } from '../../store/reducer/review';
-import { FileObject, ResponseBannerList, ResponseReview, SearchBannerList, SearchReview } from '../../models';
-import { getBannersAsync, getBannersMainAsync } from '../../store/action/banner.action';
+  SearchBannerList,
+  SelectedBanner,
+  UpdateBanner,
+} from '../../models';
+import {
+  deleteBannersAsync,
+  getBannersAsync,
+  getBannersMainAsync,
+  updateBannersMainAsync, updateBannersMainSequenceAsync,
+} from '../../store/action/banner.action';
 import { PaginationTable } from '../../components';
 import { getThumbUrl, setPagingIndex } from '../../lib/utils';
 import {
@@ -27,10 +33,7 @@ import {
   BannerType,
   BannerTypeJson,
 } from '../../enums/Banner';
-import { EventStatus, SHIPPING_STATUSES } from '../../enums';
-import EventList from '../EventList';
-import { getBrandsAsync } from '../../store/reducer/brand';
-import ReactToPrint from 'react-to-print';
+
 import DndList from '../../components/DndList';
 import DndItem from '../../components/DndList/DndItem';
 import { useHistory } from 'react-router';
@@ -72,7 +75,9 @@ interface SequenceList {
 
 }
 
-
+const defaultSearchCondition:SearchBannerList = {
+  bannerOrder:BannerOrder[BannerOrder.CREATED_DESC]
+};
 
 function Banner() {
   const { Option } = Select;
@@ -83,9 +88,9 @@ function Banner() {
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchBannerList>();
   const [selectedSeqList, setSelectedSeqList] = useState<number[] | string[]>([]);
   const [selectedBanners, setSelectedBanners] = useState<number[] | string[]>([]);
-  const [bannerExposeSelected, setBannerExposeSelected] = useState<BannerExposeStatus>(BannerExposeStatus.null);
-  const [bannerTypeSelected, setBannerTypeSelected] = useState<BannerType>(BannerType.null);
-  const [bannerOrderSelected, setBannerOrderSelected] = useState<BannerOrder>(BannerOrder.CREATED_DESC);
+  const [bannerOrderSelected, setBannerOrderSelected] = useState<BannerOrder>(BannerOrder[BannerOrder.CREATED_DESC]);
+  const [bannerTypeSelected, setBannerTypeSelected] = useState<BannerType>(BannerType[BannerType.TOTAL]);
+  const [bannerExposeSelected, setBannerExposeSelected] = useState<BannerExposeStatus>(BannerExposeStatus[BannerExposeStatus.TOTAL]);
   const [searchInput, setSearchInput] = useState<string>('');
   const [showSequenceListModal, setShowSequenceListModal] = useState<boolean>(false);
 
@@ -100,7 +105,6 @@ function Banner() {
       title: '공구없음'
     }
   ]);
-
 
   const getBannersMain = useCallback(
     () => {
@@ -123,10 +127,9 @@ function Banner() {
     [dispatch, pageSize, setLastSearchCondition],
   );
 
-
   useEffect(() => {
     getBannersMain();
-    getBanners(0);
+    getBanners(0,10, defaultSearchCondition);
     return () => {
       // will unmount
     };
@@ -138,13 +141,14 @@ function Banner() {
     },
     [setSelectedSeqList],
   );
+
   const handleChangeBanner = useCallback(
     (selectedRowKeys: number[] | string[]) => {
+
       setSelectedBanners(selectedRowKeys);
     },
     [setSelectedBanners],
   );
-
 
   const columns: Array<ColumnProps<BannerList>> = useMemo(
     () => [
@@ -199,12 +203,11 @@ function Banner() {
     [getBanners],
   );
 
-
   const mainData: BannerList[] = bannersMain.map((banner, i) => {
     return {
       key: banner.bannerId,
       no: i+1,
-      period: `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}`,
+      period:banner.exposeStarted! ? `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}` : '기간 없음',
       bannerId: banner.bannerId,
       bannerType: BannerType[banner.bannerType],
       bannerExposeStatus:BannerExposeStatus[banner.bannerExposeStatus],
@@ -226,7 +229,7 @@ function Banner() {
     return {
       id: i+1,
       sequenceId:i+1,
-      period: `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}`,
+      period:banner.exposeStarted! ? `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}` : '기간 없음',
       bannerId: banner.bannerId,
       bannerType: BannerType[banner.bannerType],
       bannerExposeStatus:BannerExposeStatus[banner.bannerExposeStatus],
@@ -239,7 +242,7 @@ function Banner() {
     return {
       key: banner.bannerId,
       no: setPagingIndex(banners.totalElements, banners.page, banners.size, i),
-      period: `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}`,
+      period:banner.exposeStarted! ? `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}` : '기간 없음',
       bannerId: banner.bannerId,
       bannerType: BannerType[banner.bannerType],
       bannerExposeStatus:BannerExposeStatus[banner.bannerExposeStatus],
@@ -266,57 +269,90 @@ function Banner() {
   );
 
   const updateSequenceList = () => {
-    console.log('updateSequenceList ok',sequenceList);
+    const bannerIds :number[] = [];
+    sequenceList.map((item,i)=> {
+      bannerIds.push(item.bannerId);
+    });
+    dispatch(updateBannersMainSequenceAsync.request({bannerIds}));
   };
 
-  const handleBannerOpen = () => {
-    console.log('handleBannerOpen ',selectedBanners);
+  // 선택오픈
+  const handleBannerOpen = (exposeMain:boolean) => {
+    const updateBanner :UpdateBanner = {
+      exposeMain,
+      bannerIds: selectedBanners
+    };
+    dispatch(updateBannersMainAsync.request(updateBanner));
   };
 
-  const handleBannerDelete = () => {
-    console.log('handleBannerDelete',selectedBanners);
+  const nullDataDelete = (searchCondition:SearchBannerList) => {
+      if(searchCondition.bannerType === "TOTAL"){
+        delete searchCondition.bannerType
+      }
+      if(searchCondition.bannerExposeStatus === "TOTAL"){
+        delete searchCondition.bannerExposeStatus
+      }
+      if(searchCondition.title === ""){
+        delete searchCondition.title
+      }
+      return searchCondition;
   };
 
   const handleBannerSearchChangeOrder = useCallback(value=> {
-
     setBannerOrderSelected(value);
-    console.log(BannerType[bannerTypeSelected]);
-    console.log(BannerOrder[bannerOrderSelected]);
-    console.log(BannerExposeStatus[bannerExposeSelected]);
-    console.log(searchInput);
+
+    const searchCondition:SearchBannerList = {
+      bannerOrder:value,
+      bannerType:bannerTypeSelected,
+      bannerExposeStatus:bannerExposeSelected,
+      title:searchInput
+    };
+    const searchData = nullDataDelete(searchCondition);
+    getBanners(0,10, searchData);
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
+
 
   const handleBannerSearchChangeExpose = useCallback(value => {
     setBannerExposeSelected(value);
 
-    console.log(BannerType[bannerTypeSelected]);
-    console.log(BannerOrder[bannerOrderSelected]);
-    console.log(BannerExposeStatus[bannerExposeSelected]);
-    console.log(searchInput);
+    const searchCondition:SearchBannerList = {
+      bannerOrder:bannerOrderSelected,
+      bannerType:bannerTypeSelected,
+      bannerExposeStatus:value,
+      title:searchInput
+    };
+    const searchData = nullDataDelete(searchCondition);
+    getBanners(0,10, searchData);
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
 
   const handleBannerSearchChangeType = useCallback(value => {
     setBannerTypeSelected(value);
 
-    console.log(BannerType[bannerTypeSelected]);
-    console.log(BannerOrder[bannerOrderSelected]);
-    console.log(BannerExposeStatus[bannerExposeSelected]);
-    console.log(searchInput);
+    const searchCondition:SearchBannerList = {
+      bannerOrder:bannerOrderSelected,
+      bannerType:value,
+      bannerExposeStatus:bannerExposeSelected,
+      title:searchInput
+    };
+    const searchData = nullDataDelete(searchCondition);
+    getBanners(0,10, searchData);
+
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
 
   const handleInputChange = useCallback(e => {
     setSearchInput(e.target.value);
-    console.log(BannerType[bannerTypeSelected]);
-    console.log(BannerOrder[bannerOrderSelected]);
-    console.log(BannerExposeStatus[bannerExposeSelected]);
-    console.log(searchInput);
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
 
   const onSearch = useCallback(value => {
-    console.log(BannerType[bannerTypeSelected]);
-    console.log(BannerExposeStatus[bannerExposeSelected]);
-    console.log(BannerOrder[bannerOrderSelected]);
-    console.log(searchInput);
+
+    const searchCondition:SearchBannerList = {
+      bannerOrder:bannerOrderSelected,
+      bannerType:bannerTypeSelected,
+      bannerExposeStatus:bannerExposeSelected,
+      title:searchInput
+    };
+    const searchData = nullDataDelete(searchCondition);
+    getBanners(0,10, searchData);
 
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
 
@@ -332,8 +368,6 @@ function Banner() {
   const moveDndItem = (dragIndex: number, hoverIndex: number) => {
 
     const dragItem =  sequenceList[dragIndex];
-    console.log('dragIndex:',dragIndex);
-    console.log('hoverIndex:',hoverIndex);
     sequenceList.splice(dragIndex, 1);
     sequenceList.splice(hoverIndex, 0,  dragItem);
 
@@ -344,31 +378,39 @@ function Banner() {
     setSequenceList(data);
   };
 
+  // 선택 사용 안함
   const handleDeleteSequenceList = useCallback(
-    () => {
-      console.log(selectedSeqList);
-      if(sequenceList.length < 2 ){
+    (value:boolean) => {
+
+      if(seqList.length <= selectedSeqList.length){
         message.error('최소 1개의 공구는 존재해야 합니다.');
         return;
       }
-        console.log(selectedSeqList);
+
       if (selectedSeqList.length > 0) {
-       // updateReviewsExpose(selectedReviews, expose);
+        const updateBanner :UpdateBanner = {
+          exposeMain:value,
+          bannerIds: selectedSeqList
+        };
+        dispatch(updateBannersMainAsync.request(updateBanner));
       }
     },
     [selectedSeqList],
   );
 
+  // 선택 삭제
   const handleDeleteBannerList = useCallback(
     () => {
-      console.log(selectedBanners);
-      if(sequenceList.length < 2 ){
+
+      if(data.length <= selectedBanners.length){
         message.error('최소 1개의 공구는 존재해야 합니다.');
         return;
       }
-      console.log(selectedBanners);
       if (selectedBanners.length > 0) {
-        // updateReviewsExpose(selectedReviews, expose);
+        const selectedBanner :SelectedBanner = {
+          bannerIds: selectedBanners
+        };
+        dispatch(deleteBannersAsync.request(selectedBanner));
       }
     },
     [selectedBanners],
@@ -386,7 +428,7 @@ function Banner() {
                 <Button type="primary" icon="ordered-list" onClick={handleShowSequenceListModal}>
                   순서변경
                 </Button>
-                <Button style={{marginLeft: '10px'}} type="default" icon="scissor" onClick={handleDeleteSequenceList}>
+                <Button style={{marginLeft: '10px'}} type="default" icon="scissor" onClick={() => handleDeleteSequenceList(false)}>
                   선택 사용 안함
                 </Button>
               </Col>
@@ -437,10 +479,10 @@ function Banner() {
               </Button>
             </Col>
             <Col>
-              <Button type="primary" icon="ordered-list" onClick={handleBannerOpen}>
+              <Button type="primary" icon="ordered-list" onClick={() =>handleBannerOpen(true)}>
                 선택 오픈
               </Button>
-              <Button style={{marginLeft: '10px'}} type="default" icon="scissor" onClick={handleBannerDelete}>
+              <Button style={{marginLeft: '10px'}} type="default" icon="scissor" onClick={handleDeleteBannerList}>
                 선택 삭제
               </Button>
               <Button style={{marginLeft: '10px'}} type="default" icon="plus" onClick={handleAddBanner}>

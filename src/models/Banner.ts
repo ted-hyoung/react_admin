@@ -19,10 +19,10 @@ export interface ResponseBannerList
 
 export interface SearchBannerList
 {
-  bannerOrder:BannerOrder;
-  bannerType:BannerType;
-  bannerExposeStatus:BannerExposeStatus;
-  title:string;
+  bannerOrder?:BannerOrder;
+  bannerType?:BannerType;
+  bannerExposeStatus?:BannerExposeStatus;
+  title?:string;
 }
 
 export interface SearchAccount
@@ -43,3 +43,13 @@ export interface CreateBanner
   eventId:number;
 }
 
+export interface UpdateBanner
+{
+  exposeMain: boolean,
+  bannerIds: number[] | string []
+}
+
+export interface SelectedBanner
+{
+  bannerIds: number[] | string []
+}
