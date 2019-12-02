@@ -5,6 +5,7 @@ import { BannerExposeStatus, BannerType, BannerOrder } from 'enums/Banner';
 export interface ResponseBannerList
 {
   bannerId:number;
+  mainEnable:boolean;
   created:string;
   exposeStarted:string;
   exposeEnded:string;

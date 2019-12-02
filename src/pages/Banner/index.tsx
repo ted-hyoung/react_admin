@@ -50,6 +50,7 @@ interface BannerDetail {
 
 // types
 interface BannerList {
+  mainEnable:boolean;
   key: number;
   no: number;
   period: string;
@@ -190,6 +191,16 @@ function Banner() {
         ),
       },
       {
+        title: '매인노츨',
+        dataIndex: 'mainEnable',
+        key: 'mainEnable',
+        render: (mainEnable) => (
+          <div style={{ display: 'flex' }}>
+            <p>{mainEnable ? '노출' : '미노출'}</p>
+          </div>
+        )
+      },
+      {
         title: '노출기간',
         dataIndex: 'period',
         key: 'period',
@@ -206,6 +217,7 @@ function Banner() {
   const mainData: BannerList[] = bannersMain.map((banner, i) => {
     return {
       key: banner.bannerId,
+      mainEnable:banner.mainEnable,
       no: i+1,
       period:banner.exposeStarted! ? `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}` : '기간 없음',
       bannerId: banner.bannerId,
@@ -241,6 +253,7 @@ function Banner() {
   const data: BannerList[] = banners.content.map((banner, i) => {
     return {
       key: banner.bannerId,
+      mainEnable:banner.mainEnable,
       no: setPagingIndex(banners.totalElements, banners.page, banners.size, i),
       period:banner.exposeStarted! ? `${moment(banner.exposeStarted).format('YYYY-MM-DD')} ~ ${moment(banner.exposeEnded).format('YYYY-MM-DD')}` : '기간 없음',
       bannerId: banner.bannerId,
@@ -310,7 +323,6 @@ function Banner() {
     const searchData = nullDataDelete(searchCondition);
     getBanners(0,10, searchData);
   }, [setBannerOrderSelected, searchInput, bannerTypeSelected, bannerOrderSelected, bannerExposeSelected]);
-
 
   const handleBannerSearchChangeExpose = useCallback(value => {
     setBannerExposeSelected(value);
