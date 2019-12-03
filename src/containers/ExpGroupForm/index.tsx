@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 
 // modules
 import moment from 'moment';
-import { Form, Descriptions, Input, Col, Row, DatePicker, TimePicker, Typography, Button, message } from 'antd';
+import { Form, Descriptions, Input, Col, Row, DatePicker, TimePicker, Typography, Button, message, Select } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 
 // components
 import { ImageUpload, FlexRow, TextEditor } from 'components';
 
 // models
-import { CreateExperienceGroup, ResponseExperienceGroup } from 'models';
+import { CreateExperienceGroup, ResponseExperienceGroup, ResponseBrandForEvent } from 'models';
 
 // lib
 import { getBytes } from 'lib/utils';
@@ -20,12 +20,13 @@ import { LOCAL_DATE_TIME_FORMAT, TIME_FORMAT } from 'lib/constants';
 const { Paragraph } = Typography;
 
 interface ExpGroupFormProps extends FormComponentProps {
+  brands: ResponseBrandForEvent[];
   initailValues?: ResponseExperienceGroup;
   onSubmit?: (values: CreateExperienceGroup) => void;
 }
 
 function ExpGroupForm(props: ExpGroupFormProps) {
-  const { form, initailValues, onSubmit } = props;
+  const { form, brands, initailValues, onSubmit } = props;
   const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll } = form;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -130,6 +131,30 @@ function ExpGroupForm(props: ExpGroupFormProps) {
                   },
                 ],
               })(<Input placeholder="텍스트를 입력해주세요." />)}
+            </Col>
+          </FlexRow>
+          <FlexRow type="flex" align="middle">
+            <Col span={4}>
+              <span>브랜드</span>
+            </Col>
+            <Col span={8}>
+              {getFieldDecorator('brandId', {
+                initialValue: initailValues ? initailValues.brand.brandId : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '브랜드를 선택해주세요.',
+                  },
+                ],
+              })(
+                <Select placeholder="브랜드를 선택해주세요. ">
+                  {brands.map(item => (
+                    <Select.Option key={item.brandId} value={item.brandId}>
+                      {item.brandName}
+                    </Select.Option>
+                  ))}
+                </Select>,
+              )}
             </Col>
           </FlexRow>
           <FlexRow>
