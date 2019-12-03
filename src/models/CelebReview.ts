@@ -1,5 +1,6 @@
 export interface UpdateCelebReview {
   contents: string;
+  postIds:string[];
 }
 
 export interface ResponseCelebReview {
