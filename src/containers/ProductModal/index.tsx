@@ -396,7 +396,6 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
 
   useEffect(() => {
     return () => {
-      console.log('reset');
       resetFields();
     };
   }, []);
