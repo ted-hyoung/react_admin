@@ -50,9 +50,17 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
 
   const addOptionRow = () => {
     const targetOption: ResponseOption = getFieldValue('options')[product.options.length - 1];
-    if (targetOption.optionName === '' || targetOption.salePrice === 0 || targetOption.stock === 0) {
-      return message.error('추가 하려는 옵션 정보를 입력 후 다음 옵션을 추가하실 수 있습니다.');
+
+    if (targetOption.optionName === '') {
+      return message.error('추가 하려는 옵션 정보의 옵션명을 입력 후 다음 옵션을 추가하실 수 있습니다.');
     }
+    if (targetOption.stock === 0) {
+      return message.error('추가 하려는 옵션 정보의 재고를 입력 후 다음 옵션을 추가하실 수 있습니다.');
+    }
+    // if (targetOption.salePrice === 0 ) {
+    //   return message.error('추가 하려는 옵션 정보의 가격을 입력 후 다음 옵션을 추가하실 수 있습니다.');
+    // }
+
     setProduct({
       ...product,
       options: product.options.concat({
