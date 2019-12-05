@@ -20,7 +20,7 @@ import { updateEventNoticesAsync } from 'store/reducer/event';
 import { StoreState } from 'store';
 
 // defines
-const MAX_LENGTH = 5;
+const MAX_LENGTH = 10;
 
 interface Props extends FormComponentProps {
   eventNotices?: ResponseEventNotice[];
@@ -82,6 +82,7 @@ function EventNotice(props: Props) {
     setNotices(
       notices.concat({
         contents: '',
+        shippingScheduledEnable: false,
       }),
     );
   };
@@ -107,7 +108,7 @@ function EventNotice(props: Props) {
     <FlexRow key={index}>
       <Col style={{ width: 85, textAlign: 'right' }}>
         {notices.length - 1 === index && <Button type="primary" icon="plus" onClick={handleAddNotice} />}
-        {notices.length !== 1 && (
+        {notices.length !== 1 && !notices[index].shippingScheduledEnable && (
           <Button
             style={{ marginLeft: 10 }}
             data-index={index}
@@ -129,6 +130,7 @@ function EventNotice(props: Props) {
               maxLength={30}
               placeholder="공지 내용"
               onChange={handleChangeNotice}
+              disabled={eventNotices[index] ? eventNotices[index].shippingScheduledEnable : false}
             />,
           )}
         </Form.Item>
@@ -141,7 +143,7 @@ function EventNotice(props: Props) {
 
   useEffect(() => {
     if (notices.length === 0) {
-      setNotices([{ contents: '' }]);
+      setNotices([{ contents: '', shippingScheduledEnable: false }]);
     }
 
     if (prevProps.current.eventNotices !== props.eventNotices) {
@@ -156,7 +158,22 @@ function EventNotice(props: Props) {
   return (
     <Form className="event-notice" onSubmit={handleSubmit} onKeyPress={handleEnterPress}>
       <Descriptions bordered title="공구 정보" column={24}>
-        <Descriptions.Item label="긴급공지">{formItems}</Descriptions.Item>
+        <Descriptions.Item
+          label={
+            <>
+              <span>긴급공지</span>
+              <br />
+              <div style={{ paddingLeft: 10 }}>
+                <span> - 한 공지사항 당 30자까지 입력 가능</span>
+                <br />
+                <span> - 긴급공지는 최대 10개까지 등록 가능</span>
+              </div>
+            </>
+          }
+          span={1}
+        >
+          {formItems}
+        </Descriptions.Item>
       </Descriptions>
       <Row type="flex" justify="center" gutter={15} style={{ marginTop: 30 }}>
         <Col>

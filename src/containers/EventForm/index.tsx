@@ -39,6 +39,7 @@ const { TextArea } = Input;
 const { Paragraph, Text } = Typography;
 const { Option } = Select;
 const TIME_FORMAT = 'HH:mm A';
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -83,6 +84,7 @@ function EventForm(props: Props) {
           videoUrl,
           shippingCompany,
           images,
+          shippingScheduled,
         } = values;
 
         if (images && images.length < 3) {
@@ -109,6 +111,7 @@ function EventForm(props: Props) {
             detail,
             shippingCompany,
             images,
+            shippingScheduled: moment(shippingScheduled).format(DATE_FORMAT),
           };
 
           dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
@@ -124,6 +127,7 @@ function EventForm(props: Props) {
             detail,
             shippingCompany,
             images,
+            shippingScheduled: moment(shippingScheduled).format(DATE_FORMAT),
           };
 
           dispatch(createEventAsync.request({ data }));
@@ -175,6 +179,7 @@ function EventForm(props: Props) {
         targetAmount: event.targetAmount,
         videoUrl: event.videoUrl,
         shippingCompeny: event.shippingCompany,
+        shippingScheduled: moment(event.shippingScheduled, DATE_FORMAT),
       });
       setVideoUrl(event.videoUrl);
       setSelectedBrand({
@@ -346,6 +351,30 @@ function EventForm(props: Props) {
                       format={TIME_FORMAT}
                     />,
                   )}
+                </Form.Item>
+              </Col>
+            </FlexRow>
+          </Descriptions.Item>
+          <Descriptions.Item label="*배송 예정일" span={24}>
+            <FlexRow>
+              <Col>
+                <Form.Item>
+                  {getFieldDecorator('shippingScheduled', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '배송 예정일 선택해주세요.',
+                      },
+                      {
+                        validator: (rule, value: Moment, callback) => {
+                          if (value.isBefore(moment())) {
+                            return callback('배송 에정일은 현재 시간보다 이전이여야 합니다.');
+                          }
+                          return callback();
+                        },
+                      },
+                    ],
+                  })(<DatePicker placeholder="배송 예정일" />)}
                 </Form.Item>
               </Col>
             </FlexRow>
