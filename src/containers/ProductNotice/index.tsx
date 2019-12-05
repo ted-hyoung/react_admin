@@ -9,25 +9,32 @@ import { FlexRow, MultiSelect } from 'components';
 import { createProductNoticeAsync, updateProductNoticeAsync } from 'store/reducer/product';
 
 // types
-import { ResponseEvent } from 'models';
+import { ResponseEvent, ResponseEventNotice } from 'models';
 
 // less
 import './index.less';
 import { FormComponentProps } from 'antd/lib/form';
-import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Typography } from 'antd';
+import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Select, Typography } from 'antd';
 
 // enums
-import { productNoticeType, productProvision, productProvisionData } from 'enums';
+import { PAYMENT_STATUSES, productNoticeType, productProvision, productProvisionData } from 'enums';
+import { getBytes } from '../../lib/utils';
 
 export interface OptionModel {
   text: string;
   value: string;
 }
+export interface ProductNoticeSelected {
+  noticeId: number;
+  contents: string;
+}
 
 // defines
+const { Option } = Select;
 const { TextArea } = Input;
 const { Paragraph } = Typography;
 const { confirm, info, warning } = Modal;
+const MAX_LENGTH = 5;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -37,15 +44,45 @@ function ProductNotice(props: Props) {
   const { event, form } = props;
   const dispatch = useDispatch();
   const productJson: any = productProvision;
-  const { getFieldDecorator, validateFieldsAndScroll } = form;
+  const { getFieldDecorator, validateFieldsAndScroll, getFieldValue } = form;
 
   const [selected, setSelected] = useState<string[]>([]);
   const [multiSelected, setMultiSelected] = useState<string[]>([]);
+  // const [notices, setNotices] = useState<ProductNoticeSelected>({});
   const [selectedTypes, setSelectedTypes] = useState<OptionModel[]>([]);
   const [noticeData, setNoticeData] = useState<any[]>([]);
   const productProvisionDataTemp: any[] = [];
 
   const handleSetProductNoticeType = useCallback(
+    value => {
+      const selectTemp: OptionModel[] = [];
+      setMultiSelected(value);
+      productProvisionDataTemp.length = 0;
+      value.map((selectedItem: string) => {
+        productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
+        productNoticeType.map((item, index) => {
+          if (item.value === selectedItem) {
+            selectTemp.push(item);
+          }
+        });
+      });
+      setSelectedTypes(selectTemp);
+
+      if (event.productProvisions.length > 0) {
+        productProvisionDataTemp.map((selectedItem, i) => {
+          event.productProvisions.map((item, index) => {
+            if (selectedItem.productProvisionType === item[`productProvisionType`]) {
+              productProvisionDataTemp[i] = item;
+            }
+          });
+        });
+      }
+      setNoticeData(productProvisionDataTemp);
+    },
+    [setSelectedTypes, productProvisionDataTemp],
+  );
+
+  const handleSetProductNotice = useCallback(
     value => {
       const selectTemp: OptionModel[] = [];
       setMultiSelected(value);
@@ -149,6 +186,68 @@ function ProductNotice(props: Props) {
     setSelectedTypes([]);
   };
 
+  const handleAddNotice = () => {
+    if (getFieldValue('eventNotices').length === MAX_LENGTH) {
+      return;
+    }
+
+    // setNotices(
+    //   notices.concat({
+    //     contents: '',
+    //   }),
+    // );
+  };
+
+  const handleRemoveNotice = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const index = Number(e.currentTarget.dataset.index);
+
+    // setNotices(notices.filter((notice, i) => i !== index));
+    //
+    // setFieldsValue({
+    //   eventNotices: getFieldValue('eventNotices').filter((eventNotice: ResponseEventNotice, i: number) => i !== index),
+    // });
+  };
+
+  const formSelectItems = selected.map((item: string, index: number) => (
+
+    <FlexRow key={index}>
+      <Col span={4}> 상품 정보 제공 고시 </Col>
+      <Col>
+        {selected.length - 1 === index && <Button type="primary" icon="plus" onClick={handleAddNotice} />}
+        {selected.length !== 1 && (
+          <Button
+            style={{ marginLeft: 10 }}
+            data-index={index}
+            type="primary"
+            icon="minus"
+            onClick={handleRemoveNotice}
+          />
+        )}
+      </Col>
+      <Col span={16}>
+        <Form.Item>
+          {getFieldDecorator(`productNotices[${index}].selected`, {
+            initialValue: item,
+            trigger: undefined,
+          })(
+            <Select
+              key={index}
+              value={item}
+              style={{ width: 120 }}
+            //  onChange={handleSetProductNotice(index)}
+            >
+              {productNoticeType.map(option => (
+                <Option key={option.value} value={option.value}>
+                  {option.text}
+                </Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+      </Col>
+    </FlexRow>
+  ));
+
   return (
     <>
       <Form className="product-notice" onSubmit={handleSubmit}>
@@ -176,25 +275,56 @@ function ProductNotice(props: Props) {
               </Paragraph>
             </Col>
             <div style={{ width: '100%', padding: '0 5px' }}>
-              <Row style={{ marginBottom: 20 }}>
-                <Col span={4}> 상품 정보 제공 고시 </Col>
-                <Col span={20} style={{ display: 'flex' }}>
-                  <MultiSelect
-                    selectData={productNoticeType}
-                    selected={selected}
-                    setSelected={setSelected}
-                    onChange={handleSetProductNoticeType}
-                  />
+              {formSelectItems}
+
+
+              {/*<Row style={{ marginBottom: 20 }}>*/}
+              {/*  <Col span={4}> 상품 정보 제공 고시 </Col>*/}
+              {/*  <Col span={20} style={{ display: 'flex' }}>*/}
+
+              {/*    {selected.map((item,index) => (*/}
+              {/*        <Select key={index}*/}
+              {/*          value={item}*/}
+              {/*          style={{ width: 120 }}*/}
+              {/*          onChange={handleSetProductNoticeType}>*/}
+              {/*          {productNoticeType.map(option => (*/}
+              {/*            <Option key={option.value} value={option.value}>*/}
+              {/*              {option.text}*/}
+              {/*            </Option>*/}
+              {/*          ))}*/}
+              {/*        </Select>)*/}
+              {/*      )*/}
+              {/*    }*/}
+
+                  {/*<MultiSelect*/}
+                  {/*  selectData={productNoticeType}*/}
+                  {/*  selected={selected}*/}
+                  {/*  setSelected={setSelected}*/}
+                  {/*  onChange={handleSetProductNoticeType}*/}
+                  {/*/>*/}
+                  {/*<Select*/}
+                  {/*  // value={paymentStatus}*/}
+                  {/*  style={{ width: 120 }}*/}
+                  {/*  onChange={handleSetProductNoticeType}>*/}
+                  {/*  {productNoticeType.map(option => (*/}
+                  {/*    <Option key={option.value} value={option.value}>*/}
+                  {/*      {option.text}*/}
+                  {/*    </Option>*/}
+                  {/*  ))}*/}
+                  {/*</Select>*/}
                   {/*<Button type="primary" htmlType="submit" style={{ marginLeft: '10px' }}>*/}
                   {/*  {' '}*/}
                   {/*  등록{' '}*/}
                   {/*</Button>*/}
-                  <Button type="dashed" onClick={handleResetNotice} style={{ marginLeft: '10px' }}>
-                    {' '}
-                    초기화{' '}
-                  </Button>
-                </Col>
-              </Row>
+              {/*    <Button type="dashed" onClick={handleResetNotice} style={{ marginLeft: '10px' }}>*/}
+              {/*      {' '}*/}
+              {/*      초기화{' '}*/}
+              {/*    </Button>*/}
+              {/*  </Col>*/}
+              {/*</Row>*/}
+
+
+
               <Col span={24}>
                 {selectedTypes.length > 0 && (
                   <div>
