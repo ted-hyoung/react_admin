@@ -1,11 +1,11 @@
 // base
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ResponseEvent, UpdateEventShippingInfo } from 'models';
 
 // modules
-import { Form, Descriptions, Input, Row, Col, Button, Typography, InputNumber, message, Checkbox, Modal } from 'antd';
+import { Form, Descriptions, Input, Row, Col, Button, Typography, message, Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 
 // store
@@ -17,7 +17,7 @@ import { FlexRow } from 'components';
 // libs
 import './index.less';
 
-const { Paragraph, Text } = Typography;
+const { Paragraph } = Typography;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -25,17 +25,32 @@ interface Props extends FormComponentProps {
 
 function PurchaseInformation(props: Props) {
   const { event, form } = props;
+  const { shippingFeeInfo } = event;
   const { getFieldDecorator, setFieldsValue, isFieldsTouched, validateFieldsAndScroll } = form;
+  const [shippingText, setShippingText] = useState();
 
   useEffect(() => {
     setFieldsValue({
       shippingFeeInfo: {
-        shippingFee: event.shippingFeeInfo.shippingFee,
+        shippingFee: shippingFeeInfo.shippingFee,
       },
       shippingPeriod: event.shippingPeriod,
       cancellationExchangeReturnRegulationAgree: event.cancellationExchangeReturnRegulationAgree,
       cancellationExchangeReturnAgree: event.cancellationExchangeReturnAgree,
     });
+
+    if (shippingFeeInfo.shippingFreeCondition !== 0) {
+      setShippingText(
+        shippingFeeInfo.shippingFee.toLocaleString() +
+          '원(' +
+          shippingFeeInfo.shippingFreeCondition.toLocaleString() +
+          '원 이상 구매수지 무료배송)',
+      );
+    } else if (shippingFeeInfo.shippingFreeCondition === 0 && shippingFeeInfo.shippingFee !== 0) {
+      setShippingText(shippingFeeInfo.shippingFee.toLocaleString() + '원');
+    } else {
+      setShippingText('무료배송');
+    }
   }, [event, setFieldsValue]);
 
   const dispatch = useDispatch();
@@ -57,15 +72,8 @@ function PurchaseInformation(props: Props) {
           message.info('배송 안내의 배송기간을 입력해주세요.');
           return false;
         }
-        if (values.shippingFeeInfo.shippingFee === undefined) {
-          message.info('배송 안내의 배송비를 입력해주세요.');
-          return false;
-        }
 
         const updateEventShippingInfo: UpdateEventShippingInfo = {
-          shippingFeeInfo: {
-            shippingFee: values.shippingFeeInfo.shippingFee,
-          },
           shippingPeriod: values.shippingPeriod,
           cancellationExchangeReturnRegulationAgree: values.cancellationExchangeReturnRegulationAgree,
           cancellationExchangeReturnAgree: values.cancellationExchangeReturnAgree,
@@ -89,13 +97,6 @@ function PurchaseInformation(props: Props) {
         <Descriptions bordered title="구매안내" column={24}>
           <Descriptions.Item label="배송안내" span={24}>
             <FlexRow>
-              <Paragraph>
-                <strong># 주의 사항</strong>
-                <br />
-                - 배송비에 관한 사항을 기입해주시기 바라며, 배송비 및 도서산간지역 추가비용 등 정확한 비용을
-                입력해주세요.
-                <br />- 배송비의 경우 제품 정보 등록 시 동일하게 입력해주세요.
-              </Paragraph>
               <table>
                 <tbody>
                   <tr>
@@ -108,29 +109,7 @@ function PurchaseInformation(props: Props) {
                   </tr>
                   <tr>
                     <td className="PurchaseInformation-th">배송비</td>
-                    <td className="PurchaseInformation-td">
-                      <Col span={6}>
-                        <Form.Item>
-                          {getFieldDecorator('shippingFeeInfo.shippingFee', {
-                            rules: [{ required: true, message: '배송료를 입력 바랍니다.' }],
-                          })(
-                            <InputNumber
-                              min={0}
-                              step={500}
-                              style={{ width: '100%' }}
-                              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                              parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-                            />,
-                          )}
-                        </Form.Item>
-                      </Col>
-                      <Col>
-                        <span>원(\)</span>
-                      </Col>
-                      <Col>
-                        <Text type="danger">※ 0원으로 기입할 경우 무료배송으로 대체 표기됩니다.</Text>
-                      </Col>
-                    </td>
+                    <td className="PurchaseInformation-td">{shippingText}</td>
                   </tr>
                   <tr>
                     <td className="PurchaseInformation-th">도서산간지역</td>
