@@ -44,7 +44,7 @@ function PurchaseInformation(props: Props) {
         shippingFeeInfo.shippingFee.toLocaleString() +
           '원(' +
           shippingFeeInfo.shippingFreeCondition.toLocaleString() +
-          '원 이상 구매수지 무료배송)',
+          '원 이상 구매시 무료배송)',
       );
     } else if (shippingFeeInfo.shippingFreeCondition === 0 && shippingFeeInfo.shippingFee !== 0) {
       setShippingText(shippingFeeInfo.shippingFee.toLocaleString() + '원');
