@@ -53,9 +53,9 @@ function* getAccountOrders(action: RequestAsyncAction) {
 
   try {
     const res = yield call(() =>
-      Api.get('/consumers/'+consumerId+'/orders', {
+      Api.get(`/consumers/${consumerId}/orders`, {
         params: { page, size },
-        paramsSerializer: (params: any) => parseParams(params),
+        paramsSerializer: (params: any) => qs.stringify(params, { arrayFormat: 'indices', allowDots: true }),
       }),
     );
     yield put(getAccountOrdersAsync.success(res.data));

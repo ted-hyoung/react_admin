@@ -150,17 +150,12 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
   };
 
   const handleChange = (value : string) => {
-    console.log(value);
     setPrivateInfoKey(value);
   };
 
-  const onChangeRadio = (e : any) => {
-    console.log('radio checked', e.target.value);
-  };
 
   const handleChangeSelectedTotal = (value : string) => {
     setSelectedTotal(value);
-    console.log(value);
   };
 
   const getSelectedTotal = () => {
@@ -181,15 +176,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                       placeholder="시작"
                     />)}
                   <Input
-                    style={{
-                      width: 55,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
+                    className ="account-input"
                     placeholder="원  ~ "
                     disabled
                   />
@@ -207,15 +194,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     />
                   )}
                   <Input
-                    style={{
-                      width: 52,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
+                    className ="account-input"
                     placeholder="원"
                     disabled
                   />
@@ -240,15 +219,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     placeholder="시작"
                   />)}
                   <Input
-                    style={{
-                      width: 55,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
+                    className ="account-input"
                     placeholder="건  ~ "
                     disabled
                   />
@@ -264,15 +235,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     placeholder="시작"
                   />)}
                   <Input
-                    style={{
-                      width: 52,
-                      borderLeft: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                      marginRight: '0px',
-                      marginLeft: '1px',
-                      border: 'none',
-                    }}
+                    className ="account-input"
                     placeholder="건"
                     disabled
                   />
@@ -346,58 +309,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                   </Select>,
                 )}
               </Col>
-              {/*<Col className="text-align-left" span={3} style={{width:'160px'}}>*/}
-              {/*  <Form.Item>*/}
-              {/*    {getFieldDecorator('startAge', {*/}
-              {/*      initialValue: 0,*/}
-              {/*    })(<InputNumber*/}
-              {/*      min={0}*/}
-              {/*      max={99}*/}
-              {/*      type='number'*/}
-              {/*      style={{ width: 100, textAlign: 'center' }}*/}
-              {/*      placeholder="시작"*/}
-              {/*    />)}*/}
-              {/*    <Input*/}
-              {/*      style={{*/}
-              {/*        width: 55,*/}
-              {/*        borderLeft: 0,*/}
-              {/*        pointerEvents: 'none',*/}
-              {/*        backgroundColor: '#fff',*/}
-              {/*        marginRight: '0px',*/}
-              {/*        marginLeft: '1px',*/}
-              {/*        border: 'none',*/}
-              {/*      }}*/}
-              {/*      placeholder="세  ~ "*/}
-              {/*      disabled*/}
-              {/*    />*/}
-              {/*  </Form.Item>*/}
-              {/*</Col>*/}
-              {/*<Col className="text-align-left" span={3} style={{width:'160px'}}>*/}
-              {/*  <Form.Item>*/}
-              {/*    {getFieldDecorator('endAge', {*/}
-              {/*      initialValue: 0,*/}
-              {/*    })(<InputNumber*/}
-              {/*      min={0}*/}
-              {/*      max={99}*/}
-              {/*      type='number'*/}
-              {/*      style={{ width: 100, textAlign: 'center' }}*/}
-              {/*      placeholder="시작"*/}
-              {/*    />)}*/}
-              {/*    <Input*/}
-              {/*      style={{*/}
-              {/*        width: 52,*/}
-              {/*        borderLeft: 0,*/}
-              {/*        pointerEvents: 'none',*/}
-              {/*        backgroundColor: '#fff',*/}
-              {/*        marginRight: '0px',*/}
-              {/*        marginLeft: '1px',*/}
-              {/*        border: 'none',*/}
-              {/*      }}*/}
-              {/*      placeholder="세"*/}
-              {/*      disabled*/}
-              {/*    />*/}
-              {/*  </Form.Item>*/}
-              {/*</Col>*/}
             </Row>
           </Descriptions.Item>
           <Descriptions.Item label="구매금액/건수" span={24}>

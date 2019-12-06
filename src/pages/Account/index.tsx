@@ -147,19 +147,6 @@ const Account = () => {
             </Tag>
           )
         }
-
-        // return (
-        //   <Tag
-        //     style={{
-        //       boxShadow: '1px 1px 1px 1px #b3b3b3',
-        //       color: SocialProviderCode.카카오 === account.socialProvider ? '#381e1f' : '#ffffff'
-        //     }}
-        //     color={
-        //       SocialProviderCode.카카오 === account.socialProvider ? '#e4d533' : '#1bba00'
-        //     }>
-        //     {SocialProviderCode[account.socialProvider]}
-        //   </Tag>
-        // )
       }
     },
     { title: '연락처', dataIndex: 'phone', key: 'phone' },
