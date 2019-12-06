@@ -1,6 +1,6 @@
 // base
 import React, { useState, useEffect } from 'react';
-import { Prompt } from 'react-router-dom';
+import { Prompt, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
@@ -32,7 +32,8 @@ import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components'
 import { getBytes, getAdminProfile } from 'lib/utils';
 
 import './index.less';
-import { EventStatus, ShippingCompanies } from 'enums';
+import { ShippingCompanies } from 'enums';
+import { StoreState } from '../../store';
 
 // defines
 const { TextArea } = Input;
@@ -46,6 +47,7 @@ interface Props extends FormComponentProps {
 }
 
 function EventForm(props: Props) {
+  const history = useHistory();
   const { event, brands, form } = props;
   const {
     getFieldDecorator,
@@ -57,14 +59,16 @@ function EventForm(props: Props) {
   } = form;
 
   const [visible, setVisible] = useState(false);
+  const [submitable, setSubmitable] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
-
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
+
+    setSubmitable(true);
 
     // if (getAdminProfile()) {
     //   message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
@@ -125,9 +129,7 @@ function EventForm(props: Props) {
             shippingCompany,
             images,
           };
-
           dispatch(createEventAsync.request({ data }));
-          resetFields();
         }
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
@@ -453,8 +455,12 @@ function EventForm(props: Props) {
           </Button>
         </Form.Item>
       </Form>
-      <SelectOptionModal placeholder="브랜드 선택" visible={visible} options={brands} onSelect={handleSelectBrand} />
-      <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
+      {brands.length > 0 &&
+        <SelectOptionModal placeholder="브랜드 선택" visible={visible} options={brands} onSelect={handleSelectBrand} />
+      }
+      {!submitable &&
+        <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
+      }
     </>
   );
 }
