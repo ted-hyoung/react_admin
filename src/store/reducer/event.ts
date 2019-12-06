@@ -31,7 +31,6 @@ import { EventStatus } from 'enums';
 export interface EventState {
   events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
-  createEventId : ResponseCreateEventId
 }
 
 // 공구 생성
@@ -100,9 +99,7 @@ export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
 
 const initialState: EventState = {
-  createEventId : {
-    eventId : 0
-  },
+
   events: {
     content: [],
     first: false,
