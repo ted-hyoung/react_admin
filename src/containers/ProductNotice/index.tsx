@@ -3,13 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // components
-import { FlexRow, MultiSelect } from 'components';
+import { FlexRow } from 'components';
 
 // store
 import { createProductNoticeAsync, updateProductNoticeAsync } from 'store/reducer/product';
 
 // types
-import { ResponseEvent, ResponseEventNotice } from 'models';
+import { ResponseEvent } from 'models';
 
 // less
 import './index.less';
@@ -17,16 +17,12 @@ import { FormComponentProps } from 'antd/lib/form';
 import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Select, Typography } from 'antd';
 
 // enums
-import { PAYMENT_STATUSES, productNoticeType, productProvision, productProvisionData } from 'enums';
+import { productNoticeType, productProvision, productProvisionData } from 'enums';
 import { getBytes } from '../../lib/utils';
 
 export interface OptionModel {
   text: string;
   value: string;
-}
-export interface ProductNoticeSelected {
-  noticeId: number;
-  contents: string;
 }
 
 // defines
@@ -34,7 +30,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Paragraph } = Typography;
 const { confirm, info, warning } = Modal;
-const MAX_LENGTH = 5;
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -47,9 +42,6 @@ function ProductNotice(props: Props) {
   const { getFieldDecorator, validateFieldsAndScroll, getFieldValue, setFieldsValue } = form;
 
   const [selected, setSelected] = useState<string[]>([""]);
-  const [initState, setInitState] = useState<boolean>(false);
-  const [multiSelected, setMultiSelected] = useState<string[]>([]);
-  // const [notices, setNotices] = useState<ProductNoticeSelected>({});
   const [selectedTypes, setSelectedTypes] = useState<OptionModel[]>([]);
   const [noticeData, setNoticeData] = useState<any[]>([]);
   const productProvisionDataTemp: any[] = [];
@@ -57,41 +49,8 @@ function ProductNotice(props: Props) {
   const handleInitSetProductNoticeType = useCallback(
     value => {
       const selectTemp: OptionModel[] = [];
-      setMultiSelected(value);
+
       productProvisionDataTemp.length = 0;
-      value.map((selectedItem: string) => {
-        productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
-        productNoticeType.map((item, index) => {
-          if (item.value === selectedItem) {
-            selectTemp.push(item);
-          }
-        });
-      });
-      setSelectedTypes(selectTemp);
-
-      if (event.productProvisions.length > 0) {
-        productProvisionDataTemp.map((selectedItem, i) => {
-          event.productProvisions.map((item, index) => {
-            if (i === index) {
-              if (selectedItem.productProvisionType === item[`productProvisionType`]) {
-                productProvisionDataTemp[i] = item;
-              }
-            }
-          });
-        });
-      }
-      setNoticeData(productProvisionDataTemp);
-    },
-    [setSelectedTypes, productProvisionDataTemp],
-  );
-
-  const handleDeleteSetProductNoticeType = useCallback(
-
-    value => {
-      const selectTemp: OptionModel[] = [];
-      setMultiSelected(value);
-      productProvisionDataTemp.length = 0;
-
       value.map((selectedItem: string) => {
         productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
         productNoticeType.map((item, index) => {
@@ -121,10 +80,7 @@ function ProductNotice(props: Props) {
   const handleSetProductNoticeType = useCallback(
     (value) => {
 
-
       const selectTemp: OptionModel[] = [];
-     // setMultiSelected(value);
-
 
       selected.splice(selected.length-1,selected.length,value);
 
@@ -139,7 +95,6 @@ function ProductNotice(props: Props) {
         // 타입별 빈 배열 데이터 생성
         productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
 
-
         productNoticeType.map((item, index) => {
           if (item.value === selectedItem) {
             selectTemp.push(item);
@@ -149,7 +104,6 @@ function ProductNotice(props: Props) {
 
       setSelectedTypes(selectTemp);
       if (event.productProvisions.length > 0) {
-
 
         productProvisionDataTemp.map((selectedItem, i) => {
           event.productProvisions.map((item, index) => {
@@ -284,7 +238,6 @@ function ProductNotice(props: Props) {
     const dataProductProvisions = event.productProvisions.filter((item, i) => i !== index);
     const selectTemp: OptionModel[] = [];
 
-    setMultiSelected(dataSelected);
     productProvisionDataTemp.length = 0;
 
     dataSelected.map((selectedItem: string) => {
