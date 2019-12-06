@@ -19,10 +19,6 @@ export interface CreateEvent {
   images?: CreateFileObject[];
 }
 
-export interface ResponseCreateEventId {
-  eventId: number;
-}
-
 export interface ResponseEvent extends ResponseEventForList {
   targetAmount: number;
   choiceReview: string;

@@ -23,7 +23,6 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
-  ResponseCreateEventId,
 } from 'models';
 
 import { EventStatus } from 'enums';
