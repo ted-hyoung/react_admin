@@ -69,8 +69,6 @@ function ProductNotice(props: Props) {
       });
       setSelectedTypes(selectTemp);
 
-      console.log(event.productProvisions);
-
       if (event.productProvisions.length > 0) {
         productProvisionDataTemp.map((selectedItem, i) => {
           event.productProvisions.map((item, index) => {
@@ -94,7 +92,6 @@ function ProductNotice(props: Props) {
       setMultiSelected(value);
       productProvisionDataTemp.length = 0;
 
-      console.log(value);
       value.map((selectedItem: string) => {
         productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
         productNoticeType.map((item, index) => {
@@ -104,8 +101,6 @@ function ProductNotice(props: Props) {
         });
       });
       setSelectedTypes(selectTemp);
-
-      console.log(event.productProvisions);
 
       if (event.productProvisions.length > 0) {
         productProvisionDataTemp.map((selectedItem, i) => {
@@ -126,38 +121,33 @@ function ProductNotice(props: Props) {
   const handleSetProductNoticeType = useCallback(
     (value) => {
 
-      console.log('handleSetProductNoticeType', value);
+
       const selectTemp: OptionModel[] = [];
      // setMultiSelected(value);
-      console.log('handleSetProductNoticeType', selected.length);
+
 
       selected.splice(selected.length-1,selected.length,value);
 
       const tem:string[] = [];
       tem.push(...selected);
       setSelected(tem);
-      console.log('handleSetProductNoticeType', selected);
+
       productProvisionDataTemp.length = 0;
 
-
-      console.log(productProvisionData);
       selected.map((selectedItem: string) => {
 
         // 타입별 빈 배열 데이터 생성
         productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
 
-        console.log(productNoticeType);
+
         productNoticeType.map((item, index) => {
           if (item.value === selectedItem) {
             selectTemp.push(item);
           }
         });
       });
-      console.log(selectTemp);
 
       setSelectedTypes(selectTemp);
-      console.log(productProvisionDataTemp);
-      console.log(event.productProvisions);
       if (event.productProvisions.length > 0) {
 
 
@@ -176,14 +166,6 @@ function ProductNotice(props: Props) {
       setNoticeData(productProvisionDataTemp);
     },
     [setSelectedTypes, productProvisionDataTemp,selected],
-  );
-
-  const handleSetProductNotice = useCallback(
-    value => {
-      console.log(value);
-
-    },
-    [setSelectedTypes, productProvisionDataTemp],
   );
 
   useEffect(() => {
