@@ -439,21 +439,34 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
 
   const handleOptionStock = (index:number, value: number | undefined) => {
 
+
     const stock:number = typeof value === 'number' ? value : 0;
     const optionStock = getFieldValue(`options[${index}].stock`);
     const optionTotalStock = getFieldValue(`options[${index}].totalStock`);
 
+    if(typeof value !== 'number'){
+      message.error('숫자만 입력 바랍니다.');
+      return false;
+    }
+
     const newOptions: ResponseOption[] = [];
-    getFieldValue('options').forEach( (item: ResponseOption, i: number) => {
-      newOptions.push({
-        optionId: item.optionId,
-        optionName: item.optionName,
-        salePrice: item.salePrice,
-        stock: item.stock,
-        safeStock: item.safeStock,
-        totalStock: i === index ? optionTotalStock-(optionStock - stock) : item.totalStock,
+
+    if(!isNaN(optionTotalStock-(optionStock - stock))){
+      getFieldValue('options').forEach( (item: ResponseOption, i: number) => {
+        newOptions.push({
+          optionId: item.optionId,
+          optionName: item.optionName,
+          salePrice: item.salePrice,
+          stock: item.stock,
+          safeStock: item.safeStock,
+          totalStock: i === index ? optionTotalStock-(optionStock - stock) : item.totalStock,
+         // totalStock:0
+        });
       });
-    });
+    }else{
+      message.error('숫자만 입력 바랍니다.');
+      return false;
+    }
     setFieldsValue({
       options: newOptions
     });
