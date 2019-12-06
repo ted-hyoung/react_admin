@@ -47,6 +47,7 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
 
     message.success('공구가 등록되었습니다.');
   } catch (error) {
+    message.error(error);
     yield put(createEventAsync.failure(error));
   }
 }

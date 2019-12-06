@@ -46,9 +46,6 @@ export const DELETE_EVENT_FAILURE = 'event/DELETE_EVENT_FAILURE';
 // event 초기화
 export const CLEAR_EVENT = 'event/CLEAR_EVENT';
 
-// create eventId 초기화
-export const CLEAR_CREATE_EVENT_ID = 'event/CLEAR_CREATE_EVENT_ID';
-
 // events 초기화
 export const CLEAR_EVENTS = 'event/CLEAR_EVENTS';
 

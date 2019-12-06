@@ -1,8 +1,8 @@
 // base
 import React, { useState, useEffect } from 'react';
 import { Prompt, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { createEventAsync, updateEventByIdAsync, clearCreateEventId, clearEvent } from 'store/reducer/event';
+import { useDispatch } from 'react-redux';
+import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
 
 // modules
@@ -57,22 +57,13 @@ function EventForm(props: Props) {
     resetFields,
     validateFieldsAndScroll,
   } = form;
-  const { createEventId } = useSelector((state: StoreState) => state.event);
+
   const [visible, setVisible] = useState(false);
   const [submitable, setSubmitable] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if(createEventId.eventId !== 0){
-      return () => {
-        dispatch(clearCreateEventId());
-        history.push('/events/detail/' + createEventId.eventId)
-      };
-    }
-  }, [createEventId.eventId]);
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
