@@ -42,7 +42,7 @@ const MENU_LIST = [
     key: 'order',
     name: '주문 관리',
     icon: 'snippets',
-    role: true,
+    role: false,
     subMenus: [
       {
         key: 'orders',
@@ -94,7 +94,7 @@ const MENU_LIST = [
     key: 'event',
     name: '이벤트',
     icon: 'schedule',
-    role: true,
+    role: false,
     subMenus: [
       {
         key: 'exps',
