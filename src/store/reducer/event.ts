@@ -133,6 +133,7 @@ const initialState: EventState = {
       shippingFee: 0,
       shippingFreeCondition: 0,
     },
+    shippingScheduled: '',
     images: [],
     celebReview: {
       created: '',
