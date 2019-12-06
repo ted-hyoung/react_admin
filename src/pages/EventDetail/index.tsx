@@ -68,7 +68,7 @@ function EventDetail(props: RouteComponentProps<Params>) {
   };
 
   const handleOpenTemplate = () => {
-    window.open(`${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${eventId}`);
+    window.open(`${process.env.REACT_APP_CLIENT_URL}/seller/${event.creator.loginId}/events/${eventId}`);
   };
 
   const handleDeleteEvent = () => {

@@ -189,23 +189,16 @@ function EventForm(props: Props) {
         <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
-              <Col>
+              {/* <Col>
                 <span>1차</span>
-              </Col>
+              </Col> */}
               <Col span={18}>
                 <Form.Item>
-                  {getFieldDecorator('name')(
-                    <TextArea
-                      spellCheck={false}
-                      maxLength={100}
-                      autosize={{ minRows: 3, maxRows: 3 }}
-                      style={{ resize: 'none' }}
-                    />,
-                  )}
+                  {getFieldDecorator('name')(<Input spellCheck={false} maxLength={30} style={{ resize: 'none' }} />)}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{getBytes(getFieldValue('name'))}/100</span>
+                <span>{getBytes(getFieldValue('name'))}/30</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
