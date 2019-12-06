@@ -1,6 +1,6 @@
 // base
 import React, { useState, useEffect } from 'react';
-import { Prompt } from 'react-router-dom';
+import { Prompt, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createEventAsync, updateEventByIdAsync } from 'store/reducer/event';
 import { CreateEvent, ResponseEvent, UpdateEvent, ResponseBrandForEvent } from 'models';
@@ -32,13 +32,15 @@ import { SelectOptionModal, FlexRow, TextEditor, ImageUpload } from 'components'
 import { getBytes, getAdminProfile } from 'lib/utils';
 
 import './index.less';
-import { EventStatus, ShippingCompanies } from 'enums';
+import { ShippingCompanies } from 'enums';
+import { StoreState } from '../../store';
 
 // defines
 const { TextArea } = Input;
 const { Paragraph, Text } = Typography;
 const { Option } = Select;
 const TIME_FORMAT = 'HH:mm A';
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 interface Props extends FormComponentProps {
   event: ResponseEvent;
@@ -46,6 +48,7 @@ interface Props extends FormComponentProps {
 }
 
 function EventForm(props: Props) {
+  const history = useHistory();
   const { event, brands, form } = props;
   const {
     getFieldDecorator,
@@ -57,20 +60,21 @@ function EventForm(props: Props) {
   } = form;
 
   const [visible, setVisible] = useState(false);
+  const [submitable, setSubmitable] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const [detail, setDetail] = useState('');
   const [selectedBrand, setSelectedBrand] = useState<ResponseBrandForEvent>();
-
   const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
-    if (getAdminProfile()) {
-      message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
+    setSubmitable(true);
 
-      return false;
-    }
+    // if (getAdminProfile()) {
+    //   message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
+    //   return false;
+    // }
 
     validateFieldsAndScroll({ first: true, force: true }, (error, values: CreateEvent) => {
       if (!error) {
@@ -83,6 +87,7 @@ function EventForm(props: Props) {
           videoUrl,
           shippingCompany,
           images,
+          shippingScheduled,
         } = values;
 
         if (images && images.length < 3) {
@@ -109,6 +114,7 @@ function EventForm(props: Props) {
             detail,
             shippingCompany,
             images,
+            shippingScheduled: moment(shippingScheduled).format(DATE_FORMAT),
           };
 
           dispatch(updateEventByIdAsync.request({ id: event.eventId, data }));
@@ -124,10 +130,9 @@ function EventForm(props: Props) {
             detail,
             shippingCompany,
             images,
+            shippingScheduled: moment(shippingScheduled).format(DATE_FORMAT),
           };
-
           dispatch(createEventAsync.request({ data }));
-          resetFields();
         }
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
@@ -175,6 +180,7 @@ function EventForm(props: Props) {
         targetAmount: event.targetAmount,
         videoUrl: event.videoUrl,
         shippingCompeny: event.shippingCompany,
+        shippingScheduled: moment(event.shippingScheduled, DATE_FORMAT),
       });
       setVideoUrl(event.videoUrl);
       setSelectedBrand({
@@ -189,23 +195,16 @@ function EventForm(props: Props) {
         <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
-              <Col>
+              {/* <Col>
                 <span>1차</span>
-              </Col>
+              </Col> */}
               <Col span={18}>
                 <Form.Item>
-                  {getFieldDecorator('name')(
-                    <TextArea
-                      spellCheck={false}
-                      maxLength={100}
-                      autosize={{ minRows: 3, maxRows: 3 }}
-                      style={{ resize: 'none' }}
-                    />,
-                  )}
+                  {getFieldDecorator('name')(<Input spellCheck={false} maxLength={30} style={{ resize: 'none' }} />)}
                 </Form.Item>
               </Col>
               <Col style={{ alignSelf: 'flex-end' }}>
-                <span>{getBytes(getFieldValue('name'))}/100</span>
+                <span>{getBytes(getFieldValue('name'))}/30</span>
               </Col>
             </FlexRow>
           </Descriptions.Item>
@@ -297,21 +296,21 @@ function EventForm(props: Props) {
                         required: true,
                         message: '시작일을 입력해주세요.',
                       },
-                      {
-                        validator: (rule, value: Moment, callback) => {
-                          if (event.eventStatus === EventStatus[EventStatus.READY]) {
-                            if (value.isBefore(moment())) {
-                              return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
-                            }
-                          }
-
-                          if (value.isAfter(getFieldValue('salesEnded'))) {
-                            return callback('공구 시작일은 종료일보다 이전이여야 합니다.');
-                          }
-
-                          return callback();
-                        },
-                      },
+                      // {
+                      //   validator: (rule, value: Moment, callback) => {
+                      //     if (event.eventStatus === EventStatus[EventStatus.READY]) {
+                      //       if (value.isBefore(moment())) {
+                      //         return callback('공구 시작일은 현재 시간보다 이후여야 합니다.');
+                      //       }
+                      //     }
+                      //
+                      //     if (value.isAfter(getFieldValue('salesEnded'))) {
+                      //       return callback('공구 시작일은 종료일보다 이전이여야 합니다.');
+                      //     }
+                      //
+                      //     return callback();
+                      //   },
+                      // },
                     ],
                   })(
                     <TimePicker
@@ -346,6 +345,30 @@ function EventForm(props: Props) {
                       format={TIME_FORMAT}
                     />,
                   )}
+                </Form.Item>
+              </Col>
+            </FlexRow>
+          </Descriptions.Item>
+          <Descriptions.Item label="*배송 예정일" span={24}>
+            <FlexRow>
+              <Col>
+                <Form.Item>
+                  {getFieldDecorator('shippingScheduled', {
+                    rules: [
+                      {
+                        required: true,
+                        message: '배송 예정일 선택해주세요.',
+                      },
+                      {
+                        validator: (rule, value: Moment, callback) => {
+                          if (value.isBefore(moment())) {
+                            return callback('배송 에정일은 현재 시간보다 이전이여야 합니다.');
+                          }
+                          return callback();
+                        },
+                      },
+                    ],
+                  })(<DatePicker placeholder="배송 예정일" />)}
                 </Form.Item>
               </Col>
             </FlexRow>
@@ -460,8 +483,12 @@ function EventForm(props: Props) {
           </Button>
         </Form.Item>
       </Form>
-      <SelectOptionModal placeholder="브랜드 선택" visible={visible} options={brands} onSelect={handleSelectBrand} />
-      <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
+      {brands.length > 0 &&
+        <SelectOptionModal placeholder="브랜드 선택" visible={visible} options={brands} onSelect={handleSelectBrand} />
+      }
+      {!submitable &&
+        <Prompt when={isFieldsTouched()} message={'현재 작성중인 내용이 있습니다. 뒤로 가시겠습니까?'} />
+      }
     </>
   );
 }

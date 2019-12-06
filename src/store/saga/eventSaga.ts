@@ -43,10 +43,11 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
   try {
     const res = yield call(() => Api.post('/event', data));
     yield put(createEventAsync.success(res.data));
-    yield put(replace('/events/detail/' + res.data));
+    yield put(getEventByIdAsync.request({ id : res.data }));
 
     message.success('공구가 등록되었습니다.');
   } catch (error) {
+    message.error(error);
     yield put(createEventAsync.failure(error));
   }
 }

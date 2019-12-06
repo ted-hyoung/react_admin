@@ -15,8 +15,8 @@ import {
 
 function* getQna(action: RequestAsyncAction) {
   try {
-    const { page, size, qnaStatus, searchName } = action.payload;
-
+    const { page, size, searchCondition } = action.payload;
+    const { qnaStatus, searchName } = searchCondition;
     const res = yield call(() =>
       Api.get('/qna', {
         params: {
