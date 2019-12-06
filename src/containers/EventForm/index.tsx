@@ -73,7 +73,6 @@ function EventForm(props: Props) {
 
     // if (getAdminProfile()) {
     //   message.error('공구 등록 또는 수정은 인플루언서만 가능합니다.');
-    //
     //   return false;
     // }
 
