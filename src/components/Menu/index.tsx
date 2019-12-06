@@ -7,7 +7,6 @@ import { Menu as AntMenu, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 import { getAdminProfile } from 'lib/utils';
 const roleType = getAdminProfile() ? true : false;
-
 const MENU_LIST = [
   // {
   //   key: 'store',
@@ -43,7 +42,7 @@ const MENU_LIST = [
     key: 'order',
     name: '주문 관리',
     icon: 'snippets',
-    role: false,
+    role: true,
     subMenus: [
       {
         key: 'orders',
@@ -95,7 +94,7 @@ const MENU_LIST = [
     key: 'event',
     name: '이벤트',
     icon: 'schedule',
-    role: false,
+    role: true,
     subMenus: [
       {
         key: 'exps',
@@ -105,7 +104,14 @@ const MENU_LIST = [
   },
 ];
 
-
+  MENU_LIST.map((value , i) => {
+    // INFLUENCER
+    if(!roleType){
+      if(value.role === true) {
+        delete MENU_LIST[i];
+      }
+    }
+  });
 
 function Menu(props: RouteComponentProps) {
   const { history, location } = props;
@@ -139,38 +145,19 @@ function Menu(props: RouteComponentProps) {
       onClick={handleClickMenu}
     >
       {MENU_LIST.map(menu => (
-        roleType === menu.role && (
-          <AntMenu.SubMenu
-            key={menu.key}
-            title={
-              <span>
-                <Icon type={menu.icon} />
-                <span>{menu.name}</span>
-              </span>
-            }
-          >
-            {menu.subMenus.map(subMenu => (
-              <AntMenu.Item key={subMenu.key}>{subMenu.name}</AntMenu.Item>
-            ))}
-          </AntMenu.SubMenu>
-        )
-      ))}
-      {MENU_LIST.map(menu => (
-        roleType === true && (
-          <AntMenu.SubMenu
-            key={menu.key}
-            title={
-              <span>
-                <Icon type={menu.icon} />
-                <span>{menu.name}</span>
-              </span>
-            }
-          >
-            {menu.subMenus.map(subMenu => (
-              <AntMenu.Item key={subMenu.key}>{subMenu.name}</AntMenu.Item>
-            ))}
-          </AntMenu.SubMenu>
-        )
+        <AntMenu.SubMenu
+          key={menu.key}
+          title={
+            <span>
+              <Icon type={menu.icon} />
+              <span>{menu.name}</span>
+            </span>
+          }
+        >
+          {menu.subMenus.map(subMenu => (
+            <AntMenu.Item key={subMenu.key}>{subMenu.name}</AntMenu.Item>
+          ))}
+        </AntMenu.SubMenu>
       ))}
     </AntMenu>
   );
