@@ -130,7 +130,6 @@ export interface UpdateEventShippingFeeInfo {
 }
 
 export interface UpdateEventShippingInfo {
-  shippingFeeInfo: UpdateEventShipping;
   shippingPeriod: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
