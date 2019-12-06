@@ -3,6 +3,7 @@ import { ResponseEventForQna } from './Event';
 import { QnaStatus } from 'enums';
 
 export interface ResponseQna {
+  no: number;
   qnaId: number;
   qnaStatus: QnaStatus;
   event: ResponseEventForQna;
