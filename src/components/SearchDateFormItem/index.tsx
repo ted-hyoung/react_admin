@@ -144,28 +144,6 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
           )
         })
       }
-      {/*{!option &&*/}
-      {/*  <>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.TODAY })}>오늘</Button>*/}
-      {/*    </Col>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.RECENT_3DAYS })}>최근 3일</Button>*/}
-      {/*    </Col>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.RECENT_WEEK })}>최근 7일</Button>*/}
-      {/*    </Col>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.RECENT_MONTH })}>최근 1개월</Button>*/}
-      {/*    </Col>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.RECENT_THREE_MONTH })}>최근 3개월</Button>*/}
-      {/*    </Col>*/}
-      {/*    <Col>*/}
-      {/*      <Button onClick={() => dispatch({ type: ActionType.RECENT_SIX_MONTH })}>최근 6개월</Button>*/}
-      {/*    </Col>*/}
-      {/*  </>*/}
-      {/*}*/}
     </Row>
   );
 });
