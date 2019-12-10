@@ -16,7 +16,7 @@ import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
 
 // assets
 import './index.less';
-import { ActionType } from '../../enums';
+import { DateActionType } from '../../enums';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
@@ -84,13 +84,14 @@ const SearchBar = Form.create<Props>()((props: Props) => {
       {customFormItems && customFormItems(form).map(item => item)}
       <Form.Item>{getFieldDecorator('dates')(
         <SearchDateFormItem
-          option={[
-            ActionType.TODAY,
-            ActionType.RECENT_3DAYS,
-            ActionType.RECENT_WEEK,
-            ActionType.RECENT_MONTH,
-            ActionType.RECENT_THREE_MONTH,
-            ActionType.RECENT_SIX_MONTH
+          initValue={true}
+          optionDateLength={[
+            DateActionType.TODAY,
+            DateActionType.RECENT_THREE_DAYS,
+            DateActionType.RECENT_WEEK,
+            DateActionType.RECENT_MONTH,
+            DateActionType.RECENT_THREE_MONTH,
+            DateActionType.RECENT_SIX_MONTH
           ]}
         />)}</Form.Item>
       <Form.Item>

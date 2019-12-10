@@ -14,7 +14,7 @@ import { FlexRow, SearchDateFormItem } from 'components';
 import { SearchExperienceGroupConsumer } from 'models';
 import { PrizeStatus } from 'enums/PrizeStatus';
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
-import { ActionType } from '../../enums';
+import { DateRangeType, DateActionType } from 'enums';
 
 // defines
 const winningStatuses = [
@@ -110,13 +110,14 @@ function ExpConsumerSearchForm(props: ExpConsumerSearchFormProps) {
         <Descriptions.Item label="검색 기간" span={24}>
           {getFieldDecorator('dates')(
             <SearchDateFormItem
-              option={[
-                ActionType.TODAY,
-                ActionType.RECENT_3DAYS,
-                ActionType.RECENT_WEEK,
-                ActionType.RECENT_MONTH,
-                ActionType.RECENT_THREE_MONTH,
-                ActionType.RECENT_SIX_MONTH
+              initValue={true}
+              optionDateLength={[
+                DateActionType.TODAY,
+                DateActionType.RECENT_THREE_DAYS,
+                DateActionType.RECENT_WEEK,
+                DateActionType.RECENT_MONTH,
+                DateActionType.RECENT_THREE_MONTH,
+                DateActionType.RECENT_SIX_MONTH
               ]}
           />)}
         </Descriptions.Item>

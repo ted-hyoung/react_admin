@@ -15,7 +15,7 @@ import { SearchDateFormItem } from 'components';
 import { EventSearch, EventSearchModal } from 'containers';
 
 // enums
-import { SHIPPING_STATUSES, DEFAULT_SHIPPING_STATUSES, ActionType } from 'enums';
+import { SHIPPING_STATUSES, DEFAULT_SHIPPING_STATUSES, DateActionType } from 'enums';
 
 // lib
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
@@ -152,13 +152,14 @@ const ShippingSearchBar = Form.create<Props>()((props: Props) => {
               {getFieldDecorator('dates', {
                 initialValue: [moment().startOf('day'), moment().endOf('day')],
               })(<SearchDateFormItem
-                option={[
-                  ActionType.TODAY,
-                  ActionType.RECENT_3DAYS,
-                  ActionType.RECENT_WEEK,
-                  ActionType.RECENT_MONTH,
-                  ActionType.RECENT_THREE_MONTH,
-                  ActionType.RECENT_SIX_MONTH
+                initValue={true}
+                optionDateLength={[
+                  DateActionType.TODAY,
+                  DateActionType.RECENT_THREE_DAYS,
+                  DateActionType.RECENT_WEEK,
+                  DateActionType.RECENT_MONTH,
+                  DateActionType.RECENT_THREE_MONTH,
+                  DateActionType.RECENT_SIX_MONTH
                 ]}
               />)}
             </Form.Item>
