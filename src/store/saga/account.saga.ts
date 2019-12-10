@@ -67,6 +67,9 @@ function* getAccountOrders(action: RequestAsyncAction) {
 function* updateAccount(action: RequestAsyncAction) {
   try {
     const { marketingInfoAgree, phone, consumerId } = action.payload;
+
+
+
     const res = yield call(() => Api.put(`/consumers/${consumerId}`, {marketingInfoAgree, phone}));
     yield put(updateAccountAsync.success(action.payload));
     message.success('사용자 정보를 수정했습니다.');

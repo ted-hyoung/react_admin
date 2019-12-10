@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
 
 // modules
-import { Modal, Descriptions, Tag, Radio, Button, Input, Icon } from 'antd';
+import { Modal, Descriptions, Tag, Radio, Button, Input, Icon, InputNumber } from 'antd';
 import moment from 'moment';
 
 // components
@@ -69,13 +69,21 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
   );
 
   useEffect(() => {
+
+    if(visible){
+      setModifiable(false);
+    }else{
+      setModifiable(true);
+    }
+
     getDetailAccount(Number(consumerId));
     getOrdersAccount(0);
-  }, [getDetailAccount, consumerId]);
+  }, [getDetailAccount, consumerId, visible]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLElement>) => {
       e.preventDefault();
+
       if(modifiable){
         validateFields((errors, values) => {
           if (!errors) {
@@ -215,14 +223,18 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
               (
                 <Form.Item style={{ marginBottom: '0px'}}>
                   {getFieldDecorator('phone', {
-                    initialValue: phone === undefined ? null : phone,
+                    initialValue: phone === undefined ? null : `${phone}`.replace( /^\d{3}-\d{3,4}-\d{4}$/, ''),
                     rules: [
                       {
                         required: false,
                         message: '전화번호를 입력해주세요',
                       },
                     ],
-                  })(<Input size="default" placeholder="전화번호" prefix={<Icon type="phone" />} />)}
+                  })(<Input
+                    size="default"
+                    placeholder="전화번호"
+                    prefix={<Icon type="phone" />}
+                  />)}
                 </Form.Item>
               ):(
                 phone

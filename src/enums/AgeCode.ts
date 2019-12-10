@@ -1,5 +1,5 @@
 export enum AgeCode {
-  TENN_AGE_LESS_TEN ='10대 미만',
+  TEEN_LESS_TEN ='10대 미만',
   TEEN ='10대',
   TWENTY ='20대',
   THIRTY ='30대',
@@ -10,8 +10,7 @@ export enum AgeCode {
   EIGHTY ='80대',
   NINETY ='90대',
 
-
-  '10대 미만'='TENN_AGE_LESS_TEN',
+  '10대 미만'='TEEN_LESS_TEN',
   '10대'='TEEN',
   '20대' ='TWENTY',
   '30대' ='THIRTY',
@@ -24,7 +23,7 @@ export enum AgeCode {
 }
 
 export const ageDatas = [
-    {key: 'TENN_AGE_LESS_TEN', value:'10대 미만'},
+    {key: 'TEEN_LESS_TEN', value:'10대 미만'},
     {key: 'TEEN', value:'10대'},
     {key: 'TWENTY', value:'20대'},
     {key: 'THIRTY', value:'30대'},

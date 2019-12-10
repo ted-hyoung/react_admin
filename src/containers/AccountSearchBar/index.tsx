@@ -1,9 +1,20 @@
 // base
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // modules
-import { Button, Checkbox, Row, Col, Input, Icon, Descriptions, Select, Radio, message, InputNumber } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Row,
+  Col,
+  Input,
+  Icon,
+  Descriptions,
+  Select,
+  message,
+  InputNumber,
+} from 'antd';
 import Form, { FormComponentProps } from 'antd/lib/form';
 import moment from 'moment';
 
@@ -279,7 +290,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                   {getFieldDecorator('consumerCreated', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(
-                    <SearchDateFormItem />
+                    <SearchDateFormItem initValue={true} />
                   )}
                 </Form.Item>
               </Col>
@@ -331,9 +342,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
             <Row>
               <Col span={11} style={{width:'349px'}}>
                 <Form.Item>
-                  {getFieldDecorator('orderCreate', {
-                    initialValue: [moment().startOf('day'), moment().endOf('day')],
-                  })(<SearchDateFormItem />)}
+                  {getFieldDecorator('orderCreate')(<SearchDateFormItem initValue={false}/>)}
                 </Form.Item>
               </Col>
               <Col>
@@ -366,7 +375,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                 <Form.Item>
                   {getFieldDecorator('consumerAccessDate', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
-                  })(<SearchDateFormItem />)}
+                  })(<SearchDateFormItem initValue={true} />)}
                 </Form.Item>
               </Col>
               <Col className="text-align-left" style={{lineHeight :'40px'}}>
