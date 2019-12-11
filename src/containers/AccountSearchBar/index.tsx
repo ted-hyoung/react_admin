@@ -171,7 +171,10 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
 
   const getSelectedTotal = () => {
 
-    if((selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT]) || (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT_COMPLETE])){
+    if(
+      (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT]) ||
+      (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_AMOUNT_COMPLETE])
+    ){
       return (
         <Col span={12} className="text-align-left" style={{minWidth:'316px'}}>
           {getFieldDecorator('privateInfo')(
@@ -190,6 +193,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="원  ~ "
                     disabled
+                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -208,6 +212,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="원"
                     disabled
+                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -215,7 +220,10 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
           )}
         </Col>
       );
-    }else if((selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT]) || (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT_COMPLETE])){
+    }else if(
+      (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT]) ||
+      (selectedTotal === OrderSearch[OrderSearch.TOTAL_ORDER_COUNT_COMPLETE])
+    ){
       return (
         <Col span={12} className="text-align-left" style={{minWidth:'316px'}}>
           {getFieldDecorator('privateInfo')(
@@ -233,6 +241,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="건  ~ "
                     disabled
+                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -249,6 +258,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="건"
                     disabled
+                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -280,7 +290,9 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     </Select>
                 </span>
               </Col>
-              <Col span={4} style={{minWidth:'160px'}}>{getFieldDecorator('privateInfo')(<Input width={50} />)}</Col>
+              <Col span={4} style={{ minWidth:'160px' }} >
+                {getFieldDecorator('privateInfo')(<Input width={50} />)}
+              </Col>
             </Row>
           </Descriptions.Item>
           <Descriptions.Item label="가입일" span={24}>
