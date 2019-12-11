@@ -183,9 +183,9 @@ function Banner() {
               )}
             </div>
             <div style={{ paddingLeft: 15 }}>
-              <div style={{ paddingBottom: 10 }}>- 등록일:{detail.created}</div>
-              <div style={{ paddingBottom: 10 }}>- 링크:{detail.url}</div>
-              <div style={{ paddingBottom: 10 }}>- 클릭수:{detail.viewCnt}</div>
+              <div style={{ paddingBottom: 10 }}>- 등록일 : {detail.created}</div>
+              <div style={{ paddingBottom: 10 }}>- 링크 : {detail.url}</div>
+              <div style={{ paddingBottom: 10 }}>- 클릭수 : {detail.viewCnt}</div>
             </div>
           </div>
         ),
@@ -522,7 +522,9 @@ function Banner() {
             closable={false}
             visible={showSequenceListModal}
             onOk={updateSequenceList}
-            onCancel={() => {setShowSequenceListModal(false)}}>
+            onCancel={() => {setShowSequenceListModal(false)}}
+            width={700}
+          >
             <DndList>
               {sequenceList && sequenceList.map((item, idx:number) => (
                 <DndItem
@@ -545,7 +547,7 @@ function Banner() {
                       <div style={{textAlign: 'center'}}>{item.bannerExposeStatus}</div>
                     </Col>
                     <Col span={2}>
-                      <div style={{textAlign: 'center'}}>{BannerType[item.bannerType]}</div>
+                      <div style={{textAlign: 'center'}}>{item.bannerType}</div>
                     </Col>
                   </Row>
                 </DndItem>

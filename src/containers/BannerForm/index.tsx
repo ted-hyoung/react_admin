@@ -251,7 +251,7 @@ function BannerForm(props: Props) {
                     : {moment(eventByUrl.salesStarted).format(startDateFormat)} ~ {moment(eventByUrl.salesEnded).format(endDateFormat)}
                   </p>
                   <p>
-                    링크1: http://fromc-c.co.kr{eventByUrl.eventUrl}
+                    링크: http://fromc-c.co.kr{eventByUrl.eventUrl}
                   </p>
                 </div>
               )}
@@ -272,7 +272,7 @@ function BannerForm(props: Props) {
                   공구기간 : {selectedEvents[0].sales}
                 </p>
                 <p>
-                  링크2: http://fromc-c.co.kr{selectedEvents[0].eventUrl}
+                  링크: http://fromc-c.co.kr{selectedEvents[0].eventUrl}
                 </p>
               </div>
             )
@@ -325,7 +325,7 @@ function BannerForm(props: Props) {
                   : {moment(eventByUrl.salesStarted).format(startDateFormat)} ~ {moment(eventByUrl.salesEnded).format(endDateFormat)}
                 </p>
                 <p>
-                  링크1: http://fromc-c.co.kr{eventByUrl.eventUrl}
+                  링크: http://fromc-c.co.kr{eventByUrl.eventUrl}
                 </p>
               </div>
             )}
