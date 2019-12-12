@@ -2,6 +2,7 @@ import { CreateFileObject, FileObject, UpdateFileObject } from './FileObject';
 import { ExperienceGroupStatus } from 'enums/ExperienceGroupStatus';
 import { ResponseClientExperienceGroupConsumer } from './ExpGroupConsumer';
 import { CreateConsumerForExperienceGroupConsumerUpload } from './Consumer';
+import { ResponseBrand, ResponseBrandForExperienceGroup } from './Brand';
 
 export interface CreateExperienceGroup {
   experienceGroupName: string;
@@ -63,6 +64,7 @@ export interface ResponseExperienceGroup {
   shippingStarted: string;
   reviewDeadline: string;
   detail: string;
+  brand: ResponseBrandForExperienceGroup;
   experienceGroupConsumers: ResponseClientExperienceGroupConsumer[];
 }
 
