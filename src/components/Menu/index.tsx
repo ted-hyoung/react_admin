@@ -5,7 +5,8 @@ import { withRouter, RouteComponentProps } from 'react-router';
 // modules
 import { Menu as AntMenu, Icon } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
-
+import { getAdminProfile } from 'lib/utils';
+const roleType = getAdminProfile() ? true : false;
 const MENU_LIST = [
   // {
   //   key: 'store',
@@ -29,6 +30,7 @@ const MENU_LIST = [
     key: 'product',
     name: '상품 관리',
     icon: 'shop',
+    role: false,
     subMenus: [
       {
         key: 'events',
@@ -40,6 +42,7 @@ const MENU_LIST = [
     key: 'order',
     name: '주문 관리',
     icon: 'snippets',
+    role: false,
     subMenus: [
       {
         key: 'orders',
@@ -55,6 +58,7 @@ const MENU_LIST = [
     key: 'statistics',
     name: '통계 관리',
     icon: 'bar-chart',
+    role: false,
     subMenus: [
       {
         key: 'sales',
@@ -66,6 +70,7 @@ const MENU_LIST = [
     key: 'board',
     name: '게시판 관리',
     icon: 'read',
+    role: false,
     subMenus: [
       {
         key: 'review',
@@ -89,6 +94,7 @@ const MENU_LIST = [
     key: 'event',
     name: '이벤트',
     icon: 'schedule',
+    role: false,
     subMenus: [
       {
         key: 'exps',
@@ -98,9 +104,17 @@ const MENU_LIST = [
   },
 ];
 
+  MENU_LIST.map((value , i) => {
+    // INFLUENCER
+    if(!roleType){
+      if(value.role === true) {
+        delete MENU_LIST[i];
+      }
+    }
+  });
+
 function Menu(props: RouteComponentProps) {
   const { history, location } = props;
-
   const defaultSelectedKeys = location.pathname.split('/')[1];
   const defaultOpenKeys = useMemo(
     () =>
@@ -108,7 +122,6 @@ function Menu(props: RouteComponentProps) {
         if (menu.subMenus.find(subMenu => subMenu.key === defaultSelectedKeys)) {
           return menu.key;
         }
-
         return key;
       }, ''),
     [defaultSelectedKeys],
@@ -116,7 +129,6 @@ function Menu(props: RouteComponentProps) {
 
   const handleClickMenu = (param: ClickParam) => {
     const { key } = param;
-
     history.push('/' + key);
   };
 
