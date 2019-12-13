@@ -11,14 +11,19 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ResponseBrandForEvent,
-  ResponseManagementBrandStatistics, ResponseManagementOrdersDailySalesTable,
+  ResponseManagementBrandStatistics,
 } from 'models';
-import { useMemo } from 'react';
 
 export interface BrandState {
   brand: ResponseBrandForEvent[];
-  statistics : ResponseManagementBrandStatistics[];
+  statistics: ResponseManagementBrandStatistics[];
 }
+
+export const getBrandsForEventAsync = createAsyncAction(
+  Actions.GET_BRANDS_FOR_EVENT_REQUEST,
+  Actions.GET_BRANDS_FOR_EVENT_SUCCESS,
+  Actions.GET_BRANDS_FOR_EVENT_FAILURE,
+)<RequestAsyncAction, ResponseAsyncAction, ErrorAsyncAction>();
 
 export const getBrandsAsync = createAsyncAction(
   Actions.GET_EVENT_BRANDS_REQUEST,
@@ -38,11 +43,16 @@ export const clearBrandSalesStatus = action(Actions.CLEAR_BRAND_SALES_STATUS);
 // reducers
 const initialState: BrandState = {
   brand: [],
-  statistics:[]
+  statistics: [],
 };
 
 const brand = (state = initialState, action: ResponseAsyncAction) => {
   switch (action.type) {
+    case Actions.GET_BRANDS_FOR_EVENT_SUCCESS: {
+      return produce(state, draft => {
+        draft.brand = action.payload;
+      });
+    }
     case Actions.GET_EVENT_BRANDS_SUCCESS: {
       return produce(state, draft => {
         draft.brand = action.payload;
