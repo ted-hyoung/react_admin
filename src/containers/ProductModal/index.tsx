@@ -335,9 +335,9 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
           images,
         } = values;
 
-        if (images.length === 0) {
-          return message.error('제품 이미지를 등록해주세요.');
-        }
+        // if (images.length === 0) {
+        //   return message.error('제품 이미지를 등록해주세요.');
+        // }
 
         if (product.productId === 0) {
           const createProduct: CreateProduct = {
