@@ -20,7 +20,7 @@ import { updateEventNoticesAsync } from 'store/reducer/event';
 import { StoreState } from 'store';
 
 // defines
-const MAX_LENGTH = 10;
+const MAX_LENGTH = 5;
 
 interface Props extends FormComponentProps {
   eventNotices?: ResponseEventNotice[];
@@ -107,7 +107,9 @@ function EventNotice(props: Props) {
   const formItems = notices.map((eventNotice: ResponseEventNotice, index: number) => (
     <FlexRow key={index}>
       <Col style={{ width: 85, textAlign: 'right' }}>
-        {notices.length - 1 === index && <Button type="primary" icon="plus" onClick={handleAddNotice} />}
+        {notices.length - 1 === index && notices.length !== MAX_LENGTH && (
+          <Button type="primary" icon="plus" onClick={handleAddNotice} />
+        )}
         {notices.length !== 1 && !notices[index].shippingScheduledEnable && (
           <Button
             style={{ marginLeft: 10 }}
@@ -164,9 +166,9 @@ function EventNotice(props: Props) {
               <span>긴급공지</span>
               <br />
               <div style={{ paddingLeft: 10 }}>
-                <span> - 한 공지사항 당 30자까지 입력 가능</span>
+                <span> - 한 공지사항 당 15자까지 입력 가능</span>
                 <br />
-                <span> - 긴급공지는 최대 10개까지 등록 가능</span>
+                <span> - 긴급공지는 최대 5개까지 등록 가능(배송예정일 포함)</span>
               </div>
             </>
           }
