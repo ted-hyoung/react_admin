@@ -16,6 +16,7 @@ export interface CreateEvent {
   detail?: string;
   videoUrl?: string;
   shippingCompany: ShippingCompany;
+  shippingScheduled: string;
   images?: CreateFileObject[];
 }
 
@@ -34,6 +35,7 @@ export interface ResponseEvent extends ResponseEventForList {
   creator: ResponseEventCreator;
   productProvisions: [];
   shippingPeriod: string;
+  shippingScheduled: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
 }
@@ -106,6 +108,7 @@ export interface UpdateEvent {
   detail?: string;
   videoUrl?: string;
   shippingCompany: string;
+  shippingScheduled: string;
   images?: UpdateFileObject[];
 }
 
@@ -139,7 +142,6 @@ export interface UpdateEventShippingFeeInfo {
 }
 
 export interface UpdateEventShippingInfo {
-  shippingFeeInfo: UpdateEventShipping;
   shippingPeriod: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;

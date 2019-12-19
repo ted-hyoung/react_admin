@@ -95,7 +95,7 @@ function EventList() {
       no: setPagingIndex(events.totalElements, events.page, events.size, i),
       period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
       name: event.name,
-      eventLink: `${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${event.eventId}`,
+      eventLink: `${process.env.REACT_APP_CLIENT_URL}/seller/${event.creator.loginId}/events/${event.eventId}`,
       turn: event.turn,
       brand: event.brand.brandName,
       created: moment(event.created).format('YYYY-MM-DD'),

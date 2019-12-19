@@ -1,5 +1,5 @@
 // base
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // store
@@ -15,18 +15,20 @@ import moment from 'moment';
 import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'containers';
 
 // utils
-import { dateTimeFormat } from 'lib/utils';
+import { dateTimeFormat, endDateFormat, setPagingIndex, startDateFormat } from 'lib/utils';
 
 // types
 import { ResponseQna, ResponseEventForQna, QnaComment } from 'models';
 
 // enums
-import { QnaStatus, QnaOrderType } from 'enums';
+import { QnaStatus, QnaOrderType, ShippingStatus } from 'enums';
 
 // assets
 import './index.less';
+import { SearchShipping } from '../../models/Shipping';
 
 interface Qna {
+  no: number;
   qnaId: number;
   qnaStatus: QnaStatus;
   event: ResponseEventForQna;
@@ -38,34 +40,51 @@ interface Qna {
   qnaComment: QnaComment | null;
 }
 
+export interface SearchQNA {
+  qnaStatus?: string;
+  searchName?: string;
+}
+
+const defaultSearchCondition = {
+  qnaStatus: '',
+  searchName: '',
+};
+
 const Qna = () => {
   const { qna, waitStatusCount } = useSelector((storeState: StoreState) => storeState.qna);
   const dispatch = useDispatch();
+  const [lastSearchCondition, setLastSearchCondition] = useState<SearchQNA>();
+  const { first, last ,page, size:pageSize, content, totalPages, totalElements } = qna;
 
   const getQna = useCallback(
-    (qnaStatus?, searchName?) => {
+    (page: number, size = pageSize, searchCondition?: SearchQNA) => {
       const params = {
-        page: 0,
-        size: 20,
-        qnaStatus,
-        searchName,
+        page,
+        size,
+        searchCondition
       };
-
       dispatch(getQnaAsync.request(params));
+      setLastSearchCondition(searchCondition);
     },
-    [dispatch],
+    [dispatch, pageSize, setLastSearchCondition],
+  );
+  const handlePaginationChange = useCallback(
+    (currentPage: number) => {
+      getQna(currentPage - 1, pageSize, lastSearchCondition);
+    },
+    [getQna, pageSize, lastSearchCondition],
   );
 
   useEffect(() => {
-    getQna();
-  }, [getQna]);
+    getQna(0, pageSize, defaultSearchCondition);
+  }, [getQna, pageSize, defaultSearchCondition]);
 
   const columns: Array<ColumnProps<ResponseQna>> = [
     {
       title: '번호',
-      dataIndex: 'qnaId',
-      key: 'qnaId',
-      width: '5%',
+      dataIndex: 'no',
+      key: 'no',
+      width: '5%'
     },
     {
       title: '상태',
@@ -112,9 +131,10 @@ const Qna = () => {
     },
   ];
 
-  const dataSource: Array<Qna> = qna.content.map(item => {
+  const dataSource: Array<Qna> = qna.content.map((item, i) => {
     return {
-      qnaId: item.qnaId,
+      no: setPagingIndex(totalElements, page, pageSize, i),
+      qnaId : item.qnaId,
       qnaStatus: item.qnaStatus,
       event: item.event,
       contents: item.contents,
@@ -128,7 +148,7 @@ const Qna = () => {
 
   return (
     <div className="qna">
-      <QnaSearch onOk={getQna} />
+      <QnaSearch onOk={value => getQna(0, pageSize, value)} />
 
       <div className="qna-status-wait" style={{ textAlign: 'right', marginTop: 10, marginBottom: 10 }}>
         <strong>답변대기</strong> {waitStatusCount}
@@ -142,6 +162,11 @@ const Qna = () => {
           columns={columns}
           // expandIconAsCell={false}
           // expandRowByClick
+          pagination={{
+            total: totalElements,
+            pageSize,
+            onChange: handlePaginationChange,
+          }}
           expandedRowRender={record => <QnaExpandForm record={record} />}
         />
       </div>

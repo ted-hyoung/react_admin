@@ -14,7 +14,7 @@ const { Option } = Select;
 const qnaStatusList = mapEnums(QnaStatus);
 
 interface Props {
-  onOk: (qnaStatus: string, searchName: string) => void;
+  onOk: (value: { [props: string]: any }) => void;
 }
 
 function QnaSearch(props: Props) {
@@ -47,7 +47,7 @@ function QnaSearch(props: Props) {
           <Input placeholder="상품명, 문의 내용을 검색하세요." value={searchName} onChange={handleChangeSearchName} />
         </Col>
         <Col span={2}>
-          <Button type="primary" shape="circle" icon="search" onClick={() => onOk(qnaStatus, searchName)} />
+          <Button type="primary" shape="circle" icon="search" onClick={() => onOk({qnaStatus, searchName})} />
         </Col>
       </Row>
     </div>

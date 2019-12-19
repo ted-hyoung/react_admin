@@ -1,8 +1,8 @@
 // base
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // modules
-import { Row, Col, Button, Form, message, InputNumber } from 'antd';
+import { Row, Col, Button, Form, message, InputNumber, Checkbox } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { useDispatch } from 'react-redux';
 
@@ -26,13 +26,27 @@ function ShippingFeeInfo(props: Props) {
   const { shippingFreeInfo, event } = props;
   const { eventId } = event;
   const dispatch = useDispatch();
+  const [checkedShippingFreeCondition, setCheckedShippingFreeCondition] = useState<boolean>(false);
 
   useEffect(() => {
     setFieldsValue({
       shippingFee: shippingFreeInfo.shippingFee,
       shippingFreeCondition: shippingFreeInfo.shippingFreeCondition,
     });
+    if (shippingFreeInfo.shippingFreeCondition !== 0) {
+      setCheckedShippingFreeCondition(true);
+    }
   }, [shippingFreeInfo, setFieldsValue]);
+
+  const handleShippingFreeCondition = () => {
+    setCheckedShippingFreeCondition(!checkedShippingFreeCondition);
+
+    if (checkedShippingFreeCondition) {
+      setFieldsValue({
+        shippingFreeCondition: 0,
+      });
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
@@ -87,7 +101,8 @@ function ShippingFeeInfo(props: Props) {
             원
           </Col>
           <Col span={4} className="shippingFee-info-col-right">
-            * 배송비 무료 조건 (금액 :
+            <Checkbox checked={checkedShippingFreeCondition} onChange={handleShippingFreeCondition} /> 배송비 무료 조건
+            (금액 :
           </Col>
           <Col span={3} className="shippingFee-info-col-margin">
             <Form.Item>
@@ -99,6 +114,7 @@ function ShippingFeeInfo(props: Props) {
                   size="small"
                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                  disabled={!checkedShippingFreeCondition}
                 />,
               )}
             </Form.Item>

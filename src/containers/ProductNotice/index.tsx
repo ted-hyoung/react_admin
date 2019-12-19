@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // components
-import { FlexRow, MultiSelect } from 'components';
+import { FlexRow } from 'components';
 
 // store
 import { createProductNoticeAsync, updateProductNoticeAsync } from 'store/reducer/product';
@@ -14,10 +14,11 @@ import { ResponseEvent } from 'models';
 // less
 import './index.less';
 import { FormComponentProps } from 'antd/lib/form';
-import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Typography } from 'antd';
+import { Button, Col, Descriptions, Form, Input, message, Modal, Row, Select, Typography } from 'antd';
 
 // enums
 import { productNoticeType, productProvision, productProvisionData } from 'enums';
+import { getBytes } from '../../lib/utils';
 
 export interface OptionModel {
   text: string;
@@ -25,6 +26,7 @@ export interface OptionModel {
 }
 
 // defines
+const { Option } = Select;
 const { TextArea } = Input;
 const { Paragraph } = Typography;
 const { confirm, info, warning } = Modal;
@@ -37,18 +39,17 @@ function ProductNotice(props: Props) {
   const { event, form } = props;
   const dispatch = useDispatch();
   const productJson: any = productProvision;
-  const { getFieldDecorator, validateFieldsAndScroll } = form;
+  const { getFieldDecorator, validateFieldsAndScroll, getFieldValue, setFieldsValue } = form;
 
-  const [selected, setSelected] = useState<string[]>([]);
-  const [multiSelected, setMultiSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>([""]);
   const [selectedTypes, setSelectedTypes] = useState<OptionModel[]>([]);
   const [noticeData, setNoticeData] = useState<any[]>([]);
   const productProvisionDataTemp: any[] = [];
 
-  const handleSetProductNoticeType = useCallback(
+  const handleInitSetProductNoticeType = useCallback(
     value => {
       const selectTemp: OptionModel[] = [];
-      setMultiSelected(value);
+
       productProvisionDataTemp.length = 0;
       value.map((selectedItem: string) => {
         productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
@@ -63,8 +64,10 @@ function ProductNotice(props: Props) {
       if (event.productProvisions.length > 0) {
         productProvisionDataTemp.map((selectedItem, i) => {
           event.productProvisions.map((item, index) => {
-            if (selectedItem.productProvisionType === item[`productProvisionType`]) {
-              productProvisionDataTemp[i] = item;
+            if (i === index) {
+              if (selectedItem.productProvisionType === item[`productProvisionType`]) {
+                productProvisionDataTemp[i] = item;
+              }
             }
           });
         });
@@ -72,6 +75,51 @@ function ProductNotice(props: Props) {
       setNoticeData(productProvisionDataTemp);
     },
     [setSelectedTypes, productProvisionDataTemp],
+  );
+
+  const handleSetProductNoticeType = useCallback(
+    (value) => {
+
+      const selectTemp: OptionModel[] = [];
+
+      selected.splice(selected.length-1,selected.length,value);
+
+      const tem:string[] = [];
+      tem.push(...selected);
+      setSelected(tem);
+
+      productProvisionDataTemp.length = 0;
+
+      selected.map((selectedItem: string) => {
+
+        // 타입별 빈 배열 데이터 생성
+        productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
+
+        productNoticeType.map((item, index) => {
+          if (item.value === selectedItem) {
+            selectTemp.push(item);
+          }
+        });
+      });
+
+      setSelectedTypes(selectTemp);
+      if (event.productProvisions.length > 0) {
+
+        productProvisionDataTemp.map((selectedItem, i) => {
+          event.productProvisions.map((item, index) => {
+
+            if (i === index) {
+              if (selectedItem.productProvisionType === item[`productProvisionType`]) {
+                productProvisionDataTemp[i] = item;
+              }
+            }
+          });
+        });
+      }
+
+      setNoticeData(productProvisionDataTemp);
+    },
+    [setSelectedTypes, productProvisionDataTemp,selected],
   );
 
   useEffect(() => {
@@ -83,10 +131,10 @@ function ProductNotice(props: Props) {
       });
 
       const init = event.productProvisions.map(value => value[`productProvisionType`]);
-      handleSetProductNoticeType(init);
       setSelected(init);
+      handleInitSetProductNoticeType(init);
     }
-  }, [event]);
+  }, [event,setSelected]);
 
   const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
@@ -100,18 +148,25 @@ function ProductNotice(props: Props) {
       if (!error) {
         const productProvisions: object[] = [];
         Object.keys(values).forEach(key => {
+
           if (values[key] === undefined) {
             delete values[key];
             return;
           }
-          productProvisions.push({ productProvisionType: key, ...values[key] });
+          productProvisions.push({ productProvisionType: key.split('_')[0], ...values[key] });
         });
+
         productProvisions.map((item: any, index: number) => {
+
           Object.keys(item).forEach(key => {
+
+            // 신규 등록 정보
             if (item[`productProvisionId`] === null) {
               delete item[`productProvisionId`];
             }
+
             if (item[key] === null || item[key] === '') {
+
               warning({
                 title: `입력하지 않은 정보가 있습니다.\n모든 정보를 입력해주세요.`,
                 okText: '확인',
@@ -123,6 +178,7 @@ function ProductNotice(props: Props) {
             }
           });
         });
+
         if (event.productProvisions.length > 0) {
           dispatch(updateProductNoticeAsync.request({ eventId: event.eventId, data: productProvisions }));
         } else {
@@ -148,6 +204,100 @@ function ProductNotice(props: Props) {
     setSelected([]);
     setSelectedTypes([]);
   };
+
+  const handleAddNotice = (index:number,notice:string) => {
+    if(selected[index] === ""){
+      message.error("고시정보 선택후 추가 가능합니다.");
+      return false;
+    }
+
+    selected.splice(selected.length,0,"");
+    const tem:string[] = [];
+    tem.push(...selected);
+    setSelected(tem);
+  };
+
+  const handleRemoveNotice = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const index = Number(e.currentTarget.dataset.index);
+    const dataSelected = selected.filter((item, i) => i !== index);
+    setSelected(selected.filter((item, i) => i !== index));
+
+    validateFieldsAndScroll({ first: true, force: true }, (error, values) => {
+      if (!error) {
+        Object.keys(values).forEach(key => {
+
+          if (values[key] === undefined) {
+            delete values[key];
+            return;
+          }
+          delete values[`${selected[index]}_${index}`];
+        });
+      }
+    });
+
+    const dataProductProvisions = event.productProvisions.filter((item, i) => i !== index);
+    const selectTemp: OptionModel[] = [];
+
+    productProvisionDataTemp.length = 0;
+
+    dataSelected.map((selectedItem: string) => {
+      productProvisionDataTemp.push({ productProvisionType: selectedItem, ...productProvisionData });
+      productNoticeType.map((item, index) => {
+        if (item.value === selectedItem) {
+          selectTemp.push(item);
+        }
+      });
+    });
+    setSelectedTypes(selectTemp);
+
+    if (dataProductProvisions.length > 0) {
+      productProvisionDataTemp.map((selectedItem, i) => {
+        dataProductProvisions.map((item, index) => {
+          if (i === index) {
+            if (selectedItem.productProvisionType === item[`productProvisionType`]) {
+              productProvisionDataTemp[i] = item;
+            }
+          }
+        });
+      });
+    }
+    setNoticeData(productProvisionDataTemp);
+  };
+
+  const formSelectItems = selected.map((item: string, index: number) => (
+
+    <FlexRow key={index}>
+      <Col span={4}> 상품 정보 제공 고시 {index+1}</Col>
+      <Col>
+        {selected.length - 1 === index && <Button type="primary" icon="plus" onClick={() => handleAddNotice(index,item)} />}
+        {selected.length !== 1 && (
+          <Button
+            style={{ marginLeft: 10 }}
+            data-index={index}
+            type="primary"
+            icon="minus"
+            onClick={handleRemoveNotice}
+          />
+        )}
+      </Col>
+      <Col span={16}>
+        <Form.Item>
+            <Select
+              key={index}
+              value={item}
+              style={{ width: 120 }}
+              onChange={handleSetProductNoticeType}
+            >
+              {productNoticeType.map(option => (
+                <Option key={option.value} value={option.value}>
+                  {option.text}
+                </Option>
+              ))}
+            </Select>
+        </Form.Item>
+      </Col>
+    </FlexRow>
+  ));
 
   return (
     <>
@@ -176,31 +326,13 @@ function ProductNotice(props: Props) {
               </Paragraph>
             </Col>
             <div style={{ width: '100%', padding: '0 5px' }}>
-              <Row style={{ marginBottom: 20 }}>
-                <Col span={4}> 상품 정보 제공 고시 </Col>
-                <Col span={20} style={{ display: 'flex' }}>
-                  <MultiSelect
-                    selectData={productNoticeType}
-                    selected={selected}
-                    setSelected={setSelected}
-                    onChange={handleSetProductNoticeType}
-                  />
-                  {/*<Button type="primary" htmlType="submit" style={{ marginLeft: '10px' }}>*/}
-                  {/*  {' '}*/}
-                  {/*  등록{' '}*/}
-                  {/*</Button>*/}
-                  <Button type="dashed" onClick={handleResetNotice} style={{ marginLeft: '10px' }}>
-                    {' '}
-                    초기화{' '}
-                  </Button>
-                </Col>
-              </Row>
+              {formSelectItems}
               <Col span={24}>
                 {selectedTypes.length > 0 && (
                   <div>
                     {selectedTypes.map((selectedItem, i: number) => {
                       return (
-                        <div key={selectedItem.value}>
+                        <div  key={selectedItem.value + '-' + i}>
                           <h1 className="notice-product-title">{selectedItem.text}</h1>
                           <table
                             style={{
@@ -217,7 +349,7 @@ function ProductNotice(props: Props) {
                                     <tr key={index} style={{ width: '100%' }}>
                                       <td>
                                         <Form.Item>
-                                          {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
+                                          {getFieldDecorator(`${selectedItem.value}_${i}.${item.key}`, {
                                             initialValue: noticeData[i] === undefined ? 0 : noticeData[i][item.key],
                                           })(<TextArea hidden={true} />)}
                                         </Form.Item>
@@ -232,7 +364,7 @@ function ProductNotice(props: Props) {
                                       <td style={{ width: '20%' }}>{item.title}</td>
                                       <td>
                                         <Form.Item>
-                                          {getFieldDecorator(`${selectedItem.value}.${item.key}`, {
+                                          {getFieldDecorator(`${selectedItem.value}_${i}.${item.key}`, {
                                             initialValue: noticeData[i] === undefined ? '' : noticeData[i][item.key],
                                             rules: [{ required: true, message: item.title + ' 을 입력 바랍니다.' }],
                                           })(

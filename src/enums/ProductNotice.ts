@@ -1,4 +1,5 @@
 export const productNoticeType = [
+  { text: '선택', value: '' },
   { text: '의류', value: 'CLOTHING' },
   { text: '구두/신발', value: 'SHOES' },
   { text: '가방', value: 'BAG' },

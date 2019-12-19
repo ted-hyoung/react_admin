@@ -42,6 +42,7 @@ import {
   SearchExperienceGroupConsumer,
 } from 'models';
 import { PrizeStatus } from 'enums';
+import { getBrandsAsync } from 'store/reducer/brand';
 
 function ExpDetail() {
   const { id } = useParams();
@@ -52,8 +53,9 @@ function ExpDetail() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { expGroup, expGroupConsumers, expGroupConsumer, expGroupConsumersExcel } = useSelector(
+  const { brands, expGroup, expGroupConsumers, expGroupConsumer, expGroupConsumersExcel } = useSelector(
     (state: StoreState) => ({
+      brands: state.brand.brand,
       expGroup: state.expGroupState.expGroup,
       expGroupConsumer: state.expGroupConsumerState.expGroupConsumer,
       expGroupConsumers: state.expGroupConsumerState.expGroupConsumers,
@@ -190,6 +192,8 @@ function ExpDetail() {
   };
 
   useEffect(() => {
+    dispatch(getBrandsAsync.request({}));
+
     return () => {
       dispatch(clearStoreExpGroup());
     };
@@ -232,7 +236,7 @@ function ExpDetail() {
     <div className="exp-detail">
       <Tabs defaultActiveKey="EVENT">
         <Tabs.TabPane tab="이벤트 정보" key="EVENT">
-          <ExpGroupForm initailValues={expGroup ? expGroup : undefined} onSubmit={handleSubmit} />
+          <ExpGroupForm brands={brands} initailValues={expGroup ? expGroup : undefined} onSubmit={handleSubmit} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="참여자 정보" key="PRODUCT" disabled={!id}>
           <ExpConsumerSearchForm onSubmit={handleExpSearch} onResetAfter={() => getExpGroupConsumersById(Number(id))} />

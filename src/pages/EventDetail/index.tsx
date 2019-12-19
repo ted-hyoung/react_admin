@@ -9,7 +9,7 @@ import { getEventByIdAsync, updateEventStatusAsync, deleteEventAsync, clearEvent
 import { Tabs, Button, message, Row, Col, Popconfirm } from 'antd';
 
 // store
-import { getBrandsAsync } from 'store/reducer/brand';
+import { getBrandsForEventAsync } from 'store/reducer/brand';
 
 // enums
 import { EventStatus } from 'enums';
@@ -50,7 +50,7 @@ function EventDetail(props: RouteComponentProps<Params>) {
   );
 
   const getBrands = useCallback(() => {
-    dispatch(getBrandsAsync.request({}));
+    dispatch(getBrandsForEventAsync.request({}));
   }, [dispatch]);
 
   const handleOpenEvent = () => {
@@ -68,7 +68,7 @@ function EventDetail(props: RouteComponentProps<Params>) {
   };
 
   const handleOpenTemplate = () => {
-    window.open(`${process.env.REACT_APP_CLIENT_URL}/${event.creator.loginId}/events/${eventId}`);
+    window.open(`${process.env.REACT_APP_CLIENT_URL}/seller/${event.creator.loginId}/events/${eventId}`);
   };
 
   const handleDeleteEvent = () => {

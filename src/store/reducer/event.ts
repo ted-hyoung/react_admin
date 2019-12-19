@@ -40,7 +40,7 @@ export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_REQUEST,
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
-)<CreateRequestPayload<CreateEvent>, AxiosResponse, AxiosError>();
+)<CreateRequestPayload<CreateEvent>, {eventId : number}, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -102,6 +102,7 @@ export const deleteEventAsync = createAsyncAction(
   Actions.DELETE_EVENT_SUCCESS,
   Actions.DELETE_EVENT_FAILURE,
 )<RequestAsyncAction, void, ErrorAsyncAction>();
+
 
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
@@ -170,6 +171,7 @@ const initialState: EventState = {
       shippingFee: 0,
       shippingFreeCondition: 0,
     },
+    shippingScheduled: '',
     images: [],
     celebReview: {
       created: '',
