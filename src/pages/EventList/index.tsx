@@ -44,6 +44,10 @@ function EventList() {
     },
   });
 
+  const copyEvent = (no: number) => {
+    // console.log('no', no)
+  }
+
   const getEvents = useCallback(
     (page: number, size = 10, searchCondition?: SearchEvent) => {
       dispatch(
@@ -180,11 +184,29 @@ function EventList() {
       ],
       onFilter: (value, record) => record.eventStatus.indexOf(value) === 0,
     },
-    // {
-    //   title: '복사',
-    //   dataIndex: 'copy',
-    //   key: 'copy',
-    // },
+    {
+      title: '복사',
+      dataIndex: 'copy',
+      key: 'copy',
+      onCell: () => {
+        return {
+          onClick: e => e.stopPropagation(),
+        };
+      },
+      render: (value, record) => (
+        <div>
+          {value}{' '}
+          { record.eventStatus.indexOf('종료') === 0 &&
+            <Button
+              style={{ color: '#000000' }}
+              icon="copy"
+              onClick={() => copyEvent(record.no)}
+            />
+          }
+        </div>
+      ),
+      onFilter: (value, record) => record.eventStatus.indexOf('종료') === 0,
+    },
   ];
 
   return (
