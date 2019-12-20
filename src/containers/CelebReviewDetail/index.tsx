@@ -36,10 +36,10 @@ function CelebReviewDetail() {
         const counts= value.split('<iframe');
         counts.splice(0, 1);
         counts.map((item,i) =>{
-          const start = item.indexOf('src=\"https://www.instagram.com/p');
-          const end = item.indexOf("/embed/captioned/", start+33);
-          const list = item.substring(start+33, end);
-          ids.push(list);
+          const start = item.indexOf('src=\"https://www.instagram.com/');
+          const end = item.indexOf("/embed/captioned/", start+31);
+          const extractionStrArr = item.substring(start+31, end);
+          ids.push(extractionStrArr.split('/')[1])
         });
       }
 
