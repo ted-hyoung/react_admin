@@ -7,15 +7,16 @@ class HtmlFormat extends Embed {
   public static create(data: string) {
     const node: HTMLElement = super.create(data);
 
-    if(data === 'line') {
-      node.setAttribute('style', 'width: 100%; border-bottom: 1px solid #ddd; border-left: 0; margin: 5px 0 5px 0; height: 1px;');
-    }
+    // Html Element Property Set
+    // if(data === 'line') {
+    //   node.setAttribute('style', 'margin: 5px 0 5px 0; border:1px solid #ddd;');
+    // }
 
     return node;
   }
 }
 
 HtmlFormat.blotName = 'html';
-HtmlFormat.tagName = 'div';
+HtmlFormat.tagName = 'hr';
 
 export default HtmlFormat;

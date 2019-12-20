@@ -95,11 +95,11 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
       editor.insertText(selectIndex ? selectIndex : 0,'\n')
-      editor.insertEmbed(selection, 'image', quotationBottom);
+      editor.insertEmbed(selectIndex ? selectIndex : 0, 'image', quotationBottom);
       editor.insertText(selectIndex ? selectIndex : 0,'\n\n')
-      editor.insertText(selectIndex ? selectIndex : 0,'여기에 인용구를 입력해주세요.')
+      editor.insertText(selectIndex ? selectIndex : 0,'인용구를 입력해주세요.')
       editor.insertText(selectIndex ? selectIndex : 0,'\n\n')
-      editor.insertEmbed(selection, 'image', quotationTop);
+      editor.insertEmbed(selectIndex ? selectIndex : 0, 'image', quotationTop);
       editor.insertText(selectIndex ? selectIndex : 0,'\n')
       editor.blur();
     }
