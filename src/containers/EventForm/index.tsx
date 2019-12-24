@@ -19,7 +19,7 @@ import {
   Typography,
   InputNumber,
   message,
-  Select,
+  Select, Tag,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
@@ -92,7 +92,6 @@ function EventForm(props: Props) {
 
         if (images && images.length < 3) {
           message.error('이미지는 최소 3개 이상 등록해주세요.');
-
           return false;
         }
 
@@ -195,9 +194,13 @@ function EventForm(props: Props) {
         <Descriptions bordered title="공구 정보" column={24}>
           <Descriptions.Item label="*공구명" span={24}>
             <FlexRow>
-              {/* <Col>
-                <span>1차</span>
-              </Col> */}
+              <Col>
+                <span>
+                <Tag color={'volcano'}>
+                  {event.turn}차
+                </Tag>
+                </span>
+              </Col>
               <Col span={18}>
                 <Form.Item>
                   {getFieldDecorator('name')(<Input spellCheck={false} maxLength={30} style={{ resize: 'none' }} />)}

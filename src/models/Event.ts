@@ -38,6 +38,7 @@ export interface ResponseEvent extends ResponseEventForList {
   shippingScheduled: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
+  turn: number;
 }
 
 export interface ResponseEventCreator {
@@ -88,9 +89,15 @@ export interface ResponseEventForShipping {
   brand: ResponseBrand;
 }
 
+export interface CreateCopyEvent {
+  eventId: number;
+  salesStarted: string;
+  salesEnded: string;
+  shippingScheduled: string;
+}
+
 export interface ResponseCopyEvent {
-  id: number;
-  copyStatus:  boolean;
+  eventId: number;
 }
 
 export interface UpdateEvent {

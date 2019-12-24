@@ -48,6 +48,9 @@ export const CREATE_COPY_EVENT_REQUEST = 'event/CREATE_COPY_EVENT_REQUEST';
 export const CREATE_COPY_EVENT_SUCCESS = 'event/CREATE_COPY_EVENT_SUCCESS';
 export const CREATE_COPY_EVENT_FAILURE = 'event/CREATE_COPY_EVENT_FAILURE';
 
+// copy event 초기화
+export const CLEAR_COPY_EVENT = 'event/CLEAR_COPY_EVENT';
+
 // event 초기화
 export const CLEAR_EVENT = 'event/CLEAR_EVENT';
 

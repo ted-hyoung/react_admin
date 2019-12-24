@@ -23,7 +23,7 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
-  ResponseCopyEvent
+  ResponseCopyEvent, CreateCopyEvent,
 } from 'models';
 
 import { EventStatus } from 'enums';
@@ -46,7 +46,7 @@ export const createCopyEventAsync = createAsyncAction(
   Actions.CREATE_COPY_EVENT_REQUEST,
   Actions.CREATE_COPY_EVENT_SUCCESS,
   Actions.CREATE_COPY_EVENT_FAILURE,
-)<CreateRequestPayload<{id : number}>, ResponseCopyEvent, AxiosError>();
+)<CreateRequestPayload<CreateCopyEvent>, ResponseCopyEvent, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -105,11 +105,11 @@ export const deleteEventAsync = createAsyncAction(
 
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
+export const clearCopyEvent = () => action(Actions.CLEAR_COPY_EVENT);
 
 const initialState: EventState = {
   copyEvent:{
-    id: 0,
-    copyStatus:  false
+    eventId: 0,
   },
   events: {
     content: [],
@@ -182,7 +182,7 @@ export default (state = initialState, action: AnyAction) => {
     }
     case Actions.CREATE_COPY_EVENT_SUCCESS: {
       return produce(state, draft => {
-       draft.copyEvent = action.payload;
+       draft.copyEvent = {eventId : action.payload};
       });
     }
     case Actions.GET_EVENTS_SUCCESS: {
@@ -210,6 +210,7 @@ export default (state = initialState, action: AnyAction) => {
         draft.event = initialState.event;
       });
     }
+
     case Actions.CLEAR_EVENTS: {
       return produce(state, draft => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
@@ -217,6 +218,12 @@ export default (state = initialState, action: AnyAction) => {
     }
     case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
       return state;
+    }
+
+    case Actions.CLEAR_COPY_EVENT: {
+      return produce(state, draft => {
+        draft.copyEvent = { eventId: 0 };
+      });
     }
 
     default: {

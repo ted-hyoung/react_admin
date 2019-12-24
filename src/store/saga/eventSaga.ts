@@ -55,14 +55,17 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
 
 function* createEventCopy(action: RequestAsyncAction) {
 
+  const {  eventId, salesStarted, salesEnded, shippingScheduled, } = action.payload.data;
+
+  const data = {
+    salesStarted,
+    salesEnded,
+    shippingScheduled,
+  };
+
   try {
-    // const res = yield call(() => Api.post(`/events/${id}/copy`));
-   yield put(createCopyEventAsync.success({
-     id: 43,
-     copyStatus:  true
-   }));
-    // yield put(getEventsAsync.request(res.data));
-   // message.success('공구가 복사 되었습니다.');
+    const res = yield call(() => Api.post(`/events/${eventId}/copy`, data));
+   yield put(createCopyEventAsync.success(res.data));
   } catch (error) {
     message.error(error);
     yield put(createEventAsync.failure(error));

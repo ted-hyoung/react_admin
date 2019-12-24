@@ -10,15 +10,17 @@ import { ColumnProps } from 'antd/lib/table';
 import { useClipboard } from 'use-clipboard-copy';
 
 // components
-import { FlexRow, PaginationTable } from 'components';
+import { PaginationTable } from 'components';
 
 // types
 import { EventStatus } from 'enums';
 import { StoreState } from 'store';
-import { getEventsAsync, clearEvent, createCopyEventAsync } from 'store/reducer/event';
-import { SearchEvent } from 'models';
-import { Button, Col, DatePicker, Modal, TimePicker } from 'antd';
+import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event';
+import { SearchEvent, CreateCopyEvent } from 'models';
+import { Button, Modal, Tag } from 'antd';
 import { sortedString, setPagingIndex } from 'lib/utils';
+import { TIME_FORMAT, LOCAL_DATE_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
+import EventDateModal from '../../containers/EventDateModal';
 
 interface EventList {
   key: number;
@@ -33,17 +35,20 @@ interface EventList {
 }
 
 const { info } = Modal;
-const TIME_FORMAT = 'HH:mm A';
-const DATE_FORMAT = 'YYYY-MM-DD';
 
 function EventList() {
   const history = useHistory();
 
   const { events } = useSelector((state: StoreState) => state.event);
-  const { id, copyStatus } = useSelector((state: StoreState) => state.event.copyEvent);
+  const { eventId } = useSelector((state: StoreState) => state.event.copyEvent);
   const [visible, setVisible] = useState(false);
-  console.log(id);
-  console.log(copyStatus);
+  const [copyEventProp, setCopyEventProp] = useState<CreateCopyEvent>(
+    {  eventId: 0,
+      salesStarted: '',
+      salesEnded: '',
+      shippingScheduled: ''
+    }
+  );
 
   const dispatch = useDispatch();
 
@@ -66,40 +71,44 @@ function EventList() {
     [dispatch],
   );
 
-  const copyEvent = useCallback(
-    (id: number, copyStatus?:false) => {
-      dispatch(
-        createCopyEventAsync.request({ data : {id}}),
-      );
-    },
-    [dispatch],
-  );
+  const openModal = (id:number) => {
+
+    setCopyEventProp({
+      eventId: id,
+      salesStarted: '',
+      salesEnded: '',
+      shippingScheduled: ''
+    });
+    setVisible(true);
+  };
 
   useEffect(() => {
     getEvents(0, events.size);
   }, [getEvents]);
 
   useEffect(() => {
-    // setVisible(copyStatus)
-      if(copyStatus) {
-        // 모달 팝업
-        info({
-          title: '공구가 복사 되었습니다.',
-          content:'공구 등록 페이지로 이동됩니다.',
-          okText: '확인',
-         // cancelText: '취소',
-          onOk() {
-            // 공구 페이지로 이동
-            history.push('/events/detail/' + id)
-          }
-        });
 
-      }
-  }, [copyStatus, id]);
+    if(eventId !== 0) {
 
-  const onOk = useCallback(() => {
+      setVisible(false);
+      dispatch(clearCopyEvent());
+
+      // 모달 팝업
+      info({
+        title: '공구가 복사 되었습니다.',
+        content:'공구 등록 페이지로 이동됩니다.',
+        okText: '확인',
+        onOk() {
+          history.push(`/events/detail/${eventId}`)
+        }
+      });
+
+    }
+  }, [eventId]);
+
+  const handleDateModalClose = () => {
     setVisible(false);
-  }, []);
+  };
 
   const handleChangePageSize = useCallback(
     (value: number) => {
@@ -133,12 +142,12 @@ function EventList() {
     return {
       key: event.eventId,
       no: setPagingIndex(events.totalElements, events.page, events.size, i),
-      period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
+      period: `${moment(event.salesStarted).format(CLIENT_DATE_FORMAT)} ~ ${moment(event.salesEnded).format(CLIENT_DATE_FORMAT)}`,
       name: event.name,
       eventLink: `${process.env.REACT_APP_CLIENT_URL}/seller/${event.creator.loginId}/events/${event.eventId}`,
       turn: event.turn,
       brand: event.brand.brandName,
-      created: moment(event.created).format('YYYY-MM-DD'),
+      created: moment(event.created).format(CLIENT_DATE_FORMAT),
       eventStatus: EventStatus[event.eventStatus],
     };
   });
@@ -187,6 +196,13 @@ function EventList() {
       dataIndex: 'turn',
       key: 'turn',
       sorter: (a, b) => a.turn - b.turn,
+      render: (value, record) => (
+        <div style={{ textAlign: 'center' }}>
+          <Tag color={'volcano'}>
+            {record.turn}
+          </Tag>
+        </div>
+      ),
     },
     {
       title: '브랜드',
@@ -236,7 +252,7 @@ function EventList() {
             <Button
               style={{ color: '#000000' }}
               icon="copy"
-              onClick={() => copyEvent(record.key)}
+              onClick={() => openModal(record.key)}
             />
           }
         </div>
@@ -263,63 +279,12 @@ function EventList() {
         </Button>
       </Link>
     </div>
-    <Modal
-      title={'공구 시작일과 종료일을 입력 해주세요.'}
-      visible={true}
-      footer={
-        <div className="modal-footer">
-        <Button className="animation--disabled" type="primary" onClick={() => console.log('ok')}>
-        확인
-        </Button>
-        </div>
-        }
-      width={500}
-      destroyOnClose
-      onCancel={() => setVisible(false)}
-    >
-      <div>
-        <FlexRow>
-          <Col>
-            <span>시작일</span>
-          </Col>
-          <Col>
-            <DatePicker placeholder="시작일" />
-          </Col>
-          <Col>
-            <TimePicker
-              use12Hours
-              placeholder="시작시간"
-              defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
-              format={TIME_FORMAT}
-            />
-          </Col>
-        </FlexRow>
-        <FlexRow>
-          <Col>
-            <span> 종료 일</span>
-          </Col>
-          <Col>
-            <DatePicker placeholder="종료일" />
-          </Col>
-          <Col>
-            <TimePicker
-              use12Hours
-              placeholder="종료시간"
-              defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
-              format={TIME_FORMAT}
-            />
-          </Col>
-        </FlexRow>
-        <FlexRow>
-          <Col>
-            <span>배송 예정일</span>
-          </Col>
-          <Col>
-            <DatePicker placeholder="배송예정일" />
-          </Col>
-        </FlexRow>
-      </div>
-    </Modal>
+      <EventDateModal
+        copyEventProp={copyEventProp}
+        setCopyEventProp={setCopyEventProp}
+        visible={visible}
+        onCancel={handleDateModalClose}
+      />
     </>
   );
 }
