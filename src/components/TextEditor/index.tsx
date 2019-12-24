@@ -91,25 +91,37 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
   };
 
   const inputQuotation = () => {
-    const selectIndex = saveSelectionlocal();
+    let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
-      editor.insertText(selectIndex ? selectIndex : 0,'\n')
-      editor.insertEmbed(selectIndex ? selectIndex : 0, 'image', quotationBottom);
-      editor.insertText(selectIndex ? selectIndex : 0,'\n\n')
-      editor.insertText(selectIndex ? selectIndex : 0,'인용구를 입력해주세요.')
-      editor.insertText(selectIndex ? selectIndex : 0,'\n\n')
-      editor.insertEmbed(selectIndex ? selectIndex : 0, 'image', quotationTop);
-      editor.insertText(selectIndex ? selectIndex : 0,'\n')
+
+      if (!selectIndex) {
+        selectIndex = 0;
+      }
+
+      editor.insertText(selectIndex,'\n')
+      editor.insertEmbed(selectIndex, 'image', quotationBottom);
+      editor.insertText(selectIndex,'\n\n')
+      editor.insertText(selectIndex,'인용구를 입력해주세요.')
+      editor.insertText(selectIndex,'\n\n')
+      editor.insertEmbed(selectIndex, 'image', quotationTop);
+      editor.insertText(selectIndex,'\n')
       editor.blur();
     }
   }
 
   const inputLine = () => {
-    const selectIndex = saveSelectionlocal();
+    let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
-      editor.insertEmbed(selectIndex ? selectIndex : 0, 'html', 'line')
+
+      if (!selectIndex) {
+        selectIndex = 0;
+      }
+
+      editor.insertText(selectIndex,'\n')
+      editor.insertEmbed(selectIndex, 'html', 'line')
+      editor.insertText(selectIndex,'\n')
       editor.blur();
     }
   }
