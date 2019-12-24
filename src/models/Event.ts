@@ -79,6 +79,10 @@ export interface ResponseEventForReview {
   brand: ResponseBrand;
 }
 
+export interface ResponseEventQnaGroup {
+  event: ResponseEventForQna;
+}
+
 export interface ResponseEventForQna {
   name: string; // 공구명
 }

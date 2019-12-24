@@ -1,6 +1,6 @@
-import { ResponseOrderForReview } from "./Order";
-import { FileObject } from "./FileObject";
-import { ResponseEventForReview } from "./Event";
+import { ResponseOrderForReview } from './Order';
+import { FileObject } from './FileObject';
+import { ResponseEventForReview } from './Event';
 
 export interface ResponseReview {
   reviewId: number;
@@ -15,7 +15,6 @@ export interface ResponseReview {
   sequence: number;
   expose: boolean;
   order: ResponseOrderForReview;
-  event: ResponseEventForReview;
   images: FileObject[];
 }
 

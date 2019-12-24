@@ -76,13 +76,13 @@ const defaultReview = {
     orderNo: '',
     orderItems: [],
     created: '',
-  },
-  event: {
-    name: '',
-    images: [],
-    eventId: 0,
-    brand: {
-      brandName: '',
+    event: {
+      name: '',
+      images: [],
+      eventId: 0,
+      brand: {
+        brandName: '',
+      },
     },
   },
 };

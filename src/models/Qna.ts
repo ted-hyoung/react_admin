@@ -1,12 +1,12 @@
 import { QnaOrderType } from 'enums/QnaOrderType';
-import { ResponseEventForQna } from './Event';
+import { ResponseEventQnaGroup } from './Event';
 import { QnaStatus } from 'enums';
 
 export interface ResponseQna {
   no: number;
   qnaId: number;
   qnaStatus: QnaStatus;
-  event: ResponseEventForQna;
+  eventQnaGroup: ResponseEventQnaGroup;
   contents: string;
   expose: boolean;
   enable?: boolean;
