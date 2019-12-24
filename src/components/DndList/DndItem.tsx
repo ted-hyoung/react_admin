@@ -32,6 +32,7 @@ function DndItem(props: IDndItemProps) {
 
   const ref = useRef<HTMLDivElement>(null);
 
+  // 배열의 2번째 인자값만 받을려고 할때 [, value]
   const [, drop] = useDrop({
     accept: 'item',
     hover(item: IDragItem, monitor: DropTargetMonitor) {
