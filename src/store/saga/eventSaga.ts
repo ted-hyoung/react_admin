@@ -12,7 +12,7 @@ import {
   updateEventStatusAsync,
   updateEventShippingFeeInfoAsync,
   deleteEventAsync,
-  updateEventShippingAsync,
+  updateEventShippingAsync, createCopyEventAsync,
 } from 'store/reducer/event';
 
 // lib
@@ -46,6 +46,23 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
     yield put(getEventByIdAsync.request({ id : res.data }));
 
     message.success('공구가 등록되었습니다.');
+  } catch (error) {
+    message.error(error);
+    yield put(createEventAsync.failure(error));
+  }
+}
+
+
+function* createEventCopy(action: RequestAsyncAction) {
+
+  try {
+    // const res = yield call(() => Api.post(`/events/${id}/copy`));
+   yield put(createCopyEventAsync.success({
+     id: 43,
+     copyStatus:  true
+   }));
+    // yield put(getEventsAsync.request(res.data));
+   // message.success('공구가 복사 되었습니다.');
   } catch (error) {
     message.error(error);
     yield put(createEventAsync.failure(error));
@@ -172,4 +189,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
   yield takeLatest(Actions.DELETE_EVENT_REQUEST, deleteEvent);
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_REQUEST, updateEventShipping);
+  yield takeLatest(Actions.CREATE_COPY_EVENT_REQUEST, createEventCopy);
 }

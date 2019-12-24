@@ -88,6 +88,11 @@ export interface ResponseEventForShipping {
   brand: ResponseBrand;
 }
 
+export interface ResponseCopyEvent {
+  id: number;
+  copyStatus:  boolean;
+}
+
 export interface UpdateEvent {
   name: string;
   choiceReview: string;

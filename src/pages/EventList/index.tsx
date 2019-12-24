@@ -1,5 +1,5 @@
 // base
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,14 +10,14 @@ import { ColumnProps } from 'antd/lib/table';
 import { useClipboard } from 'use-clipboard-copy';
 
 // components
-import { PaginationTable } from 'components';
+import { FlexRow, PaginationTable } from 'components';
 
 // types
 import { EventStatus } from 'enums';
 import { StoreState } from 'store';
-import { getEventsAsync, clearEvent } from 'store/reducer/event';
+import { getEventsAsync, clearEvent, createCopyEventAsync } from 'store/reducer/event';
 import { SearchEvent } from 'models';
-import { Button } from 'antd';
+import { Button, Col, DatePicker, Modal, TimePicker } from 'antd';
 import { sortedString, setPagingIndex } from 'lib/utils';
 
 interface EventList {
@@ -32,10 +32,19 @@ interface EventList {
   eventLink: string;
 }
 
+const { info } = Modal;
+const TIME_FORMAT = 'HH:mm A';
+const DATE_FORMAT = 'YYYY-MM-DD';
+
 function EventList() {
   const history = useHistory();
 
   const { events } = useSelector((state: StoreState) => state.event);
+  const { id, copyStatus } = useSelector((state: StoreState) => state.event.copyEvent);
+  const [visible, setVisible] = useState(false);
+  console.log(id);
+  console.log(copyStatus);
+
   const dispatch = useDispatch();
 
   const clipboard = useClipboard({
@@ -43,10 +52,6 @@ function EventList() {
       alert('URL 복사가 완료되었습니다.');
     },
   });
-
-  const copyEvent = (no: number) => {
-    // console.log('no', no)
-  }
 
   const getEvents = useCallback(
     (page: number, size = 10, searchCondition?: SearchEvent) => {
@@ -61,9 +66,40 @@ function EventList() {
     [dispatch],
   );
 
+  const copyEvent = useCallback(
+    (id: number, copyStatus?:false) => {
+      dispatch(
+        createCopyEventAsync.request({ data : {id}}),
+      );
+    },
+    [dispatch],
+  );
+
   useEffect(() => {
     getEvents(0, events.size);
   }, [getEvents]);
+
+  useEffect(() => {
+    // setVisible(copyStatus)
+      if(copyStatus) {
+        // 모달 팝업
+        info({
+          title: '공구가 복사 되었습니다.',
+          content:'공구 등록 페이지로 이동됩니다.',
+          okText: '확인',
+         // cancelText: '취소',
+          onOk() {
+            // 공구 페이지로 이동
+            history.push('/events/detail/' + id)
+          }
+        });
+
+      }
+  }, [copyStatus, id]);
+
+  const onOk = useCallback(() => {
+    setVisible(false);
+  }, []);
 
   const handleChangePageSize = useCallback(
     (value: number) => {
@@ -200,7 +236,7 @@ function EventList() {
             <Button
               style={{ color: '#000000' }}
               icon="copy"
-              onClick={() => copyEvent(record.no)}
+              onClick={() => copyEvent(record.key)}
             />
           }
         </div>
@@ -210,6 +246,7 @@ function EventList() {
   ];
 
   return (
+    <>
     <div className="event-list">
       <PaginationTable
         bordered
@@ -218,6 +255,7 @@ function EventList() {
         onChangePageSize={handleChangePageSize}
         pagination={pagination}
         onRow={onRow}
+        style={{overflowX: 'scroll', whiteSpace:'nowrap'}}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
         <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent())}>
@@ -225,6 +263,64 @@ function EventList() {
         </Button>
       </Link>
     </div>
+    <Modal
+      title={'공구 시작일과 종료일을 입력 해주세요.'}
+      visible={true}
+      footer={
+        <div className="modal-footer">
+        <Button className="animation--disabled" type="primary" onClick={() => console.log('ok')}>
+        확인
+        </Button>
+        </div>
+        }
+      width={500}
+      destroyOnClose
+      onCancel={() => setVisible(false)}
+    >
+      <div>
+        <FlexRow>
+          <Col>
+            <span>시작일</span>
+          </Col>
+          <Col>
+            <DatePicker placeholder="시작일" />
+          </Col>
+          <Col>
+            <TimePicker
+              use12Hours
+              placeholder="시작시간"
+              defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+              format={TIME_FORMAT}
+            />
+          </Col>
+        </FlexRow>
+        <FlexRow>
+          <Col>
+            <span> 종료 일</span>
+          </Col>
+          <Col>
+            <DatePicker placeholder="종료일" />
+          </Col>
+          <Col>
+            <TimePicker
+              use12Hours
+              placeholder="종료시간"
+              defaultOpenValue={moment('00:00 AM', TIME_FORMAT)}
+              format={TIME_FORMAT}
+            />
+          </Col>
+        </FlexRow>
+        <FlexRow>
+          <Col>
+            <span>배송 예정일</span>
+          </Col>
+          <Col>
+            <DatePicker placeholder="배송예정일" />
+          </Col>
+        </FlexRow>
+      </div>
+    </Modal>
+    </>
   );
 }
 

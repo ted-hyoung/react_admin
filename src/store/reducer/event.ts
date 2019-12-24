@@ -23,6 +23,7 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
+  ResponseCopyEvent
 } from 'models';
 
 import { EventStatus } from 'enums';
@@ -30,6 +31,7 @@ import { EventStatus } from 'enums';
 export interface EventState {
   events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
+  copyEvent: ResponseCopyEvent;
 }
 
 // 공구 생성
@@ -38,6 +40,13 @@ export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
 )<CreateRequestPayload<CreateEvent>, {eventId : number}, AxiosError>();
+
+// 공구 생성
+export const createCopyEventAsync = createAsyncAction(
+  Actions.CREATE_COPY_EVENT_REQUEST,
+  Actions.CREATE_COPY_EVENT_SUCCESS,
+  Actions.CREATE_COPY_EVENT_FAILURE,
+)<CreateRequestPayload<{id : number}>, ResponseCopyEvent, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -98,7 +107,10 @@ export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
 
 const initialState: EventState = {
-
+  copyEvent:{
+    id: 0,
+    copyStatus:  false
+  },
   events: {
     content: [],
     first: false,
@@ -167,6 +179,11 @@ export default (state = initialState, action: AnyAction) => {
   switch (action.type) {
     case Actions.CREATE_EVENT_SUCCESS: {
       return state;
+    }
+    case Actions.CREATE_COPY_EVENT_SUCCESS: {
+      return produce(state, draft => {
+       draft.copyEvent = action.payload;
+      });
     }
     case Actions.GET_EVENTS_SUCCESS: {
       return produce(state, draft => {
