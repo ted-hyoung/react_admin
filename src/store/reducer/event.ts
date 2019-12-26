@@ -106,6 +106,7 @@ export const deleteEventAsync = createAsyncAction(
 
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
+export const clearEventByUrl = () => action(Actions.CLEAR_EVENT_BY_URL);
 
 const initialState: EventState = {
   eventByUrl : {
@@ -241,9 +242,15 @@ export default (state = initialState, action: AnyAction) => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
       });
     }
+    case Actions.CLEAR_EVENT_BY_URL: {
+      return produce(state, draft => {
+        draft.eventByUrl = initialState.eventByUrl;
+      });
+    }
     case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
       return state;
     }
+
 
     default: {
       return state;

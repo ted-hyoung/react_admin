@@ -106,6 +106,7 @@ const MENU_LIST = [
     key: 'banner',
     name: '배너 관리',
     icon: 'idcard',
+    role: true,
     subMenus: [
       {
         key: 'banner',
