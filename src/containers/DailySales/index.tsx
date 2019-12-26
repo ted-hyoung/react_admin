@@ -45,6 +45,8 @@ interface ResponseManagementOrdersExcels {
   totalOrderCancelCount: number;
 }
 
+const pageSize = 20;
+
 const DailySales = () => {
   const { statistics } = useSelector((storeState: StoreState) => storeState.order);
   const dispatch = useDispatch();
@@ -430,7 +432,10 @@ const DailySales = () => {
           dataSource={statistics.dailySales.orders}
           bordered
           rowKey={record => record.paymentDate}
-          pagination={false}
+          pagination={{
+            total: statistics.dailySales.orders.length,
+            pageSize,
+          }}
           size="middle"
         />
       </div>
