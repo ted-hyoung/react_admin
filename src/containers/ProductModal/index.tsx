@@ -50,9 +50,17 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
 
   const addOptionRow = () => {
     const targetOption: ResponseOption = getFieldValue('options')[product.options.length - 1];
-    if (targetOption.optionName === '' || targetOption.salePrice === 0 || targetOption.stock === 0) {
-      return message.error('추가 하려는 옵션 정보를 입력 후 다음 옵션을 추가하실 수 있습니다.');
+
+    if (targetOption.optionName === '') {
+      return message.error('추가 하려는 옵션 정보의 옵션명을 입력 후 다음 옵션을 추가하실 수 있습니다.');
     }
+    if (targetOption.stock === 0) {
+      return message.error('추가 하려는 옵션 정보의 재고를 입력 후 다음 옵션을 추가하실 수 있습니다.');
+    }
+    // if (targetOption.salePrice === 0 ) {
+    //   return message.error('추가 하려는 옵션 정보의 가격을 입력 후 다음 옵션을 추가하실 수 있습니다.');
+    // }
+
     setProduct({
       ...product,
       options: product.options.concat({
@@ -187,7 +195,7 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
           },
         },
         {
-          title: '총 재고',
+          title: '남은 재고',
           key: 'stock',
           dataIndex: 'stock',
           align: 'center',
@@ -204,6 +212,33 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
                       className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                      onChange={(value: number | undefined) => handleOptionStock(index, value)}
+                    />,
+                  )}
+                </Form.Item>
+              </div>
+            );
+          },
+        },
+        {
+          title: '총 재고',
+          key: 'totalStock',
+          dataIndex: 'totalStock',
+          align: 'center',
+          render: (text: string, record, index: number) => {
+            return (
+              <div key={index}>
+                <Form.Item>
+                  {getFieldDecorator(`options[${index}].totalStock`, {
+                    initialValue: record.totalStock,
+                  })(
+                    <InputNumber
+                      min={0}
+                      style={{ width: '100%' }}
+                      className="product-form-input"
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                      disabled={true}
                     />,
                   )}
                 </Form.Item>
@@ -298,8 +333,12 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
           freebie,
           options,
           images,
-          updateDisabledOptionStock,
         } = values;
+
+        // if (images.length === 0) {
+        //   return message.error('제품 이미지를 등록해주세요.');
+        // }
+
         if (product.productId === 0) {
           const createProduct: CreateProduct = {
             productName,
@@ -327,7 +366,7 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
                 salePrice: Number(item.salePrice),
                 stock: Number(item.stock),
                 safeStock: Number(item.safeStock),
-                totalStock: Number(item.stock),
+                totalStock: Number(item.totalStock),
               });
             });
           } else if (enableOption === 1) {
@@ -364,7 +403,6 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
             if (newOptions.length === 0 && enableOption === 0) {
               return message.error('옵션 사용 시 옵션 정보를 입력 후 추가 버튼 클릭해주세요.');
             }
-
             newOptions.forEach(item => {
               updateProduct.options.push({
                 optionId: item.optionId === 0 ? null : item.optionId,
@@ -372,7 +410,7 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
                 salePrice: Number(item.salePrice),
                 stock: Number(item.stock),
                 safeStock: Number(item.safeStock),
-                totalStock: Number(item.stock),
+                totalStock: Number(item.totalStock),
               });
             });
           } else if (enableOption === 1) {
@@ -380,10 +418,9 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
             updateProduct.disabledOptionStock = Number(disabledOptionStock);
             updateProduct.disabledOptionTotalStock = Number(disabledOptionTotalStock);
             updateProduct.disabledOptionSafeStock = Number(disabledOptionSafeStock);
-            updateProduct.updateDisabledOptionStock = Number(updateDisabledOptionStock);
             updateProduct.enableOption = false;
           }
-
+          delete updateProduct.updateDisabledOptionStock;
           dispatch(updateProductAsync.request({ eventId, productId, data: updateProduct }));
         }
 
@@ -391,6 +428,49 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
       } else {
         Object.keys(error).map(key => message.error(error[key].errors[0].message));
       }
+    });
+  };
+
+  const handleStock = (value: number | undefined) => {
+    const stock: number = typeof value === 'number' ? value : 0;
+    const optionStock = getFieldValue('disabledOptionStock');
+    const optionTotalStock = getFieldValue('disabledOptionTotalStock');
+    setFieldsValue({
+      disabledOptionStock: stock,
+      disabledOptionTotalStock: optionTotalStock - (optionStock - stock),
+    });
+  };
+
+  const handleOptionStock = (index: number, value: number | undefined) => {
+    const stock: number = typeof value === 'number' ? value : 0;
+    const optionStock = getFieldValue(`options[${index}].stock`);
+    const optionTotalStock = getFieldValue(`options[${index}].totalStock`);
+
+    if (typeof value !== 'number') {
+      message.error('숫자만 입력 바랍니다.');
+      return false;
+    }
+
+    const newOptions: ResponseOption[] = [];
+
+    if (!isNaN(optionTotalStock - (optionStock - stock))) {
+      getFieldValue('options').forEach((item: ResponseOption, i: number) => {
+        newOptions.push({
+          optionId: item.optionId,
+          optionName: item.optionName,
+          salePrice: item.salePrice,
+          stock: item.stock,
+          safeStock: item.safeStock,
+          totalStock: i === index ? optionTotalStock - (optionStock - stock) : item.totalStock,
+          // totalStock:0
+        });
+      });
+    } else {
+      message.error('숫자만 입력 바랍니다.');
+      return false;
+    }
+    setFieldsValue({
+      options: newOptions,
     });
   };
 
@@ -680,7 +760,7 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
           <>
             <Row>
               <Col span={3} className="product-form-col-3">
-                <Text>남은 재고 / 총 재고</Text>
+                <Text>남은 재고 수정/ 총 재고</Text>
               </Col>
               <Col span={3}>
                 <Form.Item>
@@ -761,10 +841,12 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
                     ],
                   })(
                     <InputNumber
+                      min={0}
                       style={{ width: '100%' }}
                       className="product-form-input"
                       formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                       parser={(value: string | undefined) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+                      onChange={(value: number | undefined) => handleStock(value)}
                     />,
                   )}
                 </Form.Item>
@@ -773,7 +855,7 @@ const ProductForm = Form.create<ProductForm>()((props: ProductForm) => {
             <Row>
               <Col span={3} className="product-form-col-3" />
               <Col span={10}>
-                <Text type="danger">※ 총 재고에서 입력한 수량 만큼 추가/감소 처리 됩니다.</Text>
+                <Text type="danger">※ 입력한 수량이 남은 재고로 처리 됩니다.</Text>
               </Col>
             </Row>
           </>

@@ -16,6 +16,7 @@ export interface CreateEvent {
   detail?: string;
   videoUrl?: string;
   shippingCompany: ShippingCompany;
+  shippingScheduled: string;
   images?: CreateFileObject[];
 }
 
@@ -34,6 +35,7 @@ export interface ResponseEvent extends ResponseEventForList {
   creator: ResponseEventCreator;
   productProvisions: [];
   shippingPeriod: string;
+  shippingScheduled: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
 }
@@ -52,6 +54,7 @@ export interface ResponseEventCreatorSns {
 
 export interface ResponseEventForList {
   eventId: number;
+  eventUrl:string;
   name: string;
   eventStatus: EventStatus;
   turn: number;
@@ -61,6 +64,15 @@ export interface ResponseEventForList {
   created: string;
   creator: ResponseEventCreator;
   products: ResponseProduct[];
+}
+export interface ResponseEventForUrl {
+  eventId: number;
+  eventUrl:string;
+  name: string;
+  brand: ResponseBrandForEvent;
+  salesStarted: string;
+  salesEnded: string;
+  creator: ResponseEventCreator;
 }
 
 export interface ResponseEventForOrders {
@@ -96,6 +108,7 @@ export interface UpdateEvent {
   detail?: string;
   videoUrl?: string;
   shippingCompany: string;
+  shippingScheduled: string;
   images?: UpdateFileObject[];
 }
 
@@ -104,7 +117,9 @@ export interface SearchEvent {
   brandName?: string;
   salesStarted: string;
   salesEnded: string;
-  eventStatuses: EventStatus[];
+  eventStatuses?: EventStatus[];
+  accountIds?:number[];
+  brandIds?:number[];
 }
 
 export interface SearchEventForOrder {
@@ -127,7 +142,6 @@ export interface UpdateEventShippingFeeInfo {
 }
 
 export interface UpdateEventShippingInfo {
-  shippingFeeInfo: UpdateEventShipping;
   shippingPeriod: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
@@ -135,4 +149,9 @@ export interface UpdateEventShippingInfo {
 
 export interface UpdateEventShipping {
   shippingFee: number;
+}
+
+
+export interface GetSearchEventByUrl {
+  eventUrl: string;
 }
