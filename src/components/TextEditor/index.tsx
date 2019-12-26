@@ -8,6 +8,7 @@ import { Spinner } from 'components';
 import CustomToolbar from './CustomToolbar';
 
 import InstagramFormat from './InstagramFormat';
+import HtmlFormat from './HtmlFormat';
 
 // lib
 import { uploadImage } from 'lib/protocols';
@@ -18,8 +19,12 @@ import 'react-quill/dist/quill.snow.css';
 
 import './index.less';
 
+import quotationTop from '../../assets/images/textEditor/ico-quotation-top.png';
+import quotationBottom from '../../assets/images/textEditor/ico-quotation-bottom.png';
+
 Quill.register({
   'formats/instagram': InstagramFormat,
+  'formats/html': HtmlFormat,
 });
 
 interface TextEditorProps {
@@ -85,11 +90,57 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     }
   };
 
+  const inputQuotation = () => {
+    let selectIndex = saveSelectionlocal();
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+
+      if (!selectIndex) {
+        selectIndex = 0;
+      }
+
+      editor.insertText(selectIndex,'\n')
+      editor.insertEmbed(selectIndex, 'image', quotationBottom);
+      editor.insertText(selectIndex,'\n\n')
+      editor.insertText(selectIndex,'인용구를 입력해주세요.')
+      editor.insertText(selectIndex,'\n\n')
+      editor.insertEmbed(selectIndex, 'image', quotationTop);
+      editor.insertText(selectIndex,'\n')
+      editor.blur();
+    }
+  }
+
+  const inputLine = () => {
+    let selectIndex = saveSelectionlocal();
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+
+      if (!selectIndex) {
+        selectIndex = 0;
+      }
+
+      editor.insertText(selectIndex,'\n')
+      editor.insertEmbed(selectIndex, 'html', 'line')
+      editor.insertText(selectIndex,'\n')
+      editor.blur();
+    }
+  }
+
+  const saveSelectionlocal = () => {
+    const editor = quillRef.current;
+    if (editor) {
+      const range = editor.getEditor().getSelection();
+      if (range) {
+        return range.index;
+      }
+    }
+    return 0;
+  }
+
   const saveSelection = () => {
     const editor = quillRef.current;
     if (editor) {
       const range = editor.getEditor().getSelection();
-
       if (range) {
         setSelection(range.index);
       }
@@ -114,6 +165,8 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
         saveSelection={saveSelection}
         imageHandler={imageHandler}
         instagramHandler={instagramHandler}
+        inputQuotation={inputQuotation}
+        inputLine={inputLine}
       />
       <ReactQuill
         theme="snow"
