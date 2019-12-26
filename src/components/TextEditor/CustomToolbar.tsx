@@ -14,7 +14,7 @@ interface CustomToolbarProps {
   saveSelection: () => void;
   imageHandler: (file: File) => void;
   instagramHandler: (url: string) => void;
-  inputQuotation: () => void;
+  inputQuotation: (value: string) => void;
   inputLine: () => void;
 }
 
@@ -52,14 +52,11 @@ const CustomToolbar = (props: CustomToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <button
-          type="button"
-          onClick={() => {
-            inputQuotation();
-          }}
-        >
-          " "
-        </button>
+        <select className="ql-insertCustomTags">
+          <option value="1" onClick={() => { inputQuotation('small'); }} />
+          <option value="2" onClick={() => { inputQuotation('medium'); }} />
+          <option value="3" onClick={() => { inputQuotation('large'); }} />
+        </select>
         <button
           type="button"
           onClick={() => {

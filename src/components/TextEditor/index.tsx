@@ -14,13 +14,17 @@ import HtmlFormat from './HtmlFormat';
 import { uploadImage } from 'lib/protocols';
 import { getThumbUrl } from 'lib/utils';
 
-// assets
+// define
 import 'react-quill/dist/quill.snow.css';
-
 import './index.less';
 
-import quotationTop from '../../assets/images/textEditor/ico-quotation-top.png';
-import quotationBottom from '../../assets/images/textEditor/ico-quotation-bottom.png';
+// assets
+import largeQuotationTop from '../../assets/images/textEditor/ico-large-quotation-top.png';
+import largeQuotationBottom from '../../assets/images/textEditor/ico-large-quotation-bottom.png';
+import mediumQuotationTop from '../../assets/images/textEditor/ico-medium-quotation-top.png';
+import mediumQuotationBottom from '../../assets/images/textEditor/ico-medium-quotation-bottom.png';
+import smallQuotationTop from '../../assets/images/textEditor/ico-small-quotation-top.png';
+import smallQuotationBottom from '../../assets/images/textEditor/ico-small-quotation-bottom.png';
 
 Quill.register({
   'formats/instagram': InstagramFormat,
@@ -90,7 +94,8 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     }
   };
 
-  const inputQuotation = () => {
+  const inputQuotation = (value: string) => {
+    console.log('value', value)
     let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -100,11 +105,11 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
       }
 
       editor.insertText(selectIndex,'\n')
-      editor.insertEmbed(selectIndex, 'image', quotationBottom);
+      editor.insertEmbed(selectIndex, 'image', smallQuotationBottom);
       editor.insertText(selectIndex,'\n\n')
       editor.insertText(selectIndex,'인용구를 입력해주세요.')
       editor.insertText(selectIndex,'\n\n')
-      editor.insertEmbed(selectIndex, 'image', quotationTop);
+      editor.insertEmbed(selectIndex, 'image', smallQuotationTop);
       editor.insertText(selectIndex,'\n')
       editor.blur();
     }
@@ -165,7 +170,7 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
         saveSelection={saveSelection}
         imageHandler={imageHandler}
         instagramHandler={instagramHandler}
-        inputQuotation={inputQuotation}
+        inputQuotation={value => inputQuotation(value)}
         inputLine={inputLine}
       />
       <ReactQuill
