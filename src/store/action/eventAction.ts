@@ -55,6 +55,8 @@ export const CLEAR_EVENT = 'event/CLEAR_EVENT';
 // events 초기화
 export const CLEAR_EVENTS = 'event/CLEAR_EVENTS';
 
+export const CLEAR_EVENT_BY_URL = 'event/CLEAR_EVENT_BY_URL';
+
 // 이벤트 배송비 설정 수정
 export const UPDATE_EVENT_SHIPPING_REQUEST = 'event/UPDATE_EVENT_SHIPPING_REQUEST';
 export const UPDATE_EVENT_SHIPPING_SUCCESS = 'event/UPDATE_EVENT_SHIPPING_SUCCESS';

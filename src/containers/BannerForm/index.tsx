@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Prompt } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  clearEventByUrl,
   clearEvents,
   getEventByUrlAsync,
 } from 'store/reducer/event';
@@ -151,6 +152,8 @@ function BannerForm(props: Props) {
 
   const handleRadioUrlLinkChange = (e:any) => {
     setUrlLink(e.target.value);
+    setSelectedEvents([]);
+    dispatch(clearEventByUrl());
     if(e.target.value === false){
       setBannerEventSearchModal(true);
       setEventsData([]);
@@ -177,7 +180,17 @@ function BannerForm(props: Props) {
 
   const checkUrlLink = () => {
     const eventUrl = getFieldValue('eventUrl');
+    if(typeof eventUrl === 'undefined'){
+      message.error('연결하실 링크 정보를 입력바랍니다.');
+    }
+
     getEventUrlLink(eventUrl);
+  };
+
+  const handleReset = () => {
+    resetFields();
+    setSelectedEvents([]);
+    dispatch(clearEventByUrl());
   };
 
   const handleBannerEventSearchModal = (visable: boolean) => {
@@ -535,7 +548,7 @@ function BannerForm(props: Props) {
             </Button>
           </Col>
           <Col>
-            <Button onClick={() => resetFields()}>취소</Button>
+            <Button onClick={() => handleReset()}>취소</Button>
           </Col>
         </Row>
       </Form>

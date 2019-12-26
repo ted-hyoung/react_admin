@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-import { Button, Input, Modal, Table } from 'antd';
+import { Button, Input, message, Modal, Table } from 'antd';
 import {
   SearchAccount,
 } from 'models';
@@ -92,6 +92,7 @@ function SellerListModal(props: Props) {
 
 
   const handleSelectedSeleb = (value:AccountCelebForList) => {
+    message.info(`${value.loginId}/${value.username} 선택되었습니다.`);
     setUsername(value.username);
     setAccountId(value.accountId);
     setLoginId(value.loginId);
@@ -131,7 +132,7 @@ function SellerListModal(props: Props) {
       destroyOnClose
       visible={visible}
       footer={null}
-      title="주문상세정보"
+      title="셀럽 ID/성명 검색"
       onCancel={onCancel}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' ,marginBottom: '10px'}}>
