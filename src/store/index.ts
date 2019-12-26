@@ -17,6 +17,7 @@ import shipping, { ShippingState } from './reducer/shipping';
 import brand, { BrandState } from './reducer/brand';
 import expGroupState, { ExpGroupState } from './reducer/expGroup.reducer';
 import expGroupConsumerState, { ExpGroupConsumerState } from './reducer/expGroupConsumer.reducer';
+import banner, { BannerState } from './reducer/banner.reducer';
 
 // saga
 import eventSaga from './saga/eventSaga';
@@ -31,8 +32,11 @@ import shippingSaga from './saga/shippingSaga';
 import brandSaga from './saga/brandSaga';
 import expGroupSaga from './saga/expGroup.saga';
 import expGroupConsumerSaga from './saga/expGroupConsumer.saga';
+import bannerSaga from './saga/banner.saga';
+
 
 export interface StoreState {
+  banner: BannerState;
   router: RouterState;
   event: EventState;
   qna: QnaState;
@@ -50,6 +54,7 @@ export interface StoreState {
 
 export function* saga() {
   yield all([
+    bannerSaga(),
     eventSaga(),
     qnaSaga(),
     reviewSaga(),
@@ -80,6 +85,7 @@ const reducer = (history: History) =>
     brand,
     expGroupState,
     expGroupConsumerState,
+    banner,
   });
 
 export default reducer;

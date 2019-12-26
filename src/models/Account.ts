@@ -28,3 +28,9 @@ export interface ResponseAccountForOrderMemo {
   loginId: string;
   role: Role;
 }
+
+export interface ResponseAccountCelebForList {
+  loginId: string;
+  username: string;
+  accountId: string;
+}
