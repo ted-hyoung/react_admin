@@ -251,7 +251,7 @@ function BannerForm(props: Props) {
               {eventByUrl.eventUrl && (
                 <div>
                   <p>
-                    셀럽1 : {eventByUrl.creator.username}
+                    셀럽 : {eventByUrl.creator.username}
                   </p>
                   <p>
                     브랜드 : {eventByUrl.brand.brandName}
