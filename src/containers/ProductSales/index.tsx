@@ -44,6 +44,8 @@ export interface ProductDataSets {
   data: (number | null)[];
 }
 
+const pageSize = 20;
+
 const ProductSales = () => {
   const printRef = useRef<any>();
   const { statistics, productsExcel } = useSelector((storeState: StoreState) => storeState.product);
@@ -282,7 +284,11 @@ const ProductSales = () => {
         ref={printRef}
         columns={columns}
         dataSource={dataSource}
-        pagination={false}
+        pagination={{
+          total: statistics.productSales.length,
+          pageSize,
+        }}
+        size="middle"
       />
     </div>
   );
