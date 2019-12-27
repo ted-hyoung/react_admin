@@ -129,7 +129,7 @@ function Review() {
         items: [
           {
             label: '공구명',
-            value: review.event && review.event.name,
+            value: review.order.event && review.order.event.name,
           },
           {
             label: '주문번호',
@@ -232,9 +232,9 @@ function Review() {
       },
       {
         title: '브랜드',
-        dataIndex: 'event',
-        key: 'event',
-        render: event => event.brand.brandName,
+        dataIndex: 'order',
+        key: 'order',
+        render: order => order.event.brand.brandName,
       },
       {
         title: '작성자',
