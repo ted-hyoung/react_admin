@@ -69,7 +69,7 @@ const DailySales = () => {
     [dispatch],
   );
 
-  useEffect( () => {
+  useEffect(() => {
     setTotalBoard(statistics.dailySales.orders.length);
   }, [statistics.dailySales.orders.length]);
 
