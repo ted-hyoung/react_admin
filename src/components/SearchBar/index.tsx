@@ -84,16 +84,15 @@ const SearchBar = Form.create<Props>()((props: Props) => {
       {customFormItems && customFormItems(form).map(item => item)}
       <Form.Item>{getFieldDecorator('dates')(
         <SearchDateFormItem
-          initValue={true}
           optionDateLength={[
             DateActionType.TODAY,
             DateActionType.RECENT_THREE_DAYS,
             DateActionType.RECENT_WEEK,
             DateActionType.RECENT_MONTH,
-            DateActionType.RECENT_THREE_MONTH,
-            DateActionType.RECENT_SIX_MONTH
+            DateActionType.RECENT_THREE_MONTH
           ]}
-        />)}</Form.Item>
+        />
+      )}</Form.Item>
       <Form.Item>
         <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
           검색

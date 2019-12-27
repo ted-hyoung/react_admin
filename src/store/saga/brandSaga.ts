@@ -12,10 +12,19 @@ import { RequestAsyncAction } from 'models/AsyncAction';
 import * as Action from 'store/action/brandAction';
 
 // reducer
-import { getBrandsAsync } from 'store/reducer/brand';
+import { getBrandsAsync, getBrandsForEventAsync } from 'store/reducer/brand';
 import qs from 'qs';
 import { getStatisticsBrandSalesAsync } from '../reducer/brand';
-import { parseParams } from '../../lib/utils';
+
+function* getBrandsForEvent(action: RequestAsyncAction) {
+  try {
+    const res = yield call(() => Api.get('/events/brands'));
+    yield put(getBrandsForEventAsync.success(res.data));
+  } catch (error) {
+    yield put(getBrandsForEventAsync.failure(error));
+    message.error('브랜드 정보를 가져오는데 실패하였습니다.');
+  }
+}
 
 function* getBrands(action: RequestAsyncAction) {
   try {
@@ -47,6 +56,7 @@ function* getStatisticsBrandSales(action: RequestAsyncAction) {
 }
 
 export default function* brandSaga() {
+  yield takeEvery(Action.GET_BRANDS_FOR_EVENT_REQUEST, getBrandsForEvent);
   yield takeEvery(Action.GET_EVENT_BRANDS_REQUEST, getBrands);
   yield takeEvery(Action.GET_BRAND_STATISTICS_BRAND_SALES_REQUEST, getStatisticsBrandSales);
 }

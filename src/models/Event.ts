@@ -54,6 +54,7 @@ export interface ResponseEventCreatorSns {
 
 export interface ResponseEventForList {
   eventId: number;
+  eventUrl:string;
   name: string;
   eventStatus: EventStatus;
   turn: number;
@@ -63,6 +64,15 @@ export interface ResponseEventForList {
   created: string;
   creator: ResponseEventCreator;
   products: ResponseProduct[];
+}
+export interface ResponseEventForUrl {
+  eventId: number;
+  eventUrl:string;
+  name: string;
+  brand: ResponseBrandForEvent;
+  salesStarted: string;
+  salesEnded: string;
+  creator: ResponseEventCreator;
 }
 
 export interface ResponseEventForOrders {
@@ -107,7 +117,9 @@ export interface SearchEvent {
   brandName?: string;
   salesStarted: string;
   salesEnded: string;
-  eventStatuses: EventStatus[];
+  eventStatuses?: EventStatus[];
+  accountIds?:number[];
+  brandIds?:number[];
 }
 
 export interface SearchEventForOrder {
@@ -137,4 +149,9 @@ export interface UpdateEventShippingInfo {
 
 export interface UpdateEventShipping {
   shippingFee: number;
+}
+
+
+export interface GetSearchEventByUrl {
+  eventUrl: string;
 }

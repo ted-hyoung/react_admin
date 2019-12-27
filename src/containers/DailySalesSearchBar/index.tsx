@@ -59,17 +59,17 @@ const DailySalesSearchBar = Form.create<Props>()((props: Props) => {
       <Form.Item>
         {getFieldDecorator('dates', {
           initialValue: [moment().startOf('day'), moment().endOf('day')],
-        })(<SearchDateFormItem
-          initValue={true}
-          optionDateLength={[
-            DateActionType.TODAY,
-            DateActionType.RECENT_THREE_DAYS,
-            DateActionType.RECENT_WEEK,
-            DateActionType.RECENT_MONTH,
-            DateActionType.RECENT_THREE_MONTH,
-            DateActionType.RECENT_SIX_MONTH
-          ]}
-        />)}
+        })(
+          <SearchDateFormItem
+            optionDateLength={[
+              DateActionType.TODAY,
+              DateActionType.RECENT_THREE_DAYS,
+              DateActionType.RECENT_WEEK,
+              DateActionType.RECENT_MONTH,
+              DateActionType.RECENT_THREE_MONTH
+            ]}
+          />
+        )}
       </Form.Item>
       <Form.Item>
         <Button onClick={handleSearch} type="primary" style={{ marginRight: 5 }}>
