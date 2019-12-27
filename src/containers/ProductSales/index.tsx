@@ -44,6 +44,8 @@ export interface ProductDataSets {
   data: (number | null)[];
 }
 
+const pageSize = 20;
+
 const ProductSales = () => {
   const printRef = useRef<any>();
   const { statistics, productsExcel } = useSelector((storeState: StoreState) => storeState.product);
@@ -53,6 +55,8 @@ const ProductSales = () => {
     labels: [],
     datasets: [],
   });
+  const [totalBoard, setTotalBoard] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const dataSource: ProductTables[] = [];
   const chartProductData: ResponseManagementProductStatistics[] = [];
 
@@ -70,9 +74,18 @@ const ProductSales = () => {
         datasets: [],
       });
       setLastSearchCondition(searchCondition);
+      setCurrentPage(1);
     },
     [dispatch, setLastSearchCondition],
   );
+
+  useEffect(() => {
+    setTotalBoard(statistics.productSales.length);
+  }, [statistics.productSales.length]);
+
+  const handlePaginationChange = (currentPage: number) => {
+    setCurrentPage(currentPage);
+  }
 
   useEffect(() => {
     if (statistics.productSalesStatus) {
@@ -282,7 +295,13 @@ const ProductSales = () => {
         ref={printRef}
         columns={columns}
         dataSource={dataSource}
-        pagination={false}
+        pagination={{
+          total: totalBoard,
+          pageSize,
+          current: currentPage,
+          onChange: handlePaginationChange
+        }}
+        size="middle"
       />
     </div>
   );
