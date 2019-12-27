@@ -54,6 +54,8 @@ const DailySales = () => {
     labels: [],
     datasets: [],
   });
+  const [totalBoard, setTotalBoard] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getDailySales = useCallback(
     (searchCondition?: any) => {
@@ -62,13 +64,22 @@ const DailySales = () => {
           searchCondition,
         }),
       );
+      setCurrentPage(1);
     },
     [dispatch],
   );
 
+  useEffect( () => {
+    setTotalBoard(statistics.dailySales.orders.length);
+  }, [statistics.dailySales.orders.length]);
+
   useEffect(() => {
     getDailySales(defaultSearchCondition);
   }, [getDailySales]);
+
+  const handlePaginationChange = (currentPage: number) => {
+    setCurrentPage(currentPage);
+  }
 
   useEffect(() => {
     if (statistics.dailySalesStatus) {
@@ -433,8 +444,10 @@ const DailySales = () => {
           bordered
           rowKey={record => record.paymentDate}
           pagination={{
-            total: statistics.dailySales.orders.length,
+            total: totalBoard,
             pageSize,
+            current: currentPage,
+            onChange: handlePaginationChange
           }}
           size="middle"
         />
