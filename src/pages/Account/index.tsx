@@ -7,33 +7,26 @@ import ReactToPrint from 'react-to-print';
 import { StoreState } from 'store';
 
 // modules
-import { Table, Button, Row, Col, Select, Modal, message, Statistic, Divider, Tag } from 'antd';
+import { Table, Button, Row, Col, message, Divider, Tag } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
-// lib
-import { payCancelHost } from 'lib/protocols';
+
 
 // containers
 import { AccountDetailModal, AccountSearchBar } from 'containers';
 
 // enums
-import { SocialProviderCode, ageDatas, PaymentStatus, ShippingStatus, ShippingCompany } from 'enums';
+import { SocialProviderCode } from 'enums';
 
 // utils
-import { startDateFormat, endDateFormat, dateTimeFormat, createExcel } from 'lib/utils';
-import { ResponseAccounts, ResponseOption, SearchAccounts, SearchOrder } from '../../models';
+import { dateTimeFormat, createExcel } from 'lib/utils';
+import { ResponseAccounts, SearchAccounts, SearchOrder } from '../../models';
 import { getAccountsAsync } from '../../store/action/account.action';
 import './index.less';
-import { clearOrderExcel, getOrdersExcelAsync } from '../../store/reducer/order';
 
-// defines
-const { Option } = Select;
-const { confirm } = Modal;
-const defaultSearchCondition = {
-  startDate: moment(new Date()).format(startDateFormat),
-  endDate: moment(new Date()).format(endDateFormat),
-};
+
+
 
 const Account = () => {
   const dispatch = useDispatch();
@@ -89,12 +82,10 @@ const Account = () => {
   };
 
   const handleChangeBlackMember = (ids: string[] | number[]) => {
-    console.log(ids);
     message.info("준비중입니다.");
   };
 
   const handleDeleteAccount = (ids: string[] | number[]) => {
-    console.log(ids);
     message.info("준비중입니다.");
   };
 
@@ -107,17 +98,13 @@ const Account = () => {
     { title: '가입일', dataIndex: 'created', key: 'created'},
     { title: '이름', dataIndex: 'username', key: 'username' },
     { title: '아이디', dataIndex: 'loginId', key: 'loginId' },
-    {
-      title: '가입수단', dataIndex: 'socialProvider', key: 'socialProvider',
+    { title: '가입수단', dataIndex: 'socialProvider', key: 'socialProvider',
       render: (text: string, account: ResponseAccounts, index: number) => {
-
         if(SocialProviderCode[account.socialProvider] === SocialProviderCode.KAKAO){
           return (
             <Tag
-              style={{
-                boxShadow: '1px 1px 1px 1px #b3b3b3',
-                color:  '#381e1f'
-              }}
+              className="tag-badge"
+              style={{ color:  '#381e1f' }}
               color={'#e4d533'}
             >
               {SocialProviderCode[account.socialProvider]}
@@ -126,10 +113,8 @@ const Account = () => {
         }else if(SocialProviderCode[account.socialProvider] === SocialProviderCode.NAVER){
           return (
             <Tag
-              style={{
-                boxShadow: '1px 1px 1px 1px #b3b3b3',
-                color: '#ffffff'
-              }}
+              className="tag-badge"
+              style={{ color: '#ffffff' }}
               color={'#1bba00'}
             >
               {SocialProviderCode[account.socialProvider]}
@@ -138,10 +123,8 @@ const Account = () => {
         }else{
           return (
             <Tag
-              style={{
-                boxShadow: '1px 1px 1px 1px #b3b3b3',
-                color: '#ffffff'
-              }}
+              className="tag-badge"
+              style={{ color: '#ffffff' }}
               color={'#909090'}>
               {SocialProviderCode[account.socialProvider]}
             </Tag>
@@ -166,10 +149,10 @@ const Account = () => {
           <Button style={{ marginRight: '5px' }} type="primary" onClick={() => handleVisible(account.consumerId)}>
             보기
           </Button>
-          <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log()}>
+          <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log('적립금')}>
             적립금
           </Button>
-          <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log()}>
+          <Button style={{ marginRight: '5px' }} disabled={true} type="primary" onClick={() => console.log('쿠폰')}>
             쿠폰
           </Button>
         </>
@@ -280,7 +263,6 @@ const Account = () => {
       <AccountDetailModal
         visible={visible}
         onCancel={() => setVisible(false)}
-        // consumerId={Number(account.consumerId)}
         account={account}
       />
       }

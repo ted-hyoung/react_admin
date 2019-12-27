@@ -1,17 +1,17 @@
 // base
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreState } from 'store';
 
 // modules
-import { Modal, Descriptions, Tag, Radio, Button, Input, Icon, InputNumber } from 'antd';
+import { Modal, Descriptions, Tag, Radio, Button, Input, Icon } from 'antd';
 import moment from 'moment';
 
 // components
 import { PaginationTable } from 'components';
 
 // lib
-import { endDateFormat, setPagingIndex, startDateFormat } from 'lib/utils';
+import { setPagingIndex } from 'lib/utils';
 
 // enums
 import { PaymentMethod, PaymentStatus, ShippingStatus, SocialProviderCode } from 'enums';
@@ -29,20 +29,14 @@ interface AccountDetailModalProps extends FormComponentProps {
   onCancel: () => void;
   account : ResponseAccounts;
 }
-const defaultSearchCondition = {
-  startDate: moment(new Date()).format(startDateFormat),
-  endDate: moment(new Date()).format(endDateFormat),
-};
 const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: AccountDetailModalProps) => {
   const { visible, onCancel, account, form } = props;
   const { consumerId, socialProvider } = account;
-  // const { consumerId , socialProvider, username, marketingInfoAgree, created, phone } = account;
   const { getFieldDecorator, validateFields } = form;
   const dispatch = useDispatch();
   const [modifiable, setModifiable] = useState<boolean>(false);
   const [detailVisible, setDetailVisible] = useState(false);
   const { accountDetail, accountOrders } = useSelector((storeState: StoreState) => storeState.accountState);
-  const { content } = useSelector((storeState: StoreState) => storeState.order.orders);
   const { created, loginId, username, phone, email, marketingInfoAgree} = accountDetail;
   const { orders, totalOrderCompleteAmount} = accountOrders;
 

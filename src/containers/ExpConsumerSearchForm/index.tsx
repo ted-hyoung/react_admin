@@ -110,6 +110,7 @@ function ExpConsumerSearchForm(props: ExpConsumerSearchFormProps) {
         <Descriptions.Item label="검색 기간" span={24}>
           {getFieldDecorator('dates')(
             <SearchDateFormItem
+              initValue={false}
               optionDateLength={[
                 DateActionType.TODAY,
                 DateActionType.RECENT_THREE_DAYS,

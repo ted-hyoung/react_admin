@@ -62,8 +62,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
   const { getFieldDecorator, validateFields, setFieldsValue, resetFields } = form;
 
   const dispatch = useDispatch();
-  const [startAge, setStartAge] = useState<number>(0);
-  const [endAge, setEndAge] = useState<number>(0);
   const [privateInfoKey, setPrivateInfoKey] = useState<string>('');
   const [selectedTotal, setSelectedTotal] = useState<string>('TOTAL');
 
@@ -302,7 +300,8 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                   {getFieldDecorator('consumerCreated', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(
-                    <SearchDateFormItem initValue={true} />
+                    <SearchDateFormItem
+                      initValue={false} />
                   )}
                 </Form.Item>
               </Col>
@@ -387,7 +386,7 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                 <Form.Item>
                   {getFieldDecorator('consumerAccessDate', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
-                  })(<SearchDateFormItem initValue={true} />)}
+                  })(<SearchDateFormItem initValue={false} />)}
                 </Form.Item>
               </Col>
               <Col className="text-align-left" style={{lineHeight :'40px'}}>

@@ -73,6 +73,7 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
             initialValue: [moment().startOf('day'), moment().endOf('day')],
           })(
             <SearchDateFormItem
+              initValue={false}
               optionDateLength={[
                 DateActionType.TODAY,
                 DateActionType.RECENT_THREE_DAYS,

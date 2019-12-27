@@ -105,11 +105,11 @@ interface SearchDateFormItemProps {
   value?: undefined | [moment.Moment, moment.Moment];
   onChange?: (dates: undefined | [moment.Moment, moment.Moment], dataString: [string, string]) => void;
   optionDateLength?: DateActionType[]
+  initValue: boolean;
 }
 
 const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormItemProps>((props, ref) => {
-  const { value, onChange , optionDateLength}: SearchDateFormItemProps = props;
-
+  const { value, onChange , optionDateLength, initValue}: SearchDateFormItemProps = props;
   const [isMount, setIsMount] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(reducer, initialState);
   const handleChange = (dates: [moment.Moment, moment.Moment], dateStrings: [string, string]) => {
@@ -118,7 +118,9 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
 
   useEffect(() => {
     setIsMount(true);
-    dispatch({ type: DateActionType.RECENT_WEEK })
+    if(initValue){
+      dispatch({ type: DateActionType.RECENT_WEEK })
+    }
   }, []);
 
   useEffect(() => {
@@ -137,9 +139,7 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
         />
       </Col>
       { optionDateLength && optionDateLength.map((option,i) => {
-
         if (option !== DateActionType.DEFAULT) {
-          console.log(option);
           return (
             <Col key={i}>
               <Button onClick={() => dispatch({ type: DateActionType[DateActionType[option]] })}>{DateRangeType[option]}</Button>
