@@ -34,3 +34,5 @@ export { default as OrderCancelForm } from './OrderCancelForm';
 export { default as BannerForm } from './BannerForm';
 export { default as BannerEventSearchModal } from './BannerEventSearchModal';
 export { default as SellerListModal } from './SellerListModal';
+
+export { default as EventDateModal } from './EventDateModal';
