@@ -55,6 +55,8 @@ const ProductSales = () => {
     labels: [],
     datasets: [],
   });
+  const [totalBoard, setTotalBoard] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const dataSource: ProductTables[] = [];
   const chartProductData: ResponseManagementProductStatistics[] = [];
 
@@ -72,9 +74,18 @@ const ProductSales = () => {
         datasets: [],
       });
       setLastSearchCondition(searchCondition);
+      setCurrentPage(1);
     },
     [dispatch, setLastSearchCondition],
   );
+
+  useEffect(() => {
+    setTotalBoard(statistics.productSales.length);
+  }, [statistics.productSales.length]);
+
+  const handlePaginationChange = (currentPage: number) => {
+    setCurrentPage(currentPage);
+  }
 
   useEffect(() => {
     if (statistics.productSalesStatus) {
@@ -285,8 +296,10 @@ const ProductSales = () => {
         columns={columns}
         dataSource={dataSource}
         pagination={{
-          total: statistics.productSales.length,
+          total: totalBoard,
           pageSize,
+          current: currentPage,
+          onChange: handlePaginationChange
         }}
         size="middle"
       />
