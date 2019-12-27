@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 
 // modules
-import { Icon } from 'antd';
+import { Icon, Select } from 'antd';
 
 // components
 import { InstagramIcon } from 'components/Icons';
@@ -10,16 +10,19 @@ import InstagramForm from './InstagramForm';
 
 interface CustomToolbarProps {
   name: string;
+  quill: any;
   instagramTool: boolean;
   saveSelection: () => void;
   imageHandler: (file: File) => void;
   instagramHandler: (url: string) => void;
-  inputQuotation: (value: string) => void;
-  inputLine: () => void;
+  quotationHandler: (value: string) => void;
+  lineHandler: () => void;
 }
 
+const { Option } = Select;
+
 const CustomToolbar = (props: CustomToolbarProps) => {
-  const { name, instagramTool, saveSelection, imageHandler, instagramHandler, inputQuotation, inputLine } = props;
+  const { name, instagramTool, saveSelection, imageHandler, instagramHandler, quotationHandler, lineHandler, quill } = props;
 
   const [visible, setVisible] = useState(false);
 
@@ -52,17 +55,20 @@ const CustomToolbar = (props: CustomToolbarProps) => {
         <select className="ql-background" />
       </span>
       <span className="ql-formats">
-        <select className="ql-insertCustomTags">
-          <option value="1" onClick={() => { inputQuotation('small'); }} />
-          <option value="2" onClick={() => { inputQuotation('medium'); }} />
-          <option value="3" onClick={() => { inputQuotation('large'); }} />
-        </select>
-        <button
-          type="button"
-          onClick={() => {
-            inputLine();
-          }}
-        >
+        <Select defaultValue="인용구" className="ql-quotation" size={'small'} onChange={quotationHandler}>
+          <Option value="small">
+            "　" /S
+          </Option>
+          <Option value="medium">
+            "　" /M
+          </Option>
+          <Option value="large">
+            "　" /L
+          </Option>
+        </Select>
+      </span>
+      <span className="ql-formats">
+        <button type="button" onClick={() => { lineHandler() }} >
           <Icon type="line" />
         </button>
       </span>

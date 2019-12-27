@@ -94,8 +94,7 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     }
   };
 
-  const inputQuotation = (value: string) => {
-    console.log('value', value)
+  const quotationHandler = (value: string) => {
     let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -105,17 +104,29 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
       }
 
       editor.insertText(selectIndex,'\n')
-      editor.insertEmbed(selectIndex, 'image', smallQuotationBottom);
+      if (value === 'small') {
+        editor.insertEmbed(selectIndex, 'image', smallQuotationBottom);
+      } else if (value === 'medium') {
+        editor.insertEmbed(selectIndex, 'image', mediumQuotationBottom);
+      } else if (value === 'large') {
+        editor.insertEmbed(selectIndex, 'image', largeQuotationBottom);
+      }
       editor.insertText(selectIndex,'\n\n')
       editor.insertText(selectIndex,'인용구를 입력해주세요.')
       editor.insertText(selectIndex,'\n\n')
-      editor.insertEmbed(selectIndex, 'image', smallQuotationTop);
+      if (value === 'small') {
+        editor.insertEmbed(selectIndex, 'image', smallQuotationTop);
+      } else if (value === 'medium') {
+        editor.insertEmbed(selectIndex, 'image', mediumQuotationTop);
+      } else if (value === 'large') {
+        editor.insertEmbed(selectIndex, 'image', largeQuotationTop);
+      }
       editor.insertText(selectIndex,'\n')
       editor.blur();
     }
   }
 
-  const inputLine = () => {
+  const lineHandler = () => {
     let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -166,12 +177,13 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     <div className={`text-editor ${name}`}>
       <CustomToolbar
         name={name}
+        quill={Quill}
         instagramTool={instagramTool}
         saveSelection={saveSelection}
         imageHandler={imageHandler}
         instagramHandler={instagramHandler}
-        inputQuotation={value => inputQuotation(value)}
-        inputLine={inputLine}
+        quotationHandler={value => quotationHandler(value)}
+        lineHandler={lineHandler}
       />
       <ReactQuill
         theme="snow"
