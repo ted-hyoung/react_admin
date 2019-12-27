@@ -241,7 +241,8 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
           <Descriptions.Item span={8} label="로그인 방법">
             {SocialProviderCode[socialProvider] === SocialProviderCode.KAKAO &&
             <Tag
-              style={{ boxShadow: '1px 1px 1px 1px #b3b3b3', color:  '#381e1f' }}
+              className="tag-badge"
+              style={{ color:  '#381e1f' }}
               color={'#e4d533'}
             >
               {SocialProviderCode[socialProvider]}
@@ -249,7 +250,8 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
             }
             {SocialProviderCode[socialProvider] === SocialProviderCode.NAVER &&
             <Tag
-              style={{ boxShadow: '1px 1px 1px 1px #b3b3b3', color: '#ffffff' }}
+              className="tag-badge"
+              style={{ color: '#ffffff' }}
               color={'#1bba00'}
             >
               {SocialProviderCode[socialProvider]}
@@ -257,7 +259,8 @@ const AccountDetailModal = Form.create<AccountDetailModalProps>()((props: Accoun
             }
             {SocialProviderCode[socialProvider] === SocialProviderCode.null &&
             <Tag
-              style={{ boxShadow: '1px 1px 1px 1px #b3b3b3', color: '#ffffff' }}
+              className="tag-badge"
+              style={{ color: '#ffffff' }}
               color={'#909090'}
             >
               {SocialProviderCode[socialProvider]}

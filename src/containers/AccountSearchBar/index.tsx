@@ -191,7 +191,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="원  ~ "
                     disabled
-                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -210,7 +209,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="원"
                     disabled
-                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -239,7 +237,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="건  ~ "
                     disabled
-                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
@@ -256,7 +253,6 @@ const AccountSearchBar = Form.create<Props>()((props: Props) => {
                     className ="account-input"
                     placeholder="건"
                     disabled
-                    style={{backgroundColor : '#ffffff'}}
                   />
                 </Form.Item>
               </Col>
