@@ -3,8 +3,11 @@ import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event';
+import { StoreState } from 'store';
 
 // modules
+import { Button, Modal, Tag } from 'antd';
 import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
 import { useClipboard } from 'use-clipboard-copy';
@@ -12,15 +15,16 @@ import { useClipboard } from 'use-clipboard-copy';
 // components
 import { PaginationTable } from 'components';
 
-// types
+// models, enums, types
 import { EventStatus } from 'enums';
-import { StoreState } from 'store';
-import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event';
 import { SearchEvent, CreateCopyEvent } from 'models';
-import { Button, Modal, Tag } from 'antd';
+
+// containers
+import EventDateModal from '../../containers/EventDateModal';
+
+// lib/utils
 import { sortedString, setPagingIndex } from 'lib/utils';
 import { CLIENT_DATE_FORMAT } from 'lib/constants';
-import EventDateModal from '../../containers/EventDateModal';
 
 interface EventList {
   key: number;

@@ -1,34 +1,32 @@
 // base
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { createCopyEventAsync } from '../../store/reducer/event';
+import Form, { FormComponentProps } from 'antd/lib/form';
 
 // modules
 import {
   Button,
   Col,
-  Input,
   message,
   Modal,
-  Select,
-  Typography,
   Descriptions,
   DatePicker,
   TimePicker,
 } from 'antd';
+import moment, { Moment } from 'moment';
 
-import Form, { FormComponentProps } from 'antd/lib/form';
+// components
+import { FlexRow } from '../../components';
 
-// types
+// models, enums, types
 import { CreateCopyEvent, } from 'models';
 
 // less
 import './index.less';
-import { FlexRow } from '../../components';
-import moment, { Moment } from 'moment';
-import { createCopyEventAsync } from '../../store/reducer/event';
-import { TIME_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
 
-// defines
+// lib
+import { TIME_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
 
 interface DateForm extends FormComponentProps {
   copyEventProp: CreateCopyEvent;
