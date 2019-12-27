@@ -14,13 +14,17 @@ import HtmlFormat from './HtmlFormat';
 import { uploadImage } from 'lib/protocols';
 import { getThumbUrl } from 'lib/utils';
 
-// assets
+// define
 import 'react-quill/dist/quill.snow.css';
-
 import './index.less';
 
-import quotationTop from '../../assets/images/textEditor/ico-quotation-top.png';
-import quotationBottom from '../../assets/images/textEditor/ico-quotation-bottom.png';
+// assets
+import largeQuotationTop from '../../assets/images/textEditor/ico-large-quotation-top.png';
+import largeQuotationBottom from '../../assets/images/textEditor/ico-large-quotation-bottom.png';
+import mediumQuotationTop from '../../assets/images/textEditor/ico-medium-quotation-top.png';
+import mediumQuotationBottom from '../../assets/images/textEditor/ico-medium-quotation-bottom.png';
+import smallQuotationTop from '../../assets/images/textEditor/ico-small-quotation-top.png';
+import smallQuotationBottom from '../../assets/images/textEditor/ico-small-quotation-bottom.png';
 
 Quill.register({
   'formats/instagram': InstagramFormat,
@@ -90,7 +94,7 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     }
   };
 
-  const inputQuotation = () => {
+  const quotationHandler = (value: string) => {
     let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -100,17 +104,29 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
       }
 
       editor.insertText(selectIndex,'\n')
-      editor.insertEmbed(selectIndex, 'image', quotationBottom);
+      if (value === 'small') {
+        editor.insertEmbed(selectIndex, 'image', smallQuotationBottom);
+      } else if (value === 'medium') {
+        editor.insertEmbed(selectIndex, 'image', mediumQuotationBottom);
+      } else if (value === 'large') {
+        editor.insertEmbed(selectIndex, 'image', largeQuotationBottom);
+      }
       editor.insertText(selectIndex,'\n\n')
       editor.insertText(selectIndex,'인용구를 입력해주세요.')
       editor.insertText(selectIndex,'\n\n')
-      editor.insertEmbed(selectIndex, 'image', quotationTop);
+      if (value === 'small') {
+        editor.insertEmbed(selectIndex, 'image', smallQuotationTop);
+      } else if (value === 'medium') {
+        editor.insertEmbed(selectIndex, 'image', mediumQuotationTop);
+      } else if (value === 'large') {
+        editor.insertEmbed(selectIndex, 'image', largeQuotationTop);
+      }
       editor.insertText(selectIndex,'\n')
       editor.blur();
     }
   }
 
-  const inputLine = () => {
+  const lineHandler = () => {
     let selectIndex = saveSelectionlocal();
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
@@ -161,12 +177,13 @@ const TextEditor = React.forwardRef<ReactQuill, TextEditorProps>((props: TextEdi
     <div className={`text-editor ${name}`}>
       <CustomToolbar
         name={name}
+        quill={Quill}
         instagramTool={instagramTool}
         saveSelection={saveSelection}
         imageHandler={imageHandler}
         instagramHandler={instagramHandler}
-        inputQuotation={inputQuotation}
-        inputLine={inputLine}
+        quotationHandler={value => quotationHandler(value)}
+        lineHandler={lineHandler}
       />
       <ReactQuill
         theme="snow"
