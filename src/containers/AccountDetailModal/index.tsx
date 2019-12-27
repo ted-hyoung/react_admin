@@ -12,16 +12,25 @@ import { PaginationTable } from 'components';
 
 // lib
 import { setPagingIndex } from 'lib/utils';
+import Form, { FormComponentProps } from 'antd/lib/form';
+import { ColumnProps } from 'antd/lib/table';
 
 // enums
 import { PaymentMethod, PaymentStatus, ShippingStatus, SocialProviderCode } from 'enums';
 
+// less
 import './index.less';
+
+// models
 import { ResponseAccounts, ResponseOrdersAccount } from 'models';
-import Form, { FormComponentProps } from 'antd/lib/form';
-import { getOrderByIdAsync } from '../../store/reducer/order';
+
+// reducer
+import { getOrderByIdAsync } from 'store/reducer/order';
+
+// action
 import { getAccountDetailAsync, getAccountOrdersAsync, updateAccountAsync } from '../../store/action/account.action';
-import { ColumnProps } from 'antd/lib/table';
+
+// containers
 import { OrderDetailModal } from '../index';
 
 interface AccountDetailModalProps extends FormComponentProps {

@@ -11,8 +11,6 @@ import { Table, Button, Row, Col, message, Divider, Tag } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import moment from 'moment';
 
-
-
 // containers
 import { AccountDetailModal, AccountSearchBar } from 'containers';
 
@@ -21,11 +19,15 @@ import { SocialProviderCode } from 'enums';
 
 // utils
 import { dateTimeFormat, createExcel } from 'lib/utils';
-import { ResponseAccounts, SearchAccounts, SearchOrder } from '../../models';
+
+// actions
 import { getAccountsAsync } from '../../store/action/account.action';
+
+// less
 import './index.less';
 
-
+// models
+import { ResponseAccounts, SearchAccounts, SearchOrder } from 'models';
 
 
 const Account = () => {

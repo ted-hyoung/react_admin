@@ -22,7 +22,6 @@ import { ImportanceCode } from 'enums/ImportanceCode';
 import { Role } from 'enums/Role';
 
 import './index.less';
-import { getOrderByIdAsync } from '../../store/reducer/order';
 
 // defines
 const getPaymentMethodColor = (paymentMethod: PaymentMethod) => {

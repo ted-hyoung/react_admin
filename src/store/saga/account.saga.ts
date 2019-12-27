@@ -1,14 +1,13 @@
 // base
-import { put, call, takeLatest, takeEvery, select } from 'redux-saga/effects';
-import { replace } from 'connected-react-router';
+import { put, call, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
 import qs from 'qs';
 
 // lib
 import * as Api from 'lib/protocols';
-import { PaymentMethod, PaymentStatus, ShippingStatus, SocialProviderCode } from 'enums';
+import { parseParams } from 'lib/utils';
+
 // actions
-import { PayloadAction, ActionType } from 'typesafe-actions';
 import * as Actions from 'store/action/account.action';
 import {
   getAccountsAsync,
@@ -19,7 +18,6 @@ import {
 
 // models
 import { RequestAsyncAction } from 'models';
-import { parseParams } from '../../lib/utils';
 
 function* getAccounts(action: RequestAsyncAction) {
   const { page, size, searchCondition } = action.payload;

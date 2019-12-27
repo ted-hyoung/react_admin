@@ -1,5 +1,5 @@
 // base
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 // modules
@@ -27,21 +27,17 @@ import { SearchDateFormItem } from 'components';
 // containers
 import { EventSearch, EventSearchModal } from 'containers';
 
-// models, enums
+// models
 import { ResponseProduct } from 'models';
-import {
-  ageDatas,
-  OrderSearch
-} from 'enums';
+
+// enums
+import { ageDatas, OrderSearch } from 'enums';
 
 // lib
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
 
-// enums
-
+// less
 import './index.less';
-
-// define
 
 export interface EventList {
   key: number;
