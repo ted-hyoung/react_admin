@@ -45,6 +45,8 @@ interface ResponseManagementOrdersExcels {
   totalOrderCancelCount: number;
 }
 
+const pageSize = 20;
+
 const DailySales = () => {
   const { statistics } = useSelector((storeState: StoreState) => storeState.order);
   const dispatch = useDispatch();
@@ -52,6 +54,8 @@ const DailySales = () => {
     labels: [],
     datasets: [],
   });
+  const [totalBoard, setTotalBoard] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getDailySales = useCallback(
     (searchCondition?: any) => {
@@ -60,13 +64,22 @@ const DailySales = () => {
           searchCondition,
         }),
       );
+      setCurrentPage(1);
     },
     [dispatch],
   );
 
   useEffect(() => {
+    setTotalBoard(statistics.dailySales.orders.length);
+  }, [statistics.dailySales.orders.length]);
+
+  useEffect(() => {
     getDailySales(defaultSearchCondition);
   }, [getDailySales]);
+
+  const handlePaginationChange = (currentPage: number) => {
+    setCurrentPage(currentPage);
+  }
 
   useEffect(() => {
     if (statistics.dailySalesStatus) {
@@ -430,7 +443,12 @@ const DailySales = () => {
           dataSource={statistics.dailySales.orders}
           bordered
           rowKey={record => record.paymentDate}
-          pagination={false}
+          pagination={{
+            total: totalBoard,
+            pageSize,
+            current: currentPage,
+            onChange: handlePaginationChange
+          }}
           size="middle"
         />
       </div>
