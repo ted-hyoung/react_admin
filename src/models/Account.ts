@@ -1,5 +1,7 @@
 import { FileObject } from './FileObject';
 import { Role } from 'enums/Role';
+import { PaymentMethod, PaymentStatus, ShippingStatus, SocialProviderCode } from '../enums';
+import { PageWrapper } from './index';
 
 export interface LoginAccount {
   loginId: string;
@@ -27,4 +29,65 @@ export interface ResponseClientAccount {
 export interface ResponseAccountForOrderMemo {
   loginId: string;
   role: Role;
+}
+
+export interface ResponseAccountCelebForList {
+  loginId: string;
+  username: string;
+  accountId: string;
+}
+
+export interface ResponseAccounts {
+  created: string;
+  username: string;
+  consumerId: string;
+  loginId: string;
+  socialProvider: SocialProviderCode;
+  phone: string;
+  marketingInfoAgree : boolean;
+}
+
+export interface ResponseDetailAccount {
+  consumerId: string;
+  created: string;
+  loginId: string;
+  username: string;
+  phone: string;
+  email: string;
+  socialProvider: SocialProviderCode;
+  marketingInfoAgree : boolean;
+}
+
+export interface ResponseOrdersForAccount {
+  loginId: string;
+  username: string;
+  totalOrderCompleteAmount:number;
+  orders: PageWrapper<ResponseOrdersAccount>;
+}
+
+export interface ResponseOrdersAccount {
+  orderId: number;
+  created: string;
+  orderNo: string;
+  totalAmount: number;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  shippingStatus: ShippingStatus;
+}
+
+export interface SearchAccounts {
+  age?: string;
+  consumerAccessDateEnded?: string;
+  consumerAccessDateStarted?: string;
+  consumerCreatedEnded?: string;
+  consumerCreatedStarted?: string;
+
+  firstOrder?: boolean;
+  orderCreateEnded?: string;
+  orderCreateStarted?: string;
+  orderSearch?: string;
+  orderTotalEnded?: number;
+  orderTotalStarted?: number;
+  username?: string;
+  phone?: string;
 }

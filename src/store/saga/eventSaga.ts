@@ -13,6 +13,8 @@ import {
   updateEventShippingFeeInfoAsync,
   deleteEventAsync,
   updateEventShippingAsync,
+  getEventByUrlAsync,
+  createCopyEventAsync,
 } from 'store/reducer/event';
 
 // lib
@@ -33,8 +35,9 @@ import {
   UpdateEvent,
   UpdateEventNotices,
   UpdateEventStatus,
-  RequestAsyncAction,
+  RequestAsyncAction, GetSearchEventByUrl,
 } from 'models';
+
 
 // sagas
 function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateEvent>>) {
@@ -46,6 +49,26 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
     yield put(getEventByIdAsync.request({ id : res.data }));
 
     message.success('공구가 등록되었습니다.');
+  } catch (error) {
+    message.error(error);
+    yield put(createEventAsync.failure(error));
+  }
+}
+
+
+function* createEventCopy(action: RequestAsyncAction) {
+
+  const { eventId, salesStarted, salesEnded, shippingScheduled } = action.payload.data;
+
+  const data = {
+    salesStarted,
+    salesEnded,
+    shippingScheduled,
+  };
+
+  try {
+    const res = yield call(() => Api.post(`/events/${eventId}/copy`, data));
+   yield put(createCopyEventAsync.success(res.data));
   } catch (error) {
     message.error(error);
     yield put(createEventAsync.failure(error));
@@ -65,6 +88,24 @@ function* getEvents(action: PayloadAction<string, GetListRequestPayload<SearchEv
     yield put(getEventsAsync.success(res.data));
   } catch (error) {
     yield put(getEventsAsync.failure(error));
+  }
+}
+
+function* getEventByUrl(action: PayloadAction<string, GetSearchEventByUrl >) {
+  const { eventUrl } = action.payload;
+
+  try {
+    const res = yield call(() =>
+      Api.get('/events/eventUrl', {
+        params: { eventUrl },
+        paramsSerializer: (params: any) => parseParams(params),
+      }),
+    );
+    yield put(getEventByUrlAsync.success(res.data));
+    yield message.success('입력하신 링크의 공구가 확인 되었습니다.');
+  } catch (error) {
+    yield message.error(error);
+    yield put(getEventByUrlAsync.failure(error));
   }
 }
 
@@ -165,6 +206,7 @@ function* updateEventShipping(action: RequestAsyncAction) {
 export default function* eventSaga() {
   yield takeLatest(Actions.CREATE_EVENT_REQUEST, createEvent);
   yield takeEvery(Actions.GET_EVENTS_REQUEST, getEvents);
+  yield takeEvery(Actions.GET_EVENT_BY_URL_REQUEST, getEventByUrl);
   yield takeEvery(Actions.GET_EVENT_REQUEST, getEventById);
   yield takeLatest(Actions.UPDATE_EVENT_REQUEST, updateEventById);
   yield takeLatest(Actions.UPDATE_EVENT_NOTICES_REQUEST, updateEventNotices);
@@ -172,4 +214,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
   yield takeLatest(Actions.DELETE_EVENT_REQUEST, deleteEvent);
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_REQUEST, updateEventShipping);
+  yield takeLatest(Actions.CREATE_COPY_EVENT_REQUEST, createEventCopy);
 }

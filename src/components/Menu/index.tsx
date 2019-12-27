@@ -8,24 +8,6 @@ import { ClickParam } from 'antd/lib/menu';
 import { getAdminProfile } from 'lib/utils';
 const roleType = getAdminProfile() ? true : false;
 const MENU_LIST = [
-  // {
-  //   key: 'store',
-  //   name: '상점 관리',
-  //   subMenus: [
-  //     {
-  //       key: 'account',
-  //       name: '계정 관리',
-  //     },
-  //     {
-  //       key: 'celeb',
-  //       name: '셀럽 관리',
-  //     },
-  //     {
-  //       key: 'settlement',
-  //       name: '결산 관리',
-  //     },
-  //   ],
-  // },
   {
     key: 'product',
     name: '상품 관리',
@@ -54,6 +36,41 @@ const MENU_LIST = [
       },
     ],
   },
+  {
+    key: 'account',
+    name: '회원 관리',
+    icon: 'team',
+    subMenus: [
+      {
+        key: 'account',
+        name: '회원정보 조회',
+      },
+      // {
+      //   key: 'withdrawal',
+      //   name: '회원탈퇴 관리',
+      // },
+      // {
+      //   key: 'resting',
+      //   name: '회원휴먼 관리',
+      // },
+      // {
+      //   key: 'level',
+      //   name: '회원등급 관리',
+      // },
+    ],
+  },
+  // {
+  //   key: 'celeb',
+  //   name: '셀럽',
+  //   icon: 'star',
+  //   role: true,
+  //   subMenus: [
+  //     {
+  //       key: 'celebrity',
+  //       name: '셀럽정보 조회',
+  //     },
+  //   ],
+  // },
   {
     key: 'statistics',
     name: '통계 관리',
@@ -100,6 +117,22 @@ const MENU_LIST = [
         key: 'exps',
         name: '체험단 후기',
       },
+    ],
+  },
+  {
+    key: 'banner',
+    name: '배너 관리',
+    icon: 'idcard',
+    role: true,
+    subMenus: [
+      {
+        key: 'banner',
+        name: '배너 오픈 관리',
+      },
+      {
+        key: 'bannerAdd',
+        name: '배너 신규 등록',
+      }
     ],
   },
 ];

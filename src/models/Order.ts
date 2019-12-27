@@ -1,9 +1,9 @@
 import { ResponseShippingDestination, ResponseShippingForOrders, ResponseClientShippingForOrder } from './Shipping';
-import { ResponseOrderItem, ResponseClientOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
+import { ResponseOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping, ResponseClientPaymentForOrder } from './Payment';
+import { ResponseEventForOrders, ResponseEventForReview, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { PaymentStatus, ShippingStatus } from 'enums';
-import { ResponseEventForOrders, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
 import { ResponseOrderMemoForOrder } from './OrderMemo';
 import { UpdateShippingDestination } from './ShippingDestination';
@@ -62,6 +62,7 @@ export interface ResponseOrderForReview {
   orderNo: string;
   created: string;
   orderItems: ResponseClientOrderItemForReview[];
+  event: ResponseEventForReview;
 }
 
 export interface ResponseManagementOrdersStatisticsDailySales {
@@ -111,7 +112,7 @@ export interface ChartData {
 }
 
 export interface ChartData2 {
-  labels: (string[])[];
+  labels: string[][];
   datasets: DataSets[];
 }
 
@@ -125,7 +126,7 @@ export interface UpdateOrderShippingDestination {
 }
 
 export interface CheckAccount {
-  refundAccountDepositor:string;
-  refundAccountBank:string;
-  refundAccountNumber:string;
+  refundAccountDepositor: string;
+  refundAccountBank: string;
+  refundAccountNumber: string;
 }

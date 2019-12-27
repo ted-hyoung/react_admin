@@ -28,6 +28,12 @@ export const GET_EVENT_NOTICES_REQUEST = 'event/GET_EVENT_NOTICES_REQUEST';
 export const GET_EVENT_NOTICES_SUCCESS = 'event/GET_EVENT_NOTICES_SUCCESS';
 export const GET_EVENT_NOTICES_FAILURE = 'event/GET_EVENT_NOTICES_FAILURE';
 
+// 이벤트 url로 조회
+export const GET_EVENT_BY_URL_REQUEST = 'event/GET_EVENT_BY_URL_REQUEST';
+export const GET_EVENT_BY_URL_SUCCESS = 'event/GET_EVENT_BY_URL_SUCCESS';
+export const GET_EVENT_BY_URL_FAILURE = 'event/GET_EVENT_BY_URL_FAILURE';
+
+
 // 공구 오픈
 export const UPDATE_EVENT_STATUS_REQUEST = 'event/UPDATE_EVENT_STATUS_REQUEST';
 export const UPDATE_EVENT_STATUS_SUCCESS = 'event/UPDATE_EVENT_STATUS_SUCCESS';
@@ -43,11 +49,21 @@ export const DELETE_EVENT_REQUEST = 'event/DELETE_EVENT_REQUEST';
 export const DELETE_EVENT_SUCCESS = 'event/DELETE_EVENT_SUCCESS';
 export const DELETE_EVENT_FAILURE = 'event/DELETE_EVENT_FAILURE';
 
+// 공구 복사
+export const CREATE_COPY_EVENT_REQUEST = 'event/CREATE_COPY_EVENT_REQUEST';
+export const CREATE_COPY_EVENT_SUCCESS = 'event/CREATE_COPY_EVENT_SUCCESS';
+export const CREATE_COPY_EVENT_FAILURE = 'event/CREATE_COPY_EVENT_FAILURE';
+
+// copy event 초기화
+export const CLEAR_COPY_EVENT = 'event/CLEAR_COPY_EVENT';
+
 // event 초기화
 export const CLEAR_EVENT = 'event/CLEAR_EVENT';
 
 // events 초기화
 export const CLEAR_EVENTS = 'event/CLEAR_EVENTS';
+
+export const CLEAR_EVENT_BY_URL = 'event/CLEAR_EVENT_BY_URL';
 
 // 이벤트 배송비 설정 수정
 export const UPDATE_EVENT_SHIPPING_REQUEST = 'event/UPDATE_EVENT_SHIPPING_REQUEST';

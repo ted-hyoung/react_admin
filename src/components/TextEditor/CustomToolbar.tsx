@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 
 // modules
-import { Icon } from 'antd';
+import { Icon, Select } from 'antd';
 
 // components
 import { InstagramIcon } from 'components/Icons';
@@ -10,14 +10,19 @@ import InstagramForm from './InstagramForm';
 
 interface CustomToolbarProps {
   name: string;
+  quill: any;
   instagramTool: boolean;
   saveSelection: () => void;
   imageHandler: (file: File) => void;
   instagramHandler: (url: string) => void;
+  quotationHandler: (value: string) => void;
+  lineHandler: () => void;
 }
 
+const { Option } = Select;
+
 const CustomToolbar = (props: CustomToolbarProps) => {
-  const { name, instagramTool, saveSelection, imageHandler, instagramHandler } = props;
+  const { name, instagramTool, saveSelection, imageHandler, instagramHandler, quotationHandler, lineHandler, quill } = props;
 
   const [visible, setVisible] = useState(false);
 
@@ -48,6 +53,24 @@ const CustomToolbar = (props: CustomToolbarProps) => {
       <span className="ql-formats">
         <select className="ql-color" />
         <select className="ql-background" />
+      </span>
+      <span className="ql-formats">
+        <Select defaultValue="인용구" className="ql-quotation" size={'small'} onChange={quotationHandler}>
+          <Option value="small" style={{fontSize: '12px'}}>
+            "　" / Small
+          </Option>
+          <Option value="medium" style={{fontSize: '12px'}}>
+            "　" / Medium
+          </Option>
+          <Option value="large" style={{fontSize: '12px'}}>
+            "　" / Large
+          </Option>
+        </Select>
+      </span>
+      <span className="ql-formats">
+        <button type="button" onClick={() => { lineHandler() }} >
+          <Icon type="line" />
+        </button>
       </span>
       <span className="ql-formats">
         <button type="button" onClick={handleClickFileInput}>

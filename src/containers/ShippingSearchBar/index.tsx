@@ -15,7 +15,7 @@ import { SearchDateFormItem } from 'components';
 import { EventSearch, EventSearchModal } from 'containers';
 
 // enums
-import { SHIPPING_STATUSES, DEFAULT_SHIPPING_STATUSES } from 'enums';
+import { SHIPPING_STATUSES, DEFAULT_SHIPPING_STATUSES, DateActionType } from 'enums';
 
 // lib
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
@@ -151,7 +151,18 @@ const ShippingSearchBar = Form.create<Props>()((props: Props) => {
             <Form.Item>
               {getFieldDecorator('dates', {
                 initialValue: [moment().startOf('day'), moment().endOf('day')],
-              })(<SearchDateFormItem />)}
+              })(
+                  <SearchDateFormItem
+                    initValue={false}
+                    optionDateLength={[
+                        DateActionType.TODAY,
+                        DateActionType.RECENT_THREE_DAYS,
+                        DateActionType.RECENT_WEEK,
+                        DateActionType.RECENT_MONTH,
+                        DateActionType.RECENT_THREE_MONTH
+                      ]}
+                  />
+                )}
             </Form.Item>
           </Descriptions.Item>
           <Descriptions.Item label="배송 상태" span={24}>

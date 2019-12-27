@@ -23,6 +23,10 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
+  CreateCopyEvent,
+  ResponseCopyEvent,
+  ResponseEventForUrl,
+  GetSearchEventByUrl,
 } from 'models';
 
 import { EventStatus } from 'enums';
@@ -30,6 +34,8 @@ import { EventStatus } from 'enums';
 export interface EventState {
   events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
+  copyEvent: ResponseCopyEvent;
+  eventByUrl:ResponseEventForUrl;
 }
 
 // 공구 생성
@@ -38,6 +44,13 @@ export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
 )<CreateRequestPayload<CreateEvent>, {eventId : number}, AxiosError>();
+
+// 공구 생성
+export const createCopyEventAsync = createAsyncAction(
+  Actions.CREATE_COPY_EVENT_REQUEST,
+  Actions.CREATE_COPY_EVENT_SUCCESS,
+  Actions.CREATE_COPY_EVENT_FAILURE,
+)<CreateRequestPayload<CreateCopyEvent>, ResponseCopyEvent, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -52,6 +65,13 @@ export const getEventByIdAsync = createAsyncAction(
   Actions.GET_EVENT_SUCCESS,
   Actions.GET_EVENT_FAILURE,
 )<GetRequestPayload, AxiosResponse, AxiosError>();
+
+// 공구  URL 로 조회
+export const getEventByUrlAsync = createAsyncAction(
+  Actions.GET_EVENT_BY_URL_REQUEST,
+  Actions.GET_EVENT_BY_URL_SUCCESS,
+  Actions.GET_EVENT_BY_URL_FAILURE,
+)<GetSearchEventByUrl, AxiosResponse, AxiosError>();
 
 // 공구 수정
 export const updateEventByIdAsync = createAsyncAction(
@@ -96,9 +116,41 @@ export const deleteEventAsync = createAsyncAction(
 
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
+export const clearEventByUrl = () => action(Actions.CLEAR_EVENT_BY_URL);
+export const clearCopyEvent = () => action(Actions.CLEAR_COPY_EVENT);
 
 const initialState: EventState = {
-
+  copyEvent:{
+    eventId: 0,
+  },
+  eventByUrl : {
+    eventId: 0,
+    eventUrl:'',
+    name: '',
+    brand: {
+      brandId: 0,
+      brandName: '',
+    },
+    salesStarted: '',
+    salesEnded: '',
+    creator: {
+      loginId: '',
+      avatar: {
+        bucketName: '',
+        fileKey: '',
+        fileMetadata: {
+          contentLength: 0,
+          contentType: '',
+        },
+        fileName: '',
+      },
+      username: '',
+      sns: {
+        instagramFollowers: '',
+        youtubeSubscriberCount: '',
+      },
+    },
+  },
   events: {
     content: [],
     first: false,
@@ -109,6 +161,7 @@ const initialState: EventState = {
     size: 10,
   },
   event: {
+    eventUrl:'',
     shippingPeriod: '',
     cancellationExchangeReturnRegulationAgree: false,
     cancellationExchangeReturnAgree: false,
@@ -168,9 +221,19 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.CREATE_EVENT_SUCCESS: {
       return state;
     }
+    case Actions.CREATE_COPY_EVENT_SUCCESS: {
+      return produce(state, draft => {
+       draft.copyEvent = {eventId : action.payload};
+      });
+    }
     case Actions.GET_EVENTS_SUCCESS: {
       return produce(state, draft => {
         draft.events = action.payload;
+      });
+    }
+    case Actions.GET_EVENT_BY_URL_SUCCESS: {
+      return produce(state, draft => {
+        draft.eventByUrl = action.payload;
       });
     }
     case Actions.GET_EVENT_SUCCESS: {
@@ -193,13 +256,26 @@ export default (state = initialState, action: AnyAction) => {
         draft.event = initialState.event;
       });
     }
+
     case Actions.CLEAR_EVENTS: {
       return produce(state, draft => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
       });
     }
+    case Actions.CLEAR_EVENT_BY_URL: {
+      return produce(state, draft => {
+        draft.eventByUrl = initialState.eventByUrl;
+      });
+    }
     case Actions.UPDATE_EVENT_SHIPPING_SUCCESS: {
       return state;
+    }
+
+
+    case Actions.CLEAR_COPY_EVENT: {
+      return produce(state, draft => {
+        draft.copyEvent = { eventId: 0 };
+      });
     }
 
     default: {

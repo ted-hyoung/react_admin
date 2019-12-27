@@ -18,20 +18,19 @@ import { QnaExpandForm, QnaSearch, QnaSequenceSelect } from 'containers';
 import { dateTimeFormat, endDateFormat, setPagingIndex, startDateFormat } from 'lib/utils';
 
 // types
-import { ResponseQna, ResponseEventForQna, QnaComment } from 'models';
+import { ResponseQna, ResponseEventForQna, QnaComment, ResponseEventQnaGroup } from 'models';
 
 // enums
 import { QnaStatus, QnaOrderType, ShippingStatus } from 'enums';
 
 // assets
 import './index.less';
-import { SearchShipping } from '../../models/Shipping';
 
 interface Qna {
   no: number;
   qnaId: number;
   qnaStatus: QnaStatus;
-  event: ResponseEventForQna;
+  eventQnaGroup: ResponseEventQnaGroup;
   contents: string;
   created: string;
   orderType: QnaOrderType;
@@ -54,14 +53,14 @@ const Qna = () => {
   const { qna, waitStatusCount } = useSelector((storeState: StoreState) => storeState.qna);
   const dispatch = useDispatch();
   const [lastSearchCondition, setLastSearchCondition] = useState<SearchQNA>();
-  const { first, last ,page, size:pageSize, content, totalPages, totalElements } = qna;
+  const { first, last, page, size: pageSize, content, totalPages, totalElements } = qna;
 
   const getQna = useCallback(
     (page: number, size = pageSize, searchCondition?: SearchQNA) => {
       const params = {
         page,
         size,
-        searchCondition
+        searchCondition,
       };
       dispatch(getQnaAsync.request(params));
       setLastSearchCondition(searchCondition);
@@ -84,7 +83,7 @@ const Qna = () => {
       title: '번호',
       dataIndex: 'no',
       key: 'no',
-      width: '5%'
+      width: '5%',
     },
     {
       title: '상태',
@@ -101,7 +100,7 @@ const Qna = () => {
       key: 'event',
       width: '20%',
       render: (text, record) => {
-        return record.event && record.event.name;
+        return record.eventQnaGroup && record.eventQnaGroup.event.name;
       },
     },
     { title: '문의 내용', dataIndex: 'contents', key: 'contents', width: '20%' },
@@ -134,9 +133,9 @@ const Qna = () => {
   const dataSource: Array<Qna> = qna.content.map((item, i) => {
     return {
       no: setPagingIndex(totalElements, page, pageSize, i),
-      qnaId : item.qnaId,
+      qnaId: item.qnaId,
       qnaStatus: item.qnaStatus,
-      event: item.event,
+      eventQnaGroup: item.eventQnaGroup,
       contents: item.contents,
       created: moment(item.created).format(dateTimeFormat),
       orderType: item.orderType,

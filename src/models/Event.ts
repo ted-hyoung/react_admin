@@ -38,6 +38,7 @@ export interface ResponseEvent extends ResponseEventForList {
   shippingScheduled: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
+  turn: number;
 }
 
 export interface ResponseEventCreator {
@@ -54,6 +55,7 @@ export interface ResponseEventCreatorSns {
 
 export interface ResponseEventForList {
   eventId: number;
+  eventUrl:string;
   name: string;
   eventStatus: EventStatus;
   turn: number;
@@ -63,6 +65,15 @@ export interface ResponseEventForList {
   created: string;
   creator: ResponseEventCreator;
   products: ResponseProduct[];
+}
+export interface ResponseEventForUrl {
+  eventId: number;
+  eventUrl:string;
+  name: string;
+  brand: ResponseBrandForEvent;
+  salesStarted: string;
+  salesEnded: string;
+  creator: ResponseEventCreator;
 }
 
 export interface ResponseEventForOrders {
@@ -79,6 +90,10 @@ export interface ResponseEventForReview {
   brand: ResponseBrand;
 }
 
+export interface ResponseEventQnaGroup {
+  event: ResponseEventForQna;
+}
+
 export interface ResponseEventForQna {
   name: string; // 공구명
 }
@@ -86,6 +101,17 @@ export interface ResponseEventForQna {
 export interface ResponseEventForShipping {
   name: string;
   brand: ResponseBrand;
+}
+
+export interface CreateCopyEvent {
+  eventId: number;
+  salesStarted: string;
+  salesEnded: string;
+  shippingScheduled: string;
+}
+
+export interface ResponseCopyEvent {
+  eventId: number;
 }
 
 export interface UpdateEvent {
@@ -107,7 +133,9 @@ export interface SearchEvent {
   brandName?: string;
   salesStarted: string;
   salesEnded: string;
-  eventStatuses: EventStatus[];
+  eventStatuses?: EventStatus[];
+  accountIds?:number[];
+  brandIds?:number[];
 }
 
 export interface SearchEventForOrder {
@@ -137,4 +165,9 @@ export interface UpdateEventShippingInfo {
 
 export interface UpdateEventShipping {
   shippingFee: number;
+}
+
+
+export interface GetSearchEventByUrl {
+  eventUrl: string;
 }

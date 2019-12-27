@@ -23,6 +23,7 @@ import {
   SHIPPING_STATUSES,
   DEFAULT_PAYMENT_STATUSES,
   DEFAULT_SHIPPING_STATUSES,
+  DateActionType,
 } from 'enums';
 
 // lib
@@ -40,6 +41,19 @@ export interface EventList {
   name: string;
   eventStatus: string;
   products: ResponseProduct[];
+}
+
+export interface BannerEventList {
+  key: number;
+  sales: string;
+  name: string;
+  eventStatus: string;
+  eventUrl: string;
+  products: ResponseProduct[];
+  brandName: string,
+  loginId:string,
+  username:string
+  eventId:number,
 }
 
 interface Props extends FormComponentProps {
@@ -190,7 +204,19 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                 <Form.Item>
                   {getFieldDecorator('dates', {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
-                  })(<SearchDateFormItem />)}
+                  })(
+                    <SearchDateFormItem
+                      initValue={false}
+                      optionDateLength={
+                        [
+                          DateActionType.TODAY,
+                          DateActionType.RECENT_THREE_DAYS,
+                          DateActionType.RECENT_WEEK,
+                          DateActionType.RECENT_MONTH,
+                          DateActionType.RECENT_THREE_MONTH
+                        ]}
+                    />
+                  )}
                 </Form.Item>
               </Col>
             </Row>

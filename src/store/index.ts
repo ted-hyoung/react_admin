@@ -17,6 +17,9 @@ import shipping, { ShippingState } from './reducer/shipping';
 import brand, { BrandState } from './reducer/brand';
 import expGroupState, { ExpGroupState } from './reducer/expGroup.reducer';
 import expGroupConsumerState, { ExpGroupConsumerState } from './reducer/expGroupConsumer.reducer';
+import snsCrawlerState, { SnsCrawlerState } from './reducer/snsCrawler.reducer';
+import banner, { BannerState } from './reducer/banner.reducer';
+import accountState, { AccountState } from './reducer/account.reducer';
 
 // saga
 import eventSaga from './saga/eventSaga';
@@ -31,8 +34,12 @@ import shippingSaga from './saga/shippingSaga';
 import brandSaga from './saga/brandSaga';
 import expGroupSaga from './saga/expGroup.saga';
 import expGroupConsumerSaga from './saga/expGroupConsumer.saga';
+import snsCrawlerSaga from './saga/snsCrawler.saga';
+import bannerSaga from './saga/banner.saga';
+import accountSaga from './saga/account.saga';
 
 export interface StoreState {
+  banner: BannerState;
   router: RouterState;
   event: EventState;
   qna: QnaState;
@@ -46,10 +53,14 @@ export interface StoreState {
   brand: BrandState;
   expGroupState: ExpGroupState;
   expGroupConsumerState: ExpGroupConsumerState;
+  accountState: AccountState;
+  snsCrawlerState:SnsCrawlerState;
+
 }
 
 export function* saga() {
   yield all([
+    bannerSaga(),
     eventSaga(),
     qnaSaga(),
     reviewSaga(),
@@ -62,6 +73,8 @@ export function* saga() {
     brandSaga(),
     expGroupSaga(),
     expGroupConsumerSaga(),
+    accountSaga(),
+    snsCrawlerSaga(),
   ]);
 }
 
@@ -80,6 +93,9 @@ const reducer = (history: History) =>
     brand,
     expGroupState,
     expGroupConsumerState,
+    accountState,
+    banner,
+    snsCrawlerState,
   });
 
 export default reducer;

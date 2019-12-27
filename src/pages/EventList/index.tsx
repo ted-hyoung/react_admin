@@ -1,10 +1,13 @@
 // base
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event';
+import { StoreState } from 'store';
 
 // modules
+import { Button, Modal, Tag } from 'antd';
 import moment from 'moment';
 import { ColumnProps } from 'antd/lib/table';
 import { useClipboard } from 'use-clipboard-copy';
@@ -12,13 +15,16 @@ import { useClipboard } from 'use-clipboard-copy';
 // components
 import { PaginationTable } from 'components';
 
-// types
+// models, enums, types
 import { EventStatus } from 'enums';
-import { StoreState } from 'store';
-import { getEventsAsync, clearEvent } from 'store/reducer/event';
-import { SearchEvent } from 'models';
-import { Button } from 'antd';
+import { SearchEvent, CreateCopyEvent } from 'models';
+
+// containers
+import EventDateModal from '../../containers/EventDateModal';
+
+// lib/utils
 import { sortedString, setPagingIndex } from 'lib/utils';
+import { CLIENT_DATE_FORMAT } from 'lib/constants';
 
 interface EventList {
   key: number;
@@ -32,10 +38,22 @@ interface EventList {
   eventLink: string;
 }
 
+const { info } = Modal;
+
 function EventList() {
   const history = useHistory();
 
   const { events } = useSelector((state: StoreState) => state.event);
+  const { eventId } = useSelector((state: StoreState) => state.event.copyEvent);
+  const [visible, setVisible] = useState(false);
+  const [copyEventProp, setCopyEventProp] = useState<CreateCopyEvent>({
+      eventId: 0,
+      salesStarted: '',
+      salesEnded: '',
+      shippingScheduled: ''
+    }
+  );
+
   const dispatch = useDispatch();
 
   const clipboard = useClipboard({
@@ -57,9 +75,44 @@ function EventList() {
     [dispatch],
   );
 
+  const openModal = (id:number) => {
+
+    setCopyEventProp({
+      eventId: id,
+      salesStarted: '',
+      salesEnded: '',
+      shippingScheduled: ''
+    });
+    setVisible(true);
+  };
+
   useEffect(() => {
     getEvents(0, events.size);
   }, [getEvents]);
+
+  useEffect(() => {
+
+    if(eventId !== 0) {
+
+      setVisible(false);
+      dispatch(clearCopyEvent());
+
+      // 모달 팝업
+      info({
+        title: '공구가 복사 되었습니다.',
+        content:'공구 등록 페이지로 이동됩니다.',
+        okText: '확인',
+        onOk() {
+          history.push(`/events/detail/${eventId}`)
+        }
+      });
+
+    }
+  }, [eventId]);
+
+  const handleDateModalClose = () => {
+    setVisible(false);
+  };
 
   const handleChangePageSize = useCallback(
     (value: number) => {
@@ -93,12 +146,12 @@ function EventList() {
     return {
       key: event.eventId,
       no: setPagingIndex(events.totalElements, events.page, events.size, i),
-      period: `${moment(event.salesStarted).format('YYYY-MM-DD')} ~ ${moment(event.salesEnded).format('YYYY-MM-DD')}`,
+      period: `${moment(event.salesStarted).format(CLIENT_DATE_FORMAT)} ~ ${moment(event.salesEnded).format(CLIENT_DATE_FORMAT)}`,
       name: event.name,
       eventLink: `${process.env.REACT_APP_CLIENT_URL}/seller/${event.creator.loginId}/events/${event.eventId}`,
       turn: event.turn,
       brand: event.brand.brandName,
-      created: moment(event.created).format('YYYY-MM-DD'),
+      created: moment(event.created).format(CLIENT_DATE_FORMAT),
       eventStatus: EventStatus[event.eventStatus],
     };
   });
@@ -147,6 +200,13 @@ function EventList() {
       dataIndex: 'turn',
       key: 'turn',
       sorter: (a, b) => a.turn - b.turn,
+      render: (value, record) => (
+        <div style={{ textAlign: 'center' }}>
+          <Tag color={'volcano'}>
+            {record.turn}
+          </Tag>
+        </div>
+      ),
     },
     {
       title: '브랜드',
@@ -180,14 +240,33 @@ function EventList() {
       ],
       onFilter: (value, record) => record.eventStatus.indexOf(value) === 0,
     },
-    // {
-    //   title: '복사',
-    //   dataIndex: 'copy',
-    //   key: 'copy',
-    // },
+    {
+      title: '복사',
+      dataIndex: 'copy',
+      key: 'copy',
+      onCell: () => {
+        return {
+          onClick: e => e.stopPropagation(),
+        };
+      },
+      render: (value, record) => (
+        <div>
+          {value}{' '}
+          { record.eventStatus.indexOf('종료') === 0 &&
+            <Button
+              style={{ color: '#000000' }}
+              icon="copy"
+              onClick={() => openModal(record.key)}
+            />
+          }
+        </div>
+      ),
+      onFilter: (value, record) => record.eventStatus.indexOf('종료') === 0,
+    },
   ];
 
   return (
+    <>
     <div className="event-list">
       <PaginationTable
         bordered
@@ -196,6 +275,7 @@ function EventList() {
         onChangePageSize={handleChangePageSize}
         pagination={pagination}
         onRow={onRow}
+        style={{overflowX: 'scroll', whiteSpace:'nowrap'}}
       />
       <Link to="/events/detail" style={{ position: 'absolute', right: 50, marginTop: 15 }}>
         <Button type="primary" icon="setting" size="large" onClick={() => dispatch(clearEvent())}>
@@ -203,6 +283,13 @@ function EventList() {
         </Button>
       </Link>
     </div>
+      <EventDateModal
+        copyEventProp={copyEventProp}
+        setCopyEventProp={setCopyEventProp}
+        visible={visible}
+        onCancel={handleDateModalClose}
+      />
+    </>
   );
 }
 
