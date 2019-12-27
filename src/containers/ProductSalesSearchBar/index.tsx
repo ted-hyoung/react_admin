@@ -67,7 +67,6 @@ const ProductSalesSearchBar = Form.create<Props>()((props: Props) => {
   );
 
   const handleReset = useCallback(() => {
-    console.log('handleReset');
     resetFields();
     onReset();
   }, [onReset]);

@@ -1,6 +1,7 @@
 // base
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 
 // modules
 import { Button } from 'antd';
@@ -24,15 +25,30 @@ function CelebReviewDetail() {
       celebReview,
     };
   });
+
   const [value, setValue] = useState('');
 
   const handleConfirm = () => {
     if (eventId) {
+
+      const ids:string[] =[];
+      if(value){
+        const counts= value.split('<iframe');
+        counts.splice(0, 1);
+        counts.map((item,i) =>{
+          const start = item.indexOf('src=\"https://www.instagram.com/');
+          const end = item.indexOf("/embed/captioned/", start+31);
+          const extractionStrArr = item.substring(start+31, end);
+          ids.push(extractionStrArr.split('/')[1])
+        });
+      }
+
       dispatch(
         updateCelebReviewAsync.request({
           id: eventId,
           data: {
             contents: value,
+            postIds:ids
           },
         }),
       );

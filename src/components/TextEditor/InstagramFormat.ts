@@ -28,13 +28,11 @@ class InstagramFormat extends Embed {
       node.setAttribute('data-instgrm-version', '12');
       node.setAttribute('style', 'width: 480px; max-width: 100%; border: 1px solid #ddd; border-radius: 0;');
     }
-
     return node;
   }
 
   public static value(element: Element) {
     const data = element.getAttribute('src') || element.getAttribute('data-instgrm-permalink');
-
     return convertUrl(data as string);
   }
 }

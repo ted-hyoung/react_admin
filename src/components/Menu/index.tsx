@@ -102,6 +102,22 @@ const MENU_LIST = [
       },
     ],
   },
+  {
+    key: 'banner',
+    name: '배너 관리',
+    icon: 'idcard',
+    role: true,
+    subMenus: [
+      {
+        key: 'banner',
+        name: '배너 오픈 관리',
+      },
+      {
+        key: 'bannerAdd',
+        name: '배너 신규 등록',
+      }
+    ],
+  },
 ];
 
   MENU_LIST.map((value , i) => {

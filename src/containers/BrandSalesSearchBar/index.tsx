@@ -15,6 +15,7 @@ import { BrandSalesMultiSearch } from 'containers';
 // lib
 import { startDateFormat, endDateFormat } from 'lib/utils';
 import { LOCAL_DATE_TIME_FORMAT } from 'lib/constants';
+import { DateActionType } from '../../enums';
 
 interface Props extends FormComponentProps {
   onSearch: (value: { [props: string]: any }) => void;
@@ -70,7 +71,17 @@ const BrandSalesSearchBar = Form.create<Props>()((props: Props) => {
         <Form.Item>
           {getFieldDecorator('dates', {
             initialValue: [moment().startOf('day'), moment().endOf('day')],
-          })(<SearchDateFormItem/>)}
+          })(
+            <SearchDateFormItem
+              optionDateLength={[
+                DateActionType.TODAY,
+                DateActionType.RECENT_THREE_DAYS,
+                DateActionType.RECENT_WEEK,
+                DateActionType.RECENT_MONTH,
+                DateActionType.RECENT_THREE_MONTH
+              ]}
+            />
+          )}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('brandIds', {

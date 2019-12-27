@@ -17,6 +17,8 @@ export * from './Consumer';
 export * from './Brand';
 export * from './ExpGroup';
 export * from './ExpGroupConsumer';
+export * from './Banner'
+export * from './SnsCrawler';
 
 export interface PageWrapper<T> {
   content: T[];

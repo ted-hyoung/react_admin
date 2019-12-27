@@ -14,10 +14,12 @@ interface CustomToolbarProps {
   saveSelection: () => void;
   imageHandler: (file: File) => void;
   instagramHandler: (url: string) => void;
+  inputQuotation: () => void;
+  inputLine: () => void;
 }
 
 const CustomToolbar = (props: CustomToolbarProps) => {
-  const { name, instagramTool, saveSelection, imageHandler, instagramHandler } = props;
+  const { name, instagramTool, saveSelection, imageHandler, instagramHandler, inputQuotation, inputLine } = props;
 
   const [visible, setVisible] = useState(false);
 
@@ -48,6 +50,24 @@ const CustomToolbar = (props: CustomToolbarProps) => {
       <span className="ql-formats">
         <select className="ql-color" />
         <select className="ql-background" />
+      </span>
+      <span className="ql-formats">
+        <button
+          type="button"
+          onClick={() => {
+            inputQuotation();
+          }}
+        >
+          " "
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            inputLine();
+          }}
+        >
+          <Icon type="line" />
+        </button>
       </span>
       <span className="ql-formats">
         <button type="button" onClick={handleClickFileInput}>
