@@ -18,10 +18,6 @@ import {
 
 import Form, { FormComponentProps } from 'antd/lib/form';
 
-// store
-
-// enums
-
 // types
 import { CreateCopyEvent, } from 'models';
 
@@ -31,7 +27,6 @@ import { FlexRow } from '../../components';
 import moment, { Moment } from 'moment';
 import { createCopyEventAsync } from '../../store/reducer/event';
 import { TIME_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
-import { StoreState } from '../../store';
 
 // defines
 
@@ -169,7 +164,7 @@ const DateForm = Form.create<DateForm>()((props: DateForm) => {
             </FlexRow>
           </Descriptions.Item>
         </Descriptions>
-        <div className='ant-modal-footer'>
+        <div className="ant-modal-footer">
           <Button type="primary" htmlType="submit" >
             확인
           </Button>
