@@ -138,7 +138,7 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
           onChange={(dates, dateStrings) => handleChange(dates as [moment.Moment, moment.Moment], dateStrings)}
         />
       </Col>
-      { optionDateLength && optionDateLength.map((option,i) => {
+      { optionDateLength && optionDateLength.map((option, i) => {
         if (option !== DateActionType.DEFAULT) {
           return (
             <Col key={i}>
