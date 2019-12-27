@@ -59,17 +59,18 @@ const MENU_LIST = [
       // },
     ],
   },
-  {
-    key: 'celeb',
-    name: '셀럽',
-    icon: 'star',
-    subMenus: [
-      {
-        key: 'celebrity',
-        name: '셀럽정보 조회',
-      },
-    ],
-  },
+  // {
+  //   key: 'celeb',
+  //   name: '셀럽',
+  //   icon: 'star',
+  //   role: true,
+  //   subMenus: [
+  //     {
+  //       key: 'celebrity',
+  //       name: '셀럽정보 조회',
+  //     },
+  //   ],
+  // },
   {
     key: 'statistics',
     name: '통계 관리',
