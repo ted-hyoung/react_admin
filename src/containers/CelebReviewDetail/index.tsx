@@ -32,16 +32,18 @@ function CelebReviewDetail() {
     if (eventId) {
 
       const ids:string[] =[];
-      if(value){
-        const counts= value.split('<iframe');
-        counts.splice(0, 1);
-        counts.map((item,i) =>{
-          const start = item.indexOf('src=\"https://www.instagram.com/');
-          const end = item.indexOf("/embed/captioned/", start+31);
-          const extractionStrArr = item.substring(start+31, end);
-          ids.push(extractionStrArr.split('/')[1])
-        });
-      }
+
+      // TODO 셀럽 리뷰 수정 필요
+      // if(value){
+      //   const counts= value.split('<iframe');
+      //   counts.splice(0, 1);
+      //   counts.map((item,i) =>{
+      //     const start = item.indexOf('src=\"https://www.instagram.com/');
+      //     const end = item.indexOf("/embed/captioned/", start+31);
+      //     const extractionStrArr = item.substring(start+31, end);
+      //     ids.push(extractionStrArr.split('/')[1])
+      //   });
+      // }
 
       dispatch(
         updateCelebReviewAsync.request({
