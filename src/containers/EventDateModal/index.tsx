@@ -1,6 +1,6 @@
 // base
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 // modules
 import {
@@ -9,51 +9,31 @@ import {
   Input,
   message,
   Modal,
-  Row,
   Select,
-  Table,
   Typography,
-  InputNumber,
   Descriptions,
-  DatePicker, TimePicker,
+  DatePicker,
+  TimePicker,
 } from 'antd';
-import { ColumnProps } from 'antd/lib/table';
-import ImageUpload from 'components/ImageUpload';
-import { FileObject } from 'models/FileObject';
-import { getBytes } from 'lib/utils';
+
 import Form, { FormComponentProps } from 'antd/lib/form';
 
 // store
-import { createProductAsync, updateProductAsync } from 'store/reducer/product';
 
 // enums
-import { EventStatus } from 'enums';
 
 // types
-import {
-  CreateCopyEvent,
-  CreateOption,
-  CreateProduct,
-  ResponseEvent,
-  ResponseOption,
-  ResponseProduct, UpdateEvent,
-  UpdateOption,
-  UpdateProduct,
-} from 'models';
+import { CreateCopyEvent, } from 'models';
 
 // less
 import './index.less';
 import { FlexRow } from '../../components';
 import moment, { Moment } from 'moment';
-import { createCopyEventAsync, updateEventByIdAsync } from '../../store/reducer/event';
-import { TIME_FORMAT, LOCAL_DATE_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
+import { createCopyEventAsync } from '../../store/reducer/event';
+import { TIME_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
 import { StoreState } from '../../store';
 
 // defines
-const { TextArea } = Input;
-const { Option } = Select;
-const { Text } = Typography;
-
 
 interface DateForm extends FormComponentProps {
   copyEventProp: CreateCopyEvent;
@@ -62,8 +42,8 @@ interface DateForm extends FormComponentProps {
 }
 
 const DateForm = Form.create<DateForm>()((props: DateForm) => {
-  const { form, copyEventProp, setCopyEventProp, onCancel } = props;
-  const { getFieldDecorator, getFieldValue, setFieldsValue, validateFieldsAndScroll, resetFields } = form;
+  const { form, copyEventProp } = props;
+  const { getFieldDecorator, validateFieldsAndScroll, resetFields } = form;
   const dispatch = useDispatch();
 
 
@@ -81,8 +61,8 @@ const DateForm = Form.create<DateForm>()((props: DateForm) => {
 
         const data: CreateCopyEvent = {
           eventId: copyEventProp.eventId,
-          salesStarted: moment(salesStarted).format(LOCAL_DATE_FORMAT),
-          salesEnded: moment(salesEnded).format(LOCAL_DATE_FORMAT),
+          salesStarted: moment(salesStarted).format('YYYY-MM-DDTHH:mm'),
+          salesEnded: moment(salesEnded).format('YYYY-MM-DDTHH:mm'),
           shippingScheduled: moment(shippingScheduled).format(CLIENT_DATE_FORMAT),
         };
 

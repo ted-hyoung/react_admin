@@ -19,7 +19,7 @@ import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event'
 import { SearchEvent, CreateCopyEvent } from 'models';
 import { Button, Modal, Tag } from 'antd';
 import { sortedString, setPagingIndex } from 'lib/utils';
-import { TIME_FORMAT, LOCAL_DATE_FORMAT, CLIENT_DATE_FORMAT} from 'lib/constants';
+import { CLIENT_DATE_FORMAT} from 'lib/constants';
 import EventDateModal from '../../containers/EventDateModal';
 
 interface EventList {
@@ -42,8 +42,8 @@ function EventList() {
   const { events } = useSelector((state: StoreState) => state.event);
   const { eventId } = useSelector((state: StoreState) => state.event.copyEvent);
   const [visible, setVisible] = useState(false);
-  const [copyEventProp, setCopyEventProp] = useState<CreateCopyEvent>(
-    {  eventId: 0,
+  const [copyEventProp, setCopyEventProp] = useState<CreateCopyEvent>({
+      eventId: 0,
       salesStarted: '',
       salesEnded: '',
       shippingScheduled: ''

@@ -19,7 +19,8 @@ import {
   Typography,
   InputNumber,
   message,
-  Select, Tag,
+  Select,
+  Tag,
 } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
