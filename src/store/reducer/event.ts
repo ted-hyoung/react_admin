@@ -22,7 +22,9 @@ import {
   UpdateEventStatus,
   RequestAsyncAction,
   ResponseAsyncAction,
-  ErrorAsyncAction, CreateCopyEvent, ResponseCopyEvent,
+  ErrorAsyncAction,
+  CreateCopyEvent,
+  ResponseCopyEvent,
   ResponseEventForUrl,
   GetSearchEventByUrl,
 } from 'models';
