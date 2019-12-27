@@ -14,6 +14,7 @@ import {
   deleteEventAsync,
   updateEventShippingAsync,
   getEventByUrlAsync,
+  createCopyEventAsync,
 } from 'store/reducer/event';
 
 // lib
@@ -48,6 +49,26 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
     yield put(getEventByIdAsync.request({ id : res.data }));
 
     message.success('공구가 등록되었습니다.');
+  } catch (error) {
+    message.error(error);
+    yield put(createEventAsync.failure(error));
+  }
+}
+
+
+function* createEventCopy(action: RequestAsyncAction) {
+
+  const { eventId, salesStarted, salesEnded, shippingScheduled } = action.payload.data;
+
+  const data = {
+    salesStarted,
+    salesEnded,
+    shippingScheduled,
+  };
+
+  try {
+    const res = yield call(() => Api.post(`/events/${eventId}/copy`, data));
+   yield put(createCopyEventAsync.success(res.data));
   } catch (error) {
     message.error(error);
     yield put(createEventAsync.failure(error));
@@ -193,4 +214,5 @@ export default function* eventSaga() {
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_FEE_INFO_REQUEST, updateEventShippingFeeInfo);
   yield takeLatest(Actions.DELETE_EVENT_REQUEST, deleteEvent);
   yield takeLatest(Actions.UPDATE_EVENT_SHIPPING_REQUEST, updateEventShipping);
+  yield takeLatest(Actions.CREATE_COPY_EVENT_REQUEST, createEventCopy);
 }

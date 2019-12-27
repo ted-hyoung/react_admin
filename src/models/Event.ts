@@ -38,6 +38,7 @@ export interface ResponseEvent extends ResponseEventForList {
   shippingScheduled: string;
   cancellationExchangeReturnRegulationAgree: boolean;
   cancellationExchangeReturnAgree: boolean;
+  turn: number;
 }
 
 export interface ResponseEventCreator {
@@ -89,6 +90,10 @@ export interface ResponseEventForReview {
   brand: ResponseBrand;
 }
 
+export interface ResponseEventQnaGroup {
+  event: ResponseEventForQna;
+}
+
 export interface ResponseEventForQna {
   name: string; // 공구명
 }
@@ -96,6 +101,17 @@ export interface ResponseEventForQna {
 export interface ResponseEventForShipping {
   name: string;
   brand: ResponseBrand;
+}
+
+export interface CreateCopyEvent {
+  eventId: number;
+  salesStarted: string;
+  salesEnded: string;
+  shippingScheduled: string;
+}
+
+export interface ResponseCopyEvent {
+  eventId: number;
 }
 
 export interface UpdateEvent {

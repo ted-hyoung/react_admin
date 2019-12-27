@@ -23,6 +23,8 @@ import {
   RequestAsyncAction,
   ResponseAsyncAction,
   ErrorAsyncAction,
+  CreateCopyEvent,
+  ResponseCopyEvent,
   ResponseEventForUrl,
   GetSearchEventByUrl,
 } from 'models';
@@ -32,6 +34,7 @@ import { EventStatus } from 'enums';
 export interface EventState {
   events: PageWrapper<ResponseEventForList>;
   event: ResponseEvent;
+  copyEvent: ResponseCopyEvent;
   eventByUrl:ResponseEventForUrl;
 }
 
@@ -41,6 +44,13 @@ export const createEventAsync = createAsyncAction(
   Actions.CREATE_EVENT_SUCCESS,
   Actions.CREATE_EVENT_FAILURE,
 )<CreateRequestPayload<CreateEvent>, {eventId : number}, AxiosError>();
+
+// 공구 생성
+export const createCopyEventAsync = createAsyncAction(
+  Actions.CREATE_COPY_EVENT_REQUEST,
+  Actions.CREATE_COPY_EVENT_SUCCESS,
+  Actions.CREATE_COPY_EVENT_FAILURE,
+)<CreateRequestPayload<CreateCopyEvent>, ResponseCopyEvent, AxiosError>();
 
 // 공구 목록 조회
 export const getEventsAsync = createAsyncAction(
@@ -107,8 +117,12 @@ export const deleteEventAsync = createAsyncAction(
 export const clearEvent = () => action(Actions.CLEAR_EVENT);
 export const clearEvents = () => action(Actions.CLEAR_EVENTS);
 export const clearEventByUrl = () => action(Actions.CLEAR_EVENT_BY_URL);
+export const clearCopyEvent = () => action(Actions.CLEAR_COPY_EVENT);
 
 const initialState: EventState = {
+  copyEvent:{
+    eventId: 0,
+  },
   eventByUrl : {
     eventId: 0,
     eventUrl:'',
@@ -207,6 +221,11 @@ export default (state = initialState, action: AnyAction) => {
     case Actions.CREATE_EVENT_SUCCESS: {
       return state;
     }
+    case Actions.CREATE_COPY_EVENT_SUCCESS: {
+      return produce(state, draft => {
+       draft.copyEvent = {eventId : action.payload};
+      });
+    }
     case Actions.GET_EVENTS_SUCCESS: {
       return produce(state, draft => {
         draft.events = action.payload;
@@ -237,6 +256,7 @@ export default (state = initialState, action: AnyAction) => {
         draft.event = initialState.event;
       });
     }
+
     case Actions.CLEAR_EVENTS: {
       return produce(state, draft => {
         draft.events = { content: [], first: false, last: false, totalElements: 0, totalPages: 0, page: 0, size: 10 };
@@ -251,6 +271,12 @@ export default (state = initialState, action: AnyAction) => {
       return state;
     }
 
+
+    case Actions.CLEAR_COPY_EVENT: {
+      return produce(state, draft => {
+        draft.copyEvent = { eventId: 0 };
+      });
+    }
 
     default: {
       return state;
