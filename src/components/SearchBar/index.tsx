@@ -84,6 +84,7 @@ const SearchBar = Form.create<Props>()((props: Props) => {
       {customFormItems && customFormItems(form).map(item => item)}
       <Form.Item>{getFieldDecorator('dates')(
         <SearchDateFormItem
+          initValue={false}
           optionDateLength={[
             DateActionType.TODAY,
             DateActionType.RECENT_THREE_DAYS,

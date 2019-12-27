@@ -22,7 +22,8 @@ import {
   PAYMENT_STATUSES,
   SHIPPING_STATUSES,
   DEFAULT_PAYMENT_STATUSES,
-  DEFAULT_SHIPPING_STATUSES, DateActionType,
+  DEFAULT_SHIPPING_STATUSES,
+  DateActionType,
 } from 'enums';
 
 // lib
@@ -205,6 +206,7 @@ const OrderSearchBar = Form.create<Props>()((props: Props) => {
                     initialValue: [moment().startOf('day'), moment().endOf('day')],
                   })(
                     <SearchDateFormItem
+                      initValue={false}
                       optionDateLength={
                         [
                           DateActionType.TODAY,

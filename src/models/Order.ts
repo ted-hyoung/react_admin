@@ -2,8 +2,8 @@ import { ResponseShippingDestination, ResponseShippingForOrders, ResponseClientS
 import { ResponseOrderItem, ResponseClientOrderItemForReview } from './OrderItem';
 import { ResponseOrderAccount } from './Account';
 import { ResponsePaymentForOrders, ResponsePaymentForShipping, ResponseClientPaymentForOrder } from './Payment';
+import { ResponseEventForOrders, ResponseEventForReview, ResponseEventForShipping, SearchEventForOrder } from './Event';
 import { PaymentStatus, ShippingStatus } from 'enums';
-import { ResponseEventForOrders, ResponseEventForShipping, SearchEventForOrder, ResponseEventForReview } from './Event';
 import { ResponseOrderConsumer } from './Consumer';
 import { ResponseOrderMemoForOrder } from './OrderMemo';
 import { UpdateShippingDestination } from './ShippingDestination';

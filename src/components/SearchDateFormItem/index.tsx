@@ -106,21 +106,22 @@ interface SearchDateFormItemProps {
   value?: undefined | [moment.Moment, moment.Moment];
   onChange?: (dates: undefined | [moment.Moment, moment.Moment], dataString: [string, string]) => void;
   optionDateLength?: DateActionType[]
+  initValue: boolean;
 }
 
 const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormItemProps>((props, ref) => {
-  const { value, onChange , optionDateLength}: SearchDateFormItemProps = props;
-
+  const { value, onChange , optionDateLength, initValue}: SearchDateFormItemProps = props;
   const [isMount, setIsMount] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(reducer, initialState);
-
   const handleChange = (dates: [moment.Moment, moment.Moment], dateStrings: [string, string]) => {
     dispatch({ type: DateActionType.DEFAULT, payload: { dates, dateStrings } });
   };
 
   useEffect(() => {
     setIsMount(true);
-    dispatch({ type: DateActionType.RECENT_WEEK })
+    if(initValue){
+      dispatch({ type: DateActionType.RECENT_WEEK })
+    }
   }, []);
 
   useEffect(() => {
@@ -138,10 +139,8 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
           onChange={(dates, dateStrings) => handleChange(dates as [moment.Moment, moment.Moment], dateStrings)}
         />
       </Col>
-      { optionDateLength && optionDateLength.map((option,i) => {
-
+      { optionDateLength && optionDateLength.map((option, i) => {
         if (option !== DateActionType.DEFAULT) {
-          console.log(option);
           return (
             <Col key={i}>
               <Button onClick={() => dispatch({ type: DateActionType[DateActionType[option]] })}>{DateRangeType[option]}</Button>
@@ -149,24 +148,6 @@ const SearchDateFormItem = React.forwardRef<DatePickerDecorator, SearchDateFormI
           );
         }
       })}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.TODAY })}>오늘</Button>*/}
-      {/*</Col>*/}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.RECENT_DAYS })}>최근 3일</Button>*/}
-      {/*</Col>*/}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.RECENT_WEEK })}>최근 7일</Button>*/}
-      {/*</Col>*/}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.RECENT_MONTH })}>최근 1개월</Button>*/}
-      {/*</Col>*/}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.RECENT_THREE_MONTH })}>최근 3개월</Button>*/}
-      {/*</Col>*/}
-      {/*<Col>*/}
-      {/*  <Button onClick={() => dispatch({ type: DateActionType.RECENT_SIX_MONTH })}>최근 6개월</Button>*/}
-      {/*</Col>*/}
     </Row>
   );
 });

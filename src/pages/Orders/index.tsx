@@ -124,10 +124,8 @@ const OrdersPaymentSelect = (props: OrdersPaymentSelect) => {
             if (PaymentStatus[PaymentStatus.COMPLETE] === paymentStatus) {
               if(record.paymentMethod === PaymentMethod[PaymentMethod.VIRTUAL_ACCOUNT]){
                 // 가상계좌 주문 취소시 팝업(환불 정보 입력폼)
-                console.log("가상계좌 주문 취소시 팝업(환불 정보 입력폼)");
                 setVisible(true);
               }else{
-                console.log("카드 및 계좌 이체 결제 환불 API 호출");
                 // 카드 및 계좌 이체 결제 환불 API 호출
                 dispatch(cancelPaymentAsync.request({
                     totalAmount: Number(record.totalAmount.replace(/\$\s?|(,*)/g, '')),
@@ -386,9 +384,9 @@ const Orders = () => {
   return (
     <div className="order">
       <OrderSearchBar
-        onSearch={value => getOrders(0, pageSize, value)}
-        onReset={() => getOrders(0, pageSize, defaultSearchCondition)}
-      />
+      onSearch={value => getOrders(0, pageSize, value)}
+      onReset={() => getOrders(0, pageSize, defaultSearchCondition)}
+    />
 
       <Table
         rowKey={record => record.orderId.toString()}
