@@ -19,7 +19,7 @@ import { getEventsAsync, clearEvent, clearCopyEvent } from 'store/reducer/event'
 import { SearchEvent, CreateCopyEvent } from 'models';
 import { Button, Modal, Tag } from 'antd';
 import { sortedString, setPagingIndex } from 'lib/utils';
-import { CLIENT_DATE_FORMAT} from 'lib/constants';
+import { CLIENT_DATE_FORMAT } from 'lib/constants';
 import EventDateModal from '../../containers/EventDateModal';
 
 interface EventList {

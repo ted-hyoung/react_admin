@@ -58,7 +58,7 @@ function* createEvent(action: PayloadAction<string, CreateRequestPayload<CreateE
 
 function* createEventCopy(action: RequestAsyncAction) {
 
-  const {  eventId, salesStarted, salesEnded, shippingScheduled, } = action.payload.data;
+  const { eventId, salesStarted, salesEnded, shippingScheduled } = action.payload.data;
 
   const data = {
     salesStarted,
