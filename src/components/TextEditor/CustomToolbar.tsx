@@ -56,14 +56,14 @@ const CustomToolbar = (props: CustomToolbarProps) => {
       </span>
       <span className="ql-formats">
         <Select defaultValue="인용구" className="ql-quotation" size={'small'} onChange={quotationHandler}>
-          <Option value="small">
-            "　" /S
+          <Option value="small" style={{fontSize: '12px'}}>
+            "　" / Small
           </Option>
-          <Option value="medium">
-            "　" /M
+          <Option value="medium" style={{fontSize: '12px'}}>
+            "　" / Medium
           </Option>
-          <Option value="large">
-            "　" /L
+          <Option value="large" style={{fontSize: '12px'}}>
+            "　" / Large
           </Option>
         </Select>
       </span>
